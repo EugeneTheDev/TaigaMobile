@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,9 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.viewModel
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
@@ -47,11 +49,13 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalMaterialApi
 @Composable
 fun LoginScreen(scaffoldState: ScaffoldState) {
+    val mainViewModel: MainViewModel = viewModel()
+
     val errorMessage = stringResource(R.string.error_message)
     val coroutineScope = rememberCoroutineScope()
 
     var taigaServerInput by remember { mutableStateOf(TextFieldValue()) }
-    var login by remember { mutableStateOf(TextFieldValue()) }
+    var username by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
 
     ConstraintLayout(
@@ -95,25 +99,28 @@ fun LoginScreen(scaffoldState: ScaffoldState) {
         ) {
             LoginTextField(
                 value = taigaServerInput,
-                onValueChange = { taigaServerInput = it },
                 labelId = R.string.login_taiga_server,
+                onValueChange = { taigaServerInput = it },
             )
 
             LoginTextField(
-                value = login,
-                onValueChange = { login = it },
-                labelId = R.string.login_login,
+                value = username,
+                labelId = R.string.login_username,
+                onValueChange = { username = it },
             )
 
             LoginTextField(
                 value = password,
-                onValueChange = { password = it },
                 labelId = R.string.login_password,
+                onValueChange = { password = it },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardType = KeyboardType.Password
             )
 
             Button(
                 onClick = { coroutineScope.launch {
-                    scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+                    mainViewModel.onContinueClick(taigaServerInput.text, username.text, password.text)
+                    // scaffoldState.snackbarHostState.showSnackbar(errorMessage)
                 }},
                 modifier = Modifier.padding(top = 24.dp),
                 contentPadding = PaddingValues(start = 40.dp, end = 40.dp)
@@ -130,19 +137,28 @@ fun LoginScreen(scaffoldState: ScaffoldState) {
 @Composable
 fun LoginTextField(
     value: TextFieldValue,
+    @StringRes labelId: Int,
     onValueChange: (TextFieldValue) -> Unit,
-    @StringRes labelId: Int
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .padding(bottom = 6.dp),
-            textStyle = MaterialTheme.typography.subtitle1,
-            singleLine = true,
-            label = { Text(stringResource(labelId)) },
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 40.dp)
+            .padding(bottom = 6.dp),
+        textStyle = MaterialTheme.typography.subtitle1,
+        singleLine = true,
+        label = { Text(stringResource(labelId)) },
+        visualTransformation = visualTransformation,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
+        onImeActionPerformed = { action, controller ->
+            if (action == ImeAction.Done) {
+                controller?.hideSoftwareKeyboard()
+            }
+        }
     )
 }
 

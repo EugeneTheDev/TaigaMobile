@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kotlin-kapt")
 }
 
 val composeVersion = "1.0.0-alpha08"
@@ -52,14 +53,36 @@ dependencies {
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
+    implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
+
+    // ViewModel
+    val lifecycleKtxVersion = "2.2.0"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleKtxVersion")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleKtxVersion")
 
     // Coroutines
     val coroutinesVersion = "1.4.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
+    // Retrofit 2
+    val retrofitVersion = "2.8.1"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 
-    testImplementation("junit:junit:4.+")
+    // OkHttp
+    val okHttpVersion = "4.9.0"
+    implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
+    implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
+
+    // Dagger 2
+    val daggerVersion = "2.31.2"
+    implementation("com.google.dagger:dagger-android:$daggerVersion")
+    kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
+    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+
+
+    testImplementation("junit:junit:4.13.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 }
