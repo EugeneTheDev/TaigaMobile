@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Taiga App</string>
+
+    <string name="login_taiga_server">Taiga server</string>
+    <string name="login_login">Login</string>
+    <string name="login_password">Password</string>
+    <string name="login_continue">Continue</string>
+
+    <string name="error_message">An error was occurred. Check your connection</string>
+</resources>
