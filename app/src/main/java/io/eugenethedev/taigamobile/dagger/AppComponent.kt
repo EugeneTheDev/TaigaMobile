@@ -3,7 +3,7 @@ package io.eugenethedev.taigamobile.dagger
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import io.eugenethedev.taigamobile.ui.screens.main.MainViewModel
+import io.eugenethedev.taigamobile.ui.screens.login.LoginViewModel
 import javax.inject.Singleton
 
 @Singleton
@@ -16,5 +16,5 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
-    fun inject(mainViewModel: MainViewModel)
+    fun inject(loginViewModel: LoginViewModel)
 }

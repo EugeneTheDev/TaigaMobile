@@ -4,7 +4,7 @@ plugins {
     id("kotlin-kapt")
 }
 
-val composeVersion = "1.0.0-alpha08"
+val composeVersion = "1.0.0-alpha11"
 
 android {
     compileSdkVersion(30)
@@ -54,6 +54,9 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
+
+    // Navigation with compose support
+    implementation("androidx.navigation:navigation-compose:1.0.0-alpha06")
 
     // ViewModel
     val lifecycleKtxVersion = "2.2.0"
