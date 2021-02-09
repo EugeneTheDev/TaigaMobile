@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.stringResource
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
@@ -39,8 +40,11 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MainScreen(scaffoldState: ScaffoldState, paddingValues: PaddingValues) {
     val coroutineScope = rememberCoroutineScope()
+    val onError: @Composable (Int) -> Unit = { message ->
+        val strMessage = stringResource(message)
+        coroutineScope.launch { scaffoldState.snackbarHostState.showSnackbar(strMessage) }
+    }
 
-    val onError: (String) -> Unit = { message -> coroutineScope.launch { scaffoldState.snackbarHostState.showSnackbar(message) } }
     LoginScreen(
         onError = onError
     )

@@ -17,19 +17,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.utils.Status
 
 @ExperimentalMaterialApi
 @Composable
-fun LoginScreen(onError: (message: String) -> Unit = {}) {
+fun LoginScreen(onError: @Composable (message: Int) -> Unit = {}) {
     val viewModel: LoginViewModel = viewModel()
-    val errorMessage = stringResource(R.string.error_message)
 
-    val isError by viewModel.isError.observeAsState()
-    if (isError!!) {
-        onError(errorMessage)
+    val loginResult by viewModel.loginResult.observeAsState()
+    loginResult?.apply {
+        when(status) {
+            Status.ERROR -> onError(message!!)
+            Status.SUCCESS -> {/* TODO add navigation */}
+            else -> {}
+        }
     }
-
-    val isLoading by viewModel.isLoading.observeAsState()
 
     var taigaServerInput by remember { mutableStateOf(TextFieldValue()) }
     var usernameInput by remember { mutableStateOf(TextFieldValue()) }
@@ -53,11 +55,15 @@ fun LoginScreen(onError: (message: String) -> Unit = {}) {
             if (!taigaServerInput.text.validateServerInput()) {
                 isServerInputErrorValue = true
             } else if (usernameInput.text.isNotBlank() && passwordInput.text.isNotBlank()) {
-                viewModel.onContinueClick(taigaServerInput.text, usernameInput.text, passwordInput.text)
+                viewModel.onContinueClick(
+                    taigaServerInput.text.trimEnd('/'),
+                    usernameInput.text,
+                    passwordInput.text
+                )
             }
         },
         isServerInputErrorValue = isServerInputErrorValue,
-        isLoadingValue = isLoading!!
+        isLoadingValue = loginResult?.status === Status.LOADING
     )
 }
 
