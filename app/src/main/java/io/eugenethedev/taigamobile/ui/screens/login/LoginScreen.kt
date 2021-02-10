@@ -15,20 +15,31 @@ import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
+import androidx.navigation.compose.popUpTo
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.Status
 
 @ExperimentalMaterialApi
 @Composable
-fun LoginScreen(onError: @Composable (message: Int) -> Unit = {}) {
+fun LoginScreen(
+    navController: NavController,
+    onError: @Composable (message: Int) -> Unit = {},
+) {
     val viewModel: LoginViewModel = viewModel()
 
     val loginResult by viewModel.loginResult.observeAsState()
     loginResult?.apply {
         when(status) {
             Status.ERROR -> onError(message!!)
-            Status.SUCCESS -> {/* TODO add navigation */}
+            Status.SUCCESS -> {
+                navController.navigate(Routes.stories) {
+                    popUpTo(Routes.login) { inclusive = true }
+                }
+            }
             else -> {}
         }
     }
