@@ -54,6 +54,7 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
+    implementation("androidx.compose.animation:animation:$composeVersion")
 
     // Navigation with compose support
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha06")

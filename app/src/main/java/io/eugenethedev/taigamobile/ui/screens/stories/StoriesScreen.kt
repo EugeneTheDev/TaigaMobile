@@ -23,7 +23,6 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 
-@ExperimentalMaterialApi
 @Composable
 fun StoriesScreen(
     navController: NavController,
@@ -36,7 +35,7 @@ fun StoriesScreen(
         projectName = projectName!!,
         onTitleClick = {
             navController.navigate(Routes.projectsSelector) {
-                anim { enter = R.anim.slide_up }
+
             }
         }
     )
