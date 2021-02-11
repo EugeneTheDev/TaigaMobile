@@ -23,9 +23,29 @@ class Session(context: Context) {
             }
         }
 
+    var currentProjectId: Long
+        get() = sharedPreferences.getLong(SERVER_KEY, -1)
+        set(value) {
+            sharedPreferences.edit {
+                putLong(PROJECT_NAME_KEY, value)
+            }
+        }
+
+    var currentProjectName: String
+        get() = sharedPreferences.getString(SERVER_KEY, "") ?: ""
+        set(value) {
+            sharedPreferences.edit {
+                putString(PROJECT_NAME_KEY, value)
+            }
+        }
+
+    val isLogged: Boolean get() = token.isNotEmpty() && server.isNotEmpty()
+
     companion object {
         private const val PREFERENCES_NAME = "session"
         private const val TOKEN_KEY = "token"
         private const val SERVER_KEY = "server"
+        private const val PROJECT_NAME_KEY = "project_name"
+        private const val PROJECT_ID_KEY = "project_id"
     }
 }

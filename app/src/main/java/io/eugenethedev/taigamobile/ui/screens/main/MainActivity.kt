@@ -4,18 +4,22 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.viewinterop.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
+import io.eugenethedev.taigamobile.ui.screens.stories.StoriesScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
@@ -26,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val scaffoldState = rememberScaffoldState()
             val navController = rememberNavController()
-            val screensWithoutBottomBar = listOf(Routes.login)
 
             TaigaMobileTheme {
                 Scaffold(
@@ -41,10 +44,17 @@ class MainActivity : AppCompatActivity() {
                         }
                     },
                     bottomBar = {
+                        val items = listOf(Screen.Stories, Screen.Team)
+                        val routes = items.map { it.route }
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-                        if (currentRoute == null || currentRoute in screensWithoutBottomBar) return@Scaffold
+                        var isLaunchSingleTopShit by remember { mutableStateOf(false) }
+
+                        // hide bottom bar for other screens
+                        if (!((isLaunchSingleTopShit && currentRoute == null) || (currentRoute in routes))) {
+                            return@Scaffold
+                        }
 
                         BottomNavigation(backgroundColor = MaterialTheme.colors.surface) {
                             listOf(Screen.Stories, Screen.Team).forEach { screen ->
@@ -53,7 +63,9 @@ class MainActivity : AppCompatActivity() {
                                     unselectedContentColor = Color.Gray,
                                     icon = { Icon(imageVector = vectorResource(screen.iconId), contentDescription = "") },
                                     label = { Text(stringResource(screen.resourceId)) },
-                                    selected = currentRoute == screen.route,
+                                    // workaround, because launchSingleTop can cause strange effect
+                                    // and make currentRoute null for start destination
+                                    selected = currentRoute == screen.route || (screen.route == Routes.startDestination && currentRoute == null),
                                     onClick = {
                                         navController.navigate(screen.route) {
                                             // Pop up to the start destination of the graph to
@@ -63,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                                             // Avoid multiple copies of the same destination when
                                             // reselecting the same item
                                             launchSingleTop = true
+                                            isLaunchSingleTopShit = true
                                         }
                                     }
                                 )
@@ -85,6 +98,9 @@ object Routes {
     const val login = "login"
     const val stories = "stories"
     const val team = "team"
+    const val projectsSelector = "projects_selector"
+
+    const val startDestination = stories
 }
 
 @ExperimentalMaterialApi
@@ -94,6 +110,7 @@ fun MainScreen(
     paddingValues: PaddingValues,
     navController: NavHostController
 ) {
+    val viewModel: MainViewModel = viewModel()
     val coroutineScope = rememberCoroutineScope()
 
     val onError: @Composable (Int) -> Unit = { message ->
@@ -101,10 +118,12 @@ fun MainScreen(
         coroutineScope.launch { scaffoldState.snackbarHostState.showSnackbar(strMessage) }
     }
 
+    val isLogged by viewModel.isLogged.observeAsState()
+
     Box(Modifier.fillMaxSize().padding(paddingValues)) {
         NavHost(
             navController = navController,
-            startDestination = Routes.login
+            startDestination = if (isLogged!!) Routes.startDestination else Routes.login
         ) {
             composable(Routes.login) {
                 LoginScreen(
@@ -114,12 +133,20 @@ fun MainScreen(
             }
 
             composable(Routes.stories) {
-
+                StoriesScreen(
+                    navController = navController,
+                    onError = onError
+                )
             }
 
             composable(Routes.team) {
 
             }
+
+            composable(Routes.projectsSelector) {
+                Box(Modifier.fillMaxSize().background(Color.Cyan))
+            }
+
         }
 
     }

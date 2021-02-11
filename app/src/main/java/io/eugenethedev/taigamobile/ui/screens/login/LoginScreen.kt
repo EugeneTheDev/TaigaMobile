@@ -89,86 +89,84 @@ fun LoginScreenContent(
     onContinueClick: () -> Unit = {},
     isServerInputErrorValue: Boolean = false,
     isLoadingValue: Boolean = false,
+) = ConstraintLayout(
+    modifier = Modifier.fillMaxSize(),
 ) {
-    ConstraintLayout(
-        modifier = Modifier.fillMaxSize(),
+    val (logo, loginForm, button) = createRefs()
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.constrainAs(logo) {
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            top.linkTo(parent.top)
+            bottom.linkTo(loginForm.top)
+        }
     ) {
-        val (logo, loginForm, button) = createRefs()
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.constrainAs(logo) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(loginForm.top)
-            }
-        ) {
+        Image(
+            imageVector = vectorResource(R.drawable.ic_taiga_logo),
+            contentDescription = "",
+            modifier = Modifier
+                .size(130.dp)
+                .padding(bottom = 8.dp)
+        )
 
-            Image(
-                imageVector = vectorResource(R.drawable.ic_taiga_logo),
-                contentDescription = "",
-                modifier = Modifier
-                    .size(130.dp)
-                    .padding(bottom = 8.dp)
-            )
+        Text(
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.h5,
+        )
+    }
 
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.h5,
-            )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.constrainAs(loginForm) {
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
         }
+    ) {
+        LoginTextField(
+            value = taigaServerInput,
+            labelId = R.string.login_taiga_server,
+            onValueChange = onTaigaServerInputChange,
+            isErrorValue = isServerInputErrorValue
+        )
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.constrainAs(loginForm) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-        ) {
-            LoginTextField(
-                value = taigaServerInput,
-                labelId = R.string.login_taiga_server,
-                onValueChange = onTaigaServerInputChange,
-                isErrorValue = isServerInputErrorValue
-            )
+        LoginTextField(
+            value = usernameInput,
+            labelId = R.string.login_username,
+            onValueChange = onUsernameInputChange,
+        )
 
-            LoginTextField(
-                value = usernameInput,
-                labelId = R.string.login_username,
-                onValueChange = onUsernameInputChange,
-            )
+        LoginTextField(
+            value = passwordInput,
+            labelId = R.string.login_password,
+            onValueChange = onPasswordInputChange,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardType = KeyboardType.Password
+        )
+    }
 
-            LoginTextField(
-                value = passwordInput,
-                labelId = R.string.login_password,
-                onValueChange = onPasswordInputChange,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardType = KeyboardType.Password
-            )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.constrainAs(button) {
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            top.linkTo(loginForm.bottom, 24.dp)
         }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.constrainAs(button) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(loginForm.bottom, 24.dp)
-            }
-        ) {
-            if (isLoadingValue) {
-                CircularProgressIndicator(modifier = Modifier.size(48.dp))
-            } else {
-                Button(
-                    onClick = onContinueClick,
-                    contentPadding = PaddingValues(start = 40.dp, end = 40.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.login_continue)
-                    )
-                }
+    ) {
+        if (isLoadingValue) {
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
+        } else {
+            Button(
+                onClick = onContinueClick,
+                contentPadding = PaddingValues(start = 40.dp, end = 40.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.login_continue)
+                )
             }
         }
 

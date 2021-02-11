@@ -11,4 +11,6 @@
 
     <string name="stories">Stories</string>
     <string name="team">Team</string>
+
+    <string name="choose_project_title">Choose project</string>
 </resources>
