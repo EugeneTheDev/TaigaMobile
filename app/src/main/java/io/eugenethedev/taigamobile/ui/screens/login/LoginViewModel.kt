@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
@@ -15,7 +16,7 @@ class LoginViewModel : ViewModel() {
 
     @Inject lateinit var authRepository: AuthRepository
 
-    var loginResult = MutableLiveResult<Unit>(null)
+    val loginResult = MutableLiveResult<Unit>(null)
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -27,6 +28,7 @@ class LoginViewModel : ViewModel() {
             authRepository.auth(taigaServer, password, username)
             loginResult.value = Result(Status.SUCCESS)
         } catch (e: Exception) {
+            Log.i(javaClass.simpleName, "Error", e)
             loginResult.value = Result(Status.ERROR, message = R.string.login_error_message)
         }
     }

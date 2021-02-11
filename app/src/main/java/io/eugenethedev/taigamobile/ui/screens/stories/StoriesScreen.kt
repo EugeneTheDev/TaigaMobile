@@ -1,7 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.stories
 
-import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +20,7 @@ import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
+import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 
 @Composable
 fun StoriesScreen(
@@ -29,10 +28,9 @@ fun StoriesScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: StoriesViewModel = viewModel()
-    val projectName by viewModel.projectName.observeAsState()
 
     StoriesScreenContent(
-        projectName = projectName!!,
+        projectName = viewModel.projectName,
         onTitleClick = {
             navController.navigate(Routes.projectsSelector) {
 
@@ -50,11 +48,7 @@ fun StoriesScreenContent(
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(
-                    onClick = onTitleClick,
-                    interactionState = remember { InteractionState() },
-                    indication = null
-                )
+                modifier = Modifier.clickableUnindicated(onClick = onTitleClick)
             ) {
                 Text(projectName.takeIf { it.isNotEmpty() } ?: stringResource(R.string.choose_project_title))
                 Icon(imageVector = vectorResource(R.drawable.ic_arrow_down), contentDescription = "")

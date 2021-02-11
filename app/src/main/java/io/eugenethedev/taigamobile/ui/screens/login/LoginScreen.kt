@@ -36,7 +36,7 @@ fun LoginScreen(
         when(status) {
             Status.ERROR -> onError(message!!)
             Status.SUCCESS -> {
-                navController.navigate(Routes.stories) {
+                navController.navigate(Routes.startDestination) {
                     popUpTo(Routes.login) { inclusive = true }
                 }
             }
@@ -106,7 +106,7 @@ fun LoginScreenContent(
 
         Image(
             imageVector = vectorResource(R.drawable.ic_taiga_logo),
-            contentDescription = "",
+            contentDescription = null,
             modifier = Modifier
                 .size(130.dp)
                 .padding(bottom = 8.dp)

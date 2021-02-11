@@ -7,7 +7,9 @@ import dagger.Provides
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
+import io.eugenethedev.taigamobile.data.repositories.SearchRepository
 import io.eugenethedev.taigamobile.domain.repositories.IAuthRepository
+import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,6 +19,7 @@ import javax.inject.Singleton
 @Module
 class DataModule {
 
+    @Singleton
     @Provides
     fun provideTaigaApi(session: Session): TaigaApi {
         val baseUrlPlaceholder = "https://nothing.nothing"
@@ -51,5 +54,10 @@ class DataModule {
 
 @Module
 abstract class RepositoriesModule {
-    @Binds abstract fun bindIAuthRepository(authRepository: AuthRepository): IAuthRepository
+    @Singleton
+    @Binds
+    abstract fun bindIAuthRepository(authRepository: AuthRepository): IAuthRepository
+
+    @Singleton
+    @Binds abstract fun bindISearchRepository(searchRepository: SearchRepository): ISearchRepository
 }

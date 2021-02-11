@@ -9,7 +9,7 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val taigaApi: TaigaApi,
     private val session: Session
-): IAuthRepository {
+) : IAuthRepository {
     override suspend fun auth(taigaServer: String, password: String, username: String) = withIO {
         session.server = taigaServer
         session.token = taigaApi.auth(AuthRequest(password, username)).auth_token

@@ -4,11 +4,9 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.setContent
@@ -119,12 +117,10 @@ fun MainScreen(
         coroutineScope.launch { scaffoldState.snackbarHostState.showSnackbar(strMessage) }
     }
 
-    val isLogged by viewModel.isLogged.observeAsState()
-
     Box(Modifier.fillMaxSize().padding(paddingValues)) {
         NavHost(
             navController = navController,
-            startDestination = if (isLogged!!) Routes.startDestination else Routes.login
+            startDestination = if (viewModel.isLogged) Routes.startDestination else Routes.login
         ) {
             composable(Routes.login) {
                 LoginScreen(
