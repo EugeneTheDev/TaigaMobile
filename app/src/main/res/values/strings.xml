@@ -13,4 +13,6 @@
     <string name="team">Team</string>
 
     <string name="choose_project_title">Choose project</string>
+
+    <string name="search_projects_hint">Search projects</string>
 </resources>
