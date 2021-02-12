@@ -14,6 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
@@ -40,7 +41,7 @@ class DataModule {
                             )
                         }
                     }
-                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .addInterceptor(HttpLoggingInterceptor(Timber::d).setLevel(HttpLoggingInterceptor.Level.BODY))
                     .build()
             )
             .build()
