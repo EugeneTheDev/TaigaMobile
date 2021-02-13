@@ -154,16 +154,13 @@ fun ProjectSelectorScreenContent(
             if (index < projects.size - 1) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                             .height((0.5).dp)
                             .background(Color.LightGray)
-
                     )
                 }
             }
