@@ -23,11 +23,11 @@ class Session(context: Context) {
             }
         }
 
-    var currentProjectId: Int
-        get() = sharedPreferences.getInt(PROJECT_ID_KEY, -1)
+    var currentProjectId: Long
+        get() = sharedPreferences.getLong(PROJECT_ID_KEY, -1)
         set(value) {
             sharedPreferences.edit {
-                putInt(PROJECT_NAME_KEY, value)
+                putLong(PROJECT_ID_KEY, value)
             }
         }
 

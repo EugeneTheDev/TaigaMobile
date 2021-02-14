@@ -14,9 +14,23 @@ interface TaigaApi {
     suspend fun auth(@Body authRequest: AuthRequest): AuthResponse
 
     @GET("projects")
-    suspend fun loadProjects(
+    suspend fun getProjects(
         @Query("q") query: String,
         @Query("page") page: Int
     ): List<ProjectResponse>
+
+    @GET("userstories/filters_data")
+    suspend fun getFiltersData(
+        @Query("project") project: Long,
+        @Query("milestone") sprint: Any // workaround, since Retrofit drops null fields
+    ): FiltersDataResponse
+
+    @GET("userstories")
+    suspend fun getUserStories(
+        @Query("project") project: Long,
+        @Query("milestone") sprint: Any,
+        @Query("status") status: Long,
+        @Query("page") page: Int
+    ): List<UserStoryResponse>
 
 }

@@ -8,8 +8,10 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
 import io.eugenethedev.taigamobile.data.repositories.SearchRepository
+import io.eugenethedev.taigamobile.data.repositories.StoriesRepository
 import io.eugenethedev.taigamobile.domain.repositories.IAuthRepository
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
+import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -26,7 +28,7 @@ class DataModule {
         val baseUrlPlaceholder = "https://nothing.nothing"
         return Retrofit.Builder()
             .baseUrl(baseUrlPlaceholder) // base url is set dynamically in interceptor
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().serializeNulls().create()))
             .client(
                 OkHttpClient.Builder()
                     .addInterceptor {
@@ -60,5 +62,10 @@ abstract class RepositoriesModule {
     abstract fun bindIAuthRepository(authRepository: AuthRepository): IAuthRepository
 
     @Singleton
-    @Binds abstract fun bindISearchRepository(searchRepository: SearchRepository): ISearchRepository
+    @Binds
+    abstract fun bindISearchRepository(searchRepository: SearchRepository): ISearchRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindIStoriesRepository(storiesRepository: StoriesRepository): IStoriesRepository
 }
