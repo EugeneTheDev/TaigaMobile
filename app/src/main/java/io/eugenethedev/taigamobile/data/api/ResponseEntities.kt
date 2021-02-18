@@ -25,10 +25,16 @@ data class UserStoryResponse(
     val subject: String,
     val created_date: Date,
     val status: Long,
-    val assigned_to_extra_info: AssigneeInfo?
+    val assigned_to_extra_info: AssigneeInfo?,
+    val status_extra_info: StatusExtra
 ) {
     data class AssigneeInfo(
         val id: Long,
         val full_name_display: String
+    )
+
+    data class StatusExtra(
+        val color: String,
+        val name: String
     )
 }

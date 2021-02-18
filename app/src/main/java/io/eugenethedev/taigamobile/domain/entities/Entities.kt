@@ -10,15 +10,15 @@ data class Project(
 data class Status(
     val id: Long,
     val name: String,
-    val order: Int,
-    val color: String
+    val color: String,
+    val order: Int = 0
 )
 
 data class Story(
     val id: Long,
     val createdDate: Date,
     val title: String,
-    val statusId: Long,
+    val status: Status,
     val assignee: Assignee?
 ) {
     data class Assignee(

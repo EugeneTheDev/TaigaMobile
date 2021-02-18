@@ -25,6 +25,7 @@ import androidx.compose.ui.viewinterop.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Project
+import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.SlideAnimView
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.Status
@@ -152,17 +153,10 @@ fun ProjectSelectorScreenContent(
             )
 
             if (index < projects.size - 1) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                            .height((0.5).dp)
-                            .background(Color.LightGray)
-                    )
-                }
+                Divider(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    color = Color.LightGray
+                )
             }
 
             if (index == projects.size - 1) {
@@ -185,33 +179,22 @@ fun ProjectSelectorScreenContent(
 private fun ItemProject(
     projectName: String,
     onClick: () -> Unit = {}
-) = Box(
-    contentAlignment = Alignment.CenterStart,
-    modifier = Modifier
-        .fillMaxWidth()
-        .clickable(
-            interactionState = remember { InteractionState() },
-            indication = rememberRipple(
-                bounded = true,
-                color = MaterialTheme.colors.primary
-            ),
-            onClick = onClick
-        )
-) {
+) = ContainerBox(onClick = onClick) {
     Text(
         text = projectName,
         style = MaterialTheme.typography.body1,
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp)
     )
 }
 
 @Composable
-private fun Loader() = CircularProgressIndicator(Modifier.size(36.dp).padding(4.dp))
+private fun Loader() = CircularProgressIndicator(Modifier
+    .size(36.dp)
+    .padding(4.dp))
 
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview() = TaigaMobileTheme {
+fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
         setOf(
             Project(0, "Cool"),

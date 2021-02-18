@@ -66,6 +66,6 @@ fun StoriesScreenContent(
 
 @Preview(showBackground = true)
 @Composable
-fun StoriesScreenContentPreview() = TaigaMobileTheme {
+fun StoriesScreenPreview() = TaigaMobileTheme {
     StoriesScreenContent("")
 }

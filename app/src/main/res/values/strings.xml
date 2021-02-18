@@ -3,6 +3,8 @@
 
     <string name="common_error_message">An error was occurred. Check your connection</string>
 
+    <string name="nothing_to_see">Nothing to see here</string>
+
     <string name="login_taiga_server">Taiga server</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
@@ -15,4 +17,6 @@
     <string name="choose_project_title">Choose project</string>
 
     <string name="search_projects_hint">Search projects</string>
+
+    <string name="unassigned">Unassigned</string>
 </resources>

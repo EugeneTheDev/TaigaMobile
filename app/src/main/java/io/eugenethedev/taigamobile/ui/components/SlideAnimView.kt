@@ -16,18 +16,9 @@ import io.eugenethedev.taigamobile.ui.utils.onBackPressed
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-enum class SlideAnim {
-    UP_DOWN,
-    DOWN_UP,
-    START_END,
-    END_START
-}
-
-private enum class ScreenState {
-    ENTERED,
-    EXITED
-}
-
+/**
+ * Custom implementation of sliding animation for navigation.
+ */
 @Composable
 fun SlideAnimView(
     navigateBack: () -> Unit,
@@ -86,4 +77,19 @@ fun SlideAnimView(
             content(::navigate)
         }
     }
+}
+
+/**
+ * Supported directions for animation
+ */
+enum class SlideAnim {
+    UP_DOWN,
+    DOWN_UP,
+    START_END,
+    END_START
+}
+
+private enum class ScreenState {
+    ENTERED,
+    EXITED
 }

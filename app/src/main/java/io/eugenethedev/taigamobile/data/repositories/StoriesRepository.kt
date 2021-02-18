@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.data.api.TaigaApi
+import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.Story
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import javax.inject.Inject
@@ -19,7 +20,11 @@ class StoriesRepository @Inject constructor(
                 id = it.id,
                 createdDate = it.created_date,
                 title = it.subject,
-                statusId = it.status,
+                status = Status(
+                    id = it.status,
+                    name = it.status_extra_info.name,
+                    color = it.status_extra_info.color
+                ),
                 assignee = it.assigned_to_extra_info?.let {
                     Story.Assignee(
                         id = it.id,

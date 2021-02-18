@@ -206,6 +206,6 @@ fun LoginTextField(
 @ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview() = TaigaMobileTheme {
+fun LoginScreenPreview() = TaigaMobileTheme {
     LoginScreenContent()
 }

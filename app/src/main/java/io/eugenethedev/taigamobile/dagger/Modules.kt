@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.dagger
 
 import android.content.Context
+import com.google.gson.GsonBuilder
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
