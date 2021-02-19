@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +104,7 @@ object Routes {
     const val startDestination = stories
 }
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 fun MainScreen(

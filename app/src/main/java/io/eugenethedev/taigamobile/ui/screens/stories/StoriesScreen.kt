@@ -1,9 +1,12 @@
 package io.eugenethedev.taigamobile.ui.screens.stories
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,9 +19,15 @@ import androidx.navigation.compose.navigate
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.domain.entities.Status
+import io.eugenethedev.taigamobile.domain.entities.Story
+import io.eugenethedev.taigamobile.ui.components.StoriesList
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
+import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import timber.log.Timber
 
+@ExperimentalAnimationApi
 @Composable
 fun StoriesScreen(
     navController: NavController,
@@ -29,18 +38,33 @@ fun StoriesScreen(
         viewModel.onScreenOpen()
         null
     }
+    val statuses by viewModel.statuses.observeAsState()
+    val stories by viewModel.stories.observeAsState()
+    val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
 
     StoriesScreenContent(
         projectName = viewModel.projectName,
-        onTitleClick = { navController.navigate(Routes.projectsSelector) }
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
+        statuses = statuses?.data ?: emptySet(),
+        stories = stories ?: emptySet(),
+        isStoriesLoading = statuses?.resultStatus == ResultStatus.LOADING,
+        loadingStatusIds = loadingStatusIds!!
     )
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun StoriesScreenContent(
     projectName: String,
-    onTitleClick: () -> Unit = {}
-) = Column(Modifier.fillMaxSize()) {
+    onTitleClick: () -> Unit = {},
+    statuses: Set<Status> = emptySet(),
+    stories: Set<Story> = emptySet(),
+    isStoriesLoading: Boolean = false,
+    loadingStatusIds: List<Long> = emptyList()
+) = Column(
+    modifier = Modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally
+) {
     TopAppBar(
         title = {
             Row(
@@ -62,8 +86,21 @@ fun StoriesScreenContent(
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 0.dp
     )
+
+    if (isStoriesLoading) {
+        CircularProgressIndicator(Modifier
+            .size(48.dp)
+            .padding(4.dp))
+    } else {
+        StoriesList(
+            statuses = statuses,
+            stories = stories,
+            loadingStatusIds = loadingStatusIds
+        )
+    }
 }
 
+@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun StoriesScreenPreview() = TaigaMobileTheme {

@@ -21,7 +21,7 @@ import androidx.navigation.compose.popUpTo
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.Status
+import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 
 @ExperimentalMaterialApi
 @Composable
@@ -33,9 +33,9 @@ fun LoginScreen(
 
     val loginResult by viewModel.loginResult.observeAsState()
     loginResult?.apply {
-        when(status) {
-            Status.ERROR -> onError(message!!)
-            Status.SUCCESS -> {
+        when(resultStatus) {
+            ResultStatus.ERROR -> onError(message!!)
+            ResultStatus.SUCCESS -> {
                 navController.navigate(Routes.startDestination) {
                     popUpTo(Routes.login) { inclusive = true }
                 }
@@ -74,7 +74,7 @@ fun LoginScreen(
             }
         },
         isServerInputErrorValue = isServerInputErrorValue,
-        isLoadingValue = loginResult?.status === Status.LOADING
+        isLoadingValue = loginResult?.resultStatus === ResultStatus.LOADING
     )
 }
 

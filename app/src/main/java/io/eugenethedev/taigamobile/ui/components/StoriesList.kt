@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -29,6 +25,7 @@ import io.eugenethedev.taigamobile.domain.entities.Story
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,16 +35,19 @@ import java.util.*
 @ExperimentalAnimationApi
 @Composable
 fun StoriesList(
-    statusesWithStories: Map<Status, List<Story>>
+    statuses: Set<Status>,
+    stories: Set<Story>,
+    loadingStatusIds: List<Long> = emptyList(),
+    loadData: (Status) -> Unit = {}
 ) = Box(
     modifier = Modifier.fillMaxWidth(),
     contentAlignment = Alignment.Center
 ) {
     var visibleStatusIds by remember { mutableStateOf(setOf<Long>()) }
 
-    if (statusesWithStories.isNotEmpty()) {
+    if (statuses.isNotEmpty()) {
         LazyColumn {
-            statusesWithStories.forEach { (status, stories) ->
+            statuses.map { st -> st to stories.filter { it.status.id == st.id } }.forEach { (status, stories) ->
                 val isCategoryVisible = status.id in visibleStatusIds
 
                 item {
@@ -62,7 +62,7 @@ fun StoriesList(
 
                             Text(
                                 text = status.name.toUpperCase(Locale.getDefault()),
-                                style = MaterialTheme.typography.subtitle1,
+                                style = MaterialTheme.typography.subtitle2,
                                 modifier = Modifier.clickableUnindicated {
                                     transitionState.targetState = !isCategoryVisible
                                     visibleStatusIds = if (isCategoryVisible) {
@@ -89,10 +89,8 @@ fun StoriesList(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AnimatedVisibility(
-                            visible = isCategoryVisible && stories.isEmpty(),
-                            enter = expandVertically(),
-                            exit = shrinkOut(shrinkTowards = Alignment.TopStart)
+                        AnimateExpandVisibility(
+                            visible = isCategoryVisible && stories.isEmpty()
                         ) {
                             Text(
                                 text = stringResource(R.string.nothing_to_see),
@@ -102,22 +100,30 @@ fun StoriesList(
                     }
                 }
 
-                itemsIndexed(stories) { index, story ->
-                    AnimatedVisibility(
-                        visible = isCategoryVisible,
-                        enter = expandVertically(),
-                        exit = shrinkOut(shrinkTowards = Alignment.TopStart)
+                itemsIndexed(stories.toList()) { index, story ->
+                    AnimateExpandVisibility(
+                        visible = isCategoryVisible
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             StoryItem(story)
 
-                            if (index < stories.size - 1) {
-                                Divider(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                    color = Color.LightGray
-                                )
-                            }
+                            Divider(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                color = Color.LightGray
+                            )
                         }
+                    }
+
+                    onActive {
+                        if (index == stories.size - 1) {
+                            loadData(status)
+                        }
+                    }
+                }
+
+                item {
+                    AnimateExpandVisibility(visible = status.id in loadingStatusIds) {
+                        CircularProgressIndicator(Modifier.size(40.dp))
                     }
                 }
             }
@@ -129,6 +135,18 @@ fun StoriesList(
         )
     }
 }
+
+@ExperimentalAnimationApi
+@Composable
+private fun AnimateExpandVisibility(
+    visible: Boolean,
+    content: @Composable () -> Unit = {}
+) = AnimatedVisibility(
+    visible = visible,
+    enter = expandVertically(),
+    exit = shrinkOut(shrinkTowards = Alignment.TopStart),
+    content = content
+)
 
 
 private val storyDateFormatter = SimpleDateFormat.getDateInstance()
@@ -199,23 +217,25 @@ fun StoriesListPreview() = TaigaMobileTheme {
                 id = it.toLong(),
                 name = "In progress",
                 color = "#729fcf"
-            ) to List(it) {
-                Story(
+            )
+        }.toSet(),
+
+        List(10) {
+            Story(
+                id = it.toLong(),
+                createdDate = Date(),
+                title = "Very cool story",
+                status = Status(
+                    id = (0..2).random().toLong(),
+                    name = "In progress",
+                    color = "#729fcf"
+                ),
+                assignee = Story.Assignee(
                     id = it.toLong(),
-                    createdDate = Date(),
-                    title = "Very cool story",
-                    status = Status(
-                        id = it.toLong(),
-                        name = "In progress",
-                        color = "#729fcf"
-                    ),
-                    assignee = Story.Assignee(
-                        id = it.toLong(),
-                        fullName = "Name Name"
-                    )
+                    fullName = "Name Name"
                 )
-            }
-        }.toMap()
+            )
+        }.toSet()
 
     )
 }

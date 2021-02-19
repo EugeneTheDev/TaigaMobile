@@ -10,7 +10,7 @@ import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
-import io.eugenethedev.taigamobile.ui.utils.Status
+import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -21,8 +21,8 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var searchRepository: ISearchRepository
     @Inject lateinit var session: Session
 
-    val projectsResult = MutableLiveResult<Unit>(Result(Status.LOADING))
-    val projects = MutableLiveData(mutableSetOf<Project>())
+    val projectsResult = MutableLiveResult<Unit>()
+    val projects = MutableLiveData<MutableSet<Project>>()
     val isProjectSelected = MutableLiveData(false)
 
     init {
@@ -34,6 +34,7 @@ class ProjectSelectorViewModel : ViewModel() {
     private var currentQuery = ""
 
     fun onScreenOpen() {
+        projects.value = mutableSetOf()
         isProjectSelected.value = false
         currentPage = 0
         maxPage = Int.MAX_VALUE
@@ -58,17 +59,17 @@ class ProjectSelectorViewModel : ViewModel() {
 
         if (currentPage == maxPage) return@launch
 
-        projectsResult.value = Result(Status.LOADING)
+        projectsResult.value = Result(ResultStatus.LOADING)
         try {
             searchRepository.searchProjects(query, ++currentPage).takeIf { it.isNotEmpty() }?.let {
                 projects.value?.addAll(it)
             } ?: run {
                 maxPage = currentPage // reached maximum page
             }
-            projectsResult.value = Result(Status.SUCCESS)
+            projectsResult.value = Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
-            projectsResult.value = Result(Status.ERROR, message = R.string.common_error_message)
+            projectsResult.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
         }
     }
 }

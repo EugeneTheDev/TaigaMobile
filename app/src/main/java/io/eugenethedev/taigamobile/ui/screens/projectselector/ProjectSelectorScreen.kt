@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -18,7 +17,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
@@ -28,8 +26,7 @@ import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.SlideAnimView
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.Status
-import timber.log.Timber
+import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 
 @Composable
 fun ProjectSelectorScreen(
@@ -43,7 +40,7 @@ fun ProjectSelectorScreen(
     }
 
     val projectsResult by viewModel.projectsResult.observeAsState()
-    projectsResult?.takeIf { it.status == Status.ERROR }?.let { onError(it.message!!) }
+    projectsResult?.takeIf { it.resultStatus == ResultStatus.ERROR }?.let { onError(it.message!!) }
     val projects by viewModel.projects.observeAsState()
     val isProjectSelected by viewModel.isProjectSelected.observeAsState()
 
@@ -55,12 +52,12 @@ fun ProjectSelectorScreen(
         }
 
         ProjectSelectorScreenContent(
-            projects = projects!!,
+            projects = projects ?: emptySet(),
             navigateBack = it,
-            isLoading = projectsResult?.status == Status.LOADING,
+            isLoading = projectsResult?.resultStatus == ResultStatus.LOADING,
             query = queryInput,
             onQueryChanged = { queryInput = it },
-            loadMore = { viewModel.loadData(queryInput.text) },
+            loadData = { viewModel.loadData(queryInput.text) },
             selectProject = { viewModel.onProjectSelected(it) }
         )
     }
@@ -74,7 +71,7 @@ fun ProjectSelectorScreenContent(
     query: TextFieldValue = TextFieldValue(),
     onQueryChanged: (TextFieldValue) -> Unit = {},
     navigateBack: () -> Unit = {},
-    loadMore: () -> Unit = {},
+    loadData: () -> Unit = {},
     selectProject: (Project) -> Unit  = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
@@ -106,7 +103,7 @@ fun ProjectSelectorScreenContent(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     onImeActionPerformed = {
                         if (it == ImeAction.Search) {
-                            loadMore()
+                            loadData()
                         }
                     }
                 )
@@ -168,7 +165,7 @@ fun ProjectSelectorScreenContent(
 
             onActive {
                 if (index == projects.size - 1) {
-                    loadMore()
+                    loadData()
                 }
             }
         }
@@ -187,9 +184,7 @@ private fun ItemProject(
 }
 
 @Composable
-private fun Loader() = CircularProgressIndicator(Modifier
-    .size(36.dp)
-    .padding(4.dp))
+private fun Loader() = CircularProgressIndicator(Modifier.size(40.dp).padding(4.dp))
 
 
 @Preview(showBackground = true)

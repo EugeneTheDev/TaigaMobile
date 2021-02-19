@@ -5,12 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 class Result<T>(
-    val status: Status,
+    val resultStatus: ResultStatus,
     val data: T? = null,
     @StringRes val message: Int? = null
 )
 
-enum class Status {
+enum class ResultStatus {
     SUCCESS,
     ERROR,
     LOADING
