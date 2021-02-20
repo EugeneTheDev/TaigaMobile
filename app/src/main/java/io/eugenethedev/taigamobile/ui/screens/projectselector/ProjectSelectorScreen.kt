@@ -160,11 +160,10 @@ fun ProjectSelectorScreenContent(
                 if (isLoading) {
                     Loader()
                 }
-                Spacer(Modifier.height(6.dp))
-            }
 
-            onActive {
-                if (index == projects.size - 1) {
+                Spacer(Modifier.height(6.dp))
+
+                onActive {
                     loadData()
                 }
             }
@@ -184,7 +183,9 @@ private fun ItemProject(
 }
 
 @Composable
-private fun Loader() = CircularProgressIndicator(Modifier.size(40.dp).padding(4.dp))
+private fun Loader() = CircularProgressIndicator(Modifier
+    .size(40.dp)
+    .padding(4.dp))
 
 
 @Preview(showBackground = true)

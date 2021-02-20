@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.stories
 
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,21 +25,14 @@ class StoriesViewModel : ViewModel() {
     val projectName: String get() = session.currentProjectName
 
     val statuses = MutableLiveResult<Set<Status>>()
-    val stories = MutableLiveData<MutableSet<Story>>()
+    val stories = MutableLiveData<Set<Story>>()
 
-    // manage number of pages and loading state
     private val statusesStates = MutableLiveData(mutableMapOf<Status, StatusState>())
-    val loadingStatusIds = MediatorLiveData<List<Long>>().also { ids ->
-        ids.value = emptyList()
-        ids.addSource(statusesStates) {
-            ids.value = it.filter { (_, state) -> state.isLoading }.map { (status, _) -> status.id }
-        }
-    }
+    val loadingStatusIds = MutableLiveData(mutableListOf<Long>())
 
     private class StatusState {
         var currentPage = 0
         var maxPage = Int.MAX_VALUE
-        var isLoading = false
     }
 
     init {
@@ -50,6 +42,8 @@ class StoriesViewModel : ViewModel() {
     fun onScreenOpen() = viewModelScope.launch {
         statuses.value = Result(ResultStatus.LOADING)
         stories.value = mutableSetOf()
+        statusesStates.value?.clear()
+        loadingStatusIds.value?.clear()
 
         try {
             session.currentProjectId.takeIf { it >= 0 }?.let {
@@ -71,16 +65,16 @@ class StoriesViewModel : ViewModel() {
         statusesStates.value?.get(status)?.apply {
             if (currentPage == maxPage) return@launch
 
-            isLoading = true
+            loadingStatusIds.value?.add(status.id)
 
-            delay(5000)
+            delay(1000)
             storiesRepository.getStories(session.currentProjectId, status.id, ++currentPage).takeIf { it.isNotEmpty() }?.let {
-                stories.value?.addAll(it)
+                stories.value = stories.value!! + it
             } ?: run {
                 maxPage = currentPage // reached maximum page
             }
 
-            isLoading = false
+            loadingStatusIds.value?.remove(status.id)
         }
     }
 }

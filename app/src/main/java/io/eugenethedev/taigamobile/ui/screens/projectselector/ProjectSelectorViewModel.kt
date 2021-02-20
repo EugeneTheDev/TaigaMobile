@@ -22,7 +22,7 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var session: Session
 
     val projectsResult = MutableLiveResult<Unit>()
-    val projects = MutableLiveData<MutableSet<Project>>()
+    val projects = MutableLiveData<Set<Project>>()
     val isProjectSelected = MutableLiveData(false)
 
     init {
@@ -54,7 +54,7 @@ class ProjectSelectorViewModel : ViewModel() {
             currentQuery = it
             currentPage = 0
             maxPage = Int.MAX_VALUE
-            projects.value?.clear()
+            projects.value = setOf()
         }
 
         if (currentPage == maxPage) return@launch
@@ -62,7 +62,7 @@ class ProjectSelectorViewModel : ViewModel() {
         projectsResult.value = Result(ResultStatus.LOADING)
         try {
             searchRepository.searchProjects(query, ++currentPage).takeIf { it.isNotEmpty() }?.let {
-                projects.value?.addAll(it)
+                projects.value = projects.value!! + it
             } ?: run {
                 maxPage = currentPage // reached maximum page
             }

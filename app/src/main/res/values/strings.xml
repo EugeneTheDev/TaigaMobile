@@ -19,4 +19,5 @@
     <string name="search_projects_hint">Search projects</string>
 
     <string name="unassigned">Unassigned</string>
+    <string name="stories_without_sprint">Stories without sprint</string>
 </resources>

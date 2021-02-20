@@ -2,11 +2,10 @@ package io.eugenethedev.taigamobile.ui.screens.stories
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,6 +22,7 @@ import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.Story
 import io.eugenethedev.taigamobile.ui.components.StoriesList
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
+import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import timber.log.Timber
@@ -63,8 +63,10 @@ fun StoriesScreenContent(
     loadingStatusIds: List<Long> = emptyList()
 ) = Column(
     modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.Start
 ) {
+    var visibleStatusIds by remember { mutableStateOf(listOf<Long>()) }
+
     TopAppBar(
         title = {
             Row(
@@ -72,7 +74,8 @@ fun StoriesScreenContent(
                 modifier = Modifier.clickableUnindicated(onClick = onTitleClick)
             ) {
                 Text(
-                    text = projectName.takeIf { it.isNotEmpty() } ?: stringResource(R.string.choose_project_title),
+                    text = projectName.takeIf { it.isNotEmpty() }
+                        ?: stringResource(R.string.choose_project_title),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.preferredWidthIn(max = 250.dp)
@@ -87,16 +90,49 @@ fun StoriesScreenContent(
         elevation = 0.dp
     )
 
-    if (isStoriesLoading) {
-        CircularProgressIndicator(Modifier
-            .size(48.dp)
-            .padding(4.dp))
-    } else {
-        StoriesList(
-            statuses = statuses,
-            stories = stories,
-            loadingStatusIds = loadingStatusIds
-        )
+    if (projectName.isNotEmpty()) {
+
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            item {
+                Text(
+                    text = stringResource(R.string.stories_without_sprint),
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
+                )
+            }
+
+            if (isStoriesLoading) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(Modifier.size(40.dp))
+                    }
+                }
+            } else {
+                StoriesList(
+                    statuses = statuses,
+                    stories = stories,
+                    loadingStatusIds = loadingStatusIds,
+                    visibleStatusIds = visibleStatusIds,
+                    onStatusClick = {
+                        visibleStatusIds = if (it in visibleStatusIds) {
+                            visibleStatusIds - it
+                        } else {
+                            visibleStatusIds + it
+                        }
+                    }
+                )
+            }
+
+            item {
+                Spacer(Modifier.height(12.dp))
+            }
+        }
     }
 }
 

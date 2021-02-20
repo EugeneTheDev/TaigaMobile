@@ -7,6 +7,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -25,7 +26,6 @@ import io.eugenethedev.taigamobile.domain.entities.Story
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,106 +33,109 @@ import java.util.*
  * View for displaying list of stories or tasks
  */
 @ExperimentalAnimationApi
-@Composable
-fun StoriesList(
+fun LazyListScope.StoriesList(
     statuses: Set<Status>,
     stories: Set<Story>,
+    loadData: (Status) -> Unit = {},
     loadingStatusIds: List<Long> = emptyList(),
-    loadData: (Status) -> Unit = {}
-) = Box(
-    modifier = Modifier.fillMaxWidth(),
-    contentAlignment = Alignment.Center
+    visibleStatusIds: List<Long> = emptyList(),
+    onStatusClick: (Long) -> Unit = {}
 ) {
-    var visibleStatusIds by remember { mutableStateOf(setOf<Long>()) }
-
     if (statuses.isNotEmpty()) {
-        LazyColumn {
-            statuses.map { st -> st to stories.filter { it.status.id == st.id } }.forEach { (status, stories) ->
-                val isCategoryVisible = status.id in visibleStatusIds
+        statuses.map { st -> st to stories.filter { it.status.id == st.id } }.forEach { (status, stories) ->
+            val isCategoryVisible = status.id in visibleStatusIds
+            val isCategoryLoading = status.id in loadingStatusIds
 
-                item {
-                    Surface(
-                        modifier = Modifier
-                            .padding(horizontal = mainHorizontalScreenPadding)
-                            .padding(top = 12.dp),
-                        contentColor = Color(android.graphics.Color.parseColor(status.color))
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            val transitionState = remember { MutableTransitionState(isCategoryVisible) }
-
-                            Text(
-                                text = status.name.toUpperCase(Locale.getDefault()),
-                                style = MaterialTheme.typography.subtitle2,
-                                modifier = Modifier.clickableUnindicated {
-                                    transitionState.targetState = !isCategoryVisible
-                                    visibleStatusIds = if (isCategoryVisible) {
-                                        visibleStatusIds - status.id
-                                    } else {
-                                        visibleStatusIds + status.id
-                                    }
-                                }
-
-                            )
-
-                            val arrowRotation by updateTransition(transitionState).animateFloat { if (it) 0f else -180f }
-
-                            Image(
-                                imageVector = vectorResource(R.drawable.ic_arrow_down),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(AmbientContentColor.current),
-                                modifier = Modifier.rotate(arrowRotation)
-                            )
+            item {
+                Surface(
+                    modifier = Modifier
+                        .padding(horizontal = mainHorizontalScreenPadding)
+                        .padding(top = 12.dp),
+                    contentColor = Color(android.graphics.Color.parseColor(status.color))
+                ) {
+                    val transitionState = remember { MutableTransitionState(isCategoryVisible) }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickableUnindicated {
+                            transitionState.targetState = !isCategoryVisible
+                            onStatusClick(status.id)
                         }
-                    }
+                    ) {
 
+                        Text(
+                            text = status.name.toUpperCase(Locale.getDefault()),
+                            style = MaterialTheme.typography.subtitle2
+                        )
+
+                        val arrowRotation by updateTransition(transitionState).animateFloat { if (it) 0f else -180f }
+
+                        Image(
+                            imageVector = vectorResource(R.drawable.ic_arrow_down),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(AmbientContentColor.current),
+                            modifier = Modifier.rotate(arrowRotation)
+                        )
+                    }
+                }
+
+                AnimateExpandVisibility(
+                    visible = isCategoryVisible && !isCategoryLoading && stories.isEmpty()
+                ) {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AnimateExpandVisibility(
-                            visible = isCategoryVisible && stories.isEmpty()
-                        ) {
-                            Text(
-                                text = stringResource(R.string.nothing_to_see),
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                }
-
-                itemsIndexed(stories.toList()) { index, story ->
-                    AnimateExpandVisibility(
-                        visible = isCategoryVisible
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            StoryItem(story)
-
-                            Divider(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                color = Color.LightGray
-                            )
-                        }
-                    }
-
-                    onActive {
-                        if (index == stories.size - 1) {
-                            loadData(status)
-                        }
-                    }
-                }
-
-                item {
-                    AnimateExpandVisibility(visible = status.id in loadingStatusIds) {
-                        CircularProgressIndicator(Modifier.size(40.dp))
+                        Text(
+                            text = stringResource(R.string.nothing_to_see),
+                            color = Color.Gray
+                        )
                     }
                 }
             }
+
+            itemsIndexed(stories.toList()) { index, story ->
+                AnimateExpandVisibility(
+                    visible = isCategoryVisible
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        StoryItem(story)
+
+                        Divider(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = Color.LightGray
+                        )
+                    }
+                }
+
+                if (index == stories.size - 1) {
+                    onActive {
+                        loadData(status)
+                    }
+                }
+            }
+
+            item {
+                AnimateExpandVisibility(visible = isCategoryVisible && isCategoryLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(Modifier.size(36.dp))
+                    }
+                }
+                if (isCategoryVisible) {
+                    Spacer(Modifier.height(12.dp))
+                }
+            }
         }
+
     } else {
-        Text(
-            text = stringResource(R.string.nothing_to_see),
-            color = Color.Gray
-        )
+        item {
+            Text(
+                text = stringResource(R.string.nothing_to_see),
+                color = Color.Gray
+            )
+        }
     }
 }
 
@@ -140,11 +143,13 @@ fun StoriesList(
 @Composable
 private fun AnimateExpandVisibility(
     visible: Boolean,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {}
 ) = AnimatedVisibility(
     visible = visible,
     enter = expandVertically(),
     exit = shrinkOut(shrinkTowards = Alignment.TopStart),
+    modifier = modifier,
     content = content
 )
 
@@ -211,31 +216,42 @@ fun StoryItemPreview() = TaigaMobileTheme {
 @Preview(showBackground = true)
 @Composable
 fun StoriesListPreview() = TaigaMobileTheme {
-    StoriesList(
-        List(3) {
-            Status(
-                id = it.toLong(),
-                name = "In progress",
-                color = "#729fcf"
-            )
-        }.toSet(),
+    var visibleStatusIds by remember { mutableStateOf(listOf<Long>()) }
 
-        List(10) {
-            Story(
-                id = it.toLong(),
-                createdDate = Date(),
-                title = "Very cool story",
-                status = Status(
-                    id = (0..2).random().toLong(),
+    LazyColumn {
+        StoriesList(
+            statuses = List(3) {
+                Status(
+                    id = it.toLong(),
                     name = "In progress",
                     color = "#729fcf"
-                ),
-                assignee = Story.Assignee(
-                    id = it.toLong(),
-                    fullName = "Name Name"
                 )
-            )
-        }.toSet()
+            }.toSet(),
+            stories = List(10) {
+                Story(
+                    id = it.toLong(),
+                    createdDate = Date(),
+                    title = "Very cool story",
+                    status = Status(
+                        id = (0..2).random().toLong(),
+                        name = "In progress",
+                        color = "#729fcf"
+                    ),
+                    assignee = Story.Assignee(
+                        id = it.toLong(),
+                        fullName = "Name Name"
+                    )
+                )
+            }.toSet(),
+            visibleStatusIds = visibleStatusIds,
+            onStatusClick = {
+                visibleStatusIds = if (it in visibleStatusIds) {
+                    visibleStatusIds - it
+                } else {
+                    visibleStatusIds + it
+                }
+            }
 
-    )
+        )
+    }
 }
