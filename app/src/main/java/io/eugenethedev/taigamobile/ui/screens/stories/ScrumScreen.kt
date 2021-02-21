@@ -29,11 +29,11 @@ import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @ExperimentalAnimationApi
 @Composable
-fun StoriesScreen(
+fun ScrumScreen(
     navController: NavController,
     onError: @Composable (message: Int) -> Unit = {},
 ) {
-    val viewModel: StoriesViewModel = viewModel()
+    val viewModel: ScrumViewModel = viewModel()
     remember {
         viewModel.onScreenOpen()
         null
@@ -44,7 +44,7 @@ fun StoriesScreen(
     stories?.subscribeOnError(onError)
     val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
 
-    StoriesScreenContent(
+    ScrumScreenContent(
         projectName = viewModel.projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         statuses = statuses?.data.orEmpty(),
@@ -56,7 +56,7 @@ fun StoriesScreen(
 
 @ExperimentalAnimationApi
 @Composable
-fun StoriesScreenContent(
+fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     statuses: List<Status> = emptyList(),
@@ -143,6 +143,6 @@ fun StoriesScreenContent(
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
-fun StoriesScreenPreview() = TaigaMobileTheme {
-    StoriesScreenContent("")
+fun ScrumScreenPreview() = TaigaMobileTheme {
+    ScrumScreenContent("")
 }

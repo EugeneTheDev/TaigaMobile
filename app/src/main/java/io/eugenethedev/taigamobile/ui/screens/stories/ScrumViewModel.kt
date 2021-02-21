@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class StoriesViewModel : ViewModel() {
+class ScrumViewModel : ViewModel() {
 
     @Inject lateinit var session: Session
     @Inject lateinit var storiesRepository: IStoriesRepository

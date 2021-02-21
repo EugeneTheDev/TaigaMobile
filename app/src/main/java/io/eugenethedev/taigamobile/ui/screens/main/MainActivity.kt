@@ -19,7 +19,7 @@ import androidx.navigation.compose.*
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScreen
-import io.eugenethedev.taigamobile.ui.screens.stories.StoriesScreen
+import io.eugenethedev.taigamobile.ui.screens.stories.ScrumScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
@@ -91,17 +91,17 @@ class MainActivity : AppCompatActivity() {
 }
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
-    object Stories : Screen(Routes.stories, R.string.stories, R.drawable.ic_stories)
+    object Stories : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_stories)
     object Team : Screen(Routes.team, R.string.team, R.drawable.ic_team)
 }
 
 object Routes {
     const val login = "login"
-    const val stories = "stories"
+    const val scrum = "scrum"
     const val team = "team"
     const val projectsSelector = "projects_selector"
 
-    const val startDestination = stories
+    const val startDestination = scrum
 }
 
 @ExperimentalAnimationApi
@@ -132,8 +132,8 @@ fun MainScreen(
                 )
             }
 
-            composable(Routes.stories) {
-                StoriesScreen(
+            composable(Routes.scrum) {
+                ScrumScreen(
                     navController = navController,
                     onError = onError
                 )

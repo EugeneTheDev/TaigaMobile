@@ -11,7 +11,7 @@
     <string name="login_continue">Continue</string>
     <string name="login_error_message">Error during login. Check credentials or connection</string>
 
-    <string name="stories">Stories</string>
+    <string name="scrum">Scrum</string>
     <string name="team">Team</string>
 
     <string name="choose_project_title">Choose project</string>

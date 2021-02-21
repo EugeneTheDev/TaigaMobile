@@ -6,7 +6,7 @@ import dagger.Component
 import io.eugenethedev.taigamobile.ui.screens.login.LoginViewModel
 import io.eugenethedev.taigamobile.ui.screens.main.MainViewModel
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorViewModel
-import io.eugenethedev.taigamobile.ui.screens.stories.StoriesViewModel
+import io.eugenethedev.taigamobile.ui.screens.stories.ScrumViewModel
 import javax.inject.Singleton
 
 @Singleton
@@ -21,6 +21,6 @@ interface AppComponent {
 
     fun inject(mainViewModel: MainViewModel)
     fun inject(loginViewModel: LoginViewModel)
-    fun inject(storiesViewModel: StoriesViewModel)
+    fun inject(scrumViewModel: ScrumViewModel)
     fun inject(projectSelectorViewModel: ProjectSelectorViewModel)
 }
