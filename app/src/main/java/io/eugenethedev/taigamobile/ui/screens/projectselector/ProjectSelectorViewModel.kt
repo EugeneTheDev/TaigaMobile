@@ -21,8 +21,7 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var searchRepository: ISearchRepository
     @Inject lateinit var session: Session
 
-    val projectsResult = MutableLiveResult<Unit>()
-    val projects = MutableLiveData<Set<Project>>()
+    val projects = MutableLiveResult<List<Project>>()
     val isProjectSelected = MutableLiveData(false)
 
     init {
@@ -34,7 +33,7 @@ class ProjectSelectorViewModel : ViewModel() {
     private var currentQuery = ""
 
     fun onScreenOpen() {
-        projects.value = mutableSetOf()
+        projects.value = Result(ResultStatus.SUCCESS, emptyList())
         isProjectSelected.value = false
         currentPage = 0
         maxPage = Int.MAX_VALUE
@@ -54,22 +53,20 @@ class ProjectSelectorViewModel : ViewModel() {
             currentQuery = it
             currentPage = 0
             maxPage = Int.MAX_VALUE
-            projects.value = setOf()
+            projects.value = Result(ResultStatus.SUCCESS, emptyList())
         }
 
         if (currentPage == maxPage) return@launch
 
-        projectsResult.value = Result(ResultStatus.LOADING)
+        projects.value = Result(ResultStatus.LOADING, projects.value?.data)
         try {
-            searchRepository.searchProjects(query, ++currentPage).takeIf { it.isNotEmpty() }?.let {
-                projects.value = projects.value!! + it
-            } ?: run {
-                maxPage = currentPage // reached maximum page
-            }
-            projectsResult.value = Result(ResultStatus.SUCCESS)
+            searchRepository.searchProjects(query, ++currentPage)
+                .also { projects.value = Result(ResultStatus.SUCCESS, projects.value?.data.orEmpty() + it) }
+                .takeIf { it.isEmpty() }
+                ?.run { maxPage = currentPage /* reached maximum page */ }
         } catch (e: Exception) {
             Timber.w(e)
-            projectsResult.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            projects.value = Result(ResultStatus.ERROR, projects.value?.data, message = R.string.common_error_message)
         }
     }
 }

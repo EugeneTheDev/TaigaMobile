@@ -24,11 +24,12 @@ class StoriesViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val statuses = MutableLiveResult<Set<Status>>()
-    val stories = MutableLiveData<Set<Story>>()
+    val statuses = MutableLiveResult<List<Status>>()
+    val stories = MutableLiveResult<List<Story>>()
 
-    private val statusesStates = MutableLiveData(mutableMapOf<Status, StatusState>())
-    val loadingStatusIds = MutableLiveData(mutableListOf<Long>())
+    val loadingStatusIds = MutableLiveData(emptyList<Long>())
+
+    private val statusesStates = mutableMapOf<Status, StatusState>()
 
     private class StatusState {
         var currentPage = 0
@@ -41,16 +42,16 @@ class StoriesViewModel : ViewModel() {
 
     fun onScreenOpen() = viewModelScope.launch {
         statuses.value = Result(ResultStatus.LOADING)
-        stories.value = mutableSetOf()
-        statusesStates.value?.clear()
-        loadingStatusIds.value?.clear()
+        stories.value = Result(ResultStatus.SUCCESS)
+        statusesStates.clear()
+        loadingStatusIds.value = emptyList()
 
         try {
             session.currentProjectId.takeIf { it >= 0 }?.let {
                 statuses.value = Result(
                     resultStatus = ResultStatus.SUCCESS,
-                    storiesRepository.getStatuses(it).toSet().onEach {
-                        statusesStates.value?.set(it, StatusState())
+                    storiesRepository.getStatuses(it).onEach {
+                        statusesStates[it] = StatusState()
                         loadData(it)
                     }
                 )
@@ -62,19 +63,23 @@ class StoriesViewModel : ViewModel() {
     }
 
     fun loadData(status: Status) = viewModelScope.launch {
-        statusesStates.value?.get(status)?.apply {
+        statusesStates[status]?.apply {
             if (currentPage == maxPage) return@launch
 
-            loadingStatusIds.value?.add(status.id)
+            loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
 
-            delay(1000)
-            storiesRepository.getStories(session.currentProjectId, status.id, ++currentPage).takeIf { it.isNotEmpty() }?.let {
-                stories.value = stories.value!! + it
-            } ?: run {
-                maxPage = currentPage // reached maximum page
+            try {
+                storiesRepository.getStories(session.currentProjectId, status.id, ++currentPage).takeIf { it.isNotEmpty() }?.let {
+                    stories.value = Result(ResultStatus.SUCCESS, stories.value?.data.orEmpty() + it)
+                } ?: run {
+                    maxPage = currentPage // reached maximum page
+                }
+            } catch (e: Exception) {
+                Timber.w(e)
+                statuses.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
             }
 
-            loadingStatusIds.value?.remove(status.id)
+            loadingStatusIds.value = loadingStatusIds.value.orEmpty() - status.id
         }
     }
 }

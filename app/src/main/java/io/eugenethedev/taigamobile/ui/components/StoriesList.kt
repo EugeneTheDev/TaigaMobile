@@ -34,8 +34,8 @@ import java.util.*
  */
 @ExperimentalAnimationApi
 fun LazyListScope.StoriesList(
-    statuses: Set<Status>,
-    stories: Set<Story>,
+    statuses: List<Status>,
+    stories: List<Story>,
     loadData: (Status) -> Unit = {},
     loadingStatusIds: List<Long> = emptyList(),
     visibleStatusIds: List<Long> = emptyList(),
@@ -67,7 +67,7 @@ fun LazyListScope.StoriesList(
                             style = MaterialTheme.typography.subtitle2
                         )
 
-                        val arrowRotation by updateTransition(transitionState).animateFloat { if (it) 0f else -180f }
+                        val arrowRotation by updateTransition(transitionState).animateFloat { if (it) -180f else 0f }
 
                         Image(
                             imageVector = vectorResource(R.drawable.ic_arrow_down),
@@ -131,10 +131,15 @@ fun LazyListScope.StoriesList(
 
     } else {
         item {
-            Text(
-                text = stringResource(R.string.nothing_to_see),
-                color = Color.Gray
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.nothing_to_see),
+                    color = Color.Gray
+                )
+            }
         }
     }
 }
@@ -184,7 +189,7 @@ fun StoryItem(
         )
 
         Text(
-            text = story.assignee?.fullName ?: stringResource(R.string.unassigned),
+            text = story.assignee?.fullName?.let { stringResource(R.string.assignee_pattern).format(it) } ?: stringResource(R.string.unassigned),
             color = MaterialTheme.colors.primary,
             style = MaterialTheme.typography.body2
         )
@@ -226,7 +231,7 @@ fun StoriesListPreview() = TaigaMobileTheme {
                     name = "In progress",
                     color = "#729fcf"
                 )
-            }.toSet(),
+            },
             stories = List(10) {
                 Story(
                     id = it.toLong(),
@@ -242,7 +247,7 @@ fun StoriesListPreview() = TaigaMobileTheme {
                         fullName = "Name Name"
                     )
                 )
-            }.toSet(),
+            },
             visibleStatusIds = visibleStatusIds,
             onStatusClick = {
                 visibleStatusIds = if (it in visibleStatusIds) {

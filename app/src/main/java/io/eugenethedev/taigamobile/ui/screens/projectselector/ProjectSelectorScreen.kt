@@ -27,6 +27,7 @@ import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.SlideAnimView
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
 fun ProjectSelectorScreen(
@@ -39,9 +40,8 @@ fun ProjectSelectorScreen(
         null
     }
 
-    val projectsResult by viewModel.projectsResult.observeAsState()
-    projectsResult?.takeIf { it.resultStatus == ResultStatus.ERROR }?.let { onError(it.message!!) }
     val projects by viewModel.projects.observeAsState()
+    projects?.subscribeOnError(onError)
     val isProjectSelected by viewModel.isProjectSelected.observeAsState()
 
     var queryInput by remember { mutableStateOf(TextFieldValue()) }
@@ -52,9 +52,9 @@ fun ProjectSelectorScreen(
         }
 
         ProjectSelectorScreenContent(
-            projects = projects ?: emptySet(),
+            projects = projects?.data.orEmpty(),
             navigateBack = it,
-            isLoading = projectsResult?.resultStatus == ResultStatus.LOADING,
+            isLoading = projects?.resultStatus == ResultStatus.LOADING,
             query = queryInput,
             onQueryChanged = { queryInput = it },
             loadData = { viewModel.loadData(queryInput.text) },
@@ -66,7 +66,7 @@ fun ProjectSelectorScreen(
 
 @Composable
 fun ProjectSelectorScreenContent(
-    projects: Set<Project>,
+    projects: List<Project>,
     isLoading: Boolean = false,
     query: TextFieldValue = TextFieldValue(),
     onQueryChanged: (TextFieldValue) -> Unit = {},
@@ -192,7 +192,7 @@ private fun Loader() = CircularProgressIndicator(Modifier
 @Composable
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
-        setOf(
+        listOf(
             Project(0, "Cool"),
             Project(1, "Cooler")
         )

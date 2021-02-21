@@ -17,13 +17,19 @@ import androidx.compose.ui.platform.AmbientContext
 @SuppressLint("ComposableNaming")
 @Composable
 fun onBackPressed(action: () -> Unit) {
-    (AmbientContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.addCallback(
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                action()
-            }
+    (AmbientContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.let {
+        remember {
+            it.addCallback(
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        action()
+                        remove()
+                    }
+                }
+            )
+            null
         }
-    )
+    }
 }
 
 fun Modifier.clickableUnindicated(
@@ -45,3 +51,6 @@ fun Modifier.clickableUnindicated(
         onClick
     )
 }
+
+@Composable
+inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.ERROR }?.let { onError(it.message!!) }

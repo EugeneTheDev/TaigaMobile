@@ -25,7 +25,7 @@ import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
-import timber.log.Timber
+import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @ExperimentalAnimationApi
 @Composable
@@ -39,14 +39,16 @@ fun StoriesScreen(
         null
     }
     val statuses by viewModel.statuses.observeAsState()
+    statuses?.subscribeOnError(onError)
     val stories by viewModel.stories.observeAsState()
+    stories?.subscribeOnError(onError)
     val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
 
     StoriesScreenContent(
         projectName = viewModel.projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
-        statuses = statuses?.data ?: emptySet(),
-        stories = stories ?: emptySet(),
+        statuses = statuses?.data.orEmpty(),
+        stories = stories?.data.orEmpty(),
         isStoriesLoading = statuses?.resultStatus == ResultStatus.LOADING,
         loadingStatusIds = loadingStatusIds!!
     )
@@ -57,8 +59,8 @@ fun StoriesScreen(
 fun StoriesScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
-    statuses: Set<Status> = emptySet(),
-    stories: Set<Story> = emptySet(),
+    statuses: List<Status> = emptyList(),
+    stories: List<Story> = emptyList(),
     isStoriesLoading: Boolean = false,
     loadingStatusIds: List<Long> = emptyList()
 ) = Column(
@@ -107,7 +109,9 @@ fun StoriesScreenContent(
             if (isStoriesLoading) {
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(Modifier.size(40.dp))
