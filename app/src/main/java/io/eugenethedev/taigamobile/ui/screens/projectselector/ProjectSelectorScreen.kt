@@ -36,7 +36,7 @@ fun ProjectSelectorScreen(
 ) {
     val viewModel: ProjectSelectorViewModel = viewModel()
     remember {
-        viewModel.onScreenOpen()
+        viewModel.start()
         null
     }
 
@@ -58,7 +58,7 @@ fun ProjectSelectorScreen(
             query = queryInput,
             onQueryChanged = { queryInput = it },
             loadData = { viewModel.loadData(queryInput.text) },
-            selectProject = { viewModel.onProjectSelected(it) }
+            selectProject = viewModel::selectProject
         )
     }
 }

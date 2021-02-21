@@ -66,7 +66,7 @@ fun LoginScreen(
             if (!taigaServerInput.text.validateServerInput()) {
                 isServerInputErrorValue = true
             } else if (usernameInput.text.isNotBlank() && passwordInput.text.isNotBlank()) {
-                viewModel.onContinueClick(
+                viewModel.login(
                     taigaServerInput.text.trimEnd('/'),
                     usernameInput.text,
                     passwordInput.text

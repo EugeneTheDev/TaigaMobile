@@ -22,7 +22,7 @@ class LoginViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun onContinueClick(taigaServer: String, username: String, password: String) = viewModelScope.launch {
+    fun login(taigaServer: String, username: String, password: String) = viewModelScope.launch {
         loginResult.value = Result(ResultStatus.LOADING)
         try {
             authRepository.auth(taigaServer, password, username)

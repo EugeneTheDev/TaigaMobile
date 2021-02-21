@@ -32,7 +32,7 @@ class ProjectSelectorViewModel : ViewModel() {
     private var maxPage = Int.MAX_VALUE
     private var currentQuery = ""
 
-    fun onScreenOpen() {
+    fun start() {
         projects.value = Result(ResultStatus.SUCCESS, emptyList())
         isProjectSelected.value = false
         currentPage = 0
@@ -40,7 +40,7 @@ class ProjectSelectorViewModel : ViewModel() {
         loadData()
     }
 
-    fun onProjectSelected(project: Project) {
+    fun selectProject(project: Project) {
         session.apply {
             currentProjectId = project.id
             currentProjectName = project.name

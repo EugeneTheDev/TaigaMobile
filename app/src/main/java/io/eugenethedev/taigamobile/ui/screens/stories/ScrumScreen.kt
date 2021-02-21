@@ -35,7 +35,7 @@ fun ScrumScreen(
 ) {
     val viewModel: ScrumViewModel = viewModel()
     remember {
-        viewModel.onScreenOpen()
+        viewModel.start()
         null
     }
     val statuses by viewModel.statuses.observeAsState()
@@ -43,14 +43,21 @@ fun ScrumScreen(
     val stories by viewModel.stories.observeAsState()
     stories?.subscribeOnError(onError)
     val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
+    val visibleStatusIds by viewModel.visibleStatusIds.observeAsState()
 
     ScrumScreenContent(
         projectName = viewModel.projectName,
-        onTitleClick = { navController.navigate(Routes.projectsSelector) },
+        onTitleClick = {
+            navController.navigate(Routes.projectsSelector)
+            viewModel.reset()
+        },
         statuses = statuses?.data.orEmpty(),
         stories = stories?.data.orEmpty(),
         isStoriesLoading = statuses?.resultStatus == ResultStatus.LOADING,
-        loadingStatusIds = loadingStatusIds!!
+        loadingStatusIds = loadingStatusIds.orEmpty(),
+        loadStories = viewModel::loadStories,
+        visibleStatusIds = visibleStatusIds.orEmpty(),
+        onStatusClick = viewModel::statusClick
     )
 }
 
@@ -62,13 +69,14 @@ fun ScrumScreenContent(
     statuses: List<Status> = emptyList(),
     stories: List<Story> = emptyList(),
     isStoriesLoading: Boolean = false,
-    loadingStatusIds: List<Long> = emptyList()
+    loadingStatusIds: List<Long> = emptyList(),
+    loadStories: (Status) -> Unit = {},
+    visibleStatusIds: List<Long> = emptyList(),
+    onStatusClick: (Long) -> Unit = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
-    var visibleStatusIds by remember { mutableStateOf(listOf<Long>()) }
-
     TopAppBar(
         title = {
             Row(
@@ -123,13 +131,8 @@ fun ScrumScreenContent(
                     stories = stories,
                     loadingStatusIds = loadingStatusIds,
                     visibleStatusIds = visibleStatusIds,
-                    onStatusClick = {
-                        visibleStatusIds = if (it in visibleStatusIds) {
-                            visibleStatusIds - it
-                        } else {
-                            visibleStatusIds + it
-                        }
-                    }
+                    onStatusClick = onStatusClick,
+                    loadData = loadStories
                 )
             }
 
