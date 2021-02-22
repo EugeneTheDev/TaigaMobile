@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.main
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +11,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.viewinterop.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import io.eugenethedev.taigamobile.R
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                                 BottomNavigationItem(
                                     selectedContentColor = MaterialTheme.colors.primary,
                                     unselectedContentColor = Color.Gray,
-                                    icon = { Icon(imageVector = vectorResource(screen.iconId), contentDescription = "") },
+                                    icon = { Icon(painter = painterResource(screen.iconId), contentDescription = null) },
                                     label = { Text(stringResource(screen.resourceId)) },
                                     // workaround, because launchSingleTop can cause strange effect
                                     // and make currentRoute null for start destination

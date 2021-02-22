@@ -3,18 +3,22 @@ package io.eugenethedev.taigamobile.ui.screens.login
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.popUpTo
@@ -105,11 +109,9 @@ fun LoginScreenContent(
     ) {
 
         Image(
-            imageVector = vectorResource(R.drawable.ic_taiga_logo),
+            painter = painterResource(R.drawable.ic_taiga_logo),
             contentDescription = null,
-            modifier = Modifier
-                .size(130.dp)
-                .padding(bottom = 8.dp)
+            modifier = Modifier.size(130.dp).padding(bottom = 8.dp)
         )
 
         Text(
@@ -182,11 +184,11 @@ fun LoginTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     isErrorValue: Boolean = false
 ) {
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 40.dp)
             .padding(bottom = 6.dp),
         textStyle = MaterialTheme.typography.subtitle1,
@@ -194,11 +196,7 @@ fun LoginTextField(
         label = { Text(stringResource(labelId)) },
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
-        onImeActionPerformed = { action, controller ->
-            if (action == ImeAction.Done) {
-                controller?.hideSoftwareKeyboard()
-            }
-        },
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         isErrorValue = isErrorValue
     )
 }

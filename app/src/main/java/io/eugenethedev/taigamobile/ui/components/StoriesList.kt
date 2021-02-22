@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package io.eugenethedev.taigamobile.ui.components
 
 import androidx.compose.animation.*
@@ -16,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -41,7 +43,7 @@ fun LazyListScope.StoriesList(
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {}
 ) {
-    if (statuses.isNotEmpty()) {
+    if (statuses.isNotEmpty() && stories.isNotEmpty()) {
         statuses.map { st -> st to stories.filter { it.status.id == st.id } }.forEach { (status, stories) ->
             val isCategoryVisible = status.id in visibleStatusIds
             val isCategoryLoading = status.id in loadingStatusIds
@@ -70,9 +72,9 @@ fun LazyListScope.StoriesList(
                         val arrowRotation by updateTransition(transitionState).animateFloat { if (it) -180f else 0f }
 
                         Image(
-                            imageVector = vectorResource(R.drawable.ic_arrow_down),
+                            painter = painterResource(R.drawable.ic_arrow_down),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(AmbientContentColor.current),
+                            colorFilter = ColorFilter.tint(LocalContentColor.current),
                             modifier = Modifier.rotate(arrowRotation)
                         )
                     }

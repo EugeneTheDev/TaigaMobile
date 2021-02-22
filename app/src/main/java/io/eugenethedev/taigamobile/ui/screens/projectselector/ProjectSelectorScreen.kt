@@ -1,9 +1,9 @@
 package io.eugenethedev.taigamobile.ui.screens.projectselector
 
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -11,18 +11,17 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Project
+import io.eugenethedev.taigamobile.ui.components.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.SlideAnimView
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -77,7 +76,7 @@ fun ProjectSelectorScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    TopAppBar(
+    AppBarWithBackButton(
         title = {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -94,46 +93,17 @@ fun ProjectSelectorScreenContent(
                 BasicTextField(
                     value = query,
                     onValueChange = onQueryChanged,
-                    modifier = Modifier
-                        .wrapContentHeight()
+                    modifier = Modifier.wrapContentHeight()
                         .fillMaxWidth(),
                     textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
                     cursorColor = MaterialTheme.colors.onSurface,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    onImeActionPerformed = {
-                        if (it == ImeAction.Search) {
-                            loadData()
-                        }
-                    }
+                    keyboardActions = KeyboardActions(onSearch = { loadData() })
                 )
             }
         },
-        navigationIcon = {
-            val interactionState = remember { InteractionState() }
-
-            Image(
-                imageVector = vectorResource(R.drawable.ic_arrow_back),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(
-                    if (Interaction.Pressed in interactionState.value) {
-                        MaterialTheme.colors.primaryVariant
-                    } else {
-                        MaterialTheme.colors.primary
-                    }
-                ),
-                modifier = Modifier
-                    .size(36.dp)
-                    .padding(start = 8.dp)
-                    .clickable(
-                        interactionState = interactionState,
-                        indication = null,
-                        onClick = navigateBack
-                    )
-            )
-        },
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 1.dp
+        navigateBack = navigateBack
     )
 
     if (isLoading && projects.isEmpty()) {

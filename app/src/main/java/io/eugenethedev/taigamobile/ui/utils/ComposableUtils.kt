@@ -10,7 +10,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Utility function to handle press on back button
@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.AmbientContext
 @SuppressLint("ComposableNaming")
 @Composable
 fun onBackPressed(action: () -> Unit) {
-    (AmbientContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.let { dispatcher ->
+    (LocalContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.let { dispatcher ->
         val callback = remember {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -38,20 +38,14 @@ fun onBackPressed(action: () -> Unit) {
 
 fun Modifier.clickableUnindicated(
     enabled: Boolean = true,
-    onLongClickLabel: String? = null,
-    onLongClick: (() -> Unit)? = null,
-    onDoubleClick: (() -> Unit)? = null,
     onClick: () -> Unit
 ) = composed {
     Modifier.clickable(
-        enabled = enabled,
         interactionState = remember { InteractionState() },
         indication = null,
+        enabled = enabled,
         onClickLabel = null,
         role = null,
-        onLongClickLabel,
-        onLongClick,
-        onDoubleClick,
         onClick
     )
 }

@@ -55,7 +55,7 @@ class FileLoggingTree(private val basePath: String, private val minPriority: Int
         }
     }
 
-    override fun createStackElementTag(element: StackTraceElement): String? {
+    override fun createStackElementTag(element: StackTraceElement): String {
         // Add log statements line number to the log
         return super.createStackElementTag(element) + " - " + element.lineNumber
     }

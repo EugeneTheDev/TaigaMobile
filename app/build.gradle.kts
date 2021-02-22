@@ -4,7 +4,7 @@ plugins {
     kotlin("kapt")
 }
 
-val composeVersion = "1.0.0-alpha11"
+val composeVersion = "1.0.0-alpha12"
 
 android {
     compileSdkVersion(30)
@@ -49,15 +49,21 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("com.google.android.material:material:1.3.0")
 
-    // Compose
+    // Main Compose dependencies
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
+    // compose activity
+    implementation("androidx.activity:activity-compose:1.3.0-alpha02")
+    // view model support
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha01")
+    // compose constraint layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha02")
 
-    // Navigation with compose support
-    implementation("androidx.navigation:navigation-compose:1.0.0-alpha06")
+    // Navigation Component (with Compose)
+    implementation("androidx.navigation:navigation-compose:1.0.0-alpha07")
 
     // ViewModel
     val lifecycleKtxVersion = "2.2.0"
@@ -88,7 +94,7 @@ dependencies {
     // Timber
     implementation("com.jakewharton.timber:timber:4.7.1")
 
-    testImplementation("junit:junit:4.13.1")
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 }
