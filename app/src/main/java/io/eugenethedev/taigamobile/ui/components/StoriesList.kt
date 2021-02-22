@@ -108,7 +108,7 @@ fun LazyListScope.StoriesList(
                 }
 
                 if (index == stories.size - 1) {
-                    onActive {
+                    SideEffect {
                         loadData(status)
                     }
                 }

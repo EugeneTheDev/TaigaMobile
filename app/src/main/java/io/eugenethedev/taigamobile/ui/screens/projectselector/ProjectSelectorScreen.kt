@@ -163,7 +163,7 @@ fun ProjectSelectorScreenContent(
 
                 Spacer(Modifier.height(6.dp))
 
-                onActive {
+                SideEffect {
                     loadData()
                 }
             }
@@ -186,7 +186,9 @@ private fun ItemProject(
 }
 
 @Composable
-private fun Loader() = CircularProgressIndicator(Modifier.size(40.dp).padding(4.dp))
+private fun Loader() = CircularProgressIndicator(Modifier
+    .size(40.dp)
+    .padding(4.dp))
 
 
 @Preview(showBackground = true)

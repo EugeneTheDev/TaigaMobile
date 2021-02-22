@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -17,17 +18,20 @@ import androidx.compose.ui.platform.AmbientContext
 @SuppressLint("ComposableNaming")
 @Composable
 fun onBackPressed(action: () -> Unit) {
-    (AmbientContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.let {
-        remember {
-            it.addCallback(
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        action()
-                        remove()
-                    }
+    (AmbientContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.let { dispatcher ->
+        val callback = remember {
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    action()
+                    remove()
                 }
-            )
-            null
+            }.also {
+                dispatcher.addCallback(it)
+            }
+        }
+
+        DisposableEffect(Unit) {
+            onDispose(callback::remove)
         }
     }
 }
