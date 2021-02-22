@@ -6,7 +6,7 @@ import dagger.Component
 import io.eugenethedev.taigamobile.ui.screens.login.LoginViewModel
 import io.eugenethedev.taigamobile.ui.screens.main.MainViewModel
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorViewModel
-import io.eugenethedev.taigamobile.ui.screens.stories.ScrumViewModel
+import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumViewModel
 import javax.inject.Singleton
 
 @Singleton

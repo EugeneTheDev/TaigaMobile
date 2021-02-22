@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.stories
+package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*

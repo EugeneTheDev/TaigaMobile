@@ -19,7 +19,7 @@ import androidx.navigation.compose.*
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScreen
-import io.eugenethedev.taigamobile.ui.screens.stories.ScrumScreen
+import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 

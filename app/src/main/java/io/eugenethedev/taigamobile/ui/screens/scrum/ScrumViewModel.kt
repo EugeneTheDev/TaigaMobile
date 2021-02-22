@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.stories
+package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.Session
