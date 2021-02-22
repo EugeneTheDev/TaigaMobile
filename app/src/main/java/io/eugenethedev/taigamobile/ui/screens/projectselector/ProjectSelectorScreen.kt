@@ -175,7 +175,10 @@ fun ProjectSelectorScreenContent(
 private fun ItemProject(
     projectName: String,
     onClick: () -> Unit = {}
-) = ContainerBox(onClick = onClick) {
+) = ContainerBox(
+    verticalPadding = 16.dp,
+    onClick = onClick
+) {
     Text(
         text = projectName,
         style = MaterialTheme.typography.body1,
@@ -183,9 +186,7 @@ private fun ItemProject(
 }
 
 @Composable
-private fun Loader() = CircularProgressIndicator(Modifier
-    .size(40.dp)
-    .padding(4.dp))
+private fun Loader() = CircularProgressIndicator(Modifier.size(40.dp).padding(4.dp))
 
 
 @Preview(showBackground = true)

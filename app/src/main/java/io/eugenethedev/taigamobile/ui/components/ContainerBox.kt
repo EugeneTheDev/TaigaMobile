@@ -21,7 +21,7 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 @Composable
 fun ContainerBox(
     horizontalPadding: Dp = mainHorizontalScreenPadding,
-    verticalPadding: Dp = 16.dp,
+    verticalPadding: Dp = 8.dp,
     clickEnabled: Boolean = true,
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit = {}

@@ -33,4 +33,7 @@ interface TaigaApi {
         @Query("page") page: Int
     ): List<UserStoryResponse>
 
+    @GET("milestones")
+    suspend fun getSprints(@Query("project") project: Long): List<SprintResponse>
+
 }

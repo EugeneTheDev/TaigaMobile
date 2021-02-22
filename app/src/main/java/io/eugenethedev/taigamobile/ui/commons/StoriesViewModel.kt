@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.Story
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
@@ -17,7 +16,6 @@ import javax.inject.Inject
 
 abstract class StoriesViewModel : ViewModel() {
 
-    @Inject lateinit var session: Session
     @Inject lateinit var storiesRepository: IStoriesRepository
 
     val statuses = MutableLiveResult<List<Status>>()
@@ -42,15 +40,14 @@ abstract class StoriesViewModel : ViewModel() {
         stories.value = Result(ResultStatus.SUCCESS)
 
         try {
-            session.currentProjectId.takeIf { it >= 0 }?.let {
-                statuses.value = Result(
-                    resultStatus = ResultStatus.SUCCESS,
-                    storiesRepository.getStatuses(it, sprintId).onEach {
-                        statusesStates[it] = StatusState()
-                        loadStories(it)
-                    }
-                )
-            }
+            statuses.value = Result(
+                resultStatus = ResultStatus.SUCCESS,
+                storiesRepository.getStatuses(sprintId).onEach {
+                    statusesStates[it] = StatusState()
+                    loadStories(it)
+                }
+            )
+
         } catch (e: Exception) {
             Timber.w(e)
             statuses.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
@@ -64,7 +61,7 @@ abstract class StoriesViewModel : ViewModel() {
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
 
             try {
-                storiesRepository.getStories(session.currentProjectId, status.id, ++currentPage, sprintId)
+                storiesRepository.getStories(status.id, ++currentPage, sprintId)
                     .also { stories.value = Result(ResultStatus.SUCCESS, stories.value?.data.orEmpty() + it) }
                     .takeIf { it.isEmpty() }
                     ?.run { maxPage = currentPage /* reached maximum page */ }
@@ -85,7 +82,7 @@ abstract class StoriesViewModel : ViewModel() {
         }
     }
 
-    fun reset() {
+    open fun reset() {
         sprintId = null
         statuses.value = null
         stories.value = null

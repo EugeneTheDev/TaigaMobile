@@ -38,3 +38,17 @@ data class UserStoryResponse(
         val name: String
     )
 }
+
+data class SprintResponse(
+    val id: Long,
+    val name: String,
+    val estimated_start: Date,
+    val estimated_finish: Date,
+    val closed: Boolean,
+    val order: Int,
+    val user_stories: List<UserStory>
+) {
+    data class UserStory(
+        val id: Long
+    )
+}

@@ -64,7 +64,7 @@ fun LazyListScope.StoriesList(
 
                         Text(
                             text = status.name.toUpperCase(Locale.getDefault()),
-                            style = MaterialTheme.typography.subtitle2
+                            style = MaterialTheme.typography.subtitle1
                         )
 
                         val arrowRotation by updateTransition(transitionState).animateFloat { if (it) -180f else 0f }
@@ -159,12 +159,12 @@ private fun AnimateExpandVisibility(
 )
 
 
-private val storyDateFormatter = SimpleDateFormat.getDateInstance()
+private val dateFormatter = SimpleDateFormat.getDateInstance()
 
 @Composable
 fun StoryItem(
     story: Story
-) = ContainerBox(verticalPadding = 6.dp) {
+) = ContainerBox {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -177,7 +177,7 @@ fun StoryItem(
             )
 
             Text(
-                text = storyDateFormatter.format(story.createdDate),
+                text = dateFormatter.format(story.createdDate),
                 color = Color.Gray,
                 style = MaterialTheme.typography.body2
             )
@@ -185,7 +185,7 @@ fun StoryItem(
 
         Text(
             text = story.title,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.subtitle1,
         )
 
         Text(

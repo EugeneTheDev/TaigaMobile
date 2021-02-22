@@ -26,3 +26,13 @@ data class Story(
         val fullName: String,
     )
 }
+
+data class Sprint(
+    val id: Long,
+    val name: String,
+    val order: Int,
+    val start: Date,
+    val finish: Date,
+    val storiesCount: Int,
+    val isClosed: Boolean
+)

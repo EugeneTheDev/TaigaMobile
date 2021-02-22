@@ -7,9 +7,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 val typography = Typography(
-    subtitle2 = TextStyle(
+    subtitle1 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        letterSpacing = 0.1.sp
+        letterSpacing = 0.5.sp
     ),
 )
