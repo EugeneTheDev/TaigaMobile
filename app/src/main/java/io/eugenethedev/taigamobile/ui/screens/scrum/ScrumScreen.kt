@@ -31,6 +31,7 @@ import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.utils.navigate
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import java.text.SimpleDateFormat
 import java.util.*
@@ -69,7 +70,10 @@ fun ScrumScreen(
         loadingStatusIds = loadingStatusIds.orEmpty(),
         loadStories = viewModel::loadStories,
         visibleStatusIds = visibleStatusIds.orEmpty(),
-        onStatusClick = viewModel::statusClick
+        onStatusClick = viewModel::statusClick,
+        navigateToBoard = {
+            navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
+        }
     )
 }
 
@@ -86,7 +90,8 @@ fun ScrumScreenContent(
     loadingStatusIds: List<Long> = emptyList(),
     loadStories: (Status) -> Unit = {},
     visibleStatusIds: List<Long> = emptyList(),
-    onStatusClick: (Long) -> Unit = {}
+    onStatusClick: (Long) -> Unit = {},
+    navigateToBoard: (Sprint) -> Unit = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -168,7 +173,10 @@ fun ScrumScreenContent(
             }
 
             items(sprints) {
-                SprintItem(it)
+                SprintItem(
+                    sprint = it,
+                    navigateToBoard = navigateToBoard
+                )
             }
 
             item {
@@ -180,20 +188,19 @@ fun ScrumScreenContent(
 
 @Composable
 private fun Loader() = Box(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp),
+    modifier = Modifier.fillMaxWidth().padding(8.dp),
     contentAlignment = Alignment.Center
 ) {
     CircularProgressIndicator(Modifier.size(40.dp))
 }
 
-private val dateFormatter = SimpleDateFormat.getDateInstance()
-
 @Composable
 fun SprintItem(
-    sprint: Sprint
+    sprint: Sprint,
+    navigateToBoard: (Sprint) -> Unit = {}
 ) = ContainerBox(clickEnabled = false) {
+    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -232,7 +239,7 @@ fun SprintItem(
         }
 
         Button(
-            onClick = { },
+            onClick = { navigateToBoard(sprint) },
             modifier = Modifier.weight(0.3f),
             colors = buttonColors(
                 backgroundColor = if (!sprint.isClosed) {

@@ -27,4 +27,6 @@
     <string name="stories_count_template">Stories: %d</string>
     <string name="taskboard">Board</string>
     <string name="closed">Closed</string>
+
+    <string name="stories">Stories</string>
 </resources>

@@ -20,6 +20,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScreen
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
+import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
@@ -100,8 +101,13 @@ object Routes {
     const val scrum = "scrum"
     const val team = "team"
     const val projectsSelector = "projects_selector"
+    const val sprint = "sprint"
 
     const val startDestination = scrum
+
+    object Arguments {
+        const val sprint = "sprint"
+    }
 }
 
 @ExperimentalAnimationApi
@@ -146,6 +152,15 @@ fun MainScreen(
             composable(Routes.projectsSelector) {
                 ProjectSelectorScreen(
                     navController = navController,
+                    onError = onError
+                )
+            }
+
+            composable(Routes.sprint) {
+                // this is workaround 'cause navigation component for compose cannot pass Parcelable arguments
+                SprintScreen(
+                    navController = navController,
+                    sprint = navController.previousBackStackEntry?.arguments?.getParcelable(Routes.Arguments.sprint)!!,
                     onError = onError
                 )
             }

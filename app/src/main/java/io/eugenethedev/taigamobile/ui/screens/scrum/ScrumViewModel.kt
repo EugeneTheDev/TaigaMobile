@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.lifecycle.viewModelScope
+import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Sprint
@@ -24,7 +25,7 @@ class ScrumViewModel : StoriesViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    override fun start() {
+    fun start() {
         if (
             statuses.value == null &&
             stories.value == null &&
@@ -43,7 +44,7 @@ class ScrumViewModel : StoriesViewModel() {
             sprints.value = Result(ResultStatus.SUCCESS, storiesRepository.getSprints())
         } catch (e: Exception) {
             Timber.w(e)
-            sprints.value = Result(ResultStatus.ERROR)
+            sprints.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
         }
     }
 

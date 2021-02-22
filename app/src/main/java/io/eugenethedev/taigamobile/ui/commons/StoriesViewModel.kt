@@ -33,8 +33,6 @@ abstract class StoriesViewModel : ViewModel() {
 
     protected var sprintId: Long? = null
 
-    abstract fun start()
-
     protected suspend fun loadStatuses() {
         statuses.value = Result(ResultStatus.LOADING)
         stories.value = Result(ResultStatus.SUCCESS)

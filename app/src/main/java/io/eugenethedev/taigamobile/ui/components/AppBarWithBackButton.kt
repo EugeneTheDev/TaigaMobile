@@ -46,5 +46,5 @@ fun AppBarWithBackButton(
         )
     },
     backgroundColor = MaterialTheme.colors.surface,
-    elevation = 1.dp
+    elevation = 0.dp
 )

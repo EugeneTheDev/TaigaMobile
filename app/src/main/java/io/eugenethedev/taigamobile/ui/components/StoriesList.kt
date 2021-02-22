@@ -33,9 +33,11 @@ import java.util.*
 
 /**
  * View for displaying list of stories or tasks
+ * @param inverseCategoriesVisibility - by default all categories are collapsed, this flag invert it
  */
 @ExperimentalAnimationApi
 fun LazyListScope.StoriesList(
+    inverseCategoriesVisibility: Boolean = false,
     statuses: List<Status>,
     stories: List<Story>,
     loadData: (Status) -> Unit = {},
@@ -43,15 +45,14 @@ fun LazyListScope.StoriesList(
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {}
 ) {
-    if (statuses.isNotEmpty() && stories.isNotEmpty()) {
+    if (statuses.isNotEmpty()) {
         statuses.map { st -> st to stories.filter { it.status.id == st.id } }.forEach { (status, stories) ->
-            val isCategoryVisible = status.id in visibleStatusIds
+            val isCategoryVisible = (status.id in visibleStatusIds && !inverseCategoriesVisibility) || (status.id !in visibleStatusIds && inverseCategoriesVisibility)
             val isCategoryLoading = status.id in loadingStatusIds
 
             item {
                 Surface(
-                    modifier = Modifier
-                        .padding(horizontal = mainHorizontalScreenPadding)
+                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
                         .padding(top = 12.dp),
                     contentColor = Color(android.graphics.Color.parseColor(status.color))
                 ) {
@@ -160,13 +161,12 @@ private fun AnimateExpandVisibility(
     content = content
 )
 
-
-private val dateFormatter = SimpleDateFormat.getDateInstance()
-
 @Composable
 fun StoryItem(
     story: Story
 ) = ContainerBox {
+    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

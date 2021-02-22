@@ -1,5 +1,7 @@
 package io.eugenethedev.taigamobile.domain.entities
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 data class Project(
@@ -27,6 +29,7 @@ data class Story(
     )
 }
 
+@Parcelize
 data class Sprint(
     val id: Long,
     val name: String,
@@ -35,4 +38,4 @@ data class Sprint(
     val finish: Date,
     val storiesCount: Int,
     val isClosed: Boolean
-)
+) : Parcelable
