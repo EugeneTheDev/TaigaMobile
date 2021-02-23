@@ -103,14 +103,16 @@ fun LazyListScope.StoriesList(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         StoryItem(story)
 
-                        Divider(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = Color.LightGray
-                        )
+                        if (index < stories.lastIndex) {
+                            Divider(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                color = Color.LightGray
+                            )
+                        }
                     }
                 }
 
-                if (index == stories.size - 1) {
+                if (index == stories.lastIndex) {
                     SideEffect {
                         loadData(status)
                     }

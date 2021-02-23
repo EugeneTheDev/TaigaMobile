@@ -41,7 +41,8 @@ class MainActivity : AppCompatActivity() {
                             Snackbar(
                                 snackbarData = it,
                                 backgroundColor = MaterialTheme.colors.surface,
-                                contentColor = contentColorFor(MaterialTheme.colors.surface)
+                                contentColor = contentColorFor(MaterialTheme.colors.surface),
+                                shape = MaterialTheme.shapes.medium
                             )
                         }
                     },

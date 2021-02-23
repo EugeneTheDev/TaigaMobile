@@ -126,7 +126,7 @@ fun ProjectSelectorScreenContent(
                 )
             }
 
-            if (index == projects.size - 1) {
+            if (index == projects.lastIndex) {
                 if (isLoading) {
                     Loader()
                 }
