@@ -17,6 +17,9 @@
     <string name="choose_project_title">Choose project</string>
 
     <string name="search_projects_hint">Search projects</string>
+    <string name="project_member">Member</string>
+    <string name="project_admin">Admin</string>
+    <string name="project_owner">Owner</string>
 
     <string name="unassigned">Unassigned</string>
     <string name="assignee_pattern">Assignee: %s</string>

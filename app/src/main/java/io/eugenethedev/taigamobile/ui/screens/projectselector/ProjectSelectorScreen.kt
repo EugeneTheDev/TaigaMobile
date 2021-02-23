@@ -115,7 +115,7 @@ fun ProjectSelectorScreenContent(
     ) {
         itemsIndexed(projects.toList()) { index, item ->
             ItemProject(
-                projectName = item.name,
+                project = item,
                 onClick = { selectProject(item) }
             )
 
@@ -143,22 +143,38 @@ fun ProjectSelectorScreenContent(
 
 @Composable
 private fun ItemProject(
-    projectName: String,
+    project: Project,
     onClick: () -> Unit = {}
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-    Text(
-        text = projectName,
-        style = MaterialTheme.typography.body1,
-    )
+    Column {
+
+        project.takeIf { it.isMember || it.isAdmin || it.isOwner  }?.let {
+            Text(
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.primary,
+                text = stringResource(
+                    when {
+                        project.isOwner -> R.string.project_owner
+                        project.isAdmin -> R.string.project_admin
+                        project.isMember -> R.string.project_member
+                        else -> 0
+                    }
+                )
+            )
+        }
+
+        Text(
+            text = project.name,
+            style = MaterialTheme.typography.body1,
+        )
+    }
 }
 
 @Composable
-private fun Loader() = CircularProgressIndicator(Modifier
-    .size(40.dp)
-    .padding(4.dp))
+private fun Loader() = CircularProgressIndicator(Modifier.size(40.dp).padding(4.dp))
 
 
 @Preview(showBackground = true)
@@ -166,8 +182,8 @@ private fun Loader() = CircularProgressIndicator(Modifier
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
         listOf(
-            Project(0, "Cool"),
-            Project(1, "Cooler")
+            Project(0, "Cool", false, false, false),
+            Project(1, "Cooler", true, false, false)
         )
     )
 }

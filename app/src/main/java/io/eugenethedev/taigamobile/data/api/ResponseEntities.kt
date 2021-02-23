@@ -13,7 +13,10 @@ data class AuthResponse(
 
 data class ProjectResponse(
     val id: Long,
-    val name: String
+    val name: String,
+    val i_am_admin: Boolean,
+    val i_am_member: Boolean,
+    val i_am_owner: Boolean
 )
 
 data class FiltersDataResponse(

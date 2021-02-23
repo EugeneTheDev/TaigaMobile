@@ -6,7 +6,10 @@ import java.util.*
 
 data class Project(
     val id: Long,
-    val name: String
+    val name: String,
+    val isMember: Boolean,
+    val isAdmin: Boolean,
+    val isOwner: Boolean
 )
 
 data class Status(

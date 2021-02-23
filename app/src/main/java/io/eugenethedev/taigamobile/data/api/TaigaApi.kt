@@ -16,7 +16,8 @@ interface TaigaApi {
     @GET("projects")
     suspend fun getProjects(
         @Query("q") query: String,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("order_by") order: String = "user_order"
     ): List<ProjectResponse>
 
     @GET("userstories/filters_data")
