@@ -32,4 +32,5 @@
     <string name="closed">Closed</string>
 
     <string name="stories">Stories</string>
+    <string name="tasks_without_story">Tasks without story</string>
 </resources>

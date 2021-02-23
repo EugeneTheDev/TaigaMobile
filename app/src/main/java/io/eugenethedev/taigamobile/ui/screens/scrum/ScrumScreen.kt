@@ -24,9 +24,11 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.Story
+import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
-import io.eugenethedev.taigamobile.ui.components.StoriesList
+import io.eugenethedev.taigamobile.ui.components.Loader
+import io.eugenethedev.taigamobile.ui.components.NothingToSeeHereText
+import io.eugenethedev.taigamobile.ui.components.CommonTasksList
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
@@ -63,7 +65,7 @@ fun ScrumScreen(
             viewModel.reset()
         },
         statuses = statuses?.data.orEmpty(),
-        stories = stories?.data.orEmpty(),
+        commonTasks = stories?.data.orEmpty(),
         sprints = sprints?.data.orEmpty(),
         isStoriesLoading = statuses?.resultStatus == ResultStatus.LOADING,
         isSprintsLoading = sprints?.resultStatus == ResultStatus.LOADING,
@@ -83,7 +85,7 @@ fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     statuses: List<Status> = emptyList(),
-    stories: List<Story> = emptyList(),
+    commonTasks: List<CommonTask> = emptyList(),
     sprints: List<Sprint> = emptyList(),
     isStoriesLoading: Boolean = false,
     isSprintsLoading: Boolean = false,
@@ -138,9 +140,9 @@ fun ScrumScreenContent(
                     Loader()
                 }
             } else {
-                StoriesList(
+                CommonTasksList(
                     statuses = statuses,
-                    stories = stories,
+                    commonTasks = commonTasks,
                     loadingStatusIds = loadingStatusIds,
                     visibleStatusIds = visibleStatusIds,
                     onStatusClick = onStatusClick,
@@ -160,15 +162,7 @@ fun ScrumScreenContent(
                 if (isSprintsLoading) {
                     Loader()
                 } else if (sprints.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.nothing_to_see),
-                            color = Color.Gray
-                        )
-                    }
+                    NothingToSeeHereText()
                 }
             }
 
@@ -184,14 +178,6 @@ fun ScrumScreenContent(
             }
         }
     }
-}
-
-@Composable
-private fun Loader() = Box(
-    modifier = Modifier.fillMaxWidth().padding(8.dp),
-    contentAlignment = Alignment.Center
-) {
-    CircularProgressIndicator(Modifier.size(40.dp))
 }
 
 @Composable

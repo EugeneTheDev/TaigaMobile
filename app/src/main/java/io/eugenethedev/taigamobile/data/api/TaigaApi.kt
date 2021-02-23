@@ -32,7 +32,16 @@ interface TaigaApi {
         @Query("milestone") sprint: Any,
         @Query("status") status: Long,
         @Query("page") page: Int
-    ): List<UserStoryResponse>
+    ): List<CommonTaskResponse>
+
+    @GET("tasks")
+    suspend fun getTasks(
+        @Query("project") project: Long,
+        @Query("milestone") sprint: Long?,
+        @Query("user_story") userStory: Any,
+        @Query("page") page: Int,
+        @Query("order_by") order: String = "us_order"
+    ): List<CommonTaskResponse>
 
     @GET("milestones")
     suspend fun getSprints(@Query("project") project: Long): List<SprintResponse>

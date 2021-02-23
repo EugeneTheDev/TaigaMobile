@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.Story
+import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
@@ -19,7 +19,7 @@ abstract class StoriesViewModel : ViewModel() {
     @Inject lateinit var storiesRepository: IStoriesRepository
 
     val statuses = MutableLiveResult<List<Status>>()
-    val stories = MutableLiveResult<List<Story>>()
+    val stories = MutableLiveResult<List<CommonTask>>()
 
     val loadingStatusIds = MutableLiveData(emptyList<Long>())
     val visibleStatusIds = MutableLiveData(emptyList<Long>())

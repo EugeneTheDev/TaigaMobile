@@ -23,7 +23,7 @@ data class FiltersDataResponse(
     val statuses: List<Status>
 )
 
-data class UserStoryResponse(
+data class CommonTaskResponse(
     val id: Long,
     val subject: String,
     val created_date: Date,

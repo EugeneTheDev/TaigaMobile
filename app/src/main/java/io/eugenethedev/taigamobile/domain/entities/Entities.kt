@@ -19,7 +19,7 @@ data class Status(
     val order: Int = 0
 )
 
-data class Story(
+data class CommonTask(
     val id: Long,
     val createdDate: Date,
     val title: String,

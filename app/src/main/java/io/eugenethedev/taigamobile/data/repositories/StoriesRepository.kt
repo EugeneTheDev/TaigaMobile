@@ -2,9 +2,10 @@ package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
+import io.eugenethedev.taigamobile.data.api.CommonTaskResponse
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.Story
+import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -20,24 +21,7 @@ class StoriesRepository @Inject constructor(
 
     override suspend fun getStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
         try {
-            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page).map {
-                Story(
-                    id = it.id,
-                    createdDate = it.created_date,
-                    title = it.subject,
-                    status = Status(
-                        id = it.status,
-                        name = it.status_extra_info.name,
-                        color = it.status_extra_info.color
-                    ),
-                    assignee = it.assigned_to_extra_info?.let {
-                        Story.Assignee(
-                            id = it.id,
-                            fullName = it.full_name_display
-                        )
-                    }
-                )
-            }
+            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page).mapToStory()
         } catch (e: HttpException) {
             // suppress error if page not found (maximum page was reached)
             e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
@@ -57,4 +41,42 @@ class StoriesRepository @Inject constructor(
             )
         }
     }
+
+    override suspend fun getSprintTasks(sprintId: Long, page: Int) = withIO {
+        try {
+            taigaApi.getTasks(session.currentProjectId, sprintId, "null", page).mapToStory()
+        } catch (e: HttpException) {
+            // suppress error if page not found (maximum page was reached)
+            e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
+        }
+    }
+
+    override suspend fun getUserStoryTasks(storyId: Long, page: Int) = withIO {
+        try {
+            taigaApi.getTasks(session.currentProjectId, null, storyId, page).mapToStory()
+        } catch (e: HttpException) {
+            // suppress error if page not found (maximum page was reached)
+            e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
+        }
+    }
+
+    private fun List<CommonTaskResponse>.mapToStory() = map {
+        CommonTask(
+            id = it.id,
+            createdDate = it.created_date,
+            title = it.subject,
+            status = Status(
+                id = it.status,
+                name = it.status_extra_info.name,
+                color = it.status_extra_info.color
+            ),
+            assignee = it.assigned_to_extra_info?.let {
+                CommonTask.Assignee(
+                    id = it.id,
+                    fullName = it.full_name_display
+                )
+            }
+        )
+    }
+
 }

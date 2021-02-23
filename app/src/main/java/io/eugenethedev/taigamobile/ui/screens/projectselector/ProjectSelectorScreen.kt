@@ -23,6 +23,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.ui.components.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
+import io.eugenethedev.taigamobile.ui.components.Loader
 import io.eugenethedev.taigamobile.ui.components.SlideAnimView
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
@@ -172,10 +173,6 @@ private fun ItemProject(
         )
     }
 }
-
-@Composable
-private fun Loader() = CircularProgressIndicator(Modifier.size(40.dp).padding(4.dp))
-
 
 @Preview(showBackground = true)
 @Composable

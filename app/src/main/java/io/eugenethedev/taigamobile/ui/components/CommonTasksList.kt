@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.Story
+import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
@@ -36,17 +36,17 @@ import java.util.*
  * @param inverseCategoriesVisibility - by default all categories are collapsed, this flag invert it
  */
 @ExperimentalAnimationApi
-fun LazyListScope.StoriesList(
+fun LazyListScope.CommonTasksList(
     inverseCategoriesVisibility: Boolean = false,
     statuses: List<Status>,
-    stories: List<Story>,
+    commonTasks: List<CommonTask>,
     loadData: (Status) -> Unit = {},
     loadingStatusIds: List<Long> = emptyList(),
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {}
 ) {
     if (statuses.isNotEmpty()) {
-        statuses.map { st -> st to stories.filter { it.status.id == st.id } }.forEach { (status, stories) ->
+        statuses.map { st -> st to commonTasks.filter { it.status.id == st.id } }.forEach { (status, stories) ->
             val isCategoryVisible = (status.id in visibleStatusIds && !inverseCategoriesVisibility) || (status.id !in visibleStatusIds && inverseCategoriesVisibility)
             val isCategoryLoading = status.id in loadingStatusIds
 
@@ -84,15 +84,7 @@ fun LazyListScope.StoriesList(
                 AnimateExpandVisibility(
                     visible = isCategoryVisible && !isCategoryLoading && stories.isEmpty()
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.nothing_to_see),
-                            color = Color.Gray
-                        )
-                    }
+                    NothingToSeeHereText()
                 }
             }
 
@@ -101,7 +93,7 @@ fun LazyListScope.StoriesList(
                     visible = isCategoryVisible
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        StoryItem(story)
+                        CommonTaskItem(story)
 
                         if (index < stories.lastIndex) {
                             Divider(
@@ -129,7 +121,7 @@ fun LazyListScope.StoriesList(
                     }
                 }
                 if (isCategoryVisible) {
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(8.dp))
                 }
             }
         }
@@ -164,8 +156,8 @@ private fun AnimateExpandVisibility(
 )
 
 @Composable
-fun StoryItem(
-    story: Story
+fun CommonTaskItem(
+    commonTask: CommonTask
 ) = ContainerBox {
     val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
 
@@ -175,25 +167,25 @@ fun StoryItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = story.status.name,
-                color = Color(android.graphics.Color.parseColor(story.status.color)),
+                text = commonTask.status.name,
+                color = Color(android.graphics.Color.parseColor(commonTask.status.color)),
                 style = MaterialTheme.typography.body2
             )
 
             Text(
-                text = dateFormatter.format(story.createdDate),
+                text = dateFormatter.format(commonTask.createdDate),
                 color = Color.Gray,
                 style = MaterialTheme.typography.body2
             )
         }
 
         Text(
-            text = story.title,
+            text = commonTask.title,
             style = MaterialTheme.typography.subtitle1,
         )
 
         Text(
-            text = story.assignee?.fullName?.let { stringResource(R.string.assignee_pattern).format(it) } ?: stringResource(R.string.unassigned),
+            text = commonTask.assignee?.fullName?.let { stringResource(R.string.assignee_pattern).format(it) } ?: stringResource(R.string.unassigned),
             color = MaterialTheme.colors.primary,
             style = MaterialTheme.typography.body2
         )
@@ -202,9 +194,9 @@ fun StoryItem(
 
 @Preview(showBackground = true)
 @Composable
-fun StoryItemPreview() = TaigaMobileTheme {
-    StoryItem(
-        Story(
+fun CommonTaskItemPreview() = TaigaMobileTheme {
+    CommonTaskItem(
+        CommonTask(
             id = 0L,
             createdDate = Date(),
             title = "Very cool story",
@@ -213,7 +205,7 @@ fun StoryItemPreview() = TaigaMobileTheme {
                 name = "In progress",
                 color = "#729fcf"
             ),
-            assignee = Story.Assignee(
+            assignee = CommonTask.Assignee(
                 id = 0,
                 fullName = "Name Name"
             )
@@ -224,11 +216,11 @@ fun StoryItemPreview() = TaigaMobileTheme {
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
-fun StoriesListPreview() = TaigaMobileTheme {
+fun CommonTasksListPreview() = TaigaMobileTheme {
     var visibleStatusIds by remember { mutableStateOf(listOf<Long>()) }
 
     LazyColumn {
-        StoriesList(
+        CommonTasksList(
             statuses = List(3) {
                 Status(
                     id = it.toLong(),
@@ -236,8 +228,8 @@ fun StoriesListPreview() = TaigaMobileTheme {
                     color = "#729fcf"
                 )
             },
-            stories = List(10) {
-                Story(
+            commonTasks = List(10) {
+                CommonTask(
                     id = it.toLong(),
                     createdDate = Date(),
                     title = "Very cool story",
@@ -246,7 +238,7 @@ fun StoriesListPreview() = TaigaMobileTheme {
                         name = "In progress",
                         color = "#729fcf"
                     ),
-                    assignee = Story.Assignee(
+                    assignee = CommonTask.Assignee(
                         id = it.toLong(),
                         fullName = "Name Name"
                     )
