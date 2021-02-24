@@ -23,6 +23,7 @@ data class CommonTask(
     val id: Long,
     val createdDate: Date,
     val title: String,
+    val ref: Int,
     val status: Status,
     val assignee: Assignee?
 ) {

@@ -28,6 +28,7 @@ data class CommonTaskResponse(
     val subject: String,
     val created_date: Date,
     val status: Long,
+    val ref: Int,
     val assigned_to_extra_info: AssigneeInfo?,
     val status_extra_info: StatusExtra
 ) {

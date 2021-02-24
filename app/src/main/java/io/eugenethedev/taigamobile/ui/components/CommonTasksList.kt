@@ -180,7 +180,9 @@ fun CommonTaskItem(
         }
 
         Text(
-            text = commonTask.title,
+            text = stringResource(R.string.task_title_pattern).format(
+                commonTask.ref, commonTask.title
+            ),
             style = MaterialTheme.typography.subtitle1,
         )
 
@@ -200,6 +202,7 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
             id = 0L,
             createdDate = Date(),
             title = "Very cool story",
+            ref = 100,
             status = Status(
                 id = 0L,
                 name = "In progress",
@@ -233,6 +236,7 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                     id = it.toLong(),
                     createdDate = Date(),
                     title = "Very cool story",
+                    ref = 100,
                     status = Status(
                         id = (0..2).random().toLong(),
                         name = "In progress",

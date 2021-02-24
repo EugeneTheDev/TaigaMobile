@@ -21,6 +21,7 @@
     <string name="project_admin">Admin</string>
     <string name="project_owner">Owner</string>
 
+    <string name="task_title_pattern">#%d %s</string>
     <string name="unassigned">Unassigned</string>
     <string name="assignee_pattern">Assignee: %s</string>
     <string name="stories_without_sprint">Stories without sprint</string>

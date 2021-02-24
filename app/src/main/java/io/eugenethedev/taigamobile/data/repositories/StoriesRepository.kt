@@ -65,6 +65,7 @@ class StoriesRepository @Inject constructor(
             id = it.id,
             createdDate = it.created_date,
             title = it.subject,
+            ref = it.ref,
             status = Status(
                 id = it.status,
                 name = it.status_extra_info.name,
