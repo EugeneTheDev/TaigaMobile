@@ -109,7 +109,7 @@ fun ScrumScreenContent(
                         ?: stringResource(R.string.choose_project_title),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.preferredWidthIn(max = 250.dp)
+                    modifier = Modifier.widthIn(max = 250.dp)
                 )
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_down),

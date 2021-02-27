@@ -3,8 +3,8 @@ package io.eugenethedev.taigamobile.ui.utils
 import android.annotation.SuppressLint
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -41,7 +41,7 @@ fun Modifier.clickableUnindicated(
     onClick: () -> Unit
 ) = composed {
     Modifier.clickable(
-        interactionState = remember { InteractionState() },
+        interactionSource = remember { MutableInteractionSource() },
         indication = null,
         enabled = enabled,
         onClickLabel = null,

@@ -11,6 +11,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -97,7 +98,7 @@ fun ProjectSelectorScreenContent(
                     modifier = Modifier.wrapContentHeight()
                         .fillMaxWidth(),
                     textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
-                    cursorColor = MaterialTheme.colors.onSurface,
+                    cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { loadData() })

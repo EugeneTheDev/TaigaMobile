@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     },
-                    bodyContent = { MainScreen(scaffoldState, it, navController) }
+                    content = { MainScreen(scaffoldState, it, navController) }
                 )
             }
         }

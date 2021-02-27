@@ -1,7 +1,7 @@
 package io.eugenethedev.taigamobile.ui.components
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
@@ -31,7 +31,7 @@ fun ContainerBox(
         .fillMaxWidth()
         .clickable(
             enabled = clickEnabled,
-            interactionState = remember { InteractionState() },
+            interactionSource = remember { MutableInteractionSource() },
             indication = rememberRipple(
                 bounded = true,
                 color = MaterialTheme.colors.primary

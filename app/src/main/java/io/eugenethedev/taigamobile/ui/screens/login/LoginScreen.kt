@@ -197,7 +197,7 @@ fun LoginTextField(
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        isErrorValue = isErrorValue
+        isError = isErrorValue
     )
 }
 

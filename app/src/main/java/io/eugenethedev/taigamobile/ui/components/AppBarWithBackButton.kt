@@ -1,15 +1,16 @@
 package io.eugenethedev.taigamobile.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Interaction
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -23,13 +24,14 @@ fun AppBarWithBackButton(
 ) = TopAppBar(
     title = title,
     navigationIcon = {
-        val interactionState = remember { InteractionState() }
+        val interactionSource = remember { MutableInteractionSource() }
+        val pressedState by interactionSource.collectIsPressedAsState()
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_back),
             contentDescription = null,
             colorFilter = ColorFilter.tint(
-                if (Interaction.Pressed in interactionState.value) {
+                if (pressedState) {
                     MaterialTheme.colors.primaryVariant
                 } else {
                     MaterialTheme.colors.primary
@@ -39,7 +41,7 @@ fun AppBarWithBackButton(
                 .size(36.dp)
                 .padding(start = 8.dp)
                 .clickable(
-                    interactionState = interactionState,
+                    interactionSource = interactionSource,
                     indication = null,
                     onClick = navigateBack
                 )
