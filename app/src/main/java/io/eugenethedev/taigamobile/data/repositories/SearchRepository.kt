@@ -12,15 +12,7 @@ class SearchRepository @Inject constructor(
 
     override suspend fun searchProjects(query: String, page: Int) = withIO {
         try {
-            taigaApi.getProjects(query, page).map {
-                Project(
-                    id = it.id,
-                    name = it.name,
-                    isMember = it.i_am_member,
-                    isAdmin = it.i_am_admin,
-                    isOwner = it.i_am_owner
-                )
-            }
+            taigaApi.getProjects(query, page)
         } catch (e: HttpException) {
             // suppress error if page not found (maximum page was reached)
             e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e

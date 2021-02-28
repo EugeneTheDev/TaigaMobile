@@ -1,15 +1,16 @@
 package io.eugenethedev.taigamobile.domain.entities
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
 data class Project(
     val id: Long,
     val name: String,
-    val isMember: Boolean,
-    val isAdmin: Boolean,
-    val isOwner: Boolean
+    @SerializedName("i_am_member") val isMember: Boolean,
+    @SerializedName("i_am_admin") val isAdmin: Boolean,
+    @SerializedName("i_am_owner") val isOwner: Boolean
 )
 
 data class Status(
@@ -43,3 +44,39 @@ data class Sprint(
     val storiesCount: Int,
     val isClosed: Boolean
 ) : Parcelable
+
+data class UserStory(
+    val id: Long,
+    val status: Status,
+    val createdDateTime: Date,
+    val sprintId: Long?,
+    val sprintName: String?,
+    val assignedIds: List<Long>,
+    val watcherIds: List<Long>,
+    val creatorId: Long,
+    val ref: Int,
+    val title: String,
+    val description: String,
+    val epics: List<Epic>,
+    val projectSlug: String
+)
+
+data class Epic(
+    val id: Long,
+    val title: String,
+    val ref: Int,
+    val color: String
+)
+
+data class User(
+    val id: Long,
+    @SerializedName("full_name_display") val fullName: String,
+    @SerializedName("photo") val avatarUrl: String?
+)
+
+data class Comment(
+    val id: Long,
+    val author: User,
+    val text: String,
+    val postDateTime: Date
+)

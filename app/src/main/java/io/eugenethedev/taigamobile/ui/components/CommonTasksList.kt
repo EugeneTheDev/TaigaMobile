@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
@@ -157,8 +158,10 @@ private fun AnimateExpandVisibility(
 
 @Composable
 fun CommonTaskItem(
-    commonTask: CommonTask
-) = ContainerBox {
+    commonTask: CommonTask,
+    horizontalPadding: Dp = mainHorizontalScreenPadding,
+    verticalPadding: Dp = 8.dp,
+) = ContainerBox(horizontalPadding, verticalPadding) {
     val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -180,7 +183,7 @@ fun CommonTaskItem(
         }
 
         Text(
-            text = stringResource(R.string.task_title_pattern).format(
+            text = stringResource(R.string.title_with_ref_pattern).format(
                 commonTask.ref, commonTask.title
             ),
             style = MaterialTheme.typography.subtitle1,

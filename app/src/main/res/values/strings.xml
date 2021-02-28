@@ -21,7 +21,7 @@
     <string name="project_admin">Admin</string>
     <string name="project_owner">Owner</string>
 
-    <string name="task_title_pattern">#%d %s</string>
+    <string name="title_with_ref_pattern">#%d %s</string>
     <string name="unassigned">Unassigned</string>
     <string name="assignee_pattern">Assignee: %s</string>
     <string name="stories_without_sprint">Stories without sprint</string>
@@ -34,4 +34,13 @@
 
     <string name="stories">Stories</string>
     <string name="tasks_without_story">Tasks without story</string>
+
+    <string name="no_sprint">No sprint</string>
+    <string name="belongs_to">Belongs to</string>
+    <string name="epic">Epic</string>
+    <string name="created_by">Created by</string>
+    <string name="assigned_to">Assigned to</string>
+    <string name="watchers">Watchers</string>
+    <string name="tasks">Tasks</string>
+    <string name="comments">Comments</string>
 </resources>

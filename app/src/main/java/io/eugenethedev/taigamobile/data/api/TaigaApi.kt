@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
+import io.eugenethedev.taigamobile.domain.entities.Project
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -18,7 +19,7 @@ interface TaigaApi {
         @Query("q") query: String,
         @Query("page") page: Int,
         @Query("order_by") order: String = "user_order"
-    ): List<ProjectResponse>
+    ): List<Project>
 
     @GET("userstories/filters_data")
     suspend fun getFiltersData(

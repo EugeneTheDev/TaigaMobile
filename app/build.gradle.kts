@@ -61,7 +61,9 @@ dependencies {
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha02")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha03")
+    // glide with compose
+    implementation("dev.chrisbanes.accompanist:accompanist-glide:0.6.1")
 
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha08")
