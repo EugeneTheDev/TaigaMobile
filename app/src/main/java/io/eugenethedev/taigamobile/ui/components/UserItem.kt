@@ -11,10 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.chrisbanes.accompanist.glide.GlideImage
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
@@ -42,11 +40,11 @@ fun UserItem(
         modifier = Modifier.size(imageSize).clip(CircleShape)
     )
 
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(6.dp))
 
     Column {
         Text(
-            text = user.fullName,
+            text = user.displayName,
             style = MaterialTheme.typography.subtitle1
         )
 

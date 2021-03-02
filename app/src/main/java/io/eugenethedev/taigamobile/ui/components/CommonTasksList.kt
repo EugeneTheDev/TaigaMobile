@@ -26,8 +26,10 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import java.text.SimpleDateFormat
 import java.util.*
@@ -44,7 +46,8 @@ fun LazyListScope.CommonTasksList(
     loadData: (Status) -> Unit = {},
     loadingStatusIds: List<Long> = emptyList(),
     visibleStatusIds: List<Long> = emptyList(),
-    onStatusClick: (Long) -> Unit = {}
+    onStatusClick: (Long) -> Unit = {},
+    navigateToTask: NavigateToTask = { _, _, _, _ -> }
 ) {
     if (statuses.isNotEmpty()) {
         statuses.map { st -> st to commonTasks.filter { it.status.id == st.id } }.forEach { (status, stories) ->
@@ -89,12 +92,15 @@ fun LazyListScope.CommonTasksList(
                 }
             }
 
-            itemsIndexed(stories.toList()) { index, story ->
+            itemsIndexed(stories.toList()) { index, commonTask ->
                 AnimateExpandVisibility(
                     visible = isCategoryVisible
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        CommonTaskItem(story)
+                        CommonTaskItem(
+                            commonTask = commonTask,
+                            navigateToTask = navigateToTask
+                        )
 
                         if (index < stories.lastIndex) {
                             Divider(
@@ -156,12 +162,19 @@ private fun AnimateExpandVisibility(
     content = content
 )
 
+/**
+ * Single task item
+ */
 @Composable
 fun CommonTaskItem(
     commonTask: CommonTask,
     horizontalPadding: Dp = mainHorizontalScreenPadding,
     verticalPadding: Dp = 8.dp,
-) = ContainerBox(horizontalPadding, verticalPadding) {
+    navigateToTask: NavigateToTask = { _, _, _, _ -> }
+) = ContainerBox(
+    horizontalPadding, verticalPadding,
+    onClick = { navigateToTask(commonTask.id, commonTask.taskType, commonTask.ref, commonTask.projectSlug) }
+) {
     val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -214,7 +227,9 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
             assignee = CommonTask.Assignee(
                 id = 0,
                 fullName = "Name Name"
-            )
+            ),
+            projectSlug = "000",
+            taskType = CommonTaskType.USERSTORY
         )
     )
 }
@@ -248,7 +263,9 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                     assignee = CommonTask.Assignee(
                         id = it.toLong(),
                         fullName = "Name Name"
-                    )
+                    ),
+                    projectSlug = "000",
+                    taskType = CommonTaskType.USERSTORY
                 )
             },
             visibleStatusIds = visibleStatusIds,

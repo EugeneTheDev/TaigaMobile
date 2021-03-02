@@ -40,11 +40,11 @@ class ScrumViewModel : StoriesViewModel() {
     private suspend fun loadSprints() {
         sprints.value = Result(ResultStatus.LOADING)
 
-        try {
-            sprints.value = Result(ResultStatus.SUCCESS, storiesRepository.getSprints())
+        sprints.value = try {
+             Result(ResultStatus.SUCCESS, storiesRepository.getSprints())
         } catch (e: Exception) {
             Timber.w(e)
-            sprints.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.ERROR, message = R.string.common_error_message)
         }
     }
 

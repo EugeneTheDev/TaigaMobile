@@ -1,10 +1,9 @@
 package io.eugenethedev.taigamobile.data.api
 
+import io.eugenethedev.taigamobile.domain.entities.Comment
 import io.eugenethedev.taigamobile.domain.entities.Project
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import io.eugenethedev.taigamobile.domain.entities.User
+import retrofit2.http.*
 
 interface TaigaApi {
     companion object {
@@ -40,11 +39,19 @@ interface TaigaApi {
         @Query("project") project: Long,
         @Query("milestone") sprint: Long?,
         @Query("user_story") userStory: Any,
-        @Query("page") page: Int,
+        @Query("page") page: Int?,
         @Query("order_by") order: String = "us_order"
     ): List<CommonTaskResponse>
 
     @GET("milestones")
     suspend fun getSprints(@Query("project") project: Long): List<SprintResponse>
 
+    @GET("userstories/{id}")
+    suspend fun getUserStory(@Path("id") storyId: Long): CommonTaskResponse
+
+    @GET("history/userstory/{id}?type=comment")
+    suspend fun getUserStoryComments(@Path("id") userStoryId: Long): List<Comment>
+
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") userId: Long): User
 }

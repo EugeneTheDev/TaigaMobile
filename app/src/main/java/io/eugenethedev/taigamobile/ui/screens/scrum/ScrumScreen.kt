@@ -31,10 +31,7 @@ import io.eugenethedev.taigamobile.ui.components.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.components.CommonTasksList
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
-import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
-import io.eugenethedev.taigamobile.ui.utils.navigate
-import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import io.eugenethedev.taigamobile.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -75,7 +72,8 @@ fun ScrumScreen(
         onStatusClick = viewModel::statusClick,
         navigateToBoard = {
             navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
-        }
+        },
+        navigateToTask = navController::navigateToTaskScreen
     )
 }
 
@@ -93,7 +91,8 @@ fun ScrumScreenContent(
     loadStories: (Status) -> Unit = {},
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
-    navigateToBoard: (Sprint) -> Unit = {}
+    navigateToBoard: (Sprint) -> Unit = {},
+    navigateToTask: NavigateToTask = { _, _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -146,7 +145,8 @@ fun ScrumScreenContent(
                     loadingStatusIds = loadingStatusIds,
                     visibleStatusIds = visibleStatusIds,
                     onStatusClick = onStatusClick,
-                    loadData = loadStories
+                    loadData = loadStories,
+                    navigateToTask = navigateToTask
                 )
             }
 

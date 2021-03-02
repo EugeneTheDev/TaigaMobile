@@ -20,13 +20,20 @@ data class Status(
     val order: Int = 0
 )
 
+enum class CommonTaskType {
+    USERSTORY,
+    TASK
+}
+
 data class CommonTask(
     val id: Long,
     val createdDate: Date,
     val title: String,
     val ref: Int,
     val status: Status,
-    val assignee: Assignee?
+    val assignee: Assignee?,
+    val projectSlug: String,
+    val taskType: CommonTaskType
 ) {
     data class Assignee(
         val id: Long,
@@ -45,7 +52,7 @@ data class Sprint(
     val isClosed: Boolean
 ) : Parcelable
 
-data class UserStory(
+data class CommonTaskExtended(
     val id: Long,
     val status: Status,
     val createdDateTime: Date,
@@ -63,20 +70,23 @@ data class UserStory(
 
 data class Epic(
     val id: Long,
-    val title: String,
+    @SerializedName("subject") val title: String,
     val ref: Int,
     val color: String
 )
 
 data class User(
-    val id: Long,
-    @SerializedName("full_name_display") val fullName: String,
-    @SerializedName("photo") val avatarUrl: String?
-)
+    val id: Long?, // sometimes there is no id
+    @SerializedName("full_name_display") val fullName: String?,
+    @SerializedName("photo") val avatarUrl: String?,
+    val name: String? = null // sometimes name appears here
+) {
+    val displayName get() = fullName ?: name!!
+}
 
 data class Comment(
-    val id: Long,
-    val author: User,
-    val text: String,
-    val postDateTime: Date
+    val id: String,
+    @SerializedName("user") val author: User,
+    @SerializedName("comment") val text: String,
+    @SerializedName("created_at") val postDateTime: Date
 )

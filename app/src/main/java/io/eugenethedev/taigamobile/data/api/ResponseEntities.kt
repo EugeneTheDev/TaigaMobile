@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
+import io.eugenethedev.taigamobile.domain.entities.Epic
 import io.eugenethedev.taigamobile.domain.entities.Status
 import java.util.*
 
@@ -22,7 +23,15 @@ data class CommonTaskResponse(
     val status: Long,
     val ref: Int,
     val assigned_to_extra_info: AssigneeInfo?,
-    val status_extra_info: StatusExtra
+    val status_extra_info: StatusExtra,
+    val project_extra_info: ProjectExtraInfo,
+    val milestone: Long,
+    val milestone_name: String,
+    val assigned_users: List<Long>,
+    val watchers: List<Long>,
+    val owner: Long,
+    val description: String,
+    val epics: List<Epic>?
 ) {
     data class AssigneeInfo(
         val id: Long,
@@ -32,6 +41,10 @@ data class CommonTaskResponse(
     data class StatusExtra(
         val color: String,
         val name: String
+    )
+
+    data class ProjectExtraInfo(
+        val slug: String
     )
 }
 

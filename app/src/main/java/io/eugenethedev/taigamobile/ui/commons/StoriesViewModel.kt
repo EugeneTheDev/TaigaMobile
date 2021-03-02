@@ -37,8 +37,8 @@ abstract class StoriesViewModel : ViewModel() {
         statuses.value = Result(ResultStatus.LOADING)
         stories.value = Result(ResultStatus.SUCCESS)
 
-        try {
-            statuses.value = Result(
+        statuses.value = try {
+             Result(
                 resultStatus = ResultStatus.SUCCESS,
                 storiesRepository.getStatuses(sprintId).onEach {
                     statusesStates[it] = StatusState()
@@ -48,7 +48,7 @@ abstract class StoriesViewModel : ViewModel() {
 
         } catch (e: Exception) {
             Timber.w(e)
-            statuses.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.ERROR, message = R.string.common_error_message)
         }
     }
 
@@ -85,7 +85,7 @@ abstract class StoriesViewModel : ViewModel() {
         statuses.value = null
         stories.value = null
         statusesStates.clear()
-        loadingStatusIds.value = emptyList()
-        visibleStatusIds.value = emptyList()
+        loadingStatusIds.value = null
+        visibleStatusIds.value = null
     }
 }

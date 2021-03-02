@@ -31,7 +31,9 @@ import io.eugenethedev.taigamobile.ui.components.CommonTasksList
 import io.eugenethedev.taigamobile.ui.components.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import java.text.SimpleDateFormat
 import java.util.*
@@ -71,7 +73,8 @@ fun SprintScreen(
         navigateBack = navController::popBackStack,
         tasks = tasks?.data.orEmpty(),
         isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
-        loadTasks = viewModel::loadTasks
+        loadTasks = viewModel::loadTasks,
+        navigateToTask = navController::navigateToTaskScreen
     )
 }
 
@@ -91,7 +94,8 @@ fun SprintScreenContent(
     navigateBack: () -> Unit = {},
     tasks: List<CommonTask> = emptyList(),
     isTasksLoading: Boolean = false,
-    loadTasks: () -> Unit = {}
+    loadTasks: () -> Unit = {},
+    navigateToTask: NavigateToTask = { _, _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -140,7 +144,8 @@ fun SprintScreenContent(
                 loadingStatusIds = loadingStatusIds,
                 visibleStatusIds = visibleStatusIds,
                 onStatusClick = onStatusClick,
-                loadData = loadStories
+                loadData = loadStories,
+                navigateToTask = navigateToTask
             )
         }
 

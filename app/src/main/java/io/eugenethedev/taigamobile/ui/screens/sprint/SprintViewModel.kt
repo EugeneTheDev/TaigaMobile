@@ -46,7 +46,7 @@ class SprintViewModel : StoriesViewModel() {
                 ?.run { maxStoriesPage = currentStoriesPage }
         } catch (e: Exception) {
             Timber.w(e)
-            tasks.value = Result(ResultStatus.LOADING, message = R.string.common_error_message)
+            tasks.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
         }
     }
 

@@ -1,44 +1,100 @@
-package io.eugenethedev.taigamobile.ui.screens.story
+package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import java.util.*
 
 @Composable
-fun StoryScreen(
+fun CommonTaskScreen(
     navController: NavController,
+    commonTaskId: Long,
+    commonTaskType: CommonTaskType,
+    ref: Int,
+    projectSlug: String,
     onError: @Composable (message: Int) -> Unit = {},
 ) {
+    val viewModel: CommonTaskViewModel = viewModel()
+    remember {
+        viewModel.start(commonTaskId)
+    }
+
+    val story by viewModel.story.observeAsState()
+    story?.subscribeOnError(onError)
+    val creator by viewModel.creator.observeAsState()
+    creator?.subscribeOnError(onError)
+    val assignees by viewModel.assignees.observeAsState()
+    assignees?.subscribeOnError(onError)
+    val watchers by viewModel.watchers.observeAsState()
+    watchers?.subscribeOnError(onError)
+    val tasks by viewModel.tasks.observeAsState()
+    tasks?.subscribeOnError(onError)
+    val comments by viewModel.comments.observeAsState()
+    comments?.subscribeOnError(onError)
+
+    val isLoading by viewModel.isLoading.observeAsState()
+
+    story?.data.let {
+        CommonTaskScreenContent(
+            toolbarTitle = stringResource(
+                when (commonTaskType) {
+                    CommonTaskType.USERSTORY -> R.string.userstory_slug
+                    CommonTaskType.TASK -> R.string.task_slug
+                }
+            ).format(projectSlug, ref),
+            statusName = it?.status?.name ?: "",
+            statusColorHex = it?.status?.color ?: "#000000",
+            sprintName = it?.sprintName,
+            storyTitle = it?.title ?: "",
+            epics = it?.epics.orEmpty(),
+            description = it?.description ?: "",
+            creationDateTime = it?.createdDateTime ?: Date(),
+            creator = creator?.data,
+            assignees = assignees?.data.orEmpty(),
+            watchers = watchers?.data.orEmpty(),
+            tasks = tasks?.data.orEmpty(),
+            comments = comments?.data.orEmpty(),
+            isLoading = isLoading == true,
+            navigateBack = navController::popBackStack
+        )
+    }
 
 }
 
 @Composable
-fun StoryScreenContent(
+fun CommonTaskScreenContent(
     toolbarTitle: String,
-    status: Status,
+    statusName: String,
+    statusColorHex: String,
     sprintName: String?,
     storyTitle: String,
     epics: List<Epic> = emptyList(),
     description: String,
     creationDateTime: Date,
-    creator: User,
+    creator: User?,
     assignees: List<User> = emptyList(),
     watchers: List<User> = emptyList(),
     tasks: List<CommonTask> = emptyList(),
@@ -56,7 +112,7 @@ fun StoryScreenContent(
         navigateBack = navigateBack
     )
 
-    if (isLoading) {
+    if (isLoading || creator == null) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
@@ -74,7 +130,7 @@ fun StoryScreenContent(
 
             item {
                 Row {
-                    DropdownSelector(text = status.name, colorHex = status.color)
+                    DropdownSelector(text = statusName, colorHex = statusColorHex)
                     Spacer(Modifier.width(8.dp))
                     sprintName?.also {
                         DropdownSelector(text = it, color = MaterialTheme.colors.primary)
@@ -101,7 +157,7 @@ fun StoryScreenContent(
 
                 items(epics) {
                     EpicItem(it)
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(2.dp))
                 }
             }
 
@@ -169,14 +225,18 @@ fun StoryScreenContent(
                     )
                 }
 
-                items(tasks) {
+                itemsIndexed(tasks) { index, item ->
                     CommonTaskItem(
-                        commonTask = it,
+                        commonTask = item,
                         horizontalPadding = 0.dp,
-                        verticalPadding = 4.dp
                     )
 
-                    Spacer(Modifier.height(6.dp))
+                    if (index < tasks.lastIndex) {
+                        Divider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            color = Color.LightGray
+                        )
+                    }
                 }
             }
 
@@ -188,12 +248,18 @@ fun StoryScreenContent(
                         text = stringResource(R.string.comments),
                         style = MaterialTheme.typography.h6
                     )
+
+                    Spacer(Modifier.height(4.dp))
                 }
 
                 items(comments) {
                     CommentItem(it)
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                 }
+            }
+
+            item {
+                Spacer(Modifier.height(16.dp))
             }
         }
     }
@@ -233,19 +299,19 @@ private fun CommentItem(
         dateTime = comment.postDateTime
     )
 
-    Text(comment.text)
+    Text(
+        text = comment.text,
+        modifier = Modifier.padding(start = 4.dp)
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
-fun StoryScreenPreview() = TaigaMobileTheme {
-    StoryScreenContent(
+fun CommonTaskScreenPreview() = TaigaMobileTheme {
+    CommonTaskScreenContent(
         toolbarTitle = "617 - User story #99",
-        status = Status(
-            id = 1L,
-            name = "In progress",
-            color = "#729fcf"
-        ),
+        statusName = "In progress",
+        statusColorHex = "#729fcf",
         sprintName = "0 sprint",
         storyTitle = "Very cool and important story. Need to do this quickly",
         epics = List(2) {
@@ -291,12 +357,14 @@ fun StoryScreenPreview() = TaigaMobileTheme {
                 assignee = CommonTask.Assignee(
                     id = it.toLong(),
                     fullName = "Name Name"
-                )
+                ),
+                projectSlug = "000",
+                taskType = CommonTaskType.USERSTORY
             )
         },
         comments = List(4) {
             Comment(
-                id = 0L,
+                id = "",
                 author = User(
                     id = 0L,
                     fullName = "Full Name",

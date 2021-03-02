@@ -17,10 +17,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScreen
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
+import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
@@ -103,11 +105,16 @@ object Routes {
     const val team = "team"
     const val projectsSelector = "projects_selector"
     const val sprint = "sprint"
+    const val commonTask = "commontask"
 
     const val startDestination = scrum
 
     object Arguments {
         const val sprint = "sprint"
+        const val commonTaskId = "taskId"
+        const val commonTaskType = "taskType"
+        const val ref = "ref"
+        const val projectSlug = "projectSlug"
     }
 }
 
@@ -127,7 +134,10 @@ fun MainScreen(
         coroutineScope.launch { scaffoldState.snackbarHostState.showSnackbar(strMessage) }
     }
 
-    Box(Modifier.fillMaxSize().padding(paddingValues)) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
         NavHost(
             navController = navController,
             startDestination = if (viewModel.isLogged) Routes.startDestination else Routes.login
@@ -162,6 +172,25 @@ fun MainScreen(
                 SprintScreen(
                     navController = navController,
                     sprint = navController.previousBackStackEntry?.arguments?.getParcelable(Routes.Arguments.sprint)!!,
+                    onError = onError
+                )
+            }
+
+            composable(
+                Routes.Arguments.let { "${Routes.commonTask}/{${it.commonTaskId}}/{${it.commonTaskType}}/{${it.ref}}/{${it.projectSlug}}" },
+                arguments = listOf(
+                    navArgument(Routes.Arguments.commonTaskId) { type = NavType.LongType },
+                    navArgument(Routes.Arguments.commonTaskType) { type = NavType.StringType },
+                    navArgument(Routes.Arguments.ref) { type = NavType.IntType },
+                    navArgument(Routes.Arguments.projectSlug) { type = NavType.StringType }
+                )
+            ) {
+                CommonTaskScreen(
+                    navController = navController,
+                    commonTaskId = it.arguments!!.getLong(Routes.Arguments.commonTaskId),
+                    commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
+                    ref = it.arguments!!.getInt(Routes.Arguments.ref),
+                    projectSlug = it.arguments!!.getString(Routes.Arguments.projectSlug, ""),
                     onError = onError
                 )
             }

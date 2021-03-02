@@ -24,12 +24,12 @@ class LoginViewModel : ViewModel() {
 
     fun login(taigaServer: String, username: String, password: String) = viewModelScope.launch {
         loginResult.value = Result(ResultStatus.LOADING)
-        try {
+        loginResult.value = try {
             authRepository.auth(taigaServer, password, username)
-            loginResult.value = Result(ResultStatus.SUCCESS)
+             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
-            loginResult.value = Result(ResultStatus.ERROR, message = R.string.login_error_message)
+            Result(ResultStatus.ERROR, message = R.string.login_error_message)
         }
     }
 }
