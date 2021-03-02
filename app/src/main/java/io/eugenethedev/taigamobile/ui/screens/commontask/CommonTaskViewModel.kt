@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.domain.entities.Comment
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
-import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
@@ -37,17 +34,17 @@ class CommonTaskViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start(commonTaskId: Long) = viewModelScope.launch {
+    fun start(commonTaskId: Long, commonTaskType: CommonTaskType) = viewModelScope.launch {
         if (story.value == null) isLoading.value = true
         story.value = Result(ResultStatus.LOADING)
 
         story.value = try {
-            storiesRepository.getUserStory(commonTaskId).let {
+            storiesRepository.getCommonTask(commonTaskId, commonTaskType).let {
                 val creatorAsync = async { loadUser(it.creatorId) }
                 val assigneesAsyncs = it.assignedIds.map { async { loadUser(it) } }
                 val watchersAsyncs = it.watcherIds.map { async { loadUser(it) } }
                 val tasksAsync = async { storiesRepository.getUserStoryTasks(commonTaskId) }
-                val commentsAsync = async { storiesRepository.getComments(commonTaskId) }
+                val commentsAsync = async { storiesRepository.getComments(commonTaskId, commonTaskType) }
 
                 creator.value = creatorAsync.await()
                 assignees.value = Result(ResultStatus.SUCCESS, assigneesAsyncs.mapNotNull { it.await().data })

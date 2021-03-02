@@ -49,8 +49,14 @@ interface TaigaApi {
     @GET("userstories/{id}")
     suspend fun getUserStory(@Path("id") storyId: Long): CommonTaskResponse
 
+    @GET("tasks/{id}")
+    suspend fun getTask(@Path("id") taskId: Long): CommonTaskResponse
+
     @GET("history/userstory/{id}?type=comment")
     suspend fun getUserStoryComments(@Path("id") userStoryId: Long): List<Comment>
+
+    @GET("history/task/{id}?type=comment")
+    suspend fun getTaskComments(@Path("id") taskId: Long): List<Comment>
 
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userId: Long): User

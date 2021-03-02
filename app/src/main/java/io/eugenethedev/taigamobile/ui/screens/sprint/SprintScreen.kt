@@ -164,7 +164,10 @@ fun SprintScreenContent(
         }
 
         itemsIndexed(tasks) { index, item ->
-            CommonTaskItem(item)
+            CommonTaskItem(
+                commonTask = item,
+                navigateToTask = navigateToTask
+            )
 
             if (index < tasks.lastIndex) {
                 Divider(

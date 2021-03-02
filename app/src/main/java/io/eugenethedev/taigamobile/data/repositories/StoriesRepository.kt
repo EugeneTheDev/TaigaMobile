@@ -58,8 +58,11 @@ class StoriesRepository @Inject constructor(
         }
     }
 
-    override suspend fun getUserStory(storyId: Long) = withIO {
-        taigaApi.getUserStory(storyId).let {
+    override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
+        when (type) {
+            CommonTaskType.USERSTORY -> taigaApi.getUserStory(commonTaskId)
+            CommonTaskType.TASK -> taigaApi.getTask(commonTaskId)
+        }.let {
             CommonTaskExtended(
                 id = it.id,
                 status = Status(
@@ -70,19 +73,32 @@ class StoriesRepository @Inject constructor(
                 createdDateTime = it.created_date,
                 sprintId = it.milestone,
                 sprintName = it.milestone_name,
-                assignedIds = it.assigned_users,
+                assignedIds = it.assigned_users ?: listOf(it.assigned_to),
                 watcherIds = it.watchers,
                 creatorId = it.owner,
                 ref = it.ref,
                 title = it.subject,
                 description = it.description,
                 epics = it.epics.orEmpty(),
-                projectSlug = it.project_extra_info.slug
+                projectSlug = it.project_extra_info.slug,
+                userStoryShortInfo = it.user_story_extra_info?.let {
+                    UserStoryShortInfo(
+                        id = it.id,
+                        ref = it.ref,
+                        title = it.subject,
+                        epicColor = it.epics?.first()?.color
+                    )
+                }
             )
         }
     }
 
-    override suspend fun getComments(storyId: Long) = withIO { taigaApi.getUserStoryComments(storyId).sortedByDescending { it.postDateTime } }
+    override suspend fun getComments(commonTaskId: Long, type: CommonTaskType) = withIO {
+        when (type) {
+            CommonTaskType.USERSTORY -> taigaApi.getUserStoryComments(commonTaskId)
+            CommonTaskType.TASK -> taigaApi.getTaskComments(commonTaskId)
+        }.sortedBy { it.postDateTime }
+    }
 
     private fun List<CommonTaskResponse>.mapToCommonTask(commonTaskType: CommonTaskType) = map {
         CommonTask(

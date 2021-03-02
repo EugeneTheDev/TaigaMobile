@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,6 +26,8 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
+import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import java.util.*
 
@@ -39,7 +42,7 @@ fun CommonTaskScreen(
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
     remember {
-        viewModel.start(commonTaskId)
+        viewModel.start(commonTaskId, commonTaskType)
     }
 
     val story by viewModel.story.observeAsState()
@@ -69,6 +72,7 @@ fun CommonTaskScreen(
             statusColorHex = it?.status?.color ?: "#000000",
             sprintName = it?.sprintName,
             storyTitle = it?.title ?: "",
+            story = it?.userStoryShortInfo,
             epics = it?.epics.orEmpty(),
             description = it?.description ?: "",
             creationDateTime = it?.createdDateTime ?: Date(),
@@ -78,7 +82,8 @@ fun CommonTaskScreen(
             tasks = tasks?.data.orEmpty(),
             comments = comments?.data.orEmpty(),
             isLoading = isLoading == true,
-            navigateBack = navController::popBackStack
+            navigateBack = navController::popBackStack,
+            navigateToTask = navController::navigateToTaskScreen
         )
     }
 
@@ -92,6 +97,7 @@ fun CommonTaskScreenContent(
     sprintName: String?,
     storyTitle: String,
     epics: List<Epic> = emptyList(),
+    story: UserStoryShortInfo?,
     description: String,
     creationDateTime: Date,
     creator: User?,
@@ -100,7 +106,8 @@ fun CommonTaskScreenContent(
     tasks: List<CommonTask> = emptyList(),
     comments: List<Comment> = emptyList(),
     isLoading: Boolean = false,
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    navigateToTask: NavigateToTask = { _, _, _, _ -> }
 ) = Column(Modifier.fillMaxSize()) {
     AppBarWithBackButton(
         title = {
@@ -158,6 +165,17 @@ fun CommonTaskScreenContent(
                 items(epics) {
                     EpicItem(it)
                     Spacer(Modifier.height(2.dp))
+                }
+            }
+
+            story?.let {
+                item {
+                    Text(
+                        text = stringResource(R.string.belongs_to),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+
+                    UserStoryItem(story)
                 }
             }
 
@@ -229,6 +247,7 @@ fun CommonTaskScreenContent(
                     CommonTaskItem(
                         commonTask = item,
                         horizontalPadding = 0.dp,
+                        navigateToTask = navigateToTask
                     )
 
                     if (index < tasks.lastIndex) {
@@ -254,7 +273,7 @@ fun CommonTaskScreenContent(
 
                 items(comments) {
                     CommentItem(it)
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(10.dp))
                 }
             }
 
@@ -291,6 +310,31 @@ private fun EpicItem(
 }
 
 @Composable
+private fun UserStoryItem(
+    story: UserStoryShortInfo
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.padding(bottom = 4.dp)
+) {
+    Text(
+        text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
+        color = MaterialTheme.colors.primary,
+        style = MaterialTheme.typography.subtitle1
+    )
+    Spacer(Modifier.width(4.dp))
+
+    story.epicColor?.let {
+        Spacer(
+            Modifier.size(12.dp)
+                .background(
+                    color = Color(android.graphics.Color.parseColor(it)),
+                    shape = CircleShape
+                )
+        )
+    }
+}
+
+@Composable
 private fun CommentItem(
     comment: Comment
 ) = Column {
@@ -314,6 +358,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         statusColorHex = "#729fcf",
         sprintName = "0 sprint",
         storyTitle = "Very cool and important story. Need to do this quickly",
+        story = null,
         epics = List(2) {
             Epic(
                 id = 1L,

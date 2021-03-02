@@ -8,6 +8,6 @@ interface IStoriesRepository {
     suspend fun getSprints(): List<Sprint>
     suspend fun getUserStoryTasks(storyId: Long): List<CommonTask>
     suspend fun getSprintTasks(sprintId: Long, page: Int): List<CommonTask>
-    suspend fun getUserStory(storyId: Long): CommonTaskExtended
-    suspend fun getComments(storyId: Long): List<Comment>
+    suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType): CommonTaskExtended
+    suspend fun getComments(commonTaskId: Long, type: CommonTaskType): List<Comment>
 }

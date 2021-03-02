@@ -27,11 +27,13 @@ data class CommonTaskResponse(
     val project_extra_info: ProjectExtraInfo,
     val milestone: Long,
     val milestone_name: String,
-    val assigned_users: List<Long>,
+    val assigned_users: List<Long>?,
+    val assigned_to: Long,
     val watchers: List<Long>,
     val owner: Long,
     val description: String,
-    val epics: List<Epic>?
+    val epics: List<Epic>?,
+    val user_story_extra_info: UserStoryExtraInfo?
 ) {
     data class AssigneeInfo(
         val id: Long,
@@ -45,6 +47,13 @@ data class CommonTaskResponse(
 
     data class ProjectExtraInfo(
         val slug: String
+    )
+
+    data class UserStoryExtraInfo(
+        val id: Long,
+        val ref: Int,
+        val subject: String,
+        val epics: List<Epic>?
     )
 }
 

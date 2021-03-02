@@ -65,7 +65,8 @@ data class CommonTaskExtended(
     val title: String,
     val description: String,
     val epics: List<Epic>,
-    val projectSlug: String
+    val projectSlug: String,
+    val userStoryShortInfo: UserStoryShortInfo?
 )
 
 data class Epic(
@@ -73,6 +74,13 @@ data class Epic(
     @SerializedName("subject") val title: String,
     val ref: Int,
     val color: String
+)
+
+data class UserStoryShortInfo(
+    val id: Long,
+    val ref: Int,
+    val title: String,
+    val epicColor: String?
 )
 
 data class User(
