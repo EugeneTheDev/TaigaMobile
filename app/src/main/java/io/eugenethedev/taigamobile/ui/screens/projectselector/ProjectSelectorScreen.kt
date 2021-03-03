@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.domain.entities.Project
+import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
 import io.eugenethedev.taigamobile.ui.components.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.Loader
@@ -67,13 +67,13 @@ fun ProjectSelectorScreen(
 
 @Composable
 fun ProjectSelectorScreenContent(
-    projects: List<Project>,
+    projects: List<ProjectInSearch>,
     isLoading: Boolean = false,
     query: TextFieldValue = TextFieldValue(),
     onQueryChanged: (TextFieldValue) -> Unit = {},
     navigateBack: () -> Unit = {},
     loadData: () -> Unit = {},
-    selectProject: (Project) -> Unit  = {}
+    selectProject: (ProjectInSearch) -> Unit  = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally
@@ -145,7 +145,7 @@ fun ProjectSelectorScreenContent(
 
 @Composable
 private fun ItemProject(
-    project: Project,
+    project: ProjectInSearch,
     onClick: () -> Unit = {}
 ) = ContainerBox(
     verticalPadding = 16.dp,
@@ -180,8 +180,8 @@ private fun ItemProject(
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
         listOf(
-            Project(0, "Cool", false, false, false),
-            Project(1, "Cooler", true, false, false)
+            ProjectInSearch(0, "Cool", false, false, false),
+            ProjectInSearch(1, "Cooler", true, false, false)
         )
     )
 }

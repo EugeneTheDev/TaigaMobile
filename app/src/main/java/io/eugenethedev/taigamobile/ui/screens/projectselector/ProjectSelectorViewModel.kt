@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.domain.entities.Project
+import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
@@ -21,7 +21,7 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var searchRepository: ISearchRepository
     @Inject lateinit var session: Session
 
-    val projects = MutableLiveResult<List<Project>>()
+    val projects = MutableLiveResult<List<ProjectInSearch>>()
     val isProjectSelected = MutableLiveData(false)
 
     init {
@@ -40,7 +40,7 @@ class ProjectSelectorViewModel : ViewModel() {
         loadData()
     }
 
-    fun selectProject(project: Project) {
+    fun selectProject(project: ProjectInSearch) {
         session.apply {
             currentProjectId = project.id
             currentProjectName = project.name

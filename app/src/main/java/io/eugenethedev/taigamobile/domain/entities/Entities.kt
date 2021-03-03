@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
-data class Project(
+data class ProjectInSearch(
     val id: Long,
     val name: String,
     @SerializedName("i_am_member") val isMember: Boolean,
@@ -97,4 +97,12 @@ data class Comment(
     @SerializedName("user") val author: User,
     @SerializedName("comment") val text: String,
     @SerializedName("created_at") val postDateTime: Date
+)
+
+data class TeamMember(
+    val id: Long,
+    val avatarUrl: String?,
+    val name: String,
+    val role: String,
+    val totalPower: Int
 )

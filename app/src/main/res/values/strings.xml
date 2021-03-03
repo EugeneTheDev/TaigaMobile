@@ -46,4 +46,6 @@
     <string name="watchers">Watchers</string>
     <string name="tasks">Tasks</string>
     <string name="comments">Comments</string>
+
+    <string name="power">power</string>
 </resources>

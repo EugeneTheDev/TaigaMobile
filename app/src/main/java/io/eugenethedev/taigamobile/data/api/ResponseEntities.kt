@@ -12,6 +12,19 @@ data class AuthResponse(
     val auth_token: String
 )
 
+data class ProjectResponse(
+    val id: Long,
+    val name: String,
+    val members: List<Member>
+) {
+    data class Member(
+        val id: Long,
+        val photo: String?,
+        val full_name_display: String,
+        val role_name: String
+    )
+}
+
 data class FiltersDataResponse(
     val statuses: List<Status>
 )
@@ -70,3 +83,11 @@ data class SprintResponse(
         val id: Long
     )
 }
+
+data class MemberStatsResponse(
+    val closed_bugs: Map<String, Int>, // because api returns "null" key along with id keys, so...
+    val closed_tasks: Map<String, Int>,
+    val created_bugs: Map<String, Int>,
+    val iocaine_tasks: Map<String, Int>,
+    val wiki_changes: Map<String, Int>
+)

@@ -23,6 +23,7 @@ import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScr
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
+import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
@@ -157,7 +158,10 @@ fun MainScreen(
             }
 
             composable(Routes.team) {
-
+                TeamScreen(
+                    navController = navController,
+                    onError = onError
+                )
             }
 
             composable(Routes.projectsSelector) {
