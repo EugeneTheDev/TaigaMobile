@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     },
                     bottomBar = {
-                        val items = listOf(Screen.Stories, Screen.Team)
+                        val items = listOf(Screen.Scrum, Screen.Team)
                         val routes = items.map { it.route }
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         BottomNavigation(backgroundColor = MaterialTheme.colors.surface) {
-                            listOf(Screen.Stories, Screen.Team).forEach { screen ->
+                            items.forEach { screen ->
                                 BottomNavigationItem(
                                     selectedContentColor = MaterialTheme.colors.primary,
                                     unselectedContentColor = Color.Gray,
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
-    object Stories : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_stories)
+    object Scrum : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_stories)
     object Team : Screen(Routes.team, R.string.team, R.drawable.ic_team)
 }
 

@@ -36,7 +36,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun start(commonTaskId: Long, commonTaskType: CommonTaskType) = viewModelScope.launch {
         if (story.value == null) isLoading.value = true
-        story.value = Result(ResultStatus.LOADING)
+        story.value = Result(ResultStatus.LOADING, story.value?.data)
 
         story.value = try {
             storiesRepository.getCommonTask(commonTaskId, commonTaskType).let {
