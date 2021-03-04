@@ -55,12 +55,8 @@ class MainActivity : AppCompatActivity() {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-                        var isLaunchSingleTopShit by remember { mutableStateOf(false) }
-
                         // hide bottom bar for other screens
-                        if (!((isLaunchSingleTopShit && currentRoute == null) || (currentRoute in routes))) {
-                            return@Scaffold
-                        }
+                        if (currentRoute !in routes) return@Scaffold
 
                         BottomNavigation(backgroundColor = MaterialTheme.colors.surface) {
                             items.forEach { screen ->
@@ -69,19 +65,12 @@ class MainActivity : AppCompatActivity() {
                                     unselectedContentColor = Color.Gray,
                                     icon = { Icon(painter = painterResource(screen.iconId), contentDescription = null) },
                                     label = { Text(stringResource(screen.resourceId)) },
-                                    // workaround, because launchSingleTop can cause strange effect
-                                    // and make currentRoute null for start destination
-                                    selected = currentRoute == screen.route || (screen.route == Routes.startDestination && currentRoute == null),
+                                    selected = currentRoute == screen.route,
                                     onClick = {
-                                        navController.navigate(screen.route) {
-                                            // Pop up to the start destination of the graph to
-                                            // avoid building up a large stack of destinations
-                                            // on the back stack as users select items
-                                            popUpTo = navController.graph.startDestination
-                                            // Avoid multiple copies of the same destination when
-                                            // reselecting the same item
-                                            launchSingleTop = true
-                                            isLaunchSingleTopShit = true
+                                        if (screen.route != currentRoute) {
+                                            navController.navigate(screen.route) {
+                                                currentRoute?.let { popUpTo(it) { inclusive = true } }
+                                            }
                                         }
                                     }
                                 )
