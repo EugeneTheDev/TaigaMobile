@@ -17,6 +17,7 @@
     <string name="choose_project_title">Choose project</string>
 
     <string name="search_projects_hint">Search projects</string>
+    <string name="project_name_template">%s (%s)</string>
     <string name="project_member">Member</string>
     <string name="project_admin">Admin</string>
     <string name="project_owner">Owner</string>

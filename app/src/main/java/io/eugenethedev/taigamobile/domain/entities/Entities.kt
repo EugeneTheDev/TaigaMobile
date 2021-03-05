@@ -8,6 +8,7 @@ import java.util.*
 data class ProjectInSearch(
     val id: Long,
     val name: String,
+    val slug: String,
     @SerializedName("i_am_member") val isMember: Boolean,
     @SerializedName("i_am_admin") val isAdmin: Boolean,
     @SerializedName("i_am_owner") val isOwner: Boolean

@@ -169,7 +169,7 @@ private fun ItemProject(
         }
 
         Text(
-            text = project.name,
+            text = stringResource(R.string.project_name_template).format(project.name, project.slug),
             style = MaterialTheme.typography.body1,
         )
     }
@@ -180,8 +180,8 @@ private fun ItemProject(
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
         listOf(
-            ProjectInSearch(0, "Cool", false, false, false),
-            ProjectInSearch(1, "Cooler", true, false, false)
+            ProjectInSearch(0, "Cool", "slug",false, false, false),
+            ProjectInSearch(1, "Cooler", "slug", true, false, false)
         )
     )
 }
