@@ -14,11 +14,10 @@ interface TaigaApi {
     @POST("auth")
     suspend fun auth(@Body authRequest: AuthRequest): AuthResponse
 
-    @GET("projects")
+    @GET("projects?discover_mode=true&order_by=-total_activity")
     suspend fun getProjects(
         @Query("q") query: String,
-        @Query("page") page: Int,
-        @Query("order_by") order: String = "user_order"
+        @Query("page") page: Int
     ): List<ProjectInSearch>
 
     @GET("projects/{id}")
@@ -38,13 +37,12 @@ interface TaigaApi {
         @Query("page") page: Int
     ): List<CommonTaskResponse>
 
-    @GET("tasks")
+    @GET("tasks?order_by=us_order")
     suspend fun getTasks(
         @Query("project") project: Long,
         @Query("milestone") sprint: Long?,
         @Query("user_story") userStory: Any,
-        @Query("page") page: Int?,
-        @Query("order_by") order: String = "us_order"
+        @Query("page") page: Int?
     ): List<CommonTaskResponse>
 
     @GET("milestones")

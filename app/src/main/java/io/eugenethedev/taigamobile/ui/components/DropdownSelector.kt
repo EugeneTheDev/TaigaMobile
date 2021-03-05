@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -37,7 +39,14 @@ fun DropdownSelector(
 ) {
     Text(
         text = text,
-        color = Color.White
+        color = Color.White,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        // I really want to use Modifier.weight(0.8, fill = false) here and below,
+        // but its a peace of shit and fill = false modifier simply doesn't work at all
+        // (this Row takes all available width anyways, which is of course bad for this case).
+        // Maybe this will be fixed in the future, but for now I'll leave it like this...
+        modifier = Modifier.widthIn(max = 120.dp)
     )
 
     Image(

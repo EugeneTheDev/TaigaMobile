@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,7 +68,7 @@ fun CommonTaskScreen(
                     CommonTaskType.USERSTORY -> R.string.userstory_slug
                     CommonTaskType.TASK -> R.string.task_slug
                 }
-            ).format(projectSlug, ref),
+            ).format(ref),
             statusName = it?.status?.name ?: "",
             statusColorHex = it?.status?.color ?: "#000000",
             sprintName = it?.sprint?.name,
@@ -113,7 +114,8 @@ fun CommonTaskScreenContent(
         title = {
             Text(
                 text = toolbarTitle,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         },
         navigateBack = navigateBack
@@ -137,12 +139,23 @@ fun CommonTaskScreenContent(
 
             item {
                 Row {
-                    DropdownSelector(text = statusName, colorHex = statusColorHex)
+                    DropdownSelector(
+                        text = statusName,
+                        colorHex = statusColorHex,
+                    )
+
                     Spacer(Modifier.width(8.dp))
+
                     sprintName?.also {
-                        DropdownSelector(text = it, color = MaterialTheme.colors.primary)
+                        DropdownSelector(
+                            text = it,
+                            color = MaterialTheme.colors.primary
+                        )
                     } ?: run {
-                        DropdownSelector(text = stringResource(R.string.no_sprint), color = Color.Gray)
+                        DropdownSelector(
+                            text = stringResource(R.string.no_sprint),
+                            color = Color.Gray
+                        )
                     }
                 }
 
@@ -356,7 +369,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         toolbarTitle = "617 - User story #99",
         statusName = "In progress",
         statusColorHex = "#729fcf",
-        sprintName = "0 sprint",
+        sprintName = "Very very very long sprint name",
         storyTitle = "Very cool and important story. Need to do this quickly",
         story = null,
         epics = List(2) {

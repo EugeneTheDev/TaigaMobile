@@ -134,7 +134,7 @@ private fun TeamMemberItem(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.weight(0.7f)
+        modifier = Modifier.weight(0.6f)
     ) {
         GlideImage(
             data = teamMember.avatarUrl ?: R.drawable.default_avatar,
@@ -166,7 +166,7 @@ private fun TeamMemberItem(
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.End,
-        modifier = Modifier.weight(0.3f)
+        modifier = Modifier.weight(0.4f)
     ) {
         Text(
             text = teamMember.totalPower.toString(),

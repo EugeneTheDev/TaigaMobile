@@ -36,8 +36,8 @@
     <string name="stories">Stories</string>
     <string name="tasks_without_story">Storyless tasks</string>
 
-    <string name="userstory_slug">%s - Userstory #%d</string>
-    <string name="task_slug">%s - Task #%d</string>
+    <string name="userstory_slug">Userstory #%d</string>
+    <string name="task_slug">Task #%d</string>
     
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to">Belongs to</string>
