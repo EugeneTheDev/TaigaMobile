@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.data.repositories
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.api.CommonTaskResponse
+import io.eugenethedev.taigamobile.data.api.SprintResponse
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import retrofit2.HttpException
@@ -27,17 +28,7 @@ class StoriesRepository @Inject constructor(
     }
 
     override suspend fun getSprints() = withIO {
-        taigaApi.getSprints(session.currentProjectId).map {
-            Sprint(
-                id = it.id,
-                name = it.name,
-                order = it.order,
-                start = it.estimated_start,
-                finish = it.estimated_finish,
-                storiesCount = it.user_stories.size,
-                isClosed = it.closed
-            )
-        }
+        taigaApi.getSprints(session.currentProjectId).map { it.toSprint() }
     }
 
     override suspend fun getSprintTasks(sprintId: Long, page: Int) = withIO {
@@ -71,8 +62,7 @@ class StoriesRepository @Inject constructor(
                     color = it.status_extra_info.color
                 ),
                 createdDateTime = it.created_date,
-                sprintId = it.milestone,
-                sprintName = it.milestone_name,
+                sprint = it.milestone?.let { taigaApi.getSprint(it).toSprint() },
                 assignedIds = it.assigned_users ?: listOf(it.assigned_to),
                 watcherIds = it.watchers,
                 creatorId = it.owner,
@@ -121,5 +111,15 @@ class StoriesRepository @Inject constructor(
             taskType = commonTaskType
         )
     }
+    
+    private fun SprintResponse.toSprint() = Sprint(
+        id = id,
+        name = name,
+        order = order,
+        start = estimated_start,
+        finish = estimated_finish,
+        storiesCount = user_stories.size,
+        isClosed = closed
+    )
 
 }

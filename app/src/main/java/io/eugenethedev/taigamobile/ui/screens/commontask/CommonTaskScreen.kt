@@ -70,7 +70,7 @@ fun CommonTaskScreen(
             ).format(projectSlug, ref),
             statusName = it?.status?.name ?: "",
             statusColorHex = it?.status?.color ?: "#000000",
-            sprintName = it?.sprintName,
+            sprintName = it?.sprint?.name,
             storyTitle = it?.title ?: "",
             story = it?.userStoryShortInfo,
             epics = it?.epics.orEmpty(),
