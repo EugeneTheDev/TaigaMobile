@@ -14,7 +14,7 @@ interface TaigaApi {
     @POST("auth")
     suspend fun auth(@Body authRequest: AuthRequest): AuthResponse
 
-    @GET("projects?discover_mode=true&order_by=-total_activity")
+    @GET("projects?discover_mode=true&order_by=us_order")
     suspend fun getProjects(
         @Query("q") query: String,
         @Query("page") page: Int
