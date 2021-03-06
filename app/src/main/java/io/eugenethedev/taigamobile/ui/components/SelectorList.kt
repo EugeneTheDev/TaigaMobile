@@ -1,0 +1,115 @@
+package io.eugenethedev.taigamobile.ui.components
+
+import androidx.compose.animation.*
+import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import io.eugenethedev.taigamobile.ui.utils.onBackPressed
+
+/**
+ * Selector list, which expands from bottom to top.
+ * Could be used to search and select something
+ */
+@ExperimentalAnimationApi
+@Composable
+fun <T> SelectorList(
+    titleHint: String,
+    items: List<T>,
+    isVisible: Boolean = false,
+    isLoading: Boolean = false,
+    loadData: (String) -> Unit = {},
+    navigateBack: () -> Unit = {},
+    animationDurationMillis: Int = AnimationConstants.DefaultDurationMillis,
+    itemContent: @Composable (T) -> Unit
+) = AnimatedVisibility(
+    visible = isVisible,
+    enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(animationDurationMillis)),
+    exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(animationDurationMillis)),
+    initiallyVisible = false // always show animation when becoming visible
+) {
+    var query by remember { mutableStateOf(TextFieldValue()) }
+
+    onBackPressed(navigateBack)
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        AppBarWithBackButton(
+            title = {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (query.text.isEmpty()) {
+                        Text(
+                            text = titleHint,
+                            style = MaterialTheme.typography.body1,
+                            color = Color.Gray
+                        )
+                    }
+
+                    BasicTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
+                        cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { loadData(query.text) })
+                    )
+                }
+            },
+            navigateBack = navigateBack
+        )
+
+        LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            itemsIndexed(items.toList()) { index, item ->
+                itemContent(item)
+
+                if (index < items.size - 1) {
+                    Divider(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.LightGray
+                    )
+                }
+
+                if (index == items.lastIndex) {
+                    SideEffect {
+                        loadData(query.text)
+                    }
+                }
+            }
+
+            item {
+                if (isLoading) {
+                    Loader()
+                    Spacer(Modifier.height(6.dp))
+                }
+            }
+        }
+    }
+}

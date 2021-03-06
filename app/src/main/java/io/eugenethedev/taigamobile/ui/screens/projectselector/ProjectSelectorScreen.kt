@@ -1,35 +1,28 @@
 package io.eugenethedev.taigamobile.ui.screens.projectselector
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
-import io.eugenethedev.taigamobile.ui.components.AppBarWithBackButton
-import io.eugenethedev.taigamobile.ui.components.ContainerBox
-import io.eugenethedev.taigamobile.ui.components.Loader
-import io.eugenethedev.taigamobile.ui.components.SlideAnimView
+import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 @Composable
 fun ProjectSelectorScreen(
     navController: NavController,
@@ -40,106 +33,64 @@ fun ProjectSelectorScreen(
         viewModel.start()
         null
     }
+    val coroutineScope = rememberCoroutineScope()
 
     val projects by viewModel.projects.observeAsState()
     projects?.subscribeOnError(onError)
-    val isProjectSelected by viewModel.isProjectSelected.observeAsState()
 
-    var queryInput by remember { mutableStateOf(TextFieldValue()) }
+    var isSelectorVisible by remember { mutableStateOf(true) }
+    val selectorAnimationDuration = AnimationConstants.DefaultDurationMillis
 
-    SlideAnimView(navigateBack = navController::popBackStack) {
-        if (isProjectSelected!!) {
-            it()
-        }
-
-        ProjectSelectorScreenContent(
-            projects = projects?.data.orEmpty(),
-            navigateBack = it,
-            isLoading = projects?.resultStatus == ResultStatus.LOADING,
-            query = queryInput,
-            onQueryChanged = { queryInput = it },
-            loadData = { viewModel.loadData(queryInput.text) },
-            selectProject = viewModel::selectProject
-        )
+    fun navigateBack() = coroutineScope.launch {
+        isSelectorVisible = false
+        delay(selectorAnimationDuration.toLong())
+        navController.popBackStack()
     }
+
+    val isProjectSelected by viewModel.isProjectSelected.observeAsState()
+    if (isProjectSelected == true) navigateBack()
+
+
+    ProjectSelectorScreenContent(
+        projects = projects?.data.orEmpty(),
+        isVisible = isSelectorVisible,
+        isLoading = projects?.resultStatus == ResultStatus.LOADING,
+        selectorAnimationDuration = selectorAnimationDuration,
+        navigateBack = ::navigateBack,
+        loadData = { viewModel.loadData(it) },
+        selectProject = viewModel::selectProject
+    )
+
 }
 
 
+@ExperimentalAnimationApi
 @Composable
 fun ProjectSelectorScreenContent(
     projects: List<ProjectInSearch>,
+    isVisible: Boolean = false,
     isLoading: Boolean = false,
-    query: TextFieldValue = TextFieldValue(),
-    onQueryChanged: (TextFieldValue) -> Unit = {},
+    selectorAnimationDuration: Int = AnimationConstants.DefaultDurationMillis,
     navigateBack: () -> Unit = {},
-    loadData: () -> Unit = {},
+    loadData: (String) -> Unit = {},
     selectProject: (ProjectInSearch) -> Unit  = {}
-) = Column(
-    modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally
+) = Box(
+    Modifier.fillMaxSize(),
+    contentAlignment = Alignment.TopStart
 ) {
-    AppBarWithBackButton(
-        title = {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (query.text.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.search_projects_hint),
-                        style = MaterialTheme.typography.body1,
-                        color = Color.Gray
-                    )
-                }
-
-                BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChanged,
-                    modifier = Modifier.wrapContentHeight()
-                        .fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
-                    cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { loadData() })
-                )
-            }
-        },
-        navigateBack = navigateBack
-    )
-
-    if (isLoading && projects.isEmpty()) {
-        Loader()
-    }
-
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally
+    SelectorList(
+        titleHint = stringResource(R.string.search_projects_hint),
+        items = projects,
+        isVisible = isVisible,
+        isLoading = isLoading,
+        loadData = loadData,
+        navigateBack = navigateBack,
+        animationDurationMillis = selectorAnimationDuration
     ) {
-        itemsIndexed(projects.toList()) { index, item ->
-            ItemProject(
-                project = item,
-                onClick = { selectProject(item) }
-            )
-
-            if (index < projects.size - 1) {
-                Divider(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    color = Color.LightGray
-                )
-            }
-
-            if (index == projects.lastIndex) {
-                if (isLoading) {
-                    Loader()
-                }
-
-                Spacer(Modifier.height(6.dp))
-
-                SideEffect {
-                    loadData()
-                }
-            }
-        }
+        ItemProject(
+            project = it,
+            onClick = { selectProject(it) }
+        )
     }
 }
 
@@ -175,14 +126,16 @@ private fun ItemProject(
     }
 }
 
-@Preview(showBackground = true)
+@ExperimentalAnimationApi
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
         listOf(
             ProjectInSearch(0, "Cool", "slug",false, false, false),
             ProjectInSearch(1, "Cooler", "slug", true, false, false)
-        )
+        ),
+        isVisible = true
     )
 }
 
