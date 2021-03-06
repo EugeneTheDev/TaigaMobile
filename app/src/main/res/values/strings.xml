@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Taiga App</string>
+    <string name="app_name">Taiga Mobile</string>
 
     <string name="common_error_message">An error was occurred. Check your connection</string>
 
