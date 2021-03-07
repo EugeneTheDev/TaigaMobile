@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.projectselector
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
@@ -11,6 +10,7 @@ import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -22,6 +22,7 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var session: Session
 
     val projects = MutableLiveResult<List<ProjectInSearch>>()
+    val currentProjectId get() = session.currentProjectId
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -32,7 +33,6 @@ class ProjectSelectorViewModel : ViewModel() {
     private var currentQuery = ""
 
     fun start() {
-        projects.value = Result(ResultStatus.SUCCESS, emptyList())
         currentPage = 0
         maxPage = Int.MAX_VALUE
         loadData()
@@ -56,6 +56,7 @@ class ProjectSelectorViewModel : ViewModel() {
         if (currentPage == maxPage) return@launch
 
         projects.value = Result(ResultStatus.LOADING, projects.value?.data)
+        delay(200) // slow down loading a little bit, otherwise animation would be jaggy
         try {
             searchRepository.searchProjects(query, ++currentPage)
                 .also { projects.value = Result(ResultStatus.SUCCESS, projects.value?.data.orEmpty() + it) }

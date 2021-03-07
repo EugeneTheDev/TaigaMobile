@@ -1,13 +1,15 @@
 package io.eugenethedev.taigamobile.ui.screens.projectselector
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,9 +39,10 @@ fun ProjectSelectorScreen(
 
     val projects by viewModel.projects.observeAsState()
     projects?.subscribeOnError(onError)
+    val currentProjectId = viewModel.currentProjectId
 
     var isSelectorVisible by remember { mutableStateOf(true) }
-    val selectorAnimationDuration = AnimationConstants.DefaultDurationMillis
+    val selectorAnimationDuration = SelectorListConstants.defaultAnimDurationMillis
 
     fun navigateBack() = coroutineScope.launch {
         isSelectorVisible = false
@@ -51,6 +54,7 @@ fun ProjectSelectorScreen(
         projects = projects?.data.orEmpty(),
         isVisible = isSelectorVisible,
         isLoading = projects?.resultStatus == ResultStatus.LOADING,
+        currentProjectId = currentProjectId,
         selectorAnimationDuration = selectorAnimationDuration,
         navigateBack = ::navigateBack,
         loadData = { viewModel.loadData(it) },
@@ -69,7 +73,8 @@ fun ProjectSelectorScreenContent(
     projects: List<ProjectInSearch>,
     isVisible: Boolean = false,
     isLoading: Boolean = false,
-    selectorAnimationDuration: Int = AnimationConstants.DefaultDurationMillis,
+    currentProjectId: Long = -1,
+    selectorAnimationDuration: Int = SelectorListConstants.defaultAnimDurationMillis,
     navigateBack: () -> Unit = {},
     loadData: (String) -> Unit = {},
     selectProject: (ProjectInSearch) -> Unit  = {}
@@ -88,6 +93,7 @@ fun ProjectSelectorScreenContent(
     ) {
         ItemProject(
             project = it,
+            currentProjectId = currentProjectId,
             onClick = { selectProject(it) }
         )
     }
@@ -96,32 +102,51 @@ fun ProjectSelectorScreenContent(
 @Composable
 private fun ItemProject(
     project: ProjectInSearch,
+    currentProjectId: Long,
     onClick: () -> Unit = {}
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-    Column {
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
-        project.takeIf { it.isMember || it.isAdmin || it.isOwner  }?.let {
-            Text(
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.primary,
-                text = stringResource(
-                    when {
-                        project.isOwner -> R.string.project_owner
-                        project.isAdmin -> R.string.project_admin
-                        project.isMember -> R.string.project_member
-                        else -> 0
-                    }
+        Column(Modifier.weight(0.8f)) {
+            project.takeIf { it.isMember || it.isAdmin || it.isOwner }?.let {
+                Text(
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.primary,
+                    text = stringResource(
+                        when {
+                            project.isOwner -> R.string.project_owner
+                            project.isAdmin -> R.string.project_admin
+                            project.isMember -> R.string.project_member
+                            else -> 0
+                        }
+                    )
                 )
+            }
+
+            Text(
+                text = stringResource(R.string.project_name_template).format(
+                    project.name,
+                    project.slug
+                ),
+                style = MaterialTheme.typography.body1,
             )
         }
 
-        Text(
-            text = stringResource(R.string.project_name_template).format(project.name, project.slug),
-            style = MaterialTheme.typography.body1,
-        )
+        if (project.id == currentProjectId) {
+            Image(
+                painter = painterResource(R.drawable.ic_check),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
+                modifier = Modifier.weight(0.2f)
+            )
+        }
     }
 }
 

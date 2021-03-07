@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.components
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,7 +35,7 @@ fun <T> SelectorList(
     isLoading: Boolean = false,
     loadData: (String) -> Unit = {},
     navigateBack: () -> Unit = {},
-    animationDurationMillis: Int = AnimationConstants.DefaultDurationMillis,
+    animationDurationMillis: Int = SelectorListConstants.defaultAnimDurationMillis,
     itemContent: @Composable (T) -> Unit
 ) = AnimatedVisibility(
     visible = isVisible,
@@ -112,4 +111,8 @@ fun <T> SelectorList(
             }
         }
     }
+}
+
+object SelectorListConstants {
+    const val defaultAnimDurationMillis = 200
 }
