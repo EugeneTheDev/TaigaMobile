@@ -12,6 +12,8 @@ class UsersRepository @Inject constructor(
     private val session: Session
 ) : IUsersRepository {
 
+    override suspend fun getMe() = withIO { taigaApi.getMyProfile() }
+
     override suspend fun getUser(userId: Long) = withIO { taigaApi.getUser(userId) }
 
     override suspend fun getTeam() = withIO {

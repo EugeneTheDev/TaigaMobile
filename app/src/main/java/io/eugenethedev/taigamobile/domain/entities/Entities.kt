@@ -87,6 +87,7 @@ data class User(
     val id: Long?, // sometimes there is no id
     @SerializedName("full_name_display") val fullName: String?,
     @SerializedName("photo") val avatarUrl: String?,
+    val username: String,
     val name: String? = null // sometimes name appears here
 ) {
     val displayName get() = fullName ?: name!!

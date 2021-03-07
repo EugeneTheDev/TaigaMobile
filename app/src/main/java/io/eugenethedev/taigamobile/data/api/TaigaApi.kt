@@ -63,6 +63,9 @@ interface TaigaApi {
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userId: Long): User
 
+    @GET("users/me")
+    suspend fun getMyProfile(): User
+
     @GET("projects/{id}/member_stats")
     suspend fun getMemberStats(@Path("id") projectId: Long): MemberStatsResponse
 

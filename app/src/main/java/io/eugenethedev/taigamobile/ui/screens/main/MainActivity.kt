@@ -23,6 +23,7 @@ import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScr
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
+import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     },
                     bottomBar = {
-                        val items = listOf(Screen.Scrum, Screen.Team)
+                        val items = listOf(Screen.Scrum, Screen.Team, Screen.Settings)
                         val routes = items.map { it.route }
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
@@ -87,12 +88,14 @@ class MainActivity : AppCompatActivity() {
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
     object Scrum : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_stories)
     object Team : Screen(Routes.team, R.string.team, R.drawable.ic_team)
+    object Settings : Screen(Routes.settings, R.string.settings, R.drawable.ic_settings)
 }
 
 object Routes {
     const val login = "login"
     const val scrum = "scrum"
     const val team = "team"
+    const val settings = "settings"
     const val projectsSelector = "projects_selector"
     const val sprint = "sprint"
     const val commonTask = "commontask"
@@ -148,6 +151,13 @@ fun MainScreen(
 
             composable(Routes.team) {
                 TeamScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
+
+            composable(Routes.settings) {
+                SettingsScreen(
                     navController = navController,
                     onError = onError
                 )

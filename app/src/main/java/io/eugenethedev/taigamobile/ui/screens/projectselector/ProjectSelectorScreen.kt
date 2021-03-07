@@ -47,10 +47,6 @@ fun ProjectSelectorScreen(
         navController.popBackStack()
     }
 
-    val isProjectSelected by viewModel.isProjectSelected.observeAsState()
-    if (isProjectSelected == true) navigateBack()
-
-
     ProjectSelectorScreenContent(
         projects = projects?.data.orEmpty(),
         isVisible = isSelectorVisible,
@@ -58,7 +54,10 @@ fun ProjectSelectorScreen(
         selectorAnimationDuration = selectorAnimationDuration,
         navigateBack = ::navigateBack,
         loadData = { viewModel.loadData(it) },
-        selectProject = viewModel::selectProject
+        selectProject = {
+            viewModel.selectProject(it)
+            navigateBack()
+        }
     )
 
 }

@@ -22,7 +22,6 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var session: Session
 
     val projects = MutableLiveResult<List<ProjectInSearch>>()
-    val isProjectSelected = MutableLiveData(false)
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -34,7 +33,6 @@ class ProjectSelectorViewModel : ViewModel() {
 
     fun start() {
         projects.value = Result(ResultStatus.SUCCESS, emptyList())
-        isProjectSelected.value = false
         currentPage = 0
         maxPage = Int.MAX_VALUE
         loadData()
@@ -45,7 +43,6 @@ class ProjectSelectorViewModel : ViewModel() {
             currentProjectId = project.id
             currentProjectName = project.name
         }
-        isProjectSelected.value = true
     }
 
     fun loadData(query: String = "") = viewModelScope.launch {

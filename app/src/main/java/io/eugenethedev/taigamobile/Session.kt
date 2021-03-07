@@ -41,6 +41,13 @@ class Session(context: Context) {
 
     val isLogged: Boolean get() = token.isNotEmpty() && server.isNotEmpty()
 
+    fun reset() {
+        token = ""
+        server = ""
+        currentProjectId = -1
+        currentProjectName = ""
+    }
+
     companion object {
         private const val PREFERENCES_NAME = "session"
         private const val TOKEN_KEY = "token"

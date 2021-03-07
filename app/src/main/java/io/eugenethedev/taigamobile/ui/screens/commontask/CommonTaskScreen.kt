@@ -385,20 +385,23 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         creator = User(
             id = 0L,
             fullName = "Full Name",
-            avatarUrl = null
+            avatarUrl = null,
+            username = "username"
         ),
         assignees = List(2) {
             User(
                 id = 0L,
                 fullName = "Full Name",
-                avatarUrl = null
+                avatarUrl = null,
+                username = "username"
             )
         },
         watchers = List(2) {
             User(
                 id = 0L,
                 fullName = "Full Name",
-                avatarUrl = null
+                avatarUrl = null,
+                username = "username"
             )
         },
         tasks = List(4) {
@@ -426,7 +429,8 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 author = User(
                     id = 0L,
                     fullName = "Full Name",
-                    avatarUrl = null
+                    avatarUrl = null,
+                    username = "username"
                 ),
                 text = "This is comment text",
                 postDateTime = Date()

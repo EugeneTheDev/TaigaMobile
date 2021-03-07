@@ -9,6 +9,7 @@ import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorVie
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumViewModel
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintViewModel
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
+import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
 import io.eugenethedev.taigamobile.ui.screens.team.TeamViewModel
 import javax.inject.Singleton
 
@@ -29,4 +30,5 @@ interface AppComponent {
     fun inject(sprintViewModel: SprintViewModel)
     fun inject(commonTaskViewModel: CommonTaskViewModel)
     fun inject(teamViewModel: TeamViewModel)
+    fun inject(settingsViewModel: SettingsViewModel)
 }
