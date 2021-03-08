@@ -130,8 +130,6 @@ private fun TeamMemberItem(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {
-    val dateTimeFormatter = remember { SimpleDateFormat.getDateTimeInstance() }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.weight(0.6f)

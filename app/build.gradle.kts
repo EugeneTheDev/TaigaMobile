@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -17,14 +19,40 @@ android {
         targetSdkVersion(30)
         versionCode(1)
         versionName = "0.1-alpha"
+        project.base.archivesBaseName = "TaigaMobile-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("./keystores/debug.keystore")
+            storePassword = "android"
+            keyAlias = "debug"
+            keyPassword = "android"
+        }
+
+        create("release") {
+            val properties = org.jetbrains.kotlin.konan.properties.Properties().also {
+                it.load(file("./signing.properties").inputStream())
+            }
+            storeFile = file("./keystores/release.keystore")
+            storePassword = properties.getProperty("password")
+            keyAlias = properties.getProperty("alias")
+            keyPassword = properties.getProperty("password")
+        }
+    }
+
+
     buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
