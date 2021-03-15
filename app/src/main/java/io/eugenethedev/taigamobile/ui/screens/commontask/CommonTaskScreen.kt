@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,10 +10,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,10 +27,12 @@ import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
+import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import java.util.*
 
+@ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreen(
     navController: NavController,
@@ -44,6 +45,7 @@ fun CommonTaskScreen(
     val viewModel: CommonTaskViewModel = viewModel()
     remember {
         viewModel.start(commonTaskId, commonTaskType)
+        null
     }
 
     val story by viewModel.story.observeAsState()
@@ -59,7 +61,10 @@ fun CommonTaskScreen(
     val comments by viewModel.comments.observeAsState()
     comments?.subscribeOnError(onError)
 
-    val isLoading by viewModel.isLoading.observeAsState()
+    val statuses by viewModel.statuses.observeAsState()
+    statuses?.subscribeOnError(onError)
+    val statusSelectResult by viewModel.statusSelectResult.observeAsState()
+    statusSelectResult?.subscribeOnError(onError)
 
     story?.data.let {
         CommonTaskScreenContent(
@@ -82,14 +87,20 @@ fun CommonTaskScreen(
             watchers = watchers?.data.orEmpty(),
             tasks = tasks?.data.orEmpty(),
             comments = comments?.data.orEmpty(),
-            isLoading = isLoading == true,
+            isLoading = story?.resultStatus == ResultStatus.LOADING,
             navigateBack = navController::popBackStack,
-            navigateToTask = navController::navigateToTaskScreen
+            navigateToTask = navController::navigateToTaskScreen,
+            statuses = statuses?.data.orEmpty(),
+            loadStatuses = viewModel::loadStatuses,
+            isStatusesLoading = statuses?.resultStatus == ResultStatus.LOADING,
+            selectStatus = viewModel::selectStatus,
+            isStatusBadgeLoading = statusSelectResult?.resultStatus == ResultStatus.LOADING
         )
     }
 
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreenContent(
     toolbarTitle: String,
@@ -108,8 +119,33 @@ fun CommonTaskScreenContent(
     comments: List<Comment> = emptyList(),
     isLoading: Boolean = false,
     navigateBack: () -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _, _ -> },
+    statuses: List<Status> = emptyList(),
+    loadStatuses: (String) -> Unit = {},
+    isStatusesLoading: Boolean = false,
+    selectStatus: (Status) -> Unit = {},
+    isStatusBadgeLoading: Boolean = false
 ) = Column(Modifier.fillMaxSize()) {
+    var isStatusSelectorVisible by remember { mutableStateOf(false) }
+
+    SelectorList(
+        titleHint = stringResource(R.string.search_statuses_hint),
+        items = statuses,
+        isVisible = isStatusSelectorVisible,
+        isLoading = isStatusesLoading,
+        loadData = loadStatuses,
+        navigateBack = { isStatusSelectorVisible = false }
+    ) {
+        StatusItem(
+            status = it,
+            onClick = {
+                selectStatus(it)
+                isStatusSelectorVisible = false
+            }
+        )
+    }
+
+
     AppBarWithBackButton(
         title = {
             Text(
@@ -139,20 +175,25 @@ fun CommonTaskScreenContent(
 
             item {
                 Row {
-                    DropdownSelector(
+                    ClickableBadge(
                         text = statusName,
                         colorHex = statusColorHex,
+                        onClick = {
+                            isStatusSelectorVisible = true
+                            loadStatuses("")
+                        },
+                        isLoading = isStatusBadgeLoading
                     )
 
                     Spacer(Modifier.width(8.dp))
 
                     sprintName?.also {
-                        DropdownSelector(
+                        ClickableBadge(
                             text = it,
                             color = MaterialTheme.colors.primary
                         )
                     } ?: run {
-                        DropdownSelector(
+                        ClickableBadge(
                             text = stringResource(R.string.no_sprint),
                             color = Color.Gray
                         )
@@ -338,7 +379,8 @@ private fun UserStoryItem(
 
     story.epicColor?.let {
         Spacer(
-            Modifier.size(12.dp)
+            Modifier
+                .size(12.dp)
                 .background(
                     color = Color(android.graphics.Color.parseColor(it)),
                     shape = CircleShape
@@ -362,6 +404,21 @@ private fun CommentItem(
     )
 }
 
+@Composable
+private fun StatusItem(
+    status: Status,
+    onClick: () -> Unit = {}
+) = ContainerBox(
+    verticalPadding = 16.dp,
+    onClick = onClick
+) {
+    Text(
+        text = status.name,
+        color = Color(android.graphics.Color.parseColor(status.color))
+    )
+}
+
+@ExperimentalAnimationApi
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun CommonTaskScreenPreview() = TaigaMobileTheme {
@@ -435,6 +492,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 text = "This is comment text",
                 postDateTime = Date()
             )
-        }
+        },
+        isStatusBadgeLoading = true
     )
 }

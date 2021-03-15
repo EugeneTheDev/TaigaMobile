@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
@@ -40,7 +41,7 @@ abstract class StoriesViewModel : ViewModel() {
         statuses.value = try {
              Result(
                 resultStatus = ResultStatus.SUCCESS,
-                storiesRepository.getStatuses(sprintId).onEach {
+                storiesRepository.getStatuses(CommonTaskType.USERSTORY).onEach {
                     statusesStates[it] = StatusState()
                     loadStories(it)
                 }

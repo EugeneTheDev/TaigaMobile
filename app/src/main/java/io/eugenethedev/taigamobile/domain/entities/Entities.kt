@@ -66,7 +66,8 @@ data class CommonTaskExtended(
     val description: String,
     val epics: List<Epic>,
     val projectSlug: String,
-    val userStoryShortInfo: UserStoryShortInfo?
+    val userStoryShortInfo: UserStoryShortInfo?,
+    val version: Int
 )
 
 data class Epic(

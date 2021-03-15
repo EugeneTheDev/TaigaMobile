@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.data.api.ChangeStatusRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.api.CommonTaskResponse
 import io.eugenethedev.taigamobile.data.api.SprintResponse
@@ -14,8 +15,11 @@ class StoriesRepository @Inject constructor(
     private val session: Session
 ) : IStoriesRepository {
 
-    override suspend fun getStatuses(sprintId: Long?) = withIO {
-        taigaApi.getFiltersData(session.currentProjectId, sprintId ?: "null").statuses
+    override suspend fun getStatuses(commonTaskType: CommonTaskType) = withIO {
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.getUserStoriesFiltersData(session.currentProjectId)
+            CommonTaskType.TASK -> taigaApi.getTasksFiltersData(session.currentProjectId)
+        }.statuses
     }
 
     override suspend fun getStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
@@ -78,7 +82,8 @@ class StoriesRepository @Inject constructor(
                         title = it.subject,
                         epicColor = it.epics?.first()?.color
                     )
-                }
+                },
+                version = it.version
             )
         }
     }
@@ -122,4 +127,16 @@ class StoriesRepository @Inject constructor(
         isClosed = closed
     )
 
+    override suspend fun changeStatus(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        statusId: Long,
+        version: Int
+    ) = withIO {
+        val body = ChangeStatusRequest(statusId, version)
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.changeUserStoryStatus(commonTaskId, body)
+            CommonTaskType.TASK -> taigaApi.changeTaskStatus(commonTaskId, body)
+        }
+    }
 }

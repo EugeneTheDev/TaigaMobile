@@ -24,10 +24,10 @@ interface TaigaApi {
     suspend fun getProject(@Path("id") projectId: Long): ProjectResponse
 
     @GET("userstories/filters_data")
-    suspend fun getFiltersData(
-        @Query("project") project: Long,
-        @Query("milestone") sprint: Any // workaround, since Retrofit drops null fields
-    ): FiltersDataResponse
+    suspend fun getUserStoriesFiltersData(@Query("project") project: Long): FiltersDataResponse
+
+    @GET("tasks/filters_data")
+    suspend fun getTasksFiltersData(@Query("project") project: Long): FiltersDataResponse
 
     @GET("userstories")
     suspend fun getUserStories(
@@ -71,4 +71,16 @@ interface TaigaApi {
 
     @GET("milestones/{id}")
     suspend fun getSprint(@Path("id") sprintId: Long): SprintResponse
+
+    @PATCH("userstories/{id}")
+    suspend fun changeUserStoryStatus(
+        @Path("id") id: Long,
+        @Body changeStatusRequest: ChangeStatusRequest
+    )
+
+    @PATCH("tasks/{id}")
+    suspend fun changeTaskStatus(
+        @Path("id") id: Long,
+        @Body changeStatusRequest: ChangeStatusRequest
+    )
 }

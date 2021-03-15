@@ -3,6 +3,7 @@
     <string name="app_name_with_version_template">%s - %s</string>
 
     <string name="common_error_message">An error was occurred. Check your connection</string>
+    <string name="permission_error">Error, you may not have sufficient permissions</string>
 
     <string name="nothing_to_see">Nothing to see here</string>
 
@@ -49,6 +50,7 @@
     <string name="watchers">Watchers</string>
     <string name="tasks">Tasks</string>
     <string name="comments">Comments</string>
+    <string name="search_statuses_hint">Search statuses</string>
 
     <string name="power">power</string>
 

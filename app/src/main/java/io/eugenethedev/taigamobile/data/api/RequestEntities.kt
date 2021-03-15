@@ -5,3 +5,8 @@ data class AuthRequest(
     val username: String,
     val type: String = "normal"
 )
+
+data class ChangeStatusRequest(
+    val status: Long,
+    val version: Int
+)

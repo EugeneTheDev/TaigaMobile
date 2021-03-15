@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
@@ -21,6 +20,9 @@ class CommonTaskViewModel : ViewModel() {
     @Inject lateinit var storiesRepository: IStoriesRepository
     @Inject lateinit var usersRepository: IUsersRepository
 
+    private var commonTaskId: Long = -1
+    private lateinit var commonTaskType: CommonTaskType
+
     val story = MutableLiveResult<CommonTaskExtended>()
     val creator = MutableLiveResult<User>()
     val assignees = MutableLiveResult<List<User>>()
@@ -28,15 +30,20 @@ class CommonTaskViewModel : ViewModel() {
     val tasks = MutableLiveResult<List<CommonTask>>()
     val comments = MutableLiveResult<List<Comment>>()
 
-    val isLoading = MutableLiveData(true)
-
     init {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start(commonTaskId: Long, commonTaskType: CommonTaskType) = viewModelScope.launch {
-        if (story.value == null) isLoading.value = true
-        story.value = Result(ResultStatus.LOADING, story.value?.data)
+    fun start(commonTaskId: Long, commonTaskType: CommonTaskType) {
+        this.commonTaskId = commonTaskId
+        this.commonTaskType = commonTaskType
+        loadData()
+    }
+
+    private fun loadData()  = viewModelScope.launch {
+        if (story.value == null) {
+            story.value = Result(ResultStatus.LOADING)
+        }
 
         story.value = try {
             storiesRepository.getCommonTask(commonTaskId, commonTaskType).let {
@@ -57,8 +64,6 @@ class CommonTaskViewModel : ViewModel() {
             Timber.w(e)
             Result(ResultStatus.ERROR, message = R.string.common_error_message)
         }
-
-        isLoading.value = false
     }
 
     private suspend fun loadUser(userId: Long) = try {
@@ -67,4 +72,37 @@ class CommonTaskViewModel : ViewModel() {
         Timber.w(e)
         Result(ResultStatus.ERROR, message = R.string.common_error_message)
     }
+
+    // edit related stuff
+
+    val statuses = MutableLiveResult<List<Status>>()
+    val statusSelectResult = MutableLiveResult<Unit>()
+    private lateinit var currentStatusesQuery: String
+
+    fun loadStatuses(query: String) = viewModelScope.launch {
+        if (::currentStatusesQuery.isInitialized && query == currentStatusesQuery) return@launch
+        currentStatusesQuery = query
+
+        statuses.value = Result(ResultStatus.LOADING)
+        statuses.value = try {
+            Result(ResultStatus.SUCCESS, storiesRepository.getStatuses(commonTaskType).filter { query in it.name })
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+        }
+    }
+
+    fun selectStatus(status: Status) = viewModelScope.launch {
+        statusSelectResult.value = Result(ResultStatus.LOADING)
+
+        statusSelectResult.value = try {
+            storiesRepository.changeStatus(commonTaskId, commonTaskType, status.id, story.value?.data?.version ?: -1)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
 }

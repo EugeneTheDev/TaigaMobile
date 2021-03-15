@@ -66,7 +66,6 @@ fun ProjectSelectorScreen(
 
 }
 
-
 @ExperimentalAnimationApi
 @Composable
 fun ProjectSelectorScreenContent(
@@ -134,8 +133,7 @@ private fun ItemProject(
                 text = stringResource(R.string.project_name_template).format(
                     project.name,
                     project.slug
-                ),
-                style = MaterialTheme.typography.body1,
+                )
             )
         }
 
