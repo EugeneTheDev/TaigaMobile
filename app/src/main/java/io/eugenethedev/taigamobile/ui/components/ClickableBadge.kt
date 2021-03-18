@@ -23,7 +23,7 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 
 /**
- * Badge on which you can click
+ * Badge on which you can click. With cool shimmer loading animation
  */
 
 @Composable
@@ -31,7 +31,8 @@ fun ClickableBadge(
     text: String,
     color: Color,
     onClick: () -> Unit = {},
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isClickable: Boolean = true
 ) {
     val infiniteTransition = rememberInfiniteTransition()
     val animationDuration = 800
@@ -80,7 +81,7 @@ fun ClickableBadge(
             }
             .padding(start = 6.dp)
             .padding(vertical = 2.dp)
-            .clickableUnindicated(onClick = onClick)
+            .clickableUnindicated(enabled = isClickable, onClick = onClick)
     ) {
         Text(
             text = text,
@@ -94,11 +95,15 @@ fun ClickableBadge(
             modifier = Modifier.widthIn(max = 120.dp)
         )
 
-        Image(
-            painter = painterResource(R.drawable.ic_arrow_down),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(Color.White)
-        )
+        if (isClickable) {
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_down),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color.White)
+            )
+        } else {
+            Spacer(Modifier.width(6.dp))
+        }
     }
 }
 
@@ -108,12 +113,14 @@ fun ClickableBadge(
     text: String,
     colorHex: String,
     onClick: () -> Unit = {},
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isClickable: Boolean = true
 ) = ClickableBadge(
     text,
     Color(android.graphics.Color.parseColor(colorHex)),
     onClick,
-    isLoading
+    isLoading,
+    isClickable
 )
 
 @Preview(showBackground = true)

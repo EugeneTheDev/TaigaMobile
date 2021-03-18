@@ -19,18 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import dev.chrisbanes.accompanist.glide.GlideImage
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
-import io.eugenethedev.taigamobile.ui.components.Loader
+import io.eugenethedev.taigamobile.ui.components.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -38,7 +36,6 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
-import java.text.SimpleDateFormat
 
 @Composable
 fun TeamScreen(
@@ -101,7 +98,7 @@ fun TeamScreenContent(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Loader()
+                CircularLoader()
             }
         }
         team.isEmpty() -> {

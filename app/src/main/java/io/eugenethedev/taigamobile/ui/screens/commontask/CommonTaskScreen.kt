@@ -128,6 +128,7 @@ fun CommonTaskScreenContent(
 ) = Column(Modifier.fillMaxSize()) {
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
 
+    // status editor
     SelectorList(
         titleHint = stringResource(R.string.search_statuses_hint),
         items = statuses,
@@ -162,7 +163,7 @@ fun CommonTaskScreenContent(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            Loader()
+            CircularLoader()
         }
     } else {
         val sectionsMargin = 8.dp
@@ -175,6 +176,7 @@ fun CommonTaskScreenContent(
 
             item {
                 Row {
+                    // status
                     ClickableBadge(
                         text = statusName,
                         colorHex = statusColorHex,
@@ -187,6 +189,7 @@ fun CommonTaskScreenContent(
 
                     Spacer(Modifier.width(8.dp))
 
+                    // sprint
                     sprintName?.also {
                         ClickableBadge(
                             text = it,
@@ -208,6 +211,7 @@ fun CommonTaskScreenContent(
                 Spacer(Modifier.height(4.dp))
             }
 
+            // belons to
             if (epics.isNotEmpty()) {
                 item {
                     Text(

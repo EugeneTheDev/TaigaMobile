@@ -46,7 +46,10 @@ interface TaigaApi {
     ): List<CommonTaskResponse>
 
     @GET("milestones")
-    suspend fun getSprints(@Query("project") project: Long): List<SprintResponse>
+    suspend fun getSprints(
+        @Query("project") project: Long,
+        @Query("page") page: Int
+    ): List<SprintResponse>
 
     @GET("userstories/{id}")
     suspend fun getUserStory(@Path("id") storyId: Long): CommonTaskResponse

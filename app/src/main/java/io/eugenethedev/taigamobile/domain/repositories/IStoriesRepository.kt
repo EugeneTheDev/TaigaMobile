@@ -5,7 +5,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 interface IStoriesRepository {
     suspend fun getStatuses(commonTaskType: CommonTaskType): List<Status>
     suspend fun getStories(statusId: Long, page: Int, sprintId: Long? = null): List<CommonTask>
-    suspend fun getSprints(): List<Sprint>
+    suspend fun getSprints(page: Int): List<Sprint>
     suspend fun getUserStoryTasks(storyId: Long): List<CommonTask>
     suspend fun getSprintTasks(sprintId: Long, page: Int): List<CommonTask>
     suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType): CommonTaskExtended

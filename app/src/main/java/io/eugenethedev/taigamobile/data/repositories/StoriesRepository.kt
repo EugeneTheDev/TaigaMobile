@@ -23,33 +23,28 @@ class StoriesRepository @Inject constructor(
     }
 
     override suspend fun getStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
-        try {
-            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page).mapToCommonTask(CommonTaskType.USERSTORY)
-        } catch (e: HttpException) {
-            // suppress error if page not found (maximum page was reached)
-            e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
+        handlePage {
+            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page)
+                .mapToCommonTask(CommonTaskType.USERSTORY)
         }
     }
 
-    override suspend fun getSprints() = withIO {
-        taigaApi.getSprints(session.currentProjectId).map { it.toSprint() }
+    override suspend fun getSprints(page: Int) = withIO {
+        handlePage {
+            taigaApi.getSprints(session.currentProjectId, page).map { it.toSprint() }
+        }
     }
 
     override suspend fun getSprintTasks(sprintId: Long, page: Int) = withIO {
-        try {
-            taigaApi.getTasks(session.currentProjectId, sprintId, "null", page).mapToCommonTask(CommonTaskType.TASK)
-        } catch (e: HttpException) {
-            // suppress error if page not found (maximum page was reached)
-            e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
+        handlePage {
+            taigaApi.getTasks(session.currentProjectId, sprintId, "null", page)
+                .mapToCommonTask(CommonTaskType.TASK)
         }
     }
 
     override suspend fun getUserStoryTasks(storyId: Long) = withIO {
-        try {
+        handlePage {
             taigaApi.getTasks(session.currentProjectId, null, storyId, null).mapToCommonTask(CommonTaskType.TASK)
-        } catch (e: HttpException) {
-            // suppress error if page not found (maximum page was reached)
-            e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
         }
     }
 
@@ -126,6 +121,13 @@ class StoriesRepository @Inject constructor(
         storiesCount = user_stories.size,
         isClosed = closed
     )
+
+    private suspend fun <T> handlePage(action: suspend () -> List<T>): List<T> = try {
+        action()
+    } catch (e: HttpException) {
+        // suppress error if page not found (maximum page was reached)
+        e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
+    }
 
     override suspend fun changeStatus(
         commonTaskId: Long,

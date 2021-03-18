@@ -3,7 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
@@ -26,7 +26,7 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
-import io.eugenethedev.taigamobile.ui.components.Loader
+import io.eugenethedev.taigamobile.ui.components.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.components.CommonTasksList
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -68,6 +68,7 @@ fun ScrumScreen(
         isSprintsLoading = sprints?.resultStatus == ResultStatus.LOADING,
         loadingStatusIds = loadingStatusIds.orEmpty(),
         loadStories = viewModel::loadStories,
+        loadSprints = viewModel::loadSprints,
         visibleStatusIds = visibleStatusIds.orEmpty(),
         onStatusClick = viewModel::statusClick,
         navigateToBoard = {
@@ -89,6 +90,7 @@ fun ScrumScreenContent(
     isSprintsLoading: Boolean = false,
     loadingStatusIds: List<Long> = emptyList(),
     loadStories: (Status) -> Unit = {},
+    loadSprints: () -> Unit = {},
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
     navigateToBoard: (Sprint) -> Unit = {},
@@ -136,7 +138,7 @@ fun ScrumScreenContent(
 
             if (isStoriesLoading) {
                 item {
-                    Loader()
+                    CircularLoader()
                 }
             } else {
                 CommonTasksList(
@@ -160,17 +162,23 @@ fun ScrumScreenContent(
                 )
 
                 if (isSprintsLoading) {
-                    Loader()
+                    CircularLoader()
                 } else if (sprints.isEmpty()) {
                     NothingToSeeHereText()
                 }
             }
 
-            items(sprints) {
+            itemsIndexed(sprints) {  index, item ->
                 SprintItem(
-                    sprint = it,
+                    sprint = item,
                     navigateToBoard = navigateToBoard
                 )
+
+                if (index == sprints.lastIndex) {
+                    SideEffect {
+                        loadSprints()
+                    }
+                }
             }
 
             item {

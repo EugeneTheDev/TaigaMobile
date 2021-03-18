@@ -21,6 +21,9 @@ class ScrumViewModel : StoriesViewModel() {
 
     val sprints = MutableLiveResult<List<Sprint>>()
 
+    private var currentSprintPage = 0
+    private var maxSprintPage = Int.MAX_VALUE
+
     init {
         TaigaApp.appComponent.inject(this)
     }
@@ -33,24 +36,31 @@ class ScrumViewModel : StoriesViewModel() {
             session.currentProjectId > 0
         ) {
             viewModelScope.launch { loadStatuses() }
-            viewModelScope.launch { loadSprints() }
+            loadSprints()
         }
     }
 
-    private suspend fun loadSprints() {
-        sprints.value = Result(ResultStatus.LOADING)
+    fun loadSprints() = viewModelScope.launch {
+        if (currentSprintPage == maxSprintPage) return@launch
 
-        sprints.value = try {
-             Result(ResultStatus.SUCCESS, storiesRepository.getSprints())
+        sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
+
+        try {
+            storiesRepository.getSprints(++currentSprintPage)
+                .also { sprints.value = Result(ResultStatus.SUCCESS, sprints.value?.data.orEmpty() + it) }
+                .takeIf { it.isEmpty() }
+                ?.run { maxSprintPage = currentSprintPage }
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            sprints.value = Result(ResultStatus.ERROR, sprints.value?.data, message = R.string.common_error_message)
         }
     }
 
     override fun reset() {
         super.reset()
         sprints.value = null
+        currentSprintPage = 0
+        maxSprintPage = Int.MAX_VALUE
     }
 
 }

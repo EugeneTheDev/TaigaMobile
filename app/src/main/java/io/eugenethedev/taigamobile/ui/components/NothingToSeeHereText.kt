@@ -15,17 +15,6 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 
 /**
- * Common centered circular loader for some screens
- */
-@Composable
-fun Loader() = Box(
-    modifier = Modifier.fillMaxWidth().padding(8.dp),
-    contentAlignment = Alignment.Center
-) {
-    CircularProgressIndicator(Modifier.size(40.dp))
-}
-
-/**
  * Common nothing to see here text
  */
 @Composable
