@@ -105,7 +105,7 @@ fun <T> SelectorList(
 
             item {
                 if (isLoading) {
-                    CircularLoader()
+                    DotsLoader()
                     Spacer(Modifier.height(6.dp))
                 }
             }

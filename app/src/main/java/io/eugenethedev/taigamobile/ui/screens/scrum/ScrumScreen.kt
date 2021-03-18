@@ -25,10 +25,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.ui.components.ContainerBox
-import io.eugenethedev.taigamobile.ui.components.CircularLoader
-import io.eugenethedev.taigamobile.ui.components.NothingToSeeHereText
-import io.eugenethedev.taigamobile.ui.components.CommonTasksList
+import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
@@ -138,7 +135,7 @@ fun ScrumScreenContent(
 
             if (isStoriesLoading) {
                 item {
-                    CircularLoader()
+                    DotsLoader()
                 }
             } else {
                 CommonTasksList(
@@ -160,12 +157,6 @@ fun ScrumScreenContent(
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
                 )
-
-                if (isSprintsLoading) {
-                    CircularLoader()
-                } else if (sprints.isEmpty()) {
-                    NothingToSeeHereText()
-                }
             }
 
             itemsIndexed(sprints) {  index, item ->
@@ -182,6 +173,11 @@ fun ScrumScreenContent(
             }
 
             item {
+                if (isSprintsLoading) {
+                    DotsLoader()
+                } else if (sprints.isEmpty()) {
+                    NothingToSeeHereText()
+                }
                 Spacer(Modifier.height(16.dp))
             }
         }

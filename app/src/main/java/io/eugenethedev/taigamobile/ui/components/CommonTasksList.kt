@@ -56,7 +56,8 @@ fun LazyListScope.CommonTasksList(
 
             item {
                 Surface(
-                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
+                    modifier = Modifier
+                        .padding(horizontal = mainHorizontalScreenPadding)
                         .padding(top = 12.dp),
                     contentColor = Color(android.graphics.Color.parseColor(status.color))
                 ) {
@@ -120,12 +121,7 @@ fun LazyListScope.CommonTasksList(
 
             item {
                 AnimateExpandVisibility(visible = isCategoryVisible && isCategoryLoading) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(Modifier.size(36.dp))
-                    }
+                    DotsLoader()
                 }
                 if (isCategoryVisible) {
                     Spacer(Modifier.height(8.dp))

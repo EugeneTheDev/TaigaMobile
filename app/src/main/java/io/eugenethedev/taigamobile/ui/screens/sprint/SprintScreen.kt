@@ -26,10 +26,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.ui.components.AppBarWithBackButton
-import io.eugenethedev.taigamobile.ui.components.NothingToSeeHereText
-import io.eugenethedev.taigamobile.ui.components.CommonTasksList
-import io.eugenethedev.taigamobile.ui.components.CommonTaskItem
+import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
@@ -136,7 +133,7 @@ fun SprintScreenContent(
 
         if (isStoriesLoading) {
             item {
-                Loader()
+                DotsLoader()
             }
         } else {
             CommonTasksList(
@@ -187,19 +184,11 @@ fun SprintScreenContent(
 
         item {
             if (isTasksLoading) {
-                Loader()
+                DotsLoader()
             }
             Spacer(Modifier.height(16.dp))
         }
     }
-}
-
-@Composable
-private fun Loader() = Box(
-    modifier = Modifier.fillMaxWidth().padding(8.dp),
-    contentAlignment = Alignment.Center
-) {
-    CircularProgressIndicator(Modifier.size(40.dp))
 }
 
 @ExperimentalAnimationApi
