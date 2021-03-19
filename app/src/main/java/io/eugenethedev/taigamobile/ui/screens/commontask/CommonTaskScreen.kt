@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,6 +31,7 @@ import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import java.text.SimpleDateFormat
 import java.util.*
 
 @ExperimentalAnimationApi
@@ -66,8 +68,15 @@ fun CommonTaskScreen(
     val statusSelectResult by viewModel.statusSelectResult.observeAsState()
     statusSelectResult?.subscribeOnError(onError)
 
+    val sprints by viewModel.sprints.observeAsState()
+    sprints?.subscribeOnError(onError)
+
+    val sprintSelectResult by viewModel.sprintSelectResult.observeAsState()
+    sprintSelectResult?.subscribeOnError(onError)
+
     story?.data.let {
         CommonTaskScreenContent(
+            commonTaskType = commonTaskType,
             toolbarTitle = stringResource(
                 when (commonTaskType) {
                     CommonTaskType.USERSTORY -> R.string.userstory_slug
@@ -90,11 +99,20 @@ fun CommonTaskScreen(
             isLoading = story?.resultStatus == ResultStatus.LOADING,
             navigateBack = navController::popBackStack,
             navigateToTask = navController::navigateToTaskScreen,
-            statuses = statuses?.data.orEmpty(),
-            loadStatuses = viewModel::loadStatuses,
-            isStatusesLoading = statuses?.resultStatus == ResultStatus.LOADING,
-            selectStatus = viewModel::selectStatus,
-            isStatusBadgeLoading = statusSelectResult?.resultStatus == ResultStatus.LOADING
+            editStatus = EditAction(
+                items = statuses?.data.orEmpty(),
+                loadItems = viewModel::loadStatuses,
+                isItemsLoading = statuses?.resultStatus == ResultStatus.LOADING,
+                selectItem = viewModel::selectStatus,
+                isResultLoading = statusSelectResult?.resultStatus == ResultStatus.LOADING
+            ),
+            editSprint = EditAction(
+                items = sprints?.data.orEmpty(),
+                loadItems = viewModel::loadSprints,
+                isItemsLoading = sprints?.resultStatus == ResultStatus.LOADING,
+                selectItem = viewModel::selectSprint,
+                isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.LOADING
+            )
         )
     }
 
@@ -103,6 +121,7 @@ fun CommonTaskScreen(
 @ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreenContent(
+    commonTaskType: CommonTaskType,
     toolbarTitle: String,
     statusName: String,
     statusColorHex: String,
@@ -120,32 +139,21 @@ fun CommonTaskScreenContent(
     isLoading: Boolean = false,
     navigateBack: () -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _, _ -> },
-    statuses: List<Status> = emptyList(),
-    loadStatuses: (String) -> Unit = {},
-    isStatusesLoading: Boolean = false,
-    selectStatus: (Status) -> Unit = {},
-    isStatusBadgeLoading: Boolean = false
+    editStatus: EditAction<Status> = EditAction(),
+    editSprint: EditAction<Sprint?> = EditAction()
 ) = Column(Modifier.fillMaxSize()) {
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
+    var isSprintSelectorVisible by remember { mutableStateOf(false) }
 
-    // status editor
-    SelectorList(
-        titleHint = stringResource(R.string.search_statuses_hint),
-        items = statuses,
-        isVisible = isStatusSelectorVisible,
-        isLoading = isStatusesLoading,
-        loadData = loadStatuses,
-        navigateBack = { isStatusSelectorVisible = false }
-    ) {
-        StatusItem(
-            status = it,
-            onClick = {
-                selectStatus(it)
-                isStatusSelectorVisible = false
-            }
-        )
-    }
-
+    // Bunch of list selectors
+    Selectors(
+        editStatus = editStatus,
+        isStatusSelectorVisible = isStatusSelectorVisible,
+        hideStatusEditor = { isStatusSelectorVisible = false },
+        editSprint = editSprint,
+        isSprintSelectorVisible = isSprintSelectorVisible,
+        hideSprintEditor = { isSprintSelectorVisible = false }
+    )
 
     AppBarWithBackButton(
         title = {
@@ -175,32 +183,32 @@ fun CommonTaskScreenContent(
         ) {
 
             item {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     // status
                     ClickableBadge(
                         text = statusName,
                         colorHex = statusColorHex,
                         onClick = {
                             isStatusSelectorVisible = true
-                            loadStatuses("")
+                            editStatus.loadItems(null)
                         },
-                        isLoading = isStatusBadgeLoading
+                        isLoading = editStatus.isResultLoading
                     )
 
                     Spacer(Modifier.width(8.dp))
 
                     // sprint
-                    sprintName?.also {
-                        ClickableBadge(
-                            text = it,
-                            color = MaterialTheme.colors.primary
-                        )
-                    } ?: run {
-                        ClickableBadge(
-                            text = stringResource(R.string.no_sprint),
-                            color = Color.Gray
-                        )
-                    }
+                    ClickableBadge(
+                        text = sprintName ?: stringResource(R.string.no_sprint),
+                        color = sprintName?.let { MaterialTheme.colors.primary } ?: Color.Gray,
+                        onClick = {
+                            isSprintSelectorVisible = true
+                            editSprint.loadItems(null)
+                        },
+                        isLoading = editSprint.isResultLoading,
+                        isClickable = commonTaskType != CommonTaskType.TASK
+                    )
+
                 }
 
                 Text(
@@ -211,7 +219,7 @@ fun CommonTaskScreenContent(
                 Spacer(Modifier.height(4.dp))
             }
 
-            // belons to
+            // belongs to
             if (epics.isNotEmpty()) {
                 item {
                     Text(
@@ -342,6 +350,54 @@ fun CommonTaskScreenContent(
     }
 }
 
+@ExperimentalAnimationApi
+@Composable
+private fun Selectors(
+    editStatus: EditAction<Status>,
+    isStatusSelectorVisible: Boolean,
+    hideStatusEditor: () -> Unit,
+    editSprint: EditAction<Sprint?>,
+    isSprintSelectorVisible: Boolean,
+    hideSprintEditor: () -> Unit
+) {
+    // status editor
+    SelectorList(
+        titleHint = stringResource(R.string.search_statuses_hint),
+        items = editStatus.items,
+        isVisible = isStatusSelectorVisible,
+        isLoading = editStatus.isItemsLoading,
+        loadData = editStatus.loadItems,
+        navigateBack = hideStatusEditor
+    ) {
+        StatusItem(
+            status = it,
+            onClick = {
+                editStatus.selectItem(it)
+                hideStatusEditor()
+            }
+        )
+    }
+
+    // sprint editor
+    SelectorList(
+        titleHint = stringResource(R.string.choose_sprint),
+        items = editSprint.items,
+        isVisible = isSprintSelectorVisible,
+        isLoading = editSprint.isItemsLoading,
+        isSearchable = false,
+        loadData = editSprint.loadItems,
+        navigateBack = hideSprintEditor
+    ) {
+        SprintItem(
+            sprint = it,
+            onClick = {
+                editSprint.selectItem(it)
+                hideSprintEditor()
+            }
+        )
+    }
+}
+
 @Composable
 private fun EpicItem(
     epic: Epic
@@ -357,6 +413,7 @@ private fun EpicItem(
     Spacer(Modifier.width(4.dp))
     Text(
         text = stringResource(R.string.epic),
+        style = MaterialTheme.typography.caption,
         color = Color.White,
         modifier = Modifier
             .background(
@@ -422,11 +479,52 @@ private fun StatusItem(
     )
 }
 
+@Composable
+private fun SprintItem(
+    sprint: Sprint?,
+    onClick: () -> Unit = {}
+) = ContainerBox(
+    verticalPadding = 16.dp,
+    onClick = onClick
+) {
+    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+
+    sprint?.also {
+        Surface(
+            contentColor = if (it.isClosed) Color.Gray else MaterialTheme.colors.onSurface
+        ) {
+            Column {
+                Text(
+                    if (it.isClosed) {
+                        stringResource(R.string.closed_sprint_name_template).format(it.name)
+                    } else {
+                        it.name
+                    }
+                )
+
+                Text(
+                    text = stringResource(R.string.sprint_dates_template).format(
+                        dateFormatter.format(it.start),
+                        dateFormatter.format(it.finish)
+                    ),
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        }
+    } ?: run {
+        Text(
+            text = stringResource(R.string.move_to_backlog),
+            color = MaterialTheme.colors.primary
+        )
+    }
+}
+
 @ExperimentalAnimationApi
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun CommonTaskScreenPreview() = TaigaMobileTheme {
     CommonTaskScreenContent(
+        commonTaskType = CommonTaskType.USERSTORY,
         toolbarTitle = "617 - User story #99",
         statusName = "In progress",
         statusColorHex = "#729fcf",
@@ -496,7 +594,6 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 text = "This is comment text",
                 postDateTime = Date()
             )
-        },
-        isStatusBadgeLoading = true
+        }
     )
 }

@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 
 /**
- * Three dots pulse
+ * Three dots pulsing
  */
 @Composable
 fun DotsLoader() {

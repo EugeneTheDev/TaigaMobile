@@ -127,7 +127,7 @@ fun ScrumScreenContent(
 
             item {
                 Text(
-                    text = stringResource(R.string.stories_without_sprint),
+                    text = stringResource(R.string.backlog),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
                 )

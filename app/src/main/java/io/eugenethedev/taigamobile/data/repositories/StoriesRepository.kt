@@ -1,10 +1,7 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.Session
-import io.eugenethedev.taigamobile.data.api.ChangeStatusRequest
-import io.eugenethedev.taigamobile.data.api.TaigaApi
-import io.eugenethedev.taigamobile.data.api.CommonTaskResponse
-import io.eugenethedev.taigamobile.data.api.SprintResponse
+import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import retrofit2.HttpException
@@ -139,6 +136,19 @@ class StoriesRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStoryStatus(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.changeTaskStatus(commonTaskId, body)
+        }
+    }
+
+    override suspend fun changeSprint(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        sprintId: Long?,
+        version: Int
+    ) {
+        val body = ChangeSprintRequest(sprintId, version)
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.changeUserStorySprint(commonTaskId, body)
+            CommonTaskType.TASK -> taigaApi.changeTaskSprint(commonTaskId, body)
         }
     }
 }

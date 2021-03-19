@@ -33,6 +33,7 @@ fun <T> SelectorList(
     items: List<T>,
     isVisible: Boolean = false,
     isLoading: Boolean = false,
+    isSearchable: Boolean = true,
     loadData: (String) -> Unit = {},
     navigateBack: () -> Unit = {},
     animationDurationMillis: Int = SelectorListConstants.defaultAnimDurationMillis,
@@ -58,26 +59,29 @@ fun <T> SelectorList(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    if (query.text.isEmpty()) {
-                        Text(
-                            text = titleHint,
-                            style = MaterialTheme.typography.body1,
-                            color = Color.Gray
-                        )
-                    }
+                    if (isSearchable) {
+                        if (query.text.isEmpty()) {
+                            Text(
+                                text = titleHint,
+                                style = MaterialTheme.typography.body1,
+                                color = Color.Gray
+                            )
+                        }
 
-                    BasicTextField(
-                        value = query,
-                        onValueChange = { query = it },
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                        textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
-                        cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(onSearch = { loadData(query.text) })
-                    )
+                        BasicTextField(
+                            value = query,
+                            onValueChange = { query = it },
+                            modifier = Modifier.wrapContentHeight()
+                                .fillMaxWidth(),
+                            textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
+                            cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = { loadData(query.text) })
+                        )
+                    } else {
+                        Text(titleHint)
+                    }
                 }
             },
             navigateBack = navigateBack

@@ -13,4 +13,5 @@ interface IStoriesRepository {
 
     // edit related
     suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, version: Int)
+    suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
 }

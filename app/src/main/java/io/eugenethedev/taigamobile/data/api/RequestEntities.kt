@@ -10,3 +10,8 @@ data class ChangeStatusRequest(
     val status: Long,
     val version: Int
 )
+
+data class ChangeSprintRequest(
+    val milestone: Long?,
+    val version: Int
+)

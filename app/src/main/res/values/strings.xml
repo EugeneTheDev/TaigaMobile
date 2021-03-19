@@ -28,13 +28,14 @@
     <string name="title_with_ref_pattern">#%d %s</string>
     <string name="unassigned">Unassigned</string>
     <string name="assignee_pattern">Assignee: %s</string>
-    <string name="stories_without_sprint">Stories without sprint</string>
+    <string name="backlog">Backlog</string>
 
     <string name="sprints_title">Sprints</string>
     <string name="sprint_dates_template">%s - %s</string>
     <string name="stories_count_template">Stories: %d</string>
     <string name="taskboard">Board</string>
     <string name="closed">Closed</string>
+    <string name="closed_sprint_name_template">%s (Closed)</string>
 
     <string name="stories">Stories</string>
     <string name="tasks_without_story">Storyless tasks</string>
@@ -50,7 +51,10 @@
     <string name="watchers">Watchers</string>
     <string name="tasks">Tasks</string>
     <string name="comments">Comments</string>
+
     <string name="search_statuses_hint">Search statuses</string>
+    <string name="choose_sprint">Choose sprint</string>
+    <string name="move_to_backlog">Move to backlog</string>
 
     <string name="power">power</string>
 

@@ -73,19 +73,23 @@ class CommonTaskViewModel : ViewModel() {
         Result(ResultStatus.ERROR, message = R.string.common_error_message)
     }
 
-    // edit related stuff
+    /**
+     * Edit related stuff
+     */
+
+    // Edit status
 
     val statuses = MutableLiveResult<List<Status>>()
     val statusSelectResult = MutableLiveResult<Unit>()
-    private lateinit var currentStatusesQuery: String
+    private var currentStatusesQuery: String? = null
 
-    fun loadStatuses(query: String) = viewModelScope.launch {
-        if (::currentStatusesQuery.isInitialized && query == currentStatusesQuery) return@launch
+    fun loadStatuses(query: String?) = viewModelScope.launch {
+        if (currentStatusesQuery != null && query == currentStatusesQuery) return@launch
         currentStatusesQuery = query
 
         statuses.value = Result(ResultStatus.LOADING)
         statuses.value = try {
-            Result(ResultStatus.SUCCESS, storiesRepository.getStatuses(commonTaskType).filter { query in it.name })
+            Result(ResultStatus.SUCCESS, storiesRepository.getStatuses(commonTaskType).filter { query.orEmpty().toLowerCase() in it.name })
         } catch (e: Exception) {
             Timber.w(e)
             Result(ResultStatus.ERROR, message = R.string.common_error_message)
@@ -97,6 +101,53 @@ class CommonTaskViewModel : ViewModel() {
 
         statusSelectResult.value = try {
             storiesRepository.changeStatus(commonTaskId, commonTaskType, status.id, story.value?.data?.version ?: -1)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
+    // Edit sprint
+
+    val sprints = MutableLiveResult<List<Sprint?>>()
+    val sprintSelectResult = MutableLiveResult<Unit>()
+    private var currentSprintPage = 0
+    private var maxSprintPage = Int.MAX_VALUE
+
+    fun loadSprints(query: String?) = viewModelScope.launch {
+        if (query == null) { // only handling null. search not supported
+            currentSprintPage = 0
+            maxSprintPage = Int.MAX_VALUE
+            sprints.value = null
+        }
+
+        if (currentSprintPage == maxSprintPage) return@launch
+
+        sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
+        try {
+            storiesRepository.getSprints(++currentSprintPage)
+                .also {
+                    sprints.value = Result(
+                        ResultStatus.SUCCESS,
+                        // prepending null here to always show "remove from sprints" sprint first
+                        data = listOf(null) + (sprints.value?.data.orEmpty().filterNotNull() + it)
+                    )
+                }
+                .takeIf { it.isEmpty() }
+                ?.run { maxSprintPage = currentSprintPage }
+        } catch (e: Exception) {
+            Timber.w(e)
+            sprints.value = Result(ResultStatus.ERROR, sprints.value?.data, message = R.string.common_error_message)
+        }
+    }
+
+    fun selectSprint(sprint: Sprint?) = viewModelScope.launch {
+        sprintSelectResult.value = Result(ResultStatus.LOADING)
+
+        sprintSelectResult.value = try {
+            storiesRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, story.value?.data?.version ?: -1)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
