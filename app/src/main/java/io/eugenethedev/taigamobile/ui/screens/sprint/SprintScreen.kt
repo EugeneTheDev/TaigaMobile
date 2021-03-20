@@ -102,11 +102,23 @@ fun SprintScreenContent(
 
     AppBarWithBackButton(
         title = {
-            Text(
-                text = sprintName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column {
+                Text(
+                    text = sprintName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = stringResource(R.string.sprint_dates_template).format(
+                        dateFormatter.format(start),
+                        dateFormatter.format(finish)
+                    ),
+                    style = MaterialTheme.typography.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         },
         navigateBack = navigateBack
     )
@@ -125,13 +137,6 @@ fun SprintScreenContent(
 
             item {
                 Column(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
-                    Text(
-                        text = stringResource(R.string.sprint_dates_template).format(
-                            dateFormatter.format(start),
-                            dateFormatter.format(finish)
-                        )
-                    )
-
                     Text(
                         text = stringResource(R.string.stories),
                         style = MaterialTheme.typography.h6,
