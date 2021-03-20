@@ -362,10 +362,11 @@ private fun Selectors(
 ) {
     // status editor
     SelectorList(
-        titleHint = stringResource(R.string.search_statuses_hint),
+        titleHint = stringResource(R.string.choose_status),
         items = editStatus.items,
         isVisible = isStatusSelectorVisible,
         isLoading = editStatus.isItemsLoading,
+        isSearchable = false,
         loadData = editStatus.loadItems,
         navigateBack = hideStatusEditor
     ) {

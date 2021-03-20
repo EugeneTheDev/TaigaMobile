@@ -61,16 +61,16 @@ fun SprintScreen(
         sprintName = sprint.name,
         start = sprint.start,
         finish = sprint.finish,
+        isLoading = statuses?.resultStatus == ResultStatus.LOADING || (tasks?.resultStatus == ResultStatus.LOADING && tasks?.data.isNullOrEmpty()),
+        isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
-        isStoriesLoading = statuses?.resultStatus == ResultStatus.LOADING,
         loadingStatusIds = loadingStatusIds.orEmpty(),
         loadStories = viewModel::loadStories,
         visibleStatusIds = visibleStatusIds.orEmpty(),
         onStatusClick = viewModel::statusClick,
         navigateBack = navController::popBackStack,
         tasks = tasks?.data.orEmpty(),
-        isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
         loadTasks = viewModel::loadTasks,
         navigateToTask = navController::navigateToTaskScreen
     )
@@ -82,16 +82,16 @@ fun SprintScreenContent(
     sprintName: String,
     start: Date,
     finish: Date,
+    isLoading: Boolean = false,
+    isTasksLoading: Boolean = false,
     statuses: List<Status> = emptyList(),
     commonTasks: List<CommonTask> = emptyList(),
-    isStoriesLoading: Boolean = false,
     loadingStatusIds: List<Long> = emptyList(),
     loadStories: (Status) -> Unit = {},
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
     navigateBack: () -> Unit = {},
     tasks: List<CommonTask> = emptyList(),
-    isTasksLoading: Boolean = false,
     loadTasks: () -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _, _ -> }
 ) = Column(
@@ -111,33 +111,36 @@ fun SprintScreenContent(
         navigateBack = navigateBack
     )
 
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-
-        item {
-            Column(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
-                Text(
-                    text = stringResource(R.string.sprint_dates_template).format(
-                        dateFormatter.format(start),
-                        dateFormatter.format(finish)
-                    )
-                )
-
-                Text(
-                    text = stringResource(R.string.stories),
-                    style = MaterialTheme.typography.h6,
-                )
-            }
+    if (isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularLoader()
         }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
 
-        if (isStoriesLoading) {
             item {
-                DotsLoader()
+                Column(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
+                    Text(
+                        text = stringResource(R.string.sprint_dates_template).format(
+                            dateFormatter.format(start),
+                            dateFormatter.format(finish)
+                        )
+                    )
+
+                    Text(
+                        text = stringResource(R.string.stories),
+                        style = MaterialTheme.typography.h6,
+                    )
+                }
             }
-        } else {
+
+
             CommonTasksList(
-                inverseCategoriesVisibility = true,
                 statuses = statuses,
                 commonTasks = commonTasks,
                 loadingStatusIds = loadingStatusIds,
@@ -146,47 +149,43 @@ fun SprintScreenContent(
                 loadData = loadStories,
                 navigateToTask = navigateToTask
             )
-        }
 
-        item {
-            Spacer(Modifier.height(24.dp))
+            item {
+                Spacer(Modifier.height(24.dp))
 
-            Text(
-                text = stringResource(R.string.tasks_without_story),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-            )
-
-            if (!isTasksLoading && tasks.isEmpty()) {
-                NothingToSeeHereText()
-            }
-        }
-
-        itemsIndexed(tasks) { index, item ->
-            CommonTaskItem(
-                commonTask = item,
-                navigateToTask = navigateToTask
-            )
-
-            if (index < tasks.lastIndex) {
-                Divider(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    color = Color.LightGray
+                Text(
+                    text = stringResource(R.string.tasks_without_story),
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
                 )
             }
 
-            if (index == tasks.lastIndex) {
+            itemsIndexed(tasks) { index, item ->
+                CommonTaskItem(
+                    commonTask = item,
+                    navigateToTask = navigateToTask
+                )
+
+                if (index < tasks.lastIndex) {
+                    Divider(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.LightGray
+                    )
+                }
+            }
+
+            item {
+                if (isTasksLoading) {
+                    DotsLoader()
+                } else if (tasks.isEmpty()) {
+                    NothingToSeeHereText()
+                }
+
                 SideEffect {
                     loadTasks()
                 }
+                Spacer(Modifier.height(16.dp))
             }
-        }
-
-        item {
-            if (isTasksLoading) {
-                DotsLoader()
-            }
-            Spacer(Modifier.height(16.dp))
         }
     }
 }

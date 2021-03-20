@@ -36,11 +36,9 @@ import java.util.*
 
 /**
  * View for displaying list of stories or tasks
- * @param inverseCategoriesVisibility - by default all categories are collapsed, this flag invert it
  */
 @ExperimentalAnimationApi
 fun LazyListScope.CommonTasksList(
-    inverseCategoriesVisibility: Boolean = false,
     statuses: List<Status>,
     commonTasks: List<CommonTask>,
     loadData: (Status) -> Unit = {},
@@ -51,7 +49,7 @@ fun LazyListScope.CommonTasksList(
 ) {
     if (statuses.isNotEmpty()) {
         statuses.map { st -> st to commonTasks.filter { it.status.id == st.id } }.forEach { (status, stories) ->
-            val isCategoryVisible = (status.id in visibleStatusIds && !inverseCategoriesVisibility) || (status.id !in visibleStatusIds && inverseCategoriesVisibility)
+            val isCategoryVisible = status.id in visibleStatusIds
             val isCategoryLoading = status.id in loadingStatusIds
 
             item {
@@ -85,17 +83,12 @@ fun LazyListScope.CommonTasksList(
                         )
                     }
                 }
-
-                AnimateExpandVisibility(
-                    visible = isCategoryVisible && !isCategoryLoading && stories.isEmpty()
-                ) {
-                    NothingToSeeHereText()
-                }
             }
 
             itemsIndexed(stories.toList()) { index, commonTask ->
                 AnimateExpandVisibility(
-                    visible = isCategoryVisible
+                    visible = isCategoryVisible,
+                    initiallyVisible = !isCategoryLoading && isCategoryVisible
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         CommonTaskItem(
@@ -111,20 +104,21 @@ fun LazyListScope.CommonTasksList(
                         }
                     }
                 }
-
-                if (index == stories.lastIndex) {
-                    SideEffect {
-                        loadData(status)
-                    }
-                }
             }
 
             item {
                 AnimateExpandVisibility(visible = isCategoryVisible && isCategoryLoading) {
                     DotsLoader()
                 }
-                if (isCategoryVisible) {
+
+                AnimateExpandVisibility(visible = isCategoryVisible) {
                     Spacer(Modifier.height(8.dp))
+                }
+
+                if (isCategoryVisible) {
+                    SideEffect {
+                        loadData(status)
+                    }
                 }
             }
         }
@@ -149,12 +143,14 @@ fun LazyListScope.CommonTasksList(
 private fun AnimateExpandVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
+    initiallyVisible: Boolean = visible,
     content: @Composable () -> Unit = {}
 ) = AnimatedVisibility(
     visible = visible,
     enter = expandVertically(),
     exit = shrinkOut(shrinkTowards = Alignment.TopStart),
     modifier = modifier,
+    initiallyVisible = initiallyVisible,
     content = content
 )
 

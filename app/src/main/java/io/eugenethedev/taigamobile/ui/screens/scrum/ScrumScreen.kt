@@ -58,11 +58,11 @@ fun ScrumScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
+        isLoading = statuses?.resultStatus == ResultStatus.LOADING || (sprints?.resultStatus == ResultStatus.LOADING && sprints?.data.isNullOrEmpty()),
+        isSprintsLoading = sprints?.resultStatus == ResultStatus.LOADING,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
         sprints = sprints?.data.orEmpty(),
-        isStoriesLoading = statuses?.resultStatus == ResultStatus.LOADING,
-        isSprintsLoading = sprints?.resultStatus == ResultStatus.LOADING,
         loadingStatusIds = loadingStatusIds.orEmpty(),
         loadStories = viewModel::loadStories,
         loadSprints = viewModel::loadSprints,
@@ -80,11 +80,11 @@ fun ScrumScreen(
 fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
+    isLoading: Boolean = false,
+    isSprintsLoading: Boolean = false,
     statuses: List<Status> = emptyList(),
     commonTasks: List<CommonTask> = emptyList(),
     sprints: List<Sprint> = emptyList(),
-    isStoriesLoading: Boolean = false,
-    isSprintsLoading: Boolean = false,
     loadingStatusIds: List<Long> = emptyList(),
     loadStories: (Status) -> Unit = {},
     loadSprints: () -> Unit = {},
@@ -119,25 +119,27 @@ fun ScrumScreenContent(
         elevation = 0.dp
     )
 
-    if (projectName.isNotEmpty()) {
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+    if (isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
+            CircularLoader()
+        }
+    } else {
+        if (projectName.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
-            item {
-                Text(
-                    text = stringResource(R.string.backlog),
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                )
-            }
-
-            if (isStoriesLoading) {
                 item {
-                    DotsLoader()
+                    Text(
+                        text = stringResource(R.string.backlog),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
+                    )
                 }
-            } else {
+
                 CommonTasksList(
                     statuses = statuses,
                     commonTasks = commonTasks,
@@ -147,38 +149,38 @@ fun ScrumScreenContent(
                     loadData = loadStories,
                     navigateToTask = navigateToTask
                 )
-            }
 
-            item {
-                Spacer(Modifier.height(24.dp))
+                item {
+                    Spacer(Modifier.height(24.dp))
 
-                Text(
-                    text = stringResource(R.string.sprints_title),
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                )
-            }
+                    Text(
+                        text = stringResource(R.string.sprints_title),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
+                    )
+                }
 
-            itemsIndexed(sprints) {  index, item ->
-                SprintItem(
-                    sprint = item,
-                    navigateToBoard = navigateToBoard
-                )
+                itemsIndexed(sprints) { index, item ->
+                    SprintItem(
+                        sprint = item,
+                        navigateToBoard = navigateToBoard
+                    )
 
-                if (index == sprints.lastIndex) {
-                    SideEffect {
-                        loadSprints()
+                    if (index == sprints.lastIndex) {
+                        SideEffect {
+                            loadSprints()
+                        }
                     }
                 }
-            }
 
-            item {
-                if (isSprintsLoading) {
-                    DotsLoader()
-                } else if (sprints.isEmpty()) {
-                    NothingToSeeHereText()
+                item {
+                    if (isSprintsLoading) {
+                        DotsLoader()
+                    } else if (sprints.isEmpty()) {
+                        NothingToSeeHereText()
+                    }
+                    Spacer(Modifier.height(16.dp))
                 }
-                Spacer(Modifier.height(16.dp))
             }
         }
     }

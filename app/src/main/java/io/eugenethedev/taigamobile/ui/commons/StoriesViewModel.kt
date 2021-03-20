@@ -11,6 +11,7 @@ import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -43,7 +44,6 @@ abstract class StoriesViewModel : ViewModel() {
                 resultStatus = ResultStatus.SUCCESS,
                 storiesRepository.getStatuses(CommonTaskType.USERSTORY).onEach {
                     statusesStates[it] = StatusState()
-                    loadStories(it)
                 }
             )
 
@@ -58,6 +58,7 @@ abstract class StoriesViewModel : ViewModel() {
             if (currentPage == maxPage) return@launch
 
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
+            delay(100)
 
             try {
                 storiesRepository.getStories(status.id, ++currentPage, sprintId)
@@ -66,9 +67,9 @@ abstract class StoriesViewModel : ViewModel() {
                     ?.run { maxPage = currentPage /* reached maximum page */ }
             } catch (e: Exception) {
                 Timber.w(e)
-                statuses.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
+                stories.value = Result(ResultStatus.ERROR, stories.value?.data.orEmpty(), message = R.string.common_error_message)
             }
-
+            delay(100)
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() - status.id
         }
     }

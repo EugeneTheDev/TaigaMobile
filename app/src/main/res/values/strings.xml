@@ -52,7 +52,7 @@
     <string name="tasks">Tasks</string>
     <string name="comments">Comments</string>
 
-    <string name="search_statuses_hint">Search statuses</string>
+    <string name="choose_status">Choose status</string>
     <string name="choose_sprint">Choose sprint</string>
     <string name="move_to_backlog">Move to backlog</string>
 

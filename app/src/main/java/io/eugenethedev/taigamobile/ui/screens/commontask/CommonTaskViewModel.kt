@@ -11,6 +11,7 @@ import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -81,15 +82,19 @@ class CommonTaskViewModel : ViewModel() {
 
     val statuses = MutableLiveResult<List<Status>>()
     val statusSelectResult = MutableLiveResult<Unit>()
-    private var currentStatusesQuery: String? = null
 
     fun loadStatuses(query: String?) = viewModelScope.launch {
-        if (currentStatusesQuery != null && query == currentStatusesQuery) return@launch
-        currentStatusesQuery = query
+        if (query == null) {
+            statuses.value = null
+        } else {
+            return@launch
+        }
 
         statuses.value = Result(ResultStatus.LOADING)
+        delay(200)
+
         statuses.value = try {
-            Result(ResultStatus.SUCCESS, storiesRepository.getStatuses(commonTaskType).filter { query.orEmpty().toLowerCase() in it.name })
+            Result(ResultStatus.SUCCESS, storiesRepository.getStatuses(commonTaskType))
         } catch (e: Exception) {
             Timber.w(e)
             Result(ResultStatus.ERROR, message = R.string.common_error_message)
@@ -126,6 +131,8 @@ class CommonTaskViewModel : ViewModel() {
         if (currentSprintPage == maxSprintPage) return@launch
 
         sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
+        delay(200)
+
         try {
             storiesRepository.getSprints(++currentSprintPage)
                 .also {
