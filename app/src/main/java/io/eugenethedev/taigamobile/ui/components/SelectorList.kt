@@ -101,7 +101,7 @@ fun <T> SelectorList(
                 }
 
                 if (index == items.lastIndex) {
-                    SideEffect {
+                    LaunchedEffect(items.size) {
                         loadData(query.text)
                     }
                 }

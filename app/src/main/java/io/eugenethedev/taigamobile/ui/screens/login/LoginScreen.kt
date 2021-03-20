@@ -79,7 +79,7 @@ fun LoginScreen(
             }
         },
         isServerInputErrorValue = isServerInputErrorValue,
-        isLoadingValue = loginResult?.resultStatus === ResultStatus.LOADING
+        isLoadingValue = loginResult?.resultStatus in listOf(ResultStatus.LOADING, ResultStatus.SUCCESS)
     )
 }
 

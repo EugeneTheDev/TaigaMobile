@@ -58,7 +58,6 @@ abstract class StoriesViewModel : ViewModel() {
             if (currentPage == maxPage) return@launch
 
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
-            delay(100)
 
             try {
                 storiesRepository.getStories(status.id, ++currentPage, sprintId)
@@ -69,7 +68,6 @@ abstract class StoriesViewModel : ViewModel() {
                 Timber.w(e)
                 stories.value = Result(ResultStatus.ERROR, stories.value?.data.orEmpty(), message = R.string.common_error_message)
             }
-            delay(100)
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() - status.id
         }
     }

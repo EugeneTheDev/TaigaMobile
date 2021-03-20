@@ -59,7 +59,6 @@ fun ScrumScreen(
             viewModel.reset()
         },
         isLoading = statuses?.resultStatus == ResultStatus.LOADING || (sprints?.resultStatus == ResultStatus.LOADING && sprints?.data.isNullOrEmpty()),
-        isSprintsLoading = sprints?.resultStatus == ResultStatus.LOADING,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
         sprints = sprints?.data.orEmpty(),
@@ -81,7 +80,6 @@ fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     isLoading: Boolean = false,
-    isSprintsLoading: Boolean = false,
     statuses: List<Status> = emptyList(),
     commonTasks: List<CommonTask> = emptyList(),
     sprints: List<Sprint> = emptyList(),
@@ -167,19 +165,17 @@ fun ScrumScreenContent(
                     )
 
                     if (index == sprints.lastIndex) {
-                        SideEffect {
+                        LaunchedEffect(sprints.size) {
                             loadSprints()
                         }
                     }
                 }
 
                 item {
-                    if (isSprintsLoading) {
-                        DotsLoader()
-                    } else if (sprints.isEmpty()) {
+                    if (sprints.isEmpty()) {
                         NothingToSeeHereText()
                     }
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(32.dp))
                 }
             }
         }

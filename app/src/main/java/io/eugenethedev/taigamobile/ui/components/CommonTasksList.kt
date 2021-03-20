@@ -86,23 +86,31 @@ fun LazyListScope.CommonTasksList(
             }
 
             itemsIndexed(stories.toList()) { index, commonTask ->
-                AnimateExpandVisibility(
-                    visible = isCategoryVisible,
-                    initiallyVisible = !isCategoryLoading && isCategoryVisible
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        CommonTaskItem(
-                            commonTask = commonTask,
-                            navigateToTask = navigateToTask
-                        )
 
-                        if (index < stories.lastIndex) {
-                            Divider(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                color = Color.LightGray
-                            )
-                        }
+                @Composable
+                fun Item() = Column(modifier = Modifier.fillMaxWidth()) {
+                    CommonTaskItem(
+                        commonTask = commonTask,
+                        navigateToTask = navigateToTask
+                    )
+
+                    if (index < stories.lastIndex) {
+                        Divider(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = Color.LightGray
+                        )
                     }
+                }
+
+                if (index < 10) {
+                    AnimateExpandVisibility(
+                        visible = isCategoryVisible,
+                        initiallyVisible = !isCategoryLoading && isCategoryVisible
+                    ) {
+                        Item()
+                    }
+                } else if (isCategoryVisible) {
+                    Item()
                 }
             }
 
@@ -116,7 +124,7 @@ fun LazyListScope.CommonTasksList(
                 }
 
                 if (isCategoryVisible) {
-                    SideEffect {
+                    LaunchedEffect(stories.size) {
                         loadData(status)
                     }
                 }
