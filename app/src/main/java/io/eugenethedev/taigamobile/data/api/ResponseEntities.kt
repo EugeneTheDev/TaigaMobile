@@ -21,7 +21,8 @@ data class ProjectResponse(
         val id: Long,
         val photo: String?,
         val full_name_display: String,
-        val role_name: String
+        val role_name: String,
+        val username: String
     )
 }
 

@@ -106,5 +106,13 @@ data class TeamMember(
     val avatarUrl: String?,
     val name: String,
     val role: String,
+    val username: String,
     val totalPower: Int
-)
+) {
+    fun toUser() = User(
+        id = id,
+        fullName = name,
+        avatarUrl = avatarUrl,
+        username = username
+    )
+}

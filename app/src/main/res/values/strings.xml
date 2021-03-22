@@ -50,11 +50,13 @@
     <string name="assigned_to">Assigned to</string>
     <string name="watchers">Watchers</string>
     <string name="tasks">Tasks</string>
-    <string name="comments">Comments</string>
+    <string name="comments_template">Comments (%d)</string>
+    <string name="add_user">Add user</string>
 
     <string name="choose_status">Choose status</string>
     <string name="choose_sprint">Choose sprint</string>
     <string name="move_to_backlog">Move to backlog</string>
+    <string name="search_members">Search members</string>
 
     <string name="power">power</string>
 

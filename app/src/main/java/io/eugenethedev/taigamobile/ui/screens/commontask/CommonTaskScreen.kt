@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,10 +30,8 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
-import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
-import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import io.eugenethedev.taigamobile.ui.utils.*
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -70,9 +71,11 @@ fun CommonTaskScreen(
 
     val sprints by viewModel.sprints.observeAsState()
     sprints?.subscribeOnError(onError)
-
     val sprintSelectResult by viewModel.sprintSelectResult.observeAsState()
     sprintSelectResult?.subscribeOnError(onError)
+
+    val team by viewModel.team.observeAsState()
+    team?.subscribeOnError(onError)
 
     story?.data.let {
         CommonTaskScreenContent(
@@ -112,6 +115,16 @@ fun CommonTaskScreen(
                 isItemsLoading = sprints?.resultStatus == ResultStatus.LOADING,
                 selectItem = viewModel::selectSprint,
                 isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.LOADING
+            ),
+            editAssignees = EditAction(
+                items = team?.data.orEmpty(),
+                loadItems = viewModel::loadTeam,
+                isItemsLoading = team?.resultStatus == ResultStatus.LOADING
+            ),
+            editWatchers = EditAction(
+                items = team?.data.orEmpty(),
+                loadItems = viewModel::loadTeam,
+                isItemsLoading = team?.resultStatus == ResultStatus.LOADING
             )
         )
     }
@@ -140,19 +153,29 @@ fun CommonTaskScreenContent(
     navigateBack: () -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _, _ -> },
     editStatus: EditAction<Status> = EditAction(),
-    editSprint: EditAction<Sprint?> = EditAction()
+    editSprint: EditAction<Sprint?> = EditAction(),
+    editAssignees: EditAction<TeamMember> = EditAction(),
+    editWatchers: EditAction<TeamMember> = EditAction()
 ) = Column(Modifier.fillMaxSize()) {
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
     var isSprintSelectorVisible by remember { mutableStateOf(false) }
+    var isAssigneesSelectorVisible by remember { mutableStateOf(false) }
+    var isWatchersSelectorVisible by remember { mutableStateOf(false) }
 
     // Bunch of list selectors
     Selectors(
         editStatus = editStatus,
         isStatusSelectorVisible = isStatusSelectorVisible,
-        hideStatusEditor = { isStatusSelectorVisible = false },
+        hideStatusSelector = { isStatusSelectorVisible = false },
         editSprint = editSprint,
         isSprintSelectorVisible = isSprintSelectorVisible,
-        hideSprintEditor = { isSprintSelectorVisible = false }
+        hideSprintSelector = { isSprintSelectorVisible = false },
+        editAssignees = editAssignees,
+        isAssigneesSelectorVisible = isAssigneesSelectorVisible,
+        hideAssigneesSelector = { isAssigneesSelectorVisible = false },
+        editWatchers = editWatchers,
+        isWatchersSelectorVisible = isWatchersSelectorVisible,
+        hideWatchersSelector = { isWatchersSelectorVisible = false }
     )
 
     AppBarWithBackButton(
@@ -211,6 +234,7 @@ fun CommonTaskScreenContent(
 
                 }
 
+                // title
                 Text(
                     text = storyTitle,
                     style = MaterialTheme.typography.h5
@@ -234,6 +258,7 @@ fun CommonTaskScreenContent(
                 }
             }
 
+            // belongs to (story)
             story?.let {
                 item {
                     Text(
@@ -248,6 +273,7 @@ fun CommonTaskScreenContent(
             item {
                 Spacer(Modifier.height(sectionsMargin * 2))
 
+                // description
                 if (description.isNotEmpty()) {
                     Text(description)
                 } else {
@@ -256,6 +282,7 @@ fun CommonTaskScreenContent(
 
                 Spacer(Modifier.height(sectionsMargin * 2))
 
+                // created by
                 Text(
                     text = stringResource(R.string.created_by),
                     style = MaterialTheme.typography.subtitle1
@@ -265,44 +292,68 @@ fun CommonTaskScreenContent(
                     user = creator,
                     dateTime = creationDateTime
                 )
+
+                Spacer(Modifier.height(sectionsMargin))
+
+                // assigned to
+                Text(
+                    text = stringResource(R.string.assigned_to),
+                    style = MaterialTheme.typography.subtitle1
+                )
             }
 
-            if (assignees.isNotEmpty()) {
-                item {
-                    Spacer(Modifier.height(sectionsMargin))
-
-                    Text(
-                        text = stringResource(R.string.assigned_to),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-
-                items(assignees) {
-                    UserItem(it)
-                    Spacer(Modifier.height(6.dp))
-                }
+            items(assignees) {
+                UserItem(it)
+                Spacer(Modifier.height(6.dp))
             }
 
-            if (watchers.isNotEmpty()) {
-                item {
-                    Spacer(Modifier.height(sectionsMargin))
-
-                    Text(
-                        text = stringResource(R.string.watchers),
-                        style = MaterialTheme.typography.subtitle1
-                    )
+            // add assignee & loader
+            item {
+                if (editAssignees.isResultLoading) {
+                    DotsLoader()
                 }
+                AddUserItem(
+                    onClick = {
+                        isAssigneesSelectorVisible = true
+                        editAssignees.loadItems(null)
+                    }
+                )
+            }
 
-                items(watchers) {
-                    UserItem(it)
-                    Spacer(Modifier.height(6.dp))
+
+            item {
+                Spacer(Modifier.height(sectionsMargin))
+
+                // watchers
+                Text(
+                    text = stringResource(R.string.watchers),
+                    style = MaterialTheme.typography.subtitle1
+                )
+            }
+
+            items(watchers) {
+                UserItem(it)
+                Spacer(Modifier.height(6.dp))
+            }
+
+            // add watcher & loader
+            item {
+                if (editWatchers.isResultLoading) {
+                    DotsLoader()
                 }
+                AddUserItem(
+                    onClick = {
+                        isWatchersSelectorVisible = true
+                        editWatchers.loadItems(null)
+                    }
+                )
             }
 
             if (tasks.isNotEmpty()) {
                 item {
                     Spacer(Modifier.height(sectionsMargin * 2))
 
+                    // tasks
                     Text(
                         text = stringResource(R.string.tasks),
                         style = MaterialTheme.typography.h6
@@ -325,22 +376,25 @@ fun CommonTaskScreenContent(
                 }
             }
 
-            if (comments.isNotEmpty()) {
-                item {
-                    Spacer(Modifier.height(sectionsMargin * 2))
+            item {
+                Divider(
+                    modifier = Modifier.padding(top = sectionsMargin * 2, bottom = sectionsMargin),
+                    color = Color.LightGray,
+                    thickness = 2.dp
+                )
 
-                    Text(
-                        text = stringResource(R.string.comments),
-                        style = MaterialTheme.typography.h6
-                    )
+                // comments
+                Text(
+                    text = stringResource(R.string.comments_template).format(comments.size),
+                    style = MaterialTheme.typography.h6
+                )
 
-                    Spacer(Modifier.height(4.dp))
-                }
+                Spacer(Modifier.height(4.dp))
+            }
 
-                items(comments) {
-                    CommentItem(it)
-                    Spacer(Modifier.height(10.dp))
-                }
+            items(comments) {
+                CommentItem(it)
+                Spacer(Modifier.height(10.dp))
             }
 
             item {
@@ -355,10 +409,16 @@ fun CommonTaskScreenContent(
 private fun Selectors(
     editStatus: EditAction<Status>,
     isStatusSelectorVisible: Boolean,
-    hideStatusEditor: () -> Unit,
+    hideStatusSelector: () -> Unit,
     editSprint: EditAction<Sprint?>,
     isSprintSelectorVisible: Boolean,
-    hideSprintEditor: () -> Unit
+    hideSprintSelector: () -> Unit,
+    editAssignees: EditAction<TeamMember>,
+    isAssigneesSelectorVisible: Boolean,
+    hideAssigneesSelector: () -> Unit,
+    editWatchers: EditAction<TeamMember>,
+    isWatchersSelectorVisible: Boolean,
+    hideWatchersSelector: () -> Unit
 ) {
     // status editor
     SelectorList(
@@ -368,13 +428,13 @@ private fun Selectors(
         isLoading = editStatus.isItemsLoading,
         isSearchable = false,
         loadData = editStatus.loadItems,
-        navigateBack = hideStatusEditor
+        navigateBack = hideStatusSelector
     ) {
         StatusItem(
             status = it,
             onClick = {
                 editStatus.selectItem(it)
-                hideStatusEditor()
+                hideStatusSelector()
             }
         )
     }
@@ -387,16 +447,53 @@ private fun Selectors(
         isLoading = editSprint.isItemsLoading,
         isSearchable = false,
         loadData = editSprint.loadItems,
-        navigateBack = hideSprintEditor
+        navigateBack = hideSprintSelector
     ) {
         SprintItem(
             sprint = it,
             onClick = {
                 editSprint.selectItem(it)
-                hideSprintEditor()
+                hideSprintSelector()
             }
         )
     }
+    
+    // assignees editor
+    SelectorList(
+        titleHint = stringResource(R.string.search_members),
+        items = editAssignees.items,
+        isVisible = isAssigneesSelectorVisible,
+        isLoading = editAssignees.isItemsLoading,
+        loadData = editAssignees.loadItems,
+        navigateBack = hideAssigneesSelector
+    ) {
+        MemberItem(
+            member = it,
+            onClick = {
+                editAssignees.selectItem(it)
+                hideAssigneesSelector()
+            }
+        )
+    }
+
+    // watchers editor
+    SelectorList(
+        titleHint = stringResource(R.string.search_members),
+        items = editWatchers.items,
+        isVisible = isWatchersSelectorVisible,
+        isLoading = editWatchers.isItemsLoading,
+        loadData = editWatchers.loadItems,
+        navigateBack = hideWatchersSelector
+    ) {
+        MemberItem(
+            member = it,
+            onClick = {
+                editWatchers.selectItem(it)
+                hideWatchersSelector()
+            }
+        )
+    }
+
 }
 
 @Composable
@@ -409,9 +506,12 @@ private fun EpicItem(
     Text(
         text = stringResource(R.string.title_with_ref_pattern).format(epic.ref, epic.title),
         color = MaterialTheme.colors.primary,
-        style = MaterialTheme.typography.subtitle1
+        style = MaterialTheme.typography.subtitle1,
+        modifier = Modifier
+            .weight(0.9f, fill = false)
+            .padding(end = 4.dp)
     )
-    Spacer(Modifier.width(4.dp))
+
     Text(
         text = stringResource(R.string.epic),
         style = MaterialTheme.typography.caption,
@@ -422,6 +522,7 @@ private fun EpicItem(
                 shape = MaterialTheme.shapes.small
             )
             .padding(horizontal = 2.dp)
+            .weight(0.1f, fill = false)
     )
 }
 
@@ -435,9 +536,11 @@ private fun UserStoryItem(
     Text(
         text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
         color = MaterialTheme.colors.primary,
-        style = MaterialTheme.typography.subtitle1
+        style = MaterialTheme.typography.subtitle1,
+        modifier = Modifier
+            .weight(0.9f, fill = false)
+            .padding(end = 4.dp)
     )
-    Spacer(Modifier.width(4.dp))
 
     story.epicColor?.let {
         Spacer(
@@ -447,6 +550,7 @@ private fun UserStoryItem(
                     color = Color(android.graphics.Color.parseColor(it)),
                     shape = CircleShape
                 )
+                .weight(0.1f, fill = false)
         )
     }
 }
@@ -520,13 +624,44 @@ private fun SprintItem(
     }
 }
 
+@Composable
+private fun MemberItem(
+    member: TeamMember,
+    onClick: () -> Unit = {}
+) = ContainerBox(
+    verticalPadding = 16.dp,
+    onClick = onClick
+) {
+    UserItem(user = member.toUser())
+}
+
+@Composable
+private fun AddUserItem(
+    onClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.clickableUnindicated(onClick = onClick),
+) {
+    Image(
+        painter = painterResource(R.drawable.ic_add),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+    )
+
+    Text(
+        text = stringResource(R.string.add_user),
+        color = MaterialTheme.colors.primary
+    )
+}
+
+
 @ExperimentalAnimationApi
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun CommonTaskScreenPreview() = TaigaMobileTheme {
     CommonTaskScreenContent(
         commonTaskType = CommonTaskType.USERSTORY,
-        toolbarTitle = "617 - User story #99",
+        toolbarTitle = "Userstory #99",
         statusName = "In progress",
         statusColorHex = "#729fcf",
         sprintName = "Very very very long sprint name",

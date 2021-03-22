@@ -37,6 +37,7 @@ class UsersRepository @Inject constructor(
                     avatarUrl = it.photo,
                     name = it.full_name_display,
                     role = it.role_name,
+                    username = it.username,
                     totalPower = stat[it.id] ?: 0
                 )
             }

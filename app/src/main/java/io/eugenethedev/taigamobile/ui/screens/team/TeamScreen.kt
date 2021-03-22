@@ -188,6 +188,7 @@ fun TeamScreenPreview() = TaigaMobileTheme {
                 avatarUrl = null,
                 name = "First Last",
                 role = "Cool guy",
+                username = "username",
                 totalPower = 14
             )
         }

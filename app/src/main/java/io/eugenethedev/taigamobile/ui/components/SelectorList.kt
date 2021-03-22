@@ -87,10 +87,8 @@ fun <T> SelectorList(
             navigateBack = navigateBack
         )
 
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            itemsIndexed(items.toList()) { index, item ->
+        LazyColumn {
+            itemsIndexed(items) { index, item ->
                 itemContent(item)
 
                 if (index < items.size - 1) {

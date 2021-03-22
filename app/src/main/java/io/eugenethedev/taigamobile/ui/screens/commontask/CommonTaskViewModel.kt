@@ -84,7 +84,7 @@ class CommonTaskViewModel : ViewModel() {
     val statusSelectResult = MutableLiveResult<Unit>()
 
     fun loadStatuses(query: String?) = viewModelScope.launch {
-        if (query == null) {
+        if (query == null) { // only handling null. search not supported
             statuses.value = null
         } else {
             return@launch
@@ -162,5 +162,41 @@ class CommonTaskViewModel : ViewModel() {
             Result(ResultStatus.ERROR, message = R.string.permission_error)
         }
     }
+
+    // use team for both assignees and watchers
+    val team = MutableLiveResult<List<TeamMember>>()
+    private var _team = emptyList<TeamMember>()
+    private var currentTeamQuery: String = ""
+
+    fun loadTeam(query: String?) = viewModelScope.launch {
+        if (query == currentTeamQuery) return@launch
+        currentTeamQuery = query.orEmpty()
+
+        team.value = Result(ResultStatus.LOADING)
+        team.value = query?.let { q ->
+            /* FIXME I had to put a small delay here, otherwise results were always incorrect.
+                I don't have a fucking clue why this is happening and i don't like it, but i don't know how to fix it */
+            delay(20)
+            Result(
+                resultStatus = ResultStatus.SUCCESS,
+                data = _team.filter {
+                    val regex = Regex("^.*$q.*$", RegexOption.IGNORE_CASE)
+                    it.name.matches(regex) || it.username.matches(regex)
+                }
+            )
+        } ?: run {
+            delay(200)
+            try {
+                _team = usersRepository.getTeam()
+                Result(ResultStatus.SUCCESS, _team)
+            } catch (e: Exception) {
+                Timber.w(e)
+                Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            }
+        }
+    }
+
+    // Edit assignees
+    val assigneeResult = MutableLiveResult<Unit>()
 
 }
