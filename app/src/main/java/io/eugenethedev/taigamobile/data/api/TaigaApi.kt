@@ -98,4 +98,28 @@ interface TaigaApi {
         @Path("id") id: Long,
         @Body changeSprintRequest: ChangeSprintRequest
     )
+
+    @PATCH("userstories/{id}")
+    suspend fun changeUserStoryAssignees(
+        @Path("id") id: Long,
+        @Body changeAssigneesRequest: ChangeAssigneesRequest
+    )
+
+    @PATCH("userstories/{id}")
+    suspend fun changeUserStoryWatchers(
+        @Path("id") id: Long,
+        @Body changeWatchersRequest: ChangeWatchersRequest
+    )
+
+    @PATCH("tasks/{id}")
+    suspend fun changeTaskAssignees(
+        @Path("id") id: Long,
+        @Body changeAssigneesRequest: ChangeTaskAssigneesRequest
+    )
+
+    @PATCH("tasks/{id}")
+    suspend fun changeTaskWatchers(
+        @Path("id") id: Long,
+        @Body changeWatchersRequest: ChangeWatchersRequest
+    )
 }

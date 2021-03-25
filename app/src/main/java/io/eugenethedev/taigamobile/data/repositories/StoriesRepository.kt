@@ -144,11 +144,43 @@ class StoriesRepository @Inject constructor(
         commonTaskType: CommonTaskType,
         sprintId: Long?,
         version: Int
-    ) {
+    ) = withIO {
         val body = ChangeSprintRequest(sprintId, version)
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStorySprint(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.changeTaskSprint(commonTaskId, body)
         }
     }
+
+    override suspend fun changeAssignees(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        assignees: List<Long>,
+        version: Int
+    ) = withIO {
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.changeUserStoryAssignees(
+                id = commonTaskId,
+                changeAssigneesRequest = ChangeAssigneesRequest(assignees.firstOrNull(), assignees, version)
+            )
+            CommonTaskType.TASK -> taigaApi.changeTaskAssignees(
+                id = commonTaskId,
+                changeAssigneesRequest = ChangeTaskAssigneesRequest(assignees.lastOrNull(), version)
+            )
+        }
+    }
+
+    override suspend fun changeWatchers(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        watchers: List<Long>,
+        version: Int
+    ) = withIO {
+        val body = ChangeWatchersRequest(watchers, version)
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.changeUserStoryWatchers(commonTaskId, body)
+            CommonTaskType.TASK -> taigaApi.changeTaskWatchers(commonTaskId, body)
+        }
+    }
+
 }

@@ -10,5 +10,5 @@ class EditAction<T>(
     val isItemsLoading: Boolean = false,
     val selectItem: (item: T) -> Unit = {},
     val isResultLoading: Boolean = false,
-    val deleteItem: (item: T) -> Unit = {}
+    val removeItem: (item: T) -> Unit = {}
 )

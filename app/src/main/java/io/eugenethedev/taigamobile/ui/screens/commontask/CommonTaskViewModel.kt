@@ -164,8 +164,8 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // use team for both assignees and watchers
-    val team = MutableLiveResult<List<TeamMember>>()
-    private var _team = emptyList<TeamMember>()
+    val team = MutableLiveResult<List<User>>()
+    private var _team = emptyList<User>()
     private var currentTeamQuery: String = ""
 
     fun loadTeam(query: String?) = viewModelScope.launch {
@@ -182,13 +182,13 @@ class CommonTaskViewModel : ViewModel() {
                 resultStatus = ResultStatus.SUCCESS,
                 data = _team.filter {
                     val regex = Regex("^.*$q.*$", RegexOption.IGNORE_CASE)
-                    it.name.matches(regex) || it.username.matches(regex)
+                    it.displayName.matches(regex) || it.username.matches(regex)
                 }
             )
         } ?: run {
             delay(200)
             try {
-                _team = usersRepository.getTeam()
+                _team = usersRepository.getTeam().map { it.toUser() }
                 Result(ResultStatus.SUCCESS, _team)
             } catch (e: Exception) {
                 Timber.w(e)
@@ -198,6 +198,56 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Edit assignees
-    val assigneeResult = MutableLiveResult<Unit>()
+    val assigneesResult = MutableLiveResult<Unit>()
 
+    private fun changeAssignees(user: User, remove: Boolean) = viewModelScope.launch {
+        assigneesResult.value = Result(ResultStatus.LOADING)
+
+        assigneesResult.value = try {
+            storiesRepository.changeAssignees(
+                commonTaskId, commonTaskType,
+                story.value?.data?.assignedIds.orEmpty().let {
+                    if (remove) it - user.id!!
+                    else it + user.id!!
+                },
+                story.value?.data?.version ?: -1
+            )
+            loadData()
+            Result(ResultStatus.SUCCESS)
+
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
+    fun addAssignee(user: User) = changeAssignees(user, remove = false)
+    fun removeAssignee(user: User) = changeAssignees(user, remove = true)
+
+    // Edit watchers
+    val watchersResult = MutableLiveResult<Unit>()
+
+    private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
+        watchersResult.value = Result(ResultStatus.LOADING)
+
+        watchersResult.value = try {
+            storiesRepository.changeWatchers(
+                commonTaskId, commonTaskType,
+                story.value?.data?.watcherIds.orEmpty().let {
+                    if (remove) it - user.id!!
+                    else it + user.id!!
+                },
+                story.value?.data?.version ?: -1
+            )
+            loadData()
+            Result(ResultStatus.SUCCESS)
+
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
+    fun addWatcher(user: User) = changeWatchers(user, remove = false)
+    fun removeWatcher(user: User) = changeWatchers(user, remove = true)
 }

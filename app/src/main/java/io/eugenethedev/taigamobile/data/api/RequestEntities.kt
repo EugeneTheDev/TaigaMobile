@@ -15,3 +15,19 @@ data class ChangeSprintRequest(
     val milestone: Long?,
     val version: Int
 )
+
+data class ChangeAssigneesRequest(
+    val assigned_to: Long?,
+    val assigned_users: List<Long>,
+    val version: Int
+)
+
+data class ChangeTaskAssigneesRequest(
+    val assigned_to: Long?,
+    val version: Int
+)
+
+data class ChangeWatchersRequest(
+    val watchers: List<Long>,
+    val version: Int
+)

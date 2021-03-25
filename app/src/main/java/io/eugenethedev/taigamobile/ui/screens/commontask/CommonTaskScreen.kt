@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -76,6 +73,12 @@ fun CommonTaskScreen(
     val team by viewModel.team.observeAsState()
     team?.subscribeOnError(onError)
 
+    val assigneesResult by viewModel.assigneesResult.observeAsState()
+    assigneesResult?.subscribeOnError(onError)
+
+    val watchersResult by viewModel.watchersResult.observeAsState()
+    watchersResult?.subscribeOnError(onError)
+
     story?.data.let {
         CommonTaskScreenContent(
             commonTaskType = commonTaskType,
@@ -118,12 +121,18 @@ fun CommonTaskScreen(
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team?.resultStatus == ResultStatus.LOADING
+                isItemsLoading = team?.resultStatus == ResultStatus.LOADING,
+                selectItem = viewModel::addAssignee,
+                isResultLoading = assigneesResult?.resultStatus == ResultStatus.LOADING,
+                removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team?.resultStatus == ResultStatus.LOADING
+                isItemsLoading = team?.resultStatus == ResultStatus.LOADING,
+                selectItem = viewModel::addWatcher,
+                isResultLoading = watchersResult?.resultStatus == ResultStatus.LOADING,
+                removeItem = viewModel::removeWatcher
             )
         )
     }
@@ -153,8 +162,8 @@ fun CommonTaskScreenContent(
     navigateToTask: NavigateToTask = { _, _, _, _ -> },
     editStatus: EditAction<Status> = EditAction(),
     editSprint: EditAction<Sprint?> = EditAction(),
-    editAssignees: EditAction<TeamMember> = EditAction(),
-    editWatchers: EditAction<TeamMember> = EditAction()
+    editAssignees: EditAction<User> = EditAction(),
+    editWatchers: EditAction<User> = EditAction()
 ) = Column(Modifier.fillMaxSize()) {
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
     var isSprintSelectorVisible by remember { mutableStateOf(false) }
@@ -302,7 +311,10 @@ fun CommonTaskScreenContent(
             }
 
             items(assignees) {
-                UserItem(it)
+                UserItemWithAction(
+                    user = it,
+                    onRemoveClick = { editAssignees.removeItem(it) }
+                )
                 Spacer(Modifier.height(6.dp))
             }
 
@@ -331,7 +343,10 @@ fun CommonTaskScreenContent(
             }
 
             items(watchers) {
-                UserItem(it)
+                UserItemWithAction(
+                    user = it,
+                    onRemoveClick = { editWatchers.removeItem(it) }
+                )
                 Spacer(Modifier.height(6.dp))
             }
 
@@ -412,10 +427,10 @@ private fun Selectors(
     editSprint: EditAction<Sprint?>,
     isSprintSelectorVisible: Boolean,
     hideSprintSelector: () -> Unit,
-    editAssignees: EditAction<TeamMember>,
+    editAssignees: EditAction<User>,
     isAssigneesSelectorVisible: Boolean,
     hideAssigneesSelector: () -> Unit,
-    editWatchers: EditAction<TeamMember>,
+    editWatchers: EditAction<User>,
     isWatchersSelectorVisible: Boolean,
     hideWatchersSelector: () -> Unit
 ) {
@@ -555,6 +570,25 @@ private fun UserStoryItem(
 }
 
 @Composable
+private fun UserItemWithAction(
+    user: User,
+    onRemoveClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.SpaceBetween,
+    modifier = Modifier.fillMaxWidth()
+) {
+    UserItem(user)
+
+    Image(
+        painter = painterResource(R.drawable.ic_remove),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(Color.Gray),
+        modifier = Modifier.clickableUnindicated(onClick = onRemoveClick)
+    )
+}
+
+@Composable
 private fun CommentItem(
     comment: Comment
 ) = Column {
@@ -625,13 +659,13 @@ private fun SprintItem(
 
 @Composable
 private fun MemberItem(
-    member: TeamMember,
+    member: User,
     onClick: () -> Unit = {}
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-    UserItem(user = member.toUser())
+    UserItem(member)
 }
 
 @Composable
