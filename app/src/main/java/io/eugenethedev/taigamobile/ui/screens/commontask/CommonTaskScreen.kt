@@ -573,19 +573,36 @@ private fun UserStoryItem(
 private fun UserItemWithAction(
     user: User,
     onRemoveClick: () -> Unit
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceBetween,
-    modifier = Modifier.fillMaxWidth()
 ) {
-    UserItem(user)
+    var isAlertVisible by remember { mutableStateOf(false) }
 
-    Image(
-        painter = painterResource(R.drawable.ic_remove),
-        contentDescription = null,
-        colorFilter = ColorFilter.tint(Color.Gray),
-        modifier = Modifier.clickableUnindicated(onClick = onRemoveClick)
-    )
+    if (isAlertVisible) {
+        ConfirmActionAlert(
+            title = stringResource(R.string.remove_user_title),
+            text = stringResource(R.string.remove_user_text),
+            onConfirm = {
+                isAlertVisible = false
+                onRemoveClick()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        UserItem(user)
+
+        IconButton(onClick = { isAlertVisible = true }) {
+            Image(
+                painter = painterResource(R.drawable.ic_remove),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color.Gray)
+            )
+        }
+    }
 }
 
 @Composable

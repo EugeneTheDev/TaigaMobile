@@ -2,13 +2,12 @@ package io.eugenethedev.taigamobile.ui.screens.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,9 +28,9 @@ import androidx.navigation.compose.popUpTo
 import dev.chrisbanes.accompanist.glide.GlideImage
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -99,18 +98,35 @@ fun SettingsScreenContent(
             }
     )
 
-    Image(
-        painter = painterResource(R.drawable.ic_logout),
-        contentDescription = null,
-        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
-        modifier = Modifier
-            .size(28.dp)
-            .clickableUnindicated(onClick = logout)
-            .constrainAs(logoutIcon) {
-                top.linkTo(avatar.top, 2.dp)
-                start.linkTo(avatar.end, 8.dp)
-            }
-    )
+    // logout
+    var isAlertVisible by remember { mutableStateOf(false) }
+    if (isAlertVisible) {
+        ConfirmActionAlert(
+            title = stringResource(R.string.logout_title),
+            text = stringResource(R.string.logout_text),
+            onConfirm = {
+                isAlertVisible = false
+                logout()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+
+    IconButton(
+        onClick = { isAlertVisible = true },
+        modifier = Modifier.constrainAs(logoutIcon) {
+            top.linkTo(avatar.top)
+            start.linkTo(avatar.end)
+        }
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_logout),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
+            modifier = Modifier.size(28.dp)
+        )
+    }
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

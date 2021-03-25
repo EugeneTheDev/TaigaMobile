@@ -2,6 +2,9 @@
     <string name="app_name">Taiga Mobile</string>
     <string name="app_name_with_version_template">%s - %s</string>
 
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <string name="common_error_message">An error was occurred. Check your connection</string>
     <string name="permission_error">Error, you may not have sufficient permissions</string>
 
@@ -61,4 +64,9 @@
     <string name="power">power</string>
 
     <string name="username_template">\@%s</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_text">Are you sure you want to log out?</string>
+
+    <string name="remove_user_title">Remove user</string>
+    <string name="remove_user_text">Are you sure you want to remove user?</string>
 </resources>
