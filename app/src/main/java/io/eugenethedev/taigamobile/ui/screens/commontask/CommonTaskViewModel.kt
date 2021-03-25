@@ -174,8 +174,9 @@ class CommonTaskViewModel : ViewModel() {
 
         team.value = Result(ResultStatus.LOADING)
         team.value = query?.let { q ->
-            /* FIXME I had to put a small delay here, otherwise results were always incorrect.
-                I don't have a fucking clue why this is happening and i don't like it, but i don't know how to fix it */
+            // FIXME I had to put a small delay here, otherwise results in search were always incorrect.
+            // I don't have a fucking clue why this is happening and i don't like it, but i don't know how to fix it.
+            // UPD: after some investigations i think this is bug with LazyColumn updating (data is updated, but UI doesn't)
             delay(20)
             Result(
                 resultStatus = ResultStatus.SUCCESS,

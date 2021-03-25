@@ -31,7 +31,6 @@ import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
