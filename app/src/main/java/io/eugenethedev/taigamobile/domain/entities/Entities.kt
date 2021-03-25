@@ -87,11 +87,13 @@ data class UserStoryShortInfo(
 data class User(
     val id: Long?, // sometimes there is no id
     @SerializedName("full_name_display") val fullName: String?,
-    @SerializedName("photo") val avatarUrl: String?,
+    val photo: String?,
+    @SerializedName("big_photo") val bigPhoto: String?,
     val username: String,
     val name: String? = null // sometimes name appears here
 ) {
     val displayName get() = fullName ?: name!!
+    val avatarUrl get() = bigPhoto ?: photo
 }
 
 data class Comment(
@@ -112,7 +114,8 @@ data class TeamMember(
     fun toUser() = User(
         id = id,
         fullName = name,
-        avatarUrl = avatarUrl,
+        photo = avatarUrl,
+        bigPhoto = null,
         username = username
     )
 }

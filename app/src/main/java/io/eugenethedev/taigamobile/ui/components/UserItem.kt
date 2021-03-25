@@ -65,7 +65,8 @@ fun UserItemPreview() = TaigaMobileTheme {
         user = User(
             id = 0L,
             fullName = "Full Name",
-            avatarUrl = null,
+            photo = null,
+            bigPhoto = null,
             username = "username"
         )
     )
