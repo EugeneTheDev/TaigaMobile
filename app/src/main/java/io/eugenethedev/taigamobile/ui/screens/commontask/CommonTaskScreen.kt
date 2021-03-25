@@ -205,7 +205,7 @@ fun CommonTaskScreenContent(
             CircularLoader()
         }
     } else {
-        val sectionsMargin = 8.dp
+        val sectionsMargin = 10.dp
 
         LazyColumn(
             modifier = Modifier
@@ -310,12 +310,15 @@ fun CommonTaskScreenContent(
                 )
             }
 
-            items(assignees) {
+            itemsIndexed(assignees) { index, item ->
                 UserItemWithAction(
-                    user = it,
-                    onRemoveClick = { editAssignees.removeItem(it) }
+                    user = item,
+                    onRemoveClick = { editAssignees.removeItem(item) }
                 )
-                Spacer(Modifier.height(6.dp))
+
+                if (index < assignees.lastIndex) {
+                    Spacer(Modifier.height(6.dp))
+                }
             }
 
             // add assignee & loader
@@ -323,7 +326,7 @@ fun CommonTaskScreenContent(
                 if (editAssignees.isResultLoading) {
                     DotsLoader()
                 }
-                AddUserItem(
+                AddUserButton(
                     onClick = {
                         isAssigneesSelectorVisible = true
                         editAssignees.loadItems(null)
@@ -342,12 +345,15 @@ fun CommonTaskScreenContent(
                 )
             }
 
-            items(watchers) {
+            itemsIndexed(watchers) { index, item ->
                 UserItemWithAction(
-                    user = it,
-                    onRemoveClick = { editWatchers.removeItem(it) }
+                    user = item,
+                    onRemoveClick = { editWatchers.removeItem(item) }
                 )
-                Spacer(Modifier.height(6.dp))
+
+                if (index < watchers.lastIndex) {
+                    Spacer(Modifier.height(6.dp))
+                }
             }
 
             // add watcher & loader
@@ -355,7 +361,7 @@ fun CommonTaskScreenContent(
                 if (editWatchers.isResultLoading) {
                     DotsLoader()
                 }
-                AddUserItem(
+                AddUserButton(
                     onClick = {
                         isWatchersSelectorVisible = true
                         editWatchers.loadItems(null)
@@ -686,22 +692,21 @@ private fun MemberItem(
 }
 
 @Composable
-private fun AddUserItem(
+private fun AddUserButton(
     onClick: () -> Unit
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.clickableUnindicated(onClick = onClick),
-) {
-    Image(
-        painter = painterResource(R.drawable.ic_add),
-        contentDescription = null,
-        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
-    )
+) = TextButton(onClick = onClick) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(R.drawable.ic_add),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+        )
 
-    Text(
-        text = stringResource(R.string.add_user),
-        color = MaterialTheme.colors.primary
-    )
+        Text(
+            text = stringResource(R.string.add_user),
+            color = MaterialTheme.colors.primary
+        )
+    }
 }
 
 
