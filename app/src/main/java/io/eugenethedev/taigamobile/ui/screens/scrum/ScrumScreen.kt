@@ -107,6 +107,7 @@ fun ScrumScreenContent(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.widthIn(max = 250.dp)
                 )
+
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_down),
                     contentDescription = null

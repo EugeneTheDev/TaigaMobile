@@ -6,7 +6,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,10 +73,10 @@ fun LazyListScope.CommonTasksList(
 
                         val arrowRotation by updateTransition(transitionState).animateFloat { if (it) -180f else 0f }
 
-                        Image(
+                        Icon(
                             painter = painterResource(R.drawable.ic_arrow_down),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(LocalContentColor.current),
+                            tint = LocalContentColor.current,
                             modifier = Modifier.rotate(arrowRotation)
                         )
                     }

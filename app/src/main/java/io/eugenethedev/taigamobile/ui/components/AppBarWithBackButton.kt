@@ -1,13 +1,12 @@
 package io.eugenethedev.taigamobile.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -20,10 +19,10 @@ fun AppBarWithBackButton(
     title = title,
     navigationIcon = {
         IconButton(onClick = navigateBack) {
-            Image(
+            Icon(
                 painter = painterResource(R.drawable.ic_arrow_back),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
+                tint = MaterialTheme.colors.primary,
                 modifier = Modifier.size(28.dp)
             )
         }
