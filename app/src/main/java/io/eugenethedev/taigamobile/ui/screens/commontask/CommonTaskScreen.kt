@@ -283,7 +283,7 @@ fun CommonTaskScreenContent(
 
                 // description
                 if (description.isNotEmpty()) {
-                    Text(description)
+                    MarkdownText(description)
                 } else {
                     NothingToSeeHereText()
                 }
@@ -412,9 +412,15 @@ fun CommonTaskScreenContent(
                 Spacer(Modifier.height(4.dp))
             }
 
-            items(comments) {
-                CommentItem(it)
-                Spacer(Modifier.height(10.dp))
+            itemsIndexed(comments) { index, item ->
+                CommentItem(item)
+
+                if (index < comments.lastIndex) {
+                    Divider(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        color = Color.LightGray
+                    )
+                }
             }
 
             item {
@@ -620,7 +626,7 @@ private fun CommentItem(
         dateTime = comment.postDateTime
     )
 
-    Text(
+    MarkdownText(
         text = comment.text,
         modifier = Modifier.padding(start = 4.dp)
     )
