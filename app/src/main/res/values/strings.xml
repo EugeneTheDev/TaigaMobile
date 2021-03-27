@@ -55,6 +55,8 @@
     <string name="tasks">Tasks</string>
     <string name="comments_template">Comments (%d)</string>
     <string name="comment_hint">Comment</string>
+    <string name="delete_comment_title">Delete comment</string>
+    <string name="delete_comment_text">Are you sure you want to delete comment?</string>
     <string name="add_user">Add user</string>
 
     <string name="choose_status">Choose status</string>

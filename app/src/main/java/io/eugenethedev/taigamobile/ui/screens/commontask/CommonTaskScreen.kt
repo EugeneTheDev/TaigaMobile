@@ -138,6 +138,7 @@ fun CommonTaskScreen(
             ),
             editComments = EditCommentsAction(
                 createComment = viewModel::createComment,
+                deleteComment = viewModel::deleteComment,
                 isResultLoading = commentsResult?.resultStatus == ResultStatus.LOADING
             )
         )
@@ -421,7 +422,10 @@ fun CommonTaskScreenContent(
             }
 
             itemsIndexed(comments) { index, item ->
-                CommentItem(item)
+                CommentItem(
+                    comment = item,
+                    onDeleteClick = { editComments.deleteComment(item) }
+                )
 
                 if (index < comments.lastIndex) {
                     Divider(
@@ -540,12 +544,43 @@ private fun UserItemWithAction(
 
 @Composable
 private fun CommentItem(
-    comment: Comment
+    comment: Comment,
+    onDeleteClick: () -> Unit = {}
 ) = Column {
-    UserItem(
-        user = comment.author,
-        dateTime = comment.postDateTime
-    )
+    var isAlertVisible by remember { mutableStateOf(false) }
+
+    if (isAlertVisible) {
+        ConfirmActionAlert(
+            title = stringResource(R.string.delete_comment_title),
+            text = stringResource(R.string.delete_comment_text),
+            onConfirm = {
+                isAlertVisible = false
+                onDeleteClick()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        UserItem(
+            user = comment.author,
+            dateTime = comment.postDateTime
+        )
+
+        if (comment.canDelete == true) {
+            IconButton(onClick = { isAlertVisible = true }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete),
+                    contentDescription = null,
+                    tint = Color.Red
+                )
+            }
+        }
+    }
 
     MarkdownText(
         text = comment.text,
@@ -596,7 +631,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         description = "Some description about this wonderful task",
         creationDateTime = Date(),
         creator = User(
-            id = 0L,
+            _id = 0L,
             fullName = "Full Name",
             photo = null,
             bigPhoto = null,
@@ -604,7 +639,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         ),
         assignees = List(1) {
             User(
-                id = 0L,
+                _id = 0L,
                 fullName = "Full Name",
                 photo = null,
                 bigPhoto = null,
@@ -613,7 +648,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         },
         watchers = List(2) {
             User(
-                id = 0L,
+                _id = 0L,
                 fullName = "Full Name",
                 photo = null,
                 bigPhoto = null,
@@ -643,14 +678,15 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
             Comment(
                 id = "",
                 author = User(
-                    id = 0L,
+                    _id = 0L,
                     fullName = "Full Name",
                     photo = null,
                     bigPhoto = null,
                     username = "username"
                 ),
                 text = "This is comment text",
-                postDateTime = Date()
+                postDateTime = Date(),
+                deleteDate = null
             )
         }
     )

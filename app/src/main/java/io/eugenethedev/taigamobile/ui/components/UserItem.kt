@@ -63,7 +63,7 @@ fun UserItem(
 fun UserItemPreview() = TaigaMobileTheme {
     UserItem(
         user = User(
-            id = 0L,
+            _id = 0L,
             fullName = "Full Name",
             photo = null,
             bigPhoto = null,

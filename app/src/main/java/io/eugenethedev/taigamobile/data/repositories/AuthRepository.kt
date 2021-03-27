@@ -12,7 +12,9 @@ class AuthRepository @Inject constructor(
 ) : IAuthRepository {
     override suspend fun auth(taigaServer: String, password: String, username: String) = withIO {
         session.server = taigaServer
-        session.token = taigaApi.auth(AuthRequest(password, username)).auth_token
+        taigaApi.auth(AuthRequest(password, username)).let {
+            session.token = it.auth_token
+            session.currentUserId = it.id
+        }
     }
-
 }

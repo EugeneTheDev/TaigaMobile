@@ -9,7 +9,8 @@ import java.util.*
  */
 
 data class AuthResponse(
-    val auth_token: String
+    val auth_token: String,
+    val id: Long
 )
 
 data class ProjectResponse(

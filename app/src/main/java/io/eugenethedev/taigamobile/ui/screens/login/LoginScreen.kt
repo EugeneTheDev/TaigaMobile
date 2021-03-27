@@ -1,5 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.login
 
+import android.app.Activity
+import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -10,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,6 +38,10 @@ fun LoginScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: LoginViewModel = viewModel()
+    val activity = LocalContext.current as Activity
+    LaunchedEffect(null) {
+        activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+    }
 
     val loginResult by viewModel.loginResult.observeAsState()
     loginResult?.apply {
@@ -43,6 +50,7 @@ fun LoginScreen(
             ResultStatus.SUCCESS -> {
                 navController.navigate(Routes.startDestination) {
                     popUpTo(Routes.login) { inclusive = true }
+                    activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                 }
             }
             else -> {}
@@ -112,7 +120,9 @@ fun LoginScreenContent(
         Image(
             painter = painterResource(R.drawable.ic_taiga_logo),
             contentDescription = null,
-            modifier = Modifier.size(130.dp).padding(bottom = 8.dp)
+            modifier = Modifier
+                .size(130.dp)
+                .padding(bottom = 8.dp)
         )
 
         Text(
@@ -191,7 +201,8 @@ fun LoginTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 40.dp)
             .padding(bottom = 6.dp),
         textStyle = textStyle,

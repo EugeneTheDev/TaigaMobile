@@ -17,4 +17,5 @@ interface IStoriesRepository {
     suspend fun changeAssignees(commonTaskId: Long, commonTaskType: CommonTaskType, assignees: List<Long>, version: Int)
     suspend fun changeWatchers(commonTaskId: Long, commonTaskType: CommonTaskType, watchers: List<Long>, version: Int)
     suspend fun createComment(commonTaskId: Long, commonTaskType: CommonTaskType, comment: String, version: Int)
+    suspend fun deleteComment(commonTaskId: Long, commonTaskType: CommonTaskType, commentId: String)
 }

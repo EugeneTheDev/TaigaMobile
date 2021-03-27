@@ -196,4 +196,14 @@ class StoriesRepository @Inject constructor(
         }
     }
 
+    override suspend fun deleteComment(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        commentId: String
+    ) = withIO {
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.deleteUserStoryComment(commonTaskId, commentId)
+            CommonTaskType.TASK -> taigaApi.deleteTaskComment(commonTaskId, commentId)
+        }
+    }
 }

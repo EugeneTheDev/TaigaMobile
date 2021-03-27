@@ -39,6 +39,14 @@ class Session(context: Context) {
             }
         }
 
+    var currentUserId: Long
+        get() = sharedPreferences.getLong(USER_ID_KEY, -1)
+        set(value) {
+            sharedPreferences.edit {
+                putLong(USER_ID_KEY, value)
+            }
+        }
+
     val isLogged: Boolean get() = token.isNotEmpty() && server.isNotEmpty()
 
     fun reset() {
@@ -54,5 +62,6 @@ class Session(context: Context) {
         private const val SERVER_KEY = "server"
         private const val PROJECT_NAME_KEY = "project_name"
         private const val PROJECT_ID_KEY = "project_id"
+        private const val USER_ID_KEY = "user_id"
     }
 }

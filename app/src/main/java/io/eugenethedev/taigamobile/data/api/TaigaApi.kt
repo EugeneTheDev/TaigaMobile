@@ -62,6 +62,18 @@ interface TaigaApi {
     @GET("history/task/{id}?type=comment")
     suspend fun getTaskComments(@Path("id") taskId: Long): List<Comment>
 
+    @POST("history/userstory/{id}/delete_comment")
+    suspend fun deleteUserStoryComment(
+        @Path("id") userStoryId: Long,
+        @Query("id") commentId: String
+    )
+
+    @POST("history/task/{id}/delete_comment")
+    suspend fun deleteTaskComment(
+        @Path("id") taskId: Long,
+        @Query("id") commentId: String
+    )
+
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userId: Long): User
 

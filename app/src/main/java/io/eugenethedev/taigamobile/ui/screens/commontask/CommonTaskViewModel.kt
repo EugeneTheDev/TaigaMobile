@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
@@ -17,7 +18,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class CommonTaskViewModel : ViewModel() {
-
+    @Inject lateinit var session: Session
     @Inject lateinit var storiesRepository: IStoriesRepository
     @Inject lateinit var usersRepository: IUsersRepository
 
@@ -60,7 +61,11 @@ class CommonTaskViewModel : ViewModel() {
                 assignees.value = Result(ResultStatus.SUCCESS, assigneesAsyncs.mapNotNull { it.await().data })
                 watchers.value = Result(ResultStatus.SUCCESS, watchersAsyncs.mapNotNull { it.await().data })
                 tasks.value = Result(ResultStatus.SUCCESS, tasksAsync.await())
-                comments.value = Result(ResultStatus.SUCCESS, commentsAsync.await())
+                comments.value = Result(
+                    ResultStatus.SUCCESS,
+                    commentsAsync.await().filter { it.deleteDate == null }
+                        .map { it.also { it.canDelete = it.author.id == session.currentUserId } }
+                )
                 Result(ResultStatus.SUCCESS, it)
             }
         } catch (e: Exception) {
@@ -209,8 +214,8 @@ class CommonTaskViewModel : ViewModel() {
             storiesRepository.changeAssignees(
                 commonTaskId, commonTaskType,
                 story.value?.data?.assignedIds.orEmpty().let {
-                    if (remove) it - user.id!!
-                    else it + user.id!!
+                    if (remove) it - user.id
+                    else it + user.id
                 },
                 commonTaskVersion
             )
@@ -236,8 +241,8 @@ class CommonTaskViewModel : ViewModel() {
             storiesRepository.changeWatchers(
                 commonTaskId, commonTaskType,
                 story.value?.data?.watcherIds.orEmpty().let {
-                    if (remove) it - user.id!!
-                    else it + user.id!!
+                    if (remove) it - user.id
+                    else it + user.id
                 },
                 commonTaskVersion
             )
@@ -261,6 +266,19 @@ class CommonTaskViewModel : ViewModel() {
         
         commentsResult.value = try {
             storiesRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
+    fun deleteComment(comment: Comment) = viewModelScope.launch {
+        commentsResult.value = Result(ResultStatus.LOADING)
+
+        commentsResult.value = try {
+            storiesRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {

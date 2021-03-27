@@ -85,23 +85,28 @@ data class UserStoryShortInfo(
 )
 
 data class User(
-    val id: Long?, // sometimes there is no id
+    @SerializedName("id") val _id: Long?,
     @SerializedName("full_name_display") val fullName: String?,
     val photo: String?,
     @SerializedName("big_photo") val bigPhoto: String?,
     val username: String,
-    val name: String? = null // sometimes name appears here
+    val name: String? = null, // sometimes name appears here
+    val pk: Long? = null
 ) {
     val displayName get() = fullName ?: name!!
     val avatarUrl get() = bigPhoto ?: photo
+    val id get() = _id ?: pk!!
 }
 
 data class Comment(
     val id: String,
     @SerializedName("user") val author: User,
     @SerializedName("comment") val text: String,
-    @SerializedName("created_at") val postDateTime: Date
-)
+    @SerializedName("created_at") val postDateTime: Date,
+    @SerializedName("delete_comment_date") val deleteDate: Date?
+) {
+    var canDelete: Boolean? = null
+}
 
 data class TeamMember(
     val id: Long,
@@ -112,7 +117,7 @@ data class TeamMember(
     val totalPower: Int
 ) {
     fun toUser() = User(
-        id = id,
+        _id = id,
         fullName = name,
         photo = avatarUrl,
         bigPhoto = null,
