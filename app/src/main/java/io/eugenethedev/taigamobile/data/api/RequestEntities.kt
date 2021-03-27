@@ -31,3 +31,8 @@ data class ChangeWatchersRequest(
     val watchers: List<Long>,
     val version: Int
 )
+
+data class CreateCommentRequest(
+    val comment: String,
+    val version: Int
+)

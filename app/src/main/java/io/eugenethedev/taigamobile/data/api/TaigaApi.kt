@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.data.api
 
 import io.eugenethedev.taigamobile.domain.entities.Comment
 import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
-import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.User
 import retrofit2.http.*
 
@@ -121,5 +120,17 @@ interface TaigaApi {
     suspend fun changeTaskWatchers(
         @Path("id") id: Long,
         @Body changeWatchersRequest: ChangeWatchersRequest
+    )
+
+    @PATCH("userstories/{id}")
+    suspend fun createUserStoryComment(
+        @Path("id") id: Long,
+        @Body createCommentRequest: CreateCommentRequest
+    )
+
+    @PATCH("tasks/{id}")
+    suspend fun createTaskComment(
+        @Path("id") id: Long,
+        @Body createCommentRequest: CreateCommentRequest
     )
 }

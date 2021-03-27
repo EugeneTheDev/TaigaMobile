@@ -183,4 +183,17 @@ class StoriesRepository @Inject constructor(
         }
     }
 
+    override suspend fun createComment(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        comment: String,
+        version: Int
+    ) = withIO {
+        val body = CreateCommentRequest(comment, version)
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.createUserStoryComment(commonTaskId, body)
+            CommonTaskType.TASK -> taigaApi.createTaskComment(commonTaskId, body)
+        }
+    }
+
 }

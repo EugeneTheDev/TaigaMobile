@@ -2,19 +2,26 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +36,7 @@ import io.eugenethedev.taigamobile.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreen(
@@ -76,6 +84,9 @@ fun CommonTaskScreen(
 
     val watchersResult by viewModel.watchersResult.observeAsState()
     watchersResult?.subscribeOnError(onError)
+
+    val commentsResult by viewModel.commentsResult.observeAsState()
+    commentsResult?.subscribeOnError(onError)
 
     story?.data.let {
         CommonTaskScreenContent(
@@ -131,12 +142,17 @@ fun CommonTaskScreen(
                 selectItem = viewModel::addWatcher,
                 isResultLoading = watchersResult?.resultStatus == ResultStatus.LOADING,
                 removeItem = viewModel::removeWatcher
+            ),
+            editComments = EditCommentsAction(
+                createComment = viewModel::createComment,
+                isResultLoading = commentsResult?.resultStatus == ResultStatus.LOADING
             )
         )
     }
 
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreenContent(
@@ -161,7 +177,8 @@ fun CommonTaskScreenContent(
     editStatus: EditAction<Status> = EditAction(),
     editSprint: EditAction<Sprint?> = EditAction(),
     editAssignees: EditAction<User> = EditAction(),
-    editWatchers: EditAction<User> = EditAction()
+    editWatchers: EditAction<User> = EditAction(),
+    editComments: EditCommentsAction = EditCommentsAction()
 ) = Column(Modifier.fillMaxSize()) {
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
     var isSprintSelectorVisible by remember { mutableStateOf(false) }
@@ -207,7 +224,7 @@ fun CommonTaskScreenContent(
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
                 .padding(horizontal = mainHorizontalScreenPadding)
         ) {
 
@@ -422,9 +439,14 @@ fun CommonTaskScreenContent(
             }
 
             item {
+                if (editComments.isResultLoading) {
+                    DotsLoader()
+                }
                 Spacer(Modifier.height(16.dp))
             }
         }
+
+        CreateCommentBar(editComments.createComment)
     }
 }
 
@@ -713,7 +735,62 @@ private fun AddUserButton(
     }
 }
 
+@ExperimentalComposeUiApi
+@Composable
+private fun CreateCommentBar(
+    createComment: (String) -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+        .fillMaxWidth()
+        .background(if (isSystemInDarkTheme()) Color.DarkGray else MaterialTheme.colors.surface)
+        .shadow(elevation = if (isSystemInDarkTheme()) 0.dp else 1.dp)
+        .padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding)
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
 
+    Box(
+        modifier = Modifier.weight(1f),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        if (commentTextValue.text.isEmpty()) {
+            Text(
+                text = stringResource(R.string.comment_hint),
+                style = MaterialTheme.typography.body1,
+                color = Color.Gray
+            )
+        }
+        BasicTextField(
+            value = commentTextValue,
+            onValueChange = { commentTextValue = it },
+            maxLines = 3,
+            textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
+            cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+    }
+
+    IconButton(
+        onClick = {
+            commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
+                createComment(it)
+                commentTextValue = TextFieldValue()
+                keyboardController?.hideSoftwareKeyboard()
+            }
+        }
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_send),
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary
+        )
+    }
+}
+
+
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
@@ -726,7 +803,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         sprintName = "Very very very long sprint name",
         storyTitle = "Very cool and important story. Need to do this quickly",
         story = null,
-        epics = List(2) {
+        epics = List(1) {
             Epic(
                 id = 1L,
                 title = "Important epic",
@@ -743,7 +820,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
             bigPhoto = null,
             username = "username"
         ),
-        assignees = List(2) {
+        assignees = List(1) {
             User(
                 id = 0L,
                 fullName = "Full Name",
@@ -761,7 +838,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 username = "username"
             )
         },
-        tasks = List(4) {
+        tasks = List(1) {
             CommonTask(
                 id = it.toLong(),
                 createdDate = Date(),
@@ -780,7 +857,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 taskType = CommonTaskType.USERSTORY
             )
         },
-        comments = List(4) {
+        comments = List(1) {
             Comment(
                 id = "",
                 author = User(

@@ -25,6 +25,8 @@ class CommonTaskViewModel : ViewModel() {
     private lateinit var commonTaskType: CommonTaskType
 
     val story = MutableLiveResult<CommonTaskExtended>()
+    private val commonTaskVersion get() = story.value?.data?.version ?: -1
+    
     val creator = MutableLiveResult<User>()
     val assignees = MutableLiveResult<List<User>>()
     val watchers = MutableLiveResult<List<User>>()
@@ -105,7 +107,7 @@ class CommonTaskViewModel : ViewModel() {
         statusSelectResult.value = Result(ResultStatus.LOADING)
 
         statusSelectResult.value = try {
-            storiesRepository.changeStatus(commonTaskId, commonTaskType, status.id, story.value?.data?.version ?: -1)
+            storiesRepository.changeStatus(commonTaskId, commonTaskType, status.id, commonTaskVersion)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -154,7 +156,7 @@ class CommonTaskViewModel : ViewModel() {
         sprintSelectResult.value = Result(ResultStatus.LOADING)
 
         sprintSelectResult.value = try {
-            storiesRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, story.value?.data?.version ?: -1)
+            storiesRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -210,7 +212,7 @@ class CommonTaskViewModel : ViewModel() {
                     if (remove) it - user.id!!
                     else it + user.id!!
                 },
-                story.value?.data?.version ?: -1
+                commonTaskVersion
             )
             loadData()
             Result(ResultStatus.SUCCESS)
@@ -237,7 +239,7 @@ class CommonTaskViewModel : ViewModel() {
                     if (remove) it - user.id!!
                     else it + user.id!!
                 },
-                story.value?.data?.version ?: -1
+                commonTaskVersion
             )
             loadData()
             Result(ResultStatus.SUCCESS)
@@ -250,4 +252,20 @@ class CommonTaskViewModel : ViewModel() {
 
     fun addWatcher(user: User) = changeWatchers(user, remove = false)
     fun removeWatcher(user: User) = changeWatchers(user, remove = true)
+
+    // Edit comments
+    val commentsResult = MutableLiveResult<Unit>()
+    
+    fun createComment(comment: String) = viewModelScope.launch { 
+        commentsResult.value = Result(ResultStatus.LOADING)
+        
+        commentsResult.value = try {
+            storiesRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
 }

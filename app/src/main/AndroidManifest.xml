@@ -15,7 +15,8 @@
         <activity
             android:name=".ui.screens.main.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TaigaMobile">
+            android:theme="@style/Theme.TaigaMobile"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

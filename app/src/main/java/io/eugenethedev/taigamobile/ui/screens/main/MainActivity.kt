@@ -9,13 +9,16 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
+import com.google.accompanist.insets.*
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
@@ -29,57 +32,80 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimatedInsets
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             val scaffoldState = rememberScaffoldState()
             val navController = rememberNavController()
 
             TaigaMobileTheme {
-                Scaffold(
-                    scaffoldState = scaffoldState,
-                    snackbarHost = {
-                        SnackbarHost(it) {
-                            Snackbar(
-                                snackbarData = it,
-                                backgroundColor = MaterialTheme.colors.surface,
-                                contentColor = contentColorFor(MaterialTheme.colors.surface),
-                                shape = MaterialTheme.shapes.medium
-                            )
-                        }
-                    },
-                    bottomBar = {
-                        val items = listOf(Screen.Scrum, Screen.Team, Screen.Settings)
-                        val routes = items.map { it.route }
-                        val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                    Box(
+                        Modifier
+                            .statusBarsPadding()
+                            .navigationBarsWithImePadding()) {
+                        Scaffold(
+                            scaffoldState = scaffoldState,
+                            snackbarHost = {
+                                SnackbarHost(it) {
+                                    Snackbar(
+                                        snackbarData = it,
+                                        backgroundColor = MaterialTheme.colors.surface,
+                                        contentColor = contentColorFor(MaterialTheme.colors.surface),
+                                        shape = MaterialTheme.shapes.medium
+                                    )
+                                }
+                            },
+                            bottomBar = {
+                                val items = listOf(Screen.Scrum, Screen.Team, Screen.Settings)
+                                val routes = items.map { it.route }
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentRoute =
+                                    navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-                        // hide bottom bar for other screens
-                        if (currentRoute !in routes) return@Scaffold
+                                // hide bottom bar for other screens
+                                if (currentRoute !in routes) return@Scaffold
 
-                        BottomNavigation(backgroundColor = MaterialTheme.colors.surface) {
-                            items.forEach { screen ->
-                                BottomNavigationItem(
-                                    selectedContentColor = MaterialTheme.colors.primary,
-                                    unselectedContentColor = Color.Gray,
-                                    icon = { Icon(painter = painterResource(screen.iconId), contentDescription = null) },
-                                    label = { Text(stringResource(screen.resourceId)) },
-                                    selected = currentRoute == screen.route,
-                                    onClick = {
-                                        if (screen.route != currentRoute) {
-                                            navController.navigate(screen.route) {
-                                                currentRoute?.let { popUpTo(it) { inclusive = true } }
+                                BottomNavigation(backgroundColor = MaterialTheme.colors.surface) {
+                                    items.forEach { screen ->
+                                        BottomNavigationItem(
+                                            selectedContentColor = MaterialTheme.colors.primary,
+                                            unselectedContentColor = Color.Gray,
+                                            icon = {
+                                                Icon(
+                                                    painter = painterResource(screen.iconId),
+                                                    contentDescription = null
+                                                )
+                                            },
+                                            label = { Text(stringResource(screen.resourceId)) },
+                                            selected = currentRoute == screen.route,
+                                            onClick = {
+                                                if (screen.route != currentRoute) {
+                                                    navController.navigate(screen.route) {
+                                                        currentRoute?.let {
+                                                            popUpTo(it) {
+                                                                inclusive = true
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
-                                        }
+                                        )
                                     }
-                                )
+                                }
+                            },
+                            content = {
+                                MainScreen(scaffoldState, it, navController)
                             }
-                        }
-                    },
-                    content = { MainScreen(scaffoldState, it, navController) }
-                )
+                        )
+                    }
+                }
             }
         }
     }
@@ -111,6 +137,7 @@ object Routes {
     }
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
@@ -120,11 +147,12 @@ fun MainScreen(
     navController: NavHostController
 ) {
     val viewModel: MainViewModel = viewModel()
-    val coroutineScope = rememberCoroutineScope()
 
     val onError: @Composable (Int) -> Unit = { message ->
         val strMessage = stringResource(message)
-        coroutineScope.launch { scaffoldState.snackbarHostState.showSnackbar(strMessage) }
+        LaunchedEffect(null) {
+            scaffoldState.snackbarHostState.showSnackbar(strMessage)
+        }
     }
 
     Box(
