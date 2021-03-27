@@ -2,26 +2,20 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +27,6 @@ import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 @ExperimentalComposeUiApi
@@ -450,98 +443,6 @@ fun CommonTaskScreenContent(
     }
 }
 
-@ExperimentalAnimationApi
-@Composable
-private fun Selectors(
-    editStatus: EditAction<Status>,
-    isStatusSelectorVisible: Boolean,
-    hideStatusSelector: () -> Unit,
-    editSprint: EditAction<Sprint?>,
-    isSprintSelectorVisible: Boolean,
-    hideSprintSelector: () -> Unit,
-    editAssignees: EditAction<User>,
-    isAssigneesSelectorVisible: Boolean,
-    hideAssigneesSelector: () -> Unit,
-    editWatchers: EditAction<User>,
-    isWatchersSelectorVisible: Boolean,
-    hideWatchersSelector: () -> Unit
-) {
-    // status editor
-    SelectorList(
-        titleHint = stringResource(R.string.choose_status),
-        items = editStatus.items,
-        isVisible = isStatusSelectorVisible,
-        isLoading = editStatus.isItemsLoading,
-        isSearchable = false,
-        loadData = editStatus.loadItems,
-        navigateBack = hideStatusSelector
-    ) {
-        StatusItem(
-            status = it,
-            onClick = {
-                editStatus.selectItem(it)
-                hideStatusSelector()
-            }
-        )
-    }
-
-    // sprint editor
-    SelectorList(
-        titleHint = stringResource(R.string.choose_sprint),
-        items = editSprint.items,
-        isVisible = isSprintSelectorVisible,
-        isLoading = editSprint.isItemsLoading,
-        isSearchable = false,
-        loadData = editSprint.loadItems,
-        navigateBack = hideSprintSelector
-    ) {
-        SprintItem(
-            sprint = it,
-            onClick = {
-                editSprint.selectItem(it)
-                hideSprintSelector()
-            }
-        )
-    }
-    
-    // assignees editor
-    SelectorList(
-        titleHint = stringResource(R.string.search_members),
-        items = editAssignees.items,
-        isVisible = isAssigneesSelectorVisible,
-        isLoading = editAssignees.isItemsLoading,
-        loadData = editAssignees.loadItems,
-        navigateBack = hideAssigneesSelector
-    ) {
-        MemberItem(
-            member = it,
-            onClick = {
-                editAssignees.selectItem(it)
-                hideAssigneesSelector()
-            }
-        )
-    }
-
-    // watchers editor
-    SelectorList(
-        titleHint = stringResource(R.string.search_members),
-        items = editWatchers.items,
-        isVisible = isWatchersSelectorVisible,
-        isLoading = editWatchers.isItemsLoading,
-        loadData = editWatchers.loadItems,
-        navigateBack = hideWatchersSelector
-    ) {
-        MemberItem(
-            member = it,
-            onClick = {
-                editWatchers.selectItem(it)
-                hideWatchersSelector()
-            }
-        )
-    }
-
-}
-
 @Composable
 private fun EpicItem(
     epic: Epic
@@ -653,71 +554,6 @@ private fun CommentItem(
 }
 
 @Composable
-private fun StatusItem(
-    status: Status,
-    onClick: () -> Unit = {}
-) = ContainerBox(
-    verticalPadding = 16.dp,
-    onClick = onClick
-) {
-    Text(
-        text = status.name,
-        color = Color(android.graphics.Color.parseColor(status.color))
-    )
-}
-
-@Composable
-private fun SprintItem(
-    sprint: Sprint?,
-    onClick: () -> Unit = {}
-) = ContainerBox(
-    verticalPadding = 16.dp,
-    onClick = onClick
-) {
-    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
-
-    sprint?.also {
-        Surface(
-            contentColor = if (it.isClosed) Color.Gray else MaterialTheme.colors.onSurface
-        ) {
-            Column {
-                Text(
-                    if (it.isClosed) {
-                        stringResource(R.string.closed_sprint_name_template).format(it.name)
-                    } else {
-                        it.name
-                    }
-                )
-
-                Text(
-                    text = stringResource(R.string.sprint_dates_template).format(
-                        dateFormatter.format(it.start),
-                        dateFormatter.format(it.finish)
-                    ),
-                    style = MaterialTheme.typography.body2
-                )
-            }
-        }
-    } ?: run {
-        Text(
-            text = stringResource(R.string.move_to_backlog),
-            color = MaterialTheme.colors.primary
-        )
-    }
-}
-
-@Composable
-private fun MemberItem(
-    member: User,
-    onClick: () -> Unit = {}
-) = ContainerBox(
-    verticalPadding = 16.dp,
-    onClick = onClick
-) {
-    UserItem(member)
-}
-
-@Composable
 private fun AddUserButton(
     onClick: () -> Unit
 ) = TextButton(onClick = onClick) {
@@ -731,60 +567,6 @@ private fun AddUserButton(
         Text(
             text = stringResource(R.string.add_user),
             color = MaterialTheme.colors.primary
-        )
-    }
-}
-
-@ExperimentalComposeUiApi
-@Composable
-private fun CreateCommentBar(
-    createComment: (String) -> Unit
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-        .fillMaxWidth()
-        .background(if (isSystemInDarkTheme()) Color.DarkGray else MaterialTheme.colors.surface)
-        .shadow(elevation = if (isSystemInDarkTheme()) 0.dp else 1.dp)
-        .padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding)
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
-
-    Box(
-        modifier = Modifier.weight(1f),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        if (commentTextValue.text.isEmpty()) {
-            Text(
-                text = stringResource(R.string.comment_hint),
-                style = MaterialTheme.typography.body1,
-                color = Color.Gray
-            )
-        }
-        BasicTextField(
-            value = commentTextValue,
-            onValueChange = { commentTextValue = it },
-            maxLines = 3,
-            textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
-            cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-    }
-
-    IconButton(
-        onClick = {
-            commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
-                createComment(it)
-                commentTextValue = TextFieldValue()
-                keyboardController?.hideSoftwareKeyboard()
-            }
-        }
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_send),
-            contentDescription = null,
-            tint = MaterialTheme.colors.primary
         )
     }
 }
