@@ -12,9 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,28 +92,9 @@ fun ScrumScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
-    TopAppBar(
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickableUnindicated(onClick = onTitleClick)
-            ) {
-                Text(
-                    text = projectName.takeIf { it.isNotEmpty() }
-                        ?: stringResource(R.string.choose_project_title),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.widthIn(max = 250.dp)
-                )
-
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_down),
-                    contentDescription = null
-                )
-            }
-        },
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp
+    ProjectAppBar(
+        projectName = projectName,
+        onTitleClick = onTitleClick
     )
 
     if (isLoading) {
