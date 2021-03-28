@@ -36,3 +36,9 @@ data class CreateCommentRequest(
     val comment: String,
     val version: Int
 )
+
+data class EditTaskRequest(
+    val subject: String,
+    val description: String,
+    val version: Int
+)

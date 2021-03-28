@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.components
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -14,6 +15,7 @@ import io.eugenethedev.taigamobile.R
 @Composable
 fun AppBarWithBackButton(
     title: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
     navigateBack: () -> Unit = {}
 ) = TopAppBar(
     title = title,
@@ -27,6 +29,7 @@ fun AppBarWithBackButton(
             )
         }
     },
+    actions = actions,
     backgroundColor = MaterialTheme.colors.surface,
     elevation = 0.dp
 )

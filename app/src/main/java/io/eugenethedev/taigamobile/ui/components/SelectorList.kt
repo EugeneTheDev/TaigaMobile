@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -49,7 +50,7 @@ fun <T> SelectorList(
     onBackPressed(navigateBack)
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

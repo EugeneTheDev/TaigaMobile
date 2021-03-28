@@ -286,4 +286,20 @@ class CommonTaskViewModel : ViewModel() {
             Result(ResultStatus.ERROR, message = R.string.permission_error)
         }
     }
+
+    // Edit task itself (title & description)
+    val editResult = MutableLiveResult<Unit>()
+
+    fun editTask(title: String, description: String) = viewModelScope.launch {
+        editResult.value = Result(ResultStatus.LOADING)
+
+        editResult.value = try {
+            storiesRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
 }

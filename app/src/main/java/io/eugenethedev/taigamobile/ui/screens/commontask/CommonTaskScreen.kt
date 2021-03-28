@@ -81,6 +81,9 @@ fun CommonTaskScreen(
     val commentsResult by viewModel.commentsResult.observeAsState()
     commentsResult?.subscribeOnError(onError)
 
+    val editResult by viewModel.editResult.observeAsState()
+    editResult?.subscribeOnError(onError)
+
     story?.data.let {
         CommonTaskScreenContent(
             commonTaskType = commonTaskType,
@@ -103,7 +106,7 @@ fun CommonTaskScreen(
             watchers = watchers?.data.orEmpty(),
             tasks = tasks?.data.orEmpty(),
             comments = comments?.data.orEmpty(),
-            isLoading = story?.resultStatus == ResultStatus.LOADING,
+            isLoading = story?.resultStatus == ResultStatus.LOADING || editResult?.resultStatus == ResultStatus.LOADING,
             navigateBack = navController::popBackStack,
             navigateToTask = navController::navigateToTaskScreen,
             editStatus = EditAction(
@@ -140,7 +143,8 @@ fun CommonTaskScreen(
                 createComment = viewModel::createComment,
                 deleteComment = viewModel::deleteComment,
                 isResultLoading = commentsResult?.resultStatus == ResultStatus.LOADING
-            )
+            ),
+            editTask = viewModel::editTask
         )
     }
 
@@ -172,12 +176,311 @@ fun CommonTaskScreenContent(
     editSprint: EditAction<Sprint?> = EditAction(),
     editAssignees: EditAction<User> = EditAction(),
     editWatchers: EditAction<User> = EditAction(),
-    editComments: EditCommentsAction = EditCommentsAction()
-) = Column(Modifier.fillMaxSize()) {
+    editComments: EditCommentsAction = EditCommentsAction(),
+    editTask: (title: String, desciption: String) -> Unit = { _, _ -> }
+) = Box(Modifier.fillMaxSize()) {
+    var isTaskEditorVisible by remember { mutableStateOf(false) }
+
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
     var isSprintSelectorVisible by remember { mutableStateOf(false) }
     var isAssigneesSelectorVisible by remember { mutableStateOf(false) }
     var isWatchersSelectorVisible by remember { mutableStateOf(false) }
+
+    Column(Modifier.fillMaxSize()) {
+        var isMenuExpanded by remember { mutableStateOf(false) }
+        AppBarWithBackButton(
+            title = {
+                Text(
+                    text = toolbarTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            actions = {
+                Box {
+                    IconButton(onClick = { isMenuExpanded = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_options),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.primary
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false }
+                    ) {
+                        // edit
+                        DropdownMenuItem(
+                            onClick = {
+                                    isMenuExpanded = false
+                                    isTaskEditorVisible = true
+
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.edit),
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+
+                        // delete
+                        DropdownMenuItem(onClick = { /*TODO*/ }) {
+                            Text(
+                                text = stringResource(R.string.delete),
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+                    }
+                }
+            },
+            navigateBack = navigateBack
+        )
+
+        if (isLoading || creator == null) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularLoader()
+            }
+        } else {
+            val sectionsMargin = 10.dp
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = mainHorizontalScreenPadding)
+            ) {
+
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        // status
+                        ClickableBadge(
+                            text = statusName,
+                            colorHex = statusColorHex,
+                            onClick = {
+                                isStatusSelectorVisible = true
+                                editStatus.loadItems(null)
+                            },
+                            isLoading = editStatus.isResultLoading
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+
+                        // sprint
+                        ClickableBadge(
+                            text = sprintName ?: stringResource(R.string.no_sprint),
+                            color = sprintName?.let { MaterialTheme.colors.primary } ?: Color.Gray,
+                            onClick = {
+                                isSprintSelectorVisible = true
+                                editSprint.loadItems(null)
+                            },
+                            isLoading = editSprint.isResultLoading,
+                            isClickable = commonTaskType != CommonTaskType.TASK
+                        )
+
+                    }
+
+                    // title
+                    Text(
+                        text = storyTitle,
+                        style = MaterialTheme.typography.h5
+                    )
+
+                    Spacer(Modifier.height(4.dp))
+                }
+
+                // belongs to
+                if (epics.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.belongs_to),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    }
+
+                    items(epics) {
+                        EpicItem(it)
+                        Spacer(Modifier.height(2.dp))
+                    }
+                }
+
+                // belongs to (story)
+                story?.let {
+                    item {
+                        Text(
+                            text = stringResource(R.string.belongs_to),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+
+                        UserStoryItem(story)
+                    }
+                }
+
+                item {
+                    Spacer(Modifier.height(sectionsMargin * 2))
+
+                    // description
+                    if (description.isNotEmpty()) {
+                        MarkdownText(description)
+                    } else {
+                        NothingToSeeHereText()
+                    }
+
+                    Spacer(Modifier.height(sectionsMargin * 2))
+
+                    // created by
+                    Text(
+                        text = stringResource(R.string.created_by),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+
+                    UserItem(
+                        user = creator,
+                        dateTime = creationDateTime
+                    )
+
+                    Spacer(Modifier.height(sectionsMargin))
+
+                    // assigned to
+                    Text(
+                        text = stringResource(R.string.assigned_to),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
+
+                itemsIndexed(assignees) { index, item ->
+                    UserItemWithAction(
+                        user = item,
+                        onRemoveClick = { editAssignees.removeItem(item) }
+                    )
+
+                    if (index < assignees.lastIndex) {
+                        Spacer(Modifier.height(6.dp))
+                    }
+                }
+
+                // add assignee & loader
+                item {
+                    if (editAssignees.isResultLoading) {
+                        DotsLoader()
+                    }
+                    AddUserButton(
+                        onClick = {
+                            isAssigneesSelectorVisible = true
+                            editAssignees.loadItems(null)
+                        }
+                    )
+                }
+
+
+                item {
+                    Spacer(Modifier.height(sectionsMargin))
+
+                    // watchers
+                    Text(
+                        text = stringResource(R.string.watchers),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
+
+                itemsIndexed(watchers) { index, item ->
+                    UserItemWithAction(
+                        user = item,
+                        onRemoveClick = { editWatchers.removeItem(item) }
+                    )
+
+                    if (index < watchers.lastIndex) {
+                        Spacer(Modifier.height(6.dp))
+                    }
+                }
+
+                // add watcher & loader
+                item {
+                    if (editWatchers.isResultLoading) {
+                        DotsLoader()
+                    }
+                    AddUserButton(
+                        onClick = {
+                            isWatchersSelectorVisible = true
+                            editWatchers.loadItems(null)
+                        }
+                    )
+                }
+
+                if (tasks.isNotEmpty()) {
+                    item {
+                        Spacer(Modifier.height(sectionsMargin * 2))
+
+                        // tasks
+                        Text(
+                            text = stringResource(R.string.tasks),
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
+
+                    itemsIndexed(tasks) { index, item ->
+                        CommonTaskItem(
+                            commonTask = item,
+                            horizontalPadding = 0.dp,
+                            navigateToTask = navigateToTask
+                        )
+
+                        if (index < tasks.lastIndex) {
+                            Divider(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                color = Color.LightGray
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Divider(
+                        modifier = Modifier.padding(
+                            top = sectionsMargin * 2,
+                            bottom = sectionsMargin
+                        ),
+                        color = Color.LightGray,
+                        thickness = 2.dp
+                    )
+
+                    // comments
+                    Text(
+                        text = stringResource(R.string.comments_template).format(comments.size),
+                        style = MaterialTheme.typography.h6
+                    )
+
+                    Spacer(Modifier.height(4.dp))
+                }
+
+                itemsIndexed(comments) { index, item ->
+                    CommentItem(
+                        comment = item,
+                        onDeleteClick = { editComments.deleteComment(item) }
+                    )
+
+                    if (index < comments.lastIndex) {
+                        Divider(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            color = Color.LightGray
+                        )
+                    }
+                }
+
+                item {
+                    if (editComments.isResultLoading) {
+                        DotsLoader()
+                    }
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+
+            CreateCommentBar(editComments.createComment)
+        }
+    }
+
 
     // Bunch of list selectors
     Selectors(
@@ -195,255 +498,18 @@ fun CommonTaskScreenContent(
         hideWatchersSelector = { isWatchersSelectorVisible = false }
     )
 
-    AppBarWithBackButton(
-        title = {
-            Text(
-                text = toolbarTitle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        navigateBack = navigateBack
-    )
-
-    if (isLoading || creator == null) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CircularLoader()
-        }
-    } else {
-        val sectionsMargin = 10.dp
-
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = mainHorizontalScreenPadding)
-        ) {
-
-            item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // status
-                    ClickableBadge(
-                        text = statusName,
-                        colorHex = statusColorHex,
-                        onClick = {
-                            isStatusSelectorVisible = true
-                            editStatus.loadItems(null)
-                        },
-                        isLoading = editStatus.isResultLoading
-                    )
-
-                    Spacer(Modifier.width(8.dp))
-
-                    // sprint
-                    ClickableBadge(
-                        text = sprintName ?: stringResource(R.string.no_sprint),
-                        color = sprintName?.let { MaterialTheme.colors.primary } ?: Color.Gray,
-                        onClick = {
-                            isSprintSelectorVisible = true
-                            editSprint.loadItems(null)
-                        },
-                        isLoading = editSprint.isResultLoading,
-                        isClickable = commonTaskType != CommonTaskType.TASK
-                    )
-
-                }
-
-                // title
-                Text(
-                    text = storyTitle,
-                    style = MaterialTheme.typography.h5
-                )
-
-                Spacer(Modifier.height(4.dp))
-            }
-
-            // belongs to
-            if (epics.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.belongs_to),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-
-                items(epics) {
-                    EpicItem(it)
-                    Spacer(Modifier.height(2.dp))
-                }
-            }
-
-            // belongs to (story)
-            story?.let {
-                item {
-                    Text(
-                        text = stringResource(R.string.belongs_to),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-
-                    UserStoryItem(story)
-                }
-            }
-
-            item {
-                Spacer(Modifier.height(sectionsMargin * 2))
-
-                // description
-                if (description.isNotEmpty()) {
-                    MarkdownText(description)
-                } else {
-                    NothingToSeeHereText()
-                }
-
-                Spacer(Modifier.height(sectionsMargin * 2))
-
-                // created by
-                Text(
-                    text = stringResource(R.string.created_by),
-                    style = MaterialTheme.typography.subtitle1
-                )
-
-                UserItem(
-                    user = creator,
-                    dateTime = creationDateTime
-                )
-
-                Spacer(Modifier.height(sectionsMargin))
-
-                // assigned to
-                Text(
-                    text = stringResource(R.string.assigned_to),
-                    style = MaterialTheme.typography.subtitle1
-                )
-            }
-
-            itemsIndexed(assignees) { index, item ->
-                UserItemWithAction(
-                    user = item,
-                    onRemoveClick = { editAssignees.removeItem(item) }
-                )
-
-                if (index < assignees.lastIndex) {
-                    Spacer(Modifier.height(6.dp))
-                }
-            }
-
-            // add assignee & loader
-            item {
-                if (editAssignees.isResultLoading) {
-                    DotsLoader()
-                }
-                AddUserButton(
-                    onClick = {
-                        isAssigneesSelectorVisible = true
-                        editAssignees.loadItems(null)
-                    }
-                )
-            }
-
-
-            item {
-                Spacer(Modifier.height(sectionsMargin))
-
-                // watchers
-                Text(
-                    text = stringResource(R.string.watchers),
-                    style = MaterialTheme.typography.subtitle1
-                )
-            }
-
-            itemsIndexed(watchers) { index, item ->
-                UserItemWithAction(
-                    user = item,
-                    onRemoveClick = { editWatchers.removeItem(item) }
-                )
-
-                if (index < watchers.lastIndex) {
-                    Spacer(Modifier.height(6.dp))
-                }
-            }
-
-            // add watcher & loader
-            item {
-                if (editWatchers.isResultLoading) {
-                    DotsLoader()
-                }
-                AddUserButton(
-                    onClick = {
-                        isWatchersSelectorVisible = true
-                        editWatchers.loadItems(null)
-                    }
-                )
-            }
-
-            if (tasks.isNotEmpty()) {
-                item {
-                    Spacer(Modifier.height(sectionsMargin * 2))
-
-                    // tasks
-                    Text(
-                        text = stringResource(R.string.tasks),
-                        style = MaterialTheme.typography.h6
-                    )
-                }
-
-                itemsIndexed(tasks) { index, item ->
-                    CommonTaskItem(
-                        commonTask = item,
-                        horizontalPadding = 0.dp,
-                        navigateToTask = navigateToTask
-                    )
-
-                    if (index < tasks.lastIndex) {
-                        Divider(
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            color = Color.LightGray
-                        )
-                    }
-                }
-            }
-
-            item {
-                Divider(
-                    modifier = Modifier.padding(top = sectionsMargin * 2, bottom = sectionsMargin),
-                    color = Color.LightGray,
-                    thickness = 2.dp
-                )
-
-                // comments
-                Text(
-                    text = stringResource(R.string.comments_template).format(comments.size),
-                    style = MaterialTheme.typography.h6
-                )
-
-                Spacer(Modifier.height(4.dp))
-            }
-
-            itemsIndexed(comments) { index, item ->
-                CommentItem(
-                    comment = item,
-                    onDeleteClick = { editComments.deleteComment(item) }
-                )
-
-                if (index < comments.lastIndex) {
-                    Divider(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        color = Color.LightGray
-                    )
-                }
-            }
-
-            item {
-                if (editComments.isResultLoading) {
-                    DotsLoader()
-                }
-                Spacer(Modifier.height(16.dp))
-            }
-        }
-
-        CreateCommentBar(editComments.createComment)
+    // Editor
+    if (isTaskEditorVisible) {
+        TaskEditor(
+            toolbarText = stringResource(R.string.edit),
+            title = storyTitle,
+            description = description,
+            onSaveClick = { title, description ->
+                isTaskEditorVisible = false
+                editTask(title, description)
+            },
+            navigateBack = { isTaskEditorVisible = false }
+        )
     }
 }
 
@@ -472,7 +538,7 @@ private fun EpicItem(
                 color = Color(android.graphics.Color.parseColor(epic.color)),
                 shape = MaterialTheme.shapes.small
             )
-            .padding(horizontal = 2.dp)
+            .padding(horizontal = 2.dp, vertical = 1.dp)
             .weight(0.1f, fill = false)
     )
 }

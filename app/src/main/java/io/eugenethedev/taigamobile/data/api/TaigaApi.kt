@@ -145,4 +145,17 @@ interface TaigaApi {
         @Path("id") id: Long,
         @Body createCommentRequest: CreateCommentRequest
     )
+
+    @PATCH("userstories/{id}")
+    suspend fun editUserStory(
+        @Path("id") id: Long,
+        @Body editTaskRequest: EditTaskRequest
+    )
+
+    @PATCH("tasks/{id}")
+    suspend fun editTask(
+        @Path("id") id: Long,
+        @Body editTaskRequest: EditTaskRequest
+    )
+
 }
