@@ -52,6 +52,7 @@ class SprintViewModel : StoriesViewModel() {
 
     override fun reset() {
         super.reset()
+        tasks.value = null
         currentStoriesPage = 0
         maxStoriesPage = Int.MAX_VALUE
     }

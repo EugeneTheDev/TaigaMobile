@@ -421,7 +421,10 @@ fun CommonTaskScreenContent(
                             style = MaterialTheme.typography.h6
                         )
 
-                        IconButton(onClick = navigateToCreateTask) {
+                        IconButton(
+                            onClick = navigateToCreateTask,
+                            modifier = Modifier.padding(top = 2.dp)
+                        ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_add),
                                 contentDescription = null,

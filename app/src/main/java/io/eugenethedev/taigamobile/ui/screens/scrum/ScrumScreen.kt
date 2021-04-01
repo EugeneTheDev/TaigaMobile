@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
@@ -68,7 +70,11 @@ fun ScrumScreen(
         navigateToBoard = {
             navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
         },
-        navigateToTask = navController::navigateToTaskScreen
+        navigateToTask = navController::navigateToTaskScreen,
+        navigateToCreateTask = {
+            viewModel.reset()
+            navController.navigateToCreateTaskScreen(CommonTaskType.USERSTORY)
+        }
     )
 }
 
@@ -87,7 +93,8 @@ fun ScrumScreenContent(
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
     navigateToBoard: (Sprint) -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> },
+    navigateToCreateTask: () -> Unit = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -111,11 +118,27 @@ fun ScrumScreenContent(
             ) {
 
                 item {
-                    Text(
-                        text = stringResource(R.string.backlog),
-                        style = MaterialTheme.typography.h6,
+                    // backlog
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                    )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.backlog),
+                            style = MaterialTheme.typography.h6
+                        )
+
+                        IconButton(
+                            onClick = navigateToCreateTask,
+                            modifier = Modifier.padding(top = 2.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_add),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
+                    }
                 }
 
                 CommonTasksList(

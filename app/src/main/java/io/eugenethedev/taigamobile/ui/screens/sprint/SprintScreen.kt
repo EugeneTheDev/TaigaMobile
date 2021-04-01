@@ -4,10 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -16,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,13 +24,11 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
-import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
-import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import io.eugenethedev.taigamobile.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -72,7 +68,11 @@ fun SprintScreen(
         navigateBack = navController::popBackStack,
         tasks = tasks?.data.orEmpty(),
         loadTasks = viewModel::loadTasks,
-        navigateToTask = navController::navigateToTaskScreen
+        navigateToTask = navController::navigateToTaskScreen,
+        navigateToCreateTask = {
+            viewModel.reset()
+            navController.navigateToCreateTaskScreen(CommonTaskType.TASK, sprintId = sprint.id)
+        }
     )
 }
 
@@ -93,7 +93,8 @@ fun SprintScreenContent(
     navigateBack: () -> Unit = {},
     tasks: List<CommonTask> = emptyList(),
     loadTasks: () -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> },
+    navigateToCreateTask: () -> Unit = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -136,7 +137,7 @@ fun SprintScreenContent(
         ) {
 
             item {
-                Column(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
+                Row(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
                     Text(
                         text = stringResource(R.string.stories),
                         style = MaterialTheme.typography.h6,
@@ -158,11 +159,26 @@ fun SprintScreenContent(
             item {
                 Spacer(Modifier.height(24.dp))
 
-                Text(
-                    text = stringResource(R.string.tasks_without_story),
-                    style = MaterialTheme.typography.h6,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                )
+                ) {
+                    Text(
+                        text = stringResource(R.string.tasks_without_story),
+                        style = MaterialTheme.typography.h6,
+                    )
+
+                    IconButton(
+                        onClick = navigateToCreateTask,
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.primary
+                        )
+                    }
+                }
             }
 
             itemsIndexed(tasks) { index, item ->
