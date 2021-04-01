@@ -36,7 +36,7 @@ class CreateTaskViewModel : ViewModel() {
             Result(ResultStatus.SUCCESS, tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId))
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
         }
     }
 }
