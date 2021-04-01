@@ -50,8 +50,7 @@ fun TaskEditor(
             IconButton(
                 onClick = {
                     val title = titleInput.text.trim().takeIf { it.isNotEmpty() } ?: return@IconButton
-                    val description = descriptionInput.text.trim().takeIf { it.isNotEmpty() } ?: return@IconButton
-                    onSaveClick(title, description)
+                    onSaveClick(title, descriptionInput.text.trim())
                 }
             ) {
                 Icon(

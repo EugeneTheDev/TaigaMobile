@@ -6,7 +6,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
-import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
+import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class CommonTaskViewModel : ViewModel() {
     @Inject lateinit var session: Session
-    @Inject lateinit var storiesRepository: IStoriesRepository
+    @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var usersRepository: IUsersRepository
 
     private var commonTaskId: Long = -1
@@ -50,12 +50,12 @@ class CommonTaskViewModel : ViewModel() {
         }
 
         story.value = try {
-            storiesRepository.getCommonTask(commonTaskId, commonTaskType).let {
+            tasksRepository.getCommonTask(commonTaskId, commonTaskType).let {
                 val creatorAsync = async { loadUser(it.creatorId) }
                 val assigneesAsyncs = it.assignedIds.map { async { loadUser(it) } }
                 val watchersAsyncs = it.watcherIds.map { async { loadUser(it) } }
-                val tasksAsync = async { storiesRepository.getUserStoryTasks(commonTaskId) }
-                val commentsAsync = async { storiesRepository.getComments(commonTaskId, commonTaskType) }
+                val tasksAsync = async { tasksRepository.getUserStoryTasks(commonTaskId) }
+                val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
 
                 creator.value = creatorAsync.await()
                 assignees.value = Result(ResultStatus.SUCCESS, assigneesAsyncs.mapNotNull { it.await().data })
@@ -101,7 +101,7 @@ class CommonTaskViewModel : ViewModel() {
         delay(200)
 
         statuses.value = try {
-            Result(ResultStatus.SUCCESS, storiesRepository.getStatuses(commonTaskType))
+            Result(ResultStatus.SUCCESS, tasksRepository.getStatuses(commonTaskType))
         } catch (e: Exception) {
             Timber.w(e)
             Result(ResultStatus.ERROR, message = R.string.common_error_message)
@@ -112,7 +112,7 @@ class CommonTaskViewModel : ViewModel() {
         statusSelectResult.value = Result(ResultStatus.LOADING)
 
         statusSelectResult.value = try {
-            storiesRepository.changeStatus(commonTaskId, commonTaskType, status.id, commonTaskVersion)
+            tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, commonTaskVersion)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -141,7 +141,7 @@ class CommonTaskViewModel : ViewModel() {
         delay(200)
 
         try {
-            storiesRepository.getSprints(++currentSprintPage)
+            tasksRepository.getSprints(++currentSprintPage)
                 .also {
                     sprints.value = Result(
                         ResultStatus.SUCCESS,
@@ -161,7 +161,7 @@ class CommonTaskViewModel : ViewModel() {
         sprintSelectResult.value = Result(ResultStatus.LOADING)
 
         sprintSelectResult.value = try {
-            storiesRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
+            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -211,7 +211,7 @@ class CommonTaskViewModel : ViewModel() {
         assigneesResult.value = Result(ResultStatus.LOADING)
 
         assigneesResult.value = try {
-            storiesRepository.changeAssignees(
+            tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
                 story.value?.data?.assignedIds.orEmpty().let {
                     if (remove) it - user.id
@@ -238,7 +238,7 @@ class CommonTaskViewModel : ViewModel() {
         watchersResult.value = Result(ResultStatus.LOADING)
 
         watchersResult.value = try {
-            storiesRepository.changeWatchers(
+            tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
                 story.value?.data?.watcherIds.orEmpty().let {
                     if (remove) it - user.id
@@ -265,7 +265,7 @@ class CommonTaskViewModel : ViewModel() {
         commentsResult.value = Result(ResultStatus.LOADING)
         
         commentsResult.value = try {
-            storiesRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
+            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -278,7 +278,7 @@ class CommonTaskViewModel : ViewModel() {
         commentsResult.value = Result(ResultStatus.LOADING)
 
         commentsResult.value = try {
-            storiesRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
+            tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -294,7 +294,7 @@ class CommonTaskViewModel : ViewModel() {
         editResult.value = Result(ResultStatus.LOADING)
 
         editResult.value = try {
-            storiesRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
+            tasksRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
             loadData()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {

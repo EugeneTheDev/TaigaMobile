@@ -46,7 +46,7 @@ class ScrumViewModel : StoriesViewModel() {
         sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
 
         try {
-            storiesRepository.getSprints(++currentSprintPage)
+            tasksRepository.getSprints(++currentSprintPage)
                 .also { sprints.value = Result(ResultStatus.SUCCESS, sprints.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxSprintPage = currentSprintPage }

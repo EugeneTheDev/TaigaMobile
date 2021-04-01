@@ -87,7 +87,7 @@ fun ScrumScreenContent(
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
     navigateToBoard: (Sprint) -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start

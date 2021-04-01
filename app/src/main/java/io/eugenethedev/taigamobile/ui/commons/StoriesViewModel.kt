@@ -7,18 +7,17 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
+import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 abstract class StoriesViewModel : ViewModel() {
 
-    @Inject lateinit var storiesRepository: IStoriesRepository
+    @Inject lateinit var tasksRepository: ITasksRepository
 
     val statuses = MutableLiveResult<List<Status>>()
     val stories = MutableLiveResult<List<CommonTask>>()
@@ -42,7 +41,7 @@ abstract class StoriesViewModel : ViewModel() {
         statuses.value = try {
              Result(
                 resultStatus = ResultStatus.SUCCESS,
-                storiesRepository.getStatuses(CommonTaskType.USERSTORY).onEach {
+                tasksRepository.getStatuses(CommonTaskType.USERSTORY).onEach {
                     statusesStates[it] = StatusState()
                 }
             )
@@ -60,7 +59,7 @@ abstract class StoriesViewModel : ViewModel() {
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
 
             try {
-                storiesRepository.getStories(status.id, ++currentPage, sprintId)
+                tasksRepository.getStories(status.id, ++currentPage, sprintId)
                     .also { stories.value = Result(ResultStatus.SUCCESS, stories.value?.data.orEmpty() + it) }
                     .takeIf { it.isEmpty() }
                     ?.run { maxPage = currentPage /* reached maximum page */ }

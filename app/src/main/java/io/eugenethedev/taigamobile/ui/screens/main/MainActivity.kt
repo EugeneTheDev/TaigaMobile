@@ -26,6 +26,7 @@ import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScr
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
+import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -122,18 +123,21 @@ object Routes {
     const val scrum = "scrum"
     const val team = "team"
     const val settings = "settings"
-    const val projectsSelector = "projects_selector"
+    const val projectsSelector = "projectsSelector"
     const val sprint = "sprint"
-    const val commonTask = "commontask"
+    const val commonTask = "commonTask"
+    const val createTask = "createTask"
 
     const val startDestination = scrum
 
     object Arguments {
         const val sprint = "sprint"
+        const val sprintId = "sprintId"
         const val commonTaskId = "taskId"
         const val commonTaskType = "taskType"
         const val ref = "ref"
         const val projectSlug = "projectSlug"
+        const val parentId = "parentId"
     }
 }
 
@@ -158,7 +162,8 @@ fun MainScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .padding(paddingValues)) {
+            .padding(paddingValues)
+    ) {
         NavHost(
             navController = navController,
             startDestination = if (viewModel.isLogged) Routes.startDestination else Routes.login
@@ -208,12 +213,11 @@ fun MainScreen(
             }
 
             composable(
-                Routes.Arguments.let { "${Routes.commonTask}/{${it.commonTaskId}}/{${it.commonTaskType}}/{${it.ref}}/{${it.projectSlug}}" },
+                Routes.Arguments.run { "${Routes.commonTask}/{$commonTaskId}/{$commonTaskType}/{$ref}" },
                 arguments = listOf(
-                    navArgument(Routes.Arguments.commonTaskId) { type = NavType.LongType },
                     navArgument(Routes.Arguments.commonTaskType) { type = NavType.StringType },
+                    navArgument(Routes.Arguments.commonTaskId) { type = NavType.LongType },
                     navArgument(Routes.Arguments.ref) { type = NavType.IntType },
-                    navArgument(Routes.Arguments.projectSlug) { type = NavType.StringType }
                 )
             ) {
                 CommonTaskScreen(
@@ -221,7 +225,29 @@ fun MainScreen(
                     commonTaskId = it.arguments!!.getLong(Routes.Arguments.commonTaskId),
                     commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
                     ref = it.arguments!!.getInt(Routes.Arguments.ref),
-                    projectSlug = it.arguments!!.getString(Routes.Arguments.projectSlug, ""),
+                    onError = onError
+                )
+            }
+
+            composable(
+                Routes.Arguments.run {"${Routes.createTask}/{$commonTaskType}?$parentId={$parentId}&$sprintId={$sprintId}" },
+                arguments = listOf(
+                    navArgument(Routes.Arguments.commonTaskType) { type = NavType.StringType },
+                    navArgument(Routes.Arguments.parentId) {
+                        type = NavType.LongType
+                        defaultValue = -1L // long does not allow null values
+                    },
+                    navArgument(Routes.Arguments.sprintId) {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    }
+                )
+            ) {
+                CreateTaskScreen(
+                    navController = navController,
+                    commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
+                    parentId = it.arguments!!.getLong(Routes.Arguments.parentId).takeIf { it >= 0 },
+                    sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId).takeIf { it >= 0 },
                     onError = onError
                 )
             }

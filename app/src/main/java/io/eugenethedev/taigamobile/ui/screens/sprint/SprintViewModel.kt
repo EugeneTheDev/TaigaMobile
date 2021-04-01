@@ -40,7 +40,7 @@ class SprintViewModel : StoriesViewModel() {
         tasks.value = Result(ResultStatus.LOADING, tasks.value?.data)
 
         try {
-            storiesRepository.getSprintTasks(sprintId!!, ++currentStoriesPage)
+            tasksRepository.getSprintTasks(sprintId!!, ++currentStoriesPage)
                 .also { tasks.value = Result(ResultStatus.SUCCESS, tasks.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxStoriesPage = currentStoriesPage }

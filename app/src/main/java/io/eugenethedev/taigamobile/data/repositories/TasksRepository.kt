@@ -3,14 +3,14 @@ package io.eugenethedev.taigamobile.data.repositories
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.domain.entities.*
-import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
+import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class StoriesRepository @Inject constructor(
+class TasksRepository @Inject constructor(
     private val taigaApi: TaigaApi,
     private val session: Session
-) : IStoriesRepository {
+) : ITasksRepository {
 
     override suspend fun getStatuses(commonTaskType: CommonTaskType) = withIO {
         when (commonTaskType) {
@@ -22,7 +22,7 @@ class StoriesRepository @Inject constructor(
     override suspend fun getStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
         handlePage {
             taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page)
-                .mapToCommonTask(CommonTaskType.USERSTORY)
+                .map { it.toCommonTask(CommonTaskType.USERSTORY) }
         }
     }
 
@@ -35,13 +35,14 @@ class StoriesRepository @Inject constructor(
     override suspend fun getSprintTasks(sprintId: Long, page: Int) = withIO {
         handlePage {
             taigaApi.getTasks(session.currentProjectId, sprintId, "null", page)
-                .mapToCommonTask(CommonTaskType.TASK)
+                .map { it.toCommonTask(CommonTaskType.TASK) }
         }
     }
 
     override suspend fun getUserStoryTasks(storyId: Long) = withIO {
         handlePage {
-            taigaApi.getTasks(session.currentProjectId, null, storyId, null).mapToCommonTask(CommonTaskType.TASK)
+            taigaApi.getTasks(session.currentProjectId, null, storyId, null)
+                .map { it.toCommonTask(CommonTaskType.TASK) }
         }
     }
 
@@ -87,27 +88,26 @@ class StoriesRepository @Inject constructor(
         }.sortedBy { it.postDateTime }
     }
 
-    private fun List<CommonTaskResponse>.mapToCommonTask(commonTaskType: CommonTaskType) = map {
-        CommonTask(
-            id = it.id,
-            createdDate = it.created_date,
-            title = it.subject,
-            ref = it.ref,
-            status = Status(
-                id = it.status,
-                name = it.status_extra_info.name,
-                color = it.status_extra_info.color
-            ),
-            assignee = it.assigned_to_extra_info?.let {
-                CommonTask.Assignee(
-                    id = it.id,
-                    fullName = it.full_name_display
-                )
-            },
-            projectSlug = it.project_extra_info.slug,
-            taskType = commonTaskType
-        )
-    }
+
+    private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
+        id = id,
+        createdDate = created_date,
+        title = subject,
+        ref = ref,
+        status = Status(
+            id = status,
+            name = status_extra_info.name,
+            color = status_extra_info.color
+        ),
+        assignee = assigned_to_extra_info?.let {
+            CommonTask.Assignee(
+                id = it.id,
+                fullName = it.full_name_display
+            )
+        },
+        projectSlug = project_extra_info.slug,
+        taskType = commonTaskType
+    )
     
     private fun SprintResponse.toSprint() = Sprint(
         id = id,
@@ -125,6 +125,7 @@ class StoriesRepository @Inject constructor(
         // suppress error if page not found (maximum page was reached)
         e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
     }
+
 
     override suspend fun changeStatus(
         commonTaskId: Long,
@@ -218,6 +219,26 @@ class StoriesRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.editUserStory(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.editTask(commonTaskId, body)
+        }
+    }
+
+
+    override suspend fun createCommonTask(
+        commonTaskType: CommonTaskType,
+        title: String,
+        description: String,
+        parentId: Long?,
+        sprintId: Long?
+    ) = withIO {
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> {
+                val body = CreateUserStoryRequest(session.currentProjectId, title, description)
+                taigaApi.createUserStory(body).toCommonTask(commonTaskType)
+            }
+            CommonTaskType.TASK -> {
+                val body = CreateTaskRequest(session.currentProjectId, title, description, sprintId, parentId)
+                taigaApi.createTask(body).toCommonTask(commonTaskType)
+            }
         }
     }
 }

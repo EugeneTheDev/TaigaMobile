@@ -17,14 +17,13 @@ fun NavController.navigate(route: String, vararg args: Pair<String, Parcelable>)
 }
 
 /**
- * Since navigating to task screen requires several arguments, here are some utils
+ * Since navigating to some screens requires several arguments, here are some utils
  * to make navigation code more readable
  */
-typealias NavigateToTask = (id: Long, type: CommonTaskType, ref: Int, projectSlug: String) -> Unit
+typealias NavigateToTask = (id: Long, type: CommonTaskType, ref: Int) -> Unit
+fun NavController.navigateToTaskScreen(id: Long, type: CommonTaskType, ref: Int)
+    = navigate("${Routes.commonTask}/$id/$type/$ref")
 
-fun NavController.navigateToTaskScreen(
-    id: Long,
-    type: CommonTaskType,
-    ref: Int,
-    projectSlug: String
-) = navigate("${Routes.commonTask}/$id/$type/$ref/$projectSlug")
+typealias NavigateToCreateTask = (type: CommonTaskType, parentId: Long?, sprintId: Long?) -> Unit
+fun NavController.navigateToCreateTaskScreen(type: CommonTaskType, parentId: Long? = null, sprintId: Long? = null)
+    = Routes.Arguments.let { navigate("${Routes.createTask}/$type?${it.parentId}=${parentId ?: -1}&${it.sprintId}=${sprintId ?: -1}") }

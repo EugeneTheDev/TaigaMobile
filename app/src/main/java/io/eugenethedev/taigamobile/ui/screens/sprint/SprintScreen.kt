@@ -93,7 +93,7 @@ fun SprintScreenContent(
     navigateBack: () -> Unit = {},
     tasks: List<CommonTask> = emptyList(),
     loadTasks: () -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start

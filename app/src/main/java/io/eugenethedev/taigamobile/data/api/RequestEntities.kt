@@ -42,3 +42,17 @@ data class EditTaskRequest(
     val description: String,
     val version: Int
 )
+
+data class CreateUserStoryRequest(
+    val project: Long,
+    val subject: String,
+    val description: String
+)
+
+data class CreateTaskRequest(
+    val project: Long,
+    val subject: String,
+    val description: String,
+    val milestone: Long?,
+    val user_story: Long?
+)

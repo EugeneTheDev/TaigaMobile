@@ -2,7 +2,7 @@ package io.eugenethedev.taigamobile.domain.repositories
 
 import io.eugenethedev.taigamobile.domain.entities.*
 
-interface IStoriesRepository {
+interface ITasksRepository {
     suspend fun getStatuses(commonTaskType: CommonTaskType): List<Status>
     suspend fun getStories(statusId: Long, page: Int, sprintId: Long? = null): List<CommonTask>
     suspend fun getSprints(page: Int): List<Sprint>
@@ -10,6 +10,7 @@ interface IStoriesRepository {
     suspend fun getSprintTasks(sprintId: Long, page: Int): List<CommonTask>
     suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType): CommonTaskExtended
     suspend fun getComments(commonTaskId: Long, type: CommonTaskType): List<Comment>
+
 
     // edit related
     suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, version: Int)
@@ -19,4 +20,12 @@ interface IStoriesRepository {
     suspend fun createComment(commonTaskId: Long, commonTaskType: CommonTaskType, comment: String, version: Int)
     suspend fun deleteComment(commonTaskId: Long, commonTaskType: CommonTaskType, commentId: String)
     suspend fun editTask(commonTaskId: Long, commonTaskType: CommonTaskType, title: String, description: String, version: Int)
+
+    suspend fun createCommonTask(
+        commonTaskType: CommonTaskType,
+        title: String,
+        description: String,
+        parentId: Long? = null,
+        sprintId: Long? = null
+    ): CommonTask
 }

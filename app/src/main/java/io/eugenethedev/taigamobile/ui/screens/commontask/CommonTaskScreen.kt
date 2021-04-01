@@ -37,7 +37,6 @@ fun CommonTaskScreen(
     commonTaskId: Long,
     commonTaskType: CommonTaskType,
     ref: Int,
-    projectSlug: String,
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
@@ -108,6 +107,7 @@ fun CommonTaskScreen(
             comments = comments?.data.orEmpty(),
             isLoading = story?.resultStatus == ResultStatus.LOADING || editResult?.resultStatus == ResultStatus.LOADING,
             navigateBack = navController::popBackStack,
+            navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.TASK, commonTaskId) },
             navigateToTask = navController::navigateToTaskScreen,
             editStatus = EditAction(
                 items = statuses?.data.orEmpty(),
@@ -171,13 +171,14 @@ fun CommonTaskScreenContent(
     comments: List<Comment> = emptyList(),
     isLoading: Boolean = false,
     navigateBack: () -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _, _ -> },
+    navigateToCreateTask: () -> Unit = {},
+    navigateToTask: NavigateToTask = { _, _, _ -> },
     editStatus: EditAction<Status> = EditAction(),
     editSprint: EditAction<Sprint?> = EditAction(),
     editAssignees: EditAction<User> = EditAction(),
     editWatchers: EditAction<User> = EditAction(),
     editComments: EditCommentsAction = EditCommentsAction(),
-    editTask: (title: String, desciption: String) -> Unit = { _, _ -> }
+    editTask: (title: String, description: String) -> Unit = { _, _ -> }
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -409,32 +410,46 @@ fun CommonTaskScreenContent(
                     )
                 }
 
-                if (tasks.isNotEmpty()) {
-                    item {
-                        Spacer(Modifier.height(sectionsMargin * 2))
 
-                        // tasks
+                item {
+                    Spacer(Modifier.height(sectionsMargin * 2))
+
+                    // tasks
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(R.string.tasks),
                             style = MaterialTheme.typography.h6
                         )
-                    }
 
-                    itemsIndexed(tasks) { index, item ->
-                        CommonTaskItem(
-                            commonTask = item,
-                            horizontalPadding = 0.dp,
-                            navigateToTask = navigateToTask
-                        )
-
-                        if (index < tasks.lastIndex) {
-                            Divider(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                color = Color.LightGray
+                        IconButton(onClick = navigateToCreateTask) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_add),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
                             )
                         }
                     }
+
+                    if (tasks.isEmpty()) {
+                        NothingToSeeHereText()
+                    }
                 }
+
+                itemsIndexed(tasks) { index, item ->
+                    CommonTaskItem(
+                        commonTask = item,
+                        horizontalPadding = 0.dp,
+                        navigateToTask = navigateToTask
+                    )
+
+                    if (index < tasks.lastIndex) {
+                        Divider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            color = Color.LightGray
+                        )
+                    }
+                }
+
 
                 item {
                     Divider(

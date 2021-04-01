@@ -9,11 +9,11 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
 import io.eugenethedev.taigamobile.data.repositories.SearchRepository
-import io.eugenethedev.taigamobile.data.repositories.StoriesRepository
+import io.eugenethedev.taigamobile.data.repositories.TasksRepository
 import io.eugenethedev.taigamobile.data.repositories.UsersRepository
 import io.eugenethedev.taigamobile.domain.repositories.IAuthRepository
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
-import io.eugenethedev.taigamobile.domain.repositories.IStoriesRepository
+import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -70,7 +70,7 @@ abstract class RepositoriesModule {
 
     @Singleton
     @Binds
-    abstract fun bindIStoriesRepository(storiesRepository: StoriesRepository): IStoriesRepository
+    abstract fun bindIStoriesRepository(storiesRepository: TasksRepository): ITasksRepository
 
     @Singleton
     @Binds

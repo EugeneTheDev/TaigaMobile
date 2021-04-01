@@ -79,4 +79,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
 
+    <string name="create_task">Create task</string>
+    <string name="create_userstory">Create userstory</string>
+
+    <string name="loading">Loading…</string>
 </resources>

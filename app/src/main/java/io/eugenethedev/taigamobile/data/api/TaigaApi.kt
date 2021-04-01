@@ -158,4 +158,10 @@ interface TaigaApi {
         @Body editTaskRequest: EditTaskRequest
     )
 
+    @POST("userstories")
+    suspend fun createUserStory(@Body createUserStoryRequest: CreateUserStoryRequest): CommonTaskResponse
+
+    @POST("tasks")
+    suspend fun createTask(@Body createTaskRequest: CreateTaskRequest): CommonTaskResponse
+
 }

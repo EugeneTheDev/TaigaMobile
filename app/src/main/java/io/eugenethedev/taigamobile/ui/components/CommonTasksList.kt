@@ -43,7 +43,7 @@ fun LazyListScope.CommonTasksList(
     loadingStatusIds: List<Long> = emptyList(),
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) {
     if (statuses.isNotEmpty()) {
         statuses.map { st -> st to commonTasks.filter { it.status.id == st.id } }.forEach { (status, stories) ->
@@ -168,10 +168,10 @@ fun CommonTaskItem(
     commonTask: CommonTask,
     horizontalPadding: Dp = mainHorizontalScreenPadding,
     verticalPadding: Dp = 8.dp,
-    navigateToTask: NavigateToTask = { _, _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = ContainerBox(
     horizontalPadding, verticalPadding,
-    onClick = { navigateToTask(commonTask.id, commonTask.taskType, commonTask.ref, commonTask.projectSlug) }
+    onClick = { navigateToTask(commonTask.id, commonTask.taskType, commonTask.ref) }
 ) {
     val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
 
