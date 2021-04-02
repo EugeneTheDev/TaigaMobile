@@ -31,7 +31,7 @@ fun ProjectAppBar(
                     ?: stringResource(R.string.choose_project_title),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 250.dp)
+                modifier = Modifier.widthIn(max = 300.dp)
             )
 
             Icon(
