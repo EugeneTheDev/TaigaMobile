@@ -326,7 +326,10 @@ fun CommonTaskScreenContent(
 
                     // description
                     if (description.isNotEmpty()) {
-                        MarkdownText(description)
+                        MarkdownText(
+                            text = description,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     } else {
                         NothingToSeeHereText()
                     }
