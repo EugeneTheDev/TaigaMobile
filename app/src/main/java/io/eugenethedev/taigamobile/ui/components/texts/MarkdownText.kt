@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.texts
 
 import android.widget.TextView
 import androidx.compose.material.MaterialTheme

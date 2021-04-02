@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.editors
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -21,6 +21,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
+import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.utils.onBackPressed
 
 /**

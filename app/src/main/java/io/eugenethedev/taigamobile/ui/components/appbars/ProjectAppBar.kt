@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.appbars
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.widthIn

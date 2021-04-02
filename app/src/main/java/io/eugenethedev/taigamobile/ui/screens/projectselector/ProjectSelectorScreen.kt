@@ -18,6 +18,8 @@ import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
 import io.eugenethedev.taigamobile.ui.components.*
+import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
+import io.eugenethedev.taigamobile.ui.components.editors.SelectorListConstants
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
