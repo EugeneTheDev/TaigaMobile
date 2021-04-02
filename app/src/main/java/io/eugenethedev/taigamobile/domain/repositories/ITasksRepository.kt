@@ -28,4 +28,6 @@ interface ITasksRepository {
         parentId: Long? = null,
         sprintId: Long? = null
     ): CommonTask
+
+    suspend fun deleteCommonTask(commonTaskType: CommonTaskType, commonTaskId: Long)
 }

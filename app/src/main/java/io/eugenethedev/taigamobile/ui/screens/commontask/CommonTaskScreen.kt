@@ -90,6 +90,12 @@ fun CommonTaskScreen(
     val editResult by viewModel.editResult.observeAsState()
     editResult?.subscribeOnError(onError)
 
+    val deleteResult by viewModel.deleteResult.observeAsState()
+    deleteResult?.subscribeOnError(onError)
+    deleteResult?.takeIf { it.resultStatus == ResultStatus.SUCCESS }?.let {
+        navController.popBackStack()
+    }
+
     story?.data.let {
         CommonTaskScreenContent(
             commonTaskType = commonTaskType,
@@ -152,7 +158,8 @@ fun CommonTaskScreen(
                 isResultLoading = commentsResult?.resultStatus == ResultStatus.LOADING
             ),
             editTask = viewModel::editTask,
-            isEditLoading = editResult?.resultStatus == ResultStatus.LOADING
+            deleteTask = viewModel::deleteTask,
+            isEditLoading = editResult?.resultStatus == ResultStatus.LOADING || deleteResult?.resultStatus == ResultStatus.LOADING
         )
     }
 
@@ -187,6 +194,7 @@ fun CommonTaskScreenContent(
     editWatchers: EditAction<User> = EditAction(),
     editComments: EditCommentsAction = EditCommentsAction(),
     editTask: (title: String, description: String) -> Unit = { _, _ -> },
+    deleteTask: () -> Unit = {},
     isEditLoading: Boolean = false
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
@@ -216,6 +224,20 @@ fun CommonTaskScreenContent(
                         )
                     }
 
+                    // delete alert dialog
+                    var isDeleteAlertVisible by remember { mutableStateOf(false) }
+                    if (isDeleteAlertVisible) {
+                        ConfirmActionAlert(
+                            title = stringResource(R.string.delete_task_title),
+                            text = stringResource(R.string.delete_task_description),
+                            onConfirm = {
+                                isDeleteAlertVisible = false
+                                deleteTask()
+                            },
+                            onDismiss = { isDeleteAlertVisible = false }
+                        )
+                    }
+
                     DropdownMenu(
                         expanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false }
@@ -223,9 +245,8 @@ fun CommonTaskScreenContent(
                         // edit
                         DropdownMenuItem(
                             onClick = {
-                                    isMenuExpanded = false
-                                    isTaskEditorVisible = true
-
+                                isMenuExpanded = false
+                                isTaskEditorVisible = true
                             }
                         ) {
                             Text(
@@ -235,7 +256,12 @@ fun CommonTaskScreenContent(
                         }
 
                         // delete
-                        DropdownMenuItem(onClick = { /*TODO*/ }) {
+                        DropdownMenuItem(
+                            onClick = {
+                                isMenuExpanded = false
+                                isDeleteAlertVisible = true
+                            }
+                        ) {
                             Text(
                                 text = stringResource(R.string.delete),
                                 style = MaterialTheme.typography.body1

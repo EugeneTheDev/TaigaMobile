@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.data.api
 import io.eugenethedev.taigamobile.domain.entities.Comment
 import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
 import io.eugenethedev.taigamobile.domain.entities.User
+import retrofit2.Response
 import retrofit2.http.*
 
 interface TaigaApi {
@@ -163,5 +164,11 @@ interface TaigaApi {
 
     @POST("tasks")
     suspend fun createTask(@Body createTaskRequest: CreateTaskRequest): CommonTaskResponse
+
+    @DELETE("userstories/{id}")
+    suspend fun deleteUserStory(@Path("id") id: Long): Response<Void>
+
+    @DELETE("tasks/{id}")
+    suspend fun deleteTask(@Path("id") id: Long): Response<Void>
 
 }

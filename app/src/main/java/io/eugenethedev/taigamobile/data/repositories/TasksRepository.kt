@@ -241,4 +241,12 @@ class TasksRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun deleteCommonTask(commonTaskType: CommonTaskType, commonTaskId: Long) = withIO {
+        when (commonTaskType) {
+            CommonTaskType.USERSTORY -> taigaApi.deleteUserStory(commonTaskId)
+            CommonTaskType.TASK -> taigaApi.deleteTask(commonTaskId)
+        }
+        return@withIO
+    }
 }

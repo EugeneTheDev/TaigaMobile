@@ -302,4 +302,19 @@ class CommonTaskViewModel : ViewModel() {
             Result(ResultStatus.ERROR, message = R.string.permission_error)
         }
     }
+
+    // Delete task
+    val deleteResult = MutableLiveResult<Unit>()
+
+    fun deleteTask() = viewModelScope.launch {
+        deleteResult.value = Result(ResultStatus.LOADING)
+
+        deleteResult.value = try {
+            tasksRepository.deleteCommonTask(commonTaskType, commonTaskId)
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
 }
