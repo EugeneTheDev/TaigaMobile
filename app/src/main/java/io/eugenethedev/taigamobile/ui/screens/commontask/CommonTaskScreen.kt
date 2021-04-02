@@ -159,7 +159,8 @@ fun CommonTaskScreen(
             ),
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,
-            isEditLoading = editResult?.resultStatus == ResultStatus.LOADING || deleteResult?.resultStatus == ResultStatus.LOADING
+            isEditLoading = editResult?.resultStatus == ResultStatus.LOADING,
+            isDeleteLoading = deleteResult?.resultStatus == ResultStatus.LOADING
         )
     }
 
@@ -195,7 +196,8 @@ fun CommonTaskScreenContent(
     editComments: EditCommentsAction = EditCommentsAction(),
     editTask: (title: String, description: String) -> Unit = { _, _ -> },
     deleteTask: () -> Unit = {},
-    isEditLoading: Boolean = false
+    isEditLoading: Boolean = false,
+    isDeleteLoading: Boolean = false
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -561,7 +563,7 @@ fun CommonTaskScreenContent(
         )
     }
 
-    if (isEditLoading) {
+    if (isEditLoading || isDeleteLoading) {
         LoadingDialog()
     }
 }
