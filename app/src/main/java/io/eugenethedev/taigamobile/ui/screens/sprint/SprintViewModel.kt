@@ -4,14 +4,17 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.StoriesViewModel
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class SprintViewModel : StoriesViewModel() {
+    @Inject lateinit var screensState: ScreensState
 
     val tasks = MutableLiveResult<List<CommonTask>>()
 
@@ -23,12 +26,13 @@ class SprintViewModel : StoriesViewModel() {
     }
 
     fun start(sprintId: Long) {
+        if (screensState.shouldReloadSprintScreen) {
+            reset()
+        }
+
         this.sprintId = sprintId
 
-        if (
-            statuses.value == null &&
-            stories.value == null
-        ) {
+        if (statuses.value == null) {
             viewModelScope.launch { loadStatuses() }
             loadTasks()
         }

@@ -8,6 +8,7 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
+import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 class CommonTaskViewModel : ViewModel() {
     @Inject lateinit var session: Session
+    @Inject lateinit var screensState: ScreensState
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var usersRepository: IUsersRepository
 
@@ -114,6 +116,7 @@ class CommonTaskViewModel : ViewModel() {
         statusSelectResult.value = try {
             tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, commonTaskVersion)
             loadData()
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -163,6 +166,7 @@ class CommonTaskViewModel : ViewModel() {
         sprintSelectResult.value = try {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
             loadData()
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -220,6 +224,7 @@ class CommonTaskViewModel : ViewModel() {
                 commonTaskVersion
             )
             loadData()
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
 
         } catch (e: Exception) {
@@ -296,6 +301,7 @@ class CommonTaskViewModel : ViewModel() {
         editResult.value = try {
             tasksRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
             loadData()
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -311,6 +317,7 @@ class CommonTaskViewModel : ViewModel() {
 
         deleteResult.value = try {
             tasksRepository.deleteCommonTask(commonTaskType, commonTaskId)
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)

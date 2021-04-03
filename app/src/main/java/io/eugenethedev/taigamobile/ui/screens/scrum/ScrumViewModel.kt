@@ -5,6 +5,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Sprint
+import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.StoriesViewModel
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
@@ -14,8 +15,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ScrumViewModel : StoriesViewModel() {
-
     @Inject lateinit var session: Session
+    @Inject lateinit var screensState: ScreensState
 
     val projectName: String get() = session.currentProjectName
 
@@ -29,12 +30,11 @@ class ScrumViewModel : StoriesViewModel() {
     }
 
     fun start() {
-        if (
-            statuses.value == null &&
-            stories.value == null &&
-            sprints.value == null &&
-            session.currentProjectId > 0
-        ) {
+        if (screensState.shouldReloadScrumScreen) {
+            reset()
+        }
+
+        if (statuses.value == null && session.currentProjectId > 0) {
             viewModelScope.launch { loadStatuses() }
             loadSprints()
         }
