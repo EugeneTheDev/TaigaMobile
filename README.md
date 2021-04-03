@@ -3,6 +3,11 @@ This is unofficial android app for [taiga.io](https://www.taiga.io/) (agile proj
   
 <img src="screenshots/login.png" width=400/>
 
+## Features
+* View projects, user stories, tasks, sprints
+* Create, edit and delete user stories and tasks
+* Leave and delete comments
+
 ## Demo
 How app looks (dark theme supported)  
   
