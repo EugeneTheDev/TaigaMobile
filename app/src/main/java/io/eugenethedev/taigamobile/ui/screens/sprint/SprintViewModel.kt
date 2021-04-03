@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.Settings
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
@@ -15,8 +16,11 @@ import javax.inject.Inject
 
 class SprintViewModel : StoriesViewModel() {
     @Inject lateinit var screensState: ScreensState
+    @Inject lateinit var settings: Settings
 
     val tasks = MutableLiveResult<List<CommonTask>>()
+
+    val startStatusesExpanded get() = settings.isSprintScreenExpandStatuses
 
     var currentStoriesPage = 0
     var maxStoriesPage = Int.MAX_VALUE

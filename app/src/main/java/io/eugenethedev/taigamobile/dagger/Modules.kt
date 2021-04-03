@@ -6,6 +6,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.Settings
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
 import io.eugenethedev.taigamobile.data.repositories.SearchRepository
@@ -56,6 +57,10 @@ class DataModule {
     @Provides
     @Singleton
     fun provideSession(context: Context) = Session(context)
+
+    @Provides
+    @Singleton
+    fun provideSettings(context: Context) = Settings(context)
 }
 
 @Module

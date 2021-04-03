@@ -61,6 +61,7 @@ fun ScrumScreen(
             viewModel.reset()
         },
         isLoading = statuses?.resultStatus == ResultStatus.LOADING || (sprints?.resultStatus == ResultStatus.LOADING && sprints?.data.isNullOrEmpty()),
+        startStatusesExpanded = viewModel.startStatusesExpanded,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
         sprints = sprints?.data.orEmpty(),
@@ -86,6 +87,7 @@ fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     isLoading: Boolean = false,
+    startStatusesExpanded: Boolean = false,
     statuses: List<Status> = emptyList(),
     commonTasks: List<CommonTask> = emptyList(),
     sprints: List<Sprint> = emptyList(),
@@ -141,7 +143,8 @@ fun ScrumScreenContent(
                     visibleStatusIds = visibleStatusIds,
                     onStatusClick = onStatusClick,
                     loadData = loadStories,
-                    navigateToTask = navigateToTask
+                    navigateToTask = navigateToTask,
+                    isInverseVisibility = startStatusesExpanded
                 )
 
                 item {

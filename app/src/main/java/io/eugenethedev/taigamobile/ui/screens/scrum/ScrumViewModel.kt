@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.Settings
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
@@ -17,8 +18,10 @@ import javax.inject.Inject
 class ScrumViewModel : StoriesViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
+    @Inject lateinit var settings: Settings
 
     val projectName: String get() = session.currentProjectName
+    val startStatusesExpanded get() = settings.isScrumScreenExpandStatuses
 
     val sprints = MutableLiveResult<List<Sprint>>()
 

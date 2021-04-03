@@ -26,6 +26,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -42,6 +43,9 @@ fun SettingsScreen(
     val user by viewModel.user.observeAsState()
     user?.subscribeOnError(onError)
 
+    val isScrumScreenExpandStatuses by viewModel.isScrumScreenExpandStatuses.observeAsState()
+    val isSprintScreenExpandStatuses by viewModel.isSprintScreenExpandStatuses.observeAsState()
+
     SettingsScreenContent(
         avatarUrl = user?.data?.avatarUrl,
         displayName = user?.data?.displayName.orEmpty(),
@@ -52,7 +56,11 @@ fun SettingsScreen(
             navController.navigate(Routes.login) {
                 popUpTo(Routes.settings) { inclusive = true }
             }
-        }
+        },
+        isScrumScreenExpandStatuses = isScrumScreenExpandStatuses ?: false,
+        switchScrumScreenExpandStatuses = viewModel::switchScrumScreenExpandStatuses,
+        isSprintScreenExpandStatuses = isSprintScreenExpandStatuses ?: false,
+        switchSprintScreenExpandStatuses = viewModel::switchSprintScreenExpandStatuses
     )
 }
 
@@ -62,11 +70,15 @@ fun SettingsScreenContent(
     displayName: String,
     username: String,
     serverUrl: String,
-    logout: () -> Unit = {}
+    logout: () -> Unit = {},
+    isScrumScreenExpandStatuses: Boolean = false,
+    switchScrumScreenExpandStatuses: (Boolean) -> Unit = { _ -> },
+    isSprintScreenExpandStatuses: Boolean = false,
+    switchSprintScreenExpandStatuses: (Boolean) -> Unit = { _ -> }
 ) = ConstraintLayout(
     modifier = Modifier.fillMaxSize()
 ) {
-    val (topBar, avatar, logoutIcon, userInfo, appVersion) = createRefs()
+    val (topBar, avatar, logoutIcon, userInfo, settings, appVersion) = createRefs()
 
     TopAppBar(
         modifier = Modifier.constrainAs(topBar) {
@@ -148,6 +160,55 @@ fun SettingsScreenContent(
             style = MaterialTheme.typography.body2,
             color = Color.Gray
         )
+    }
+
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(horizontal = mainHorizontalScreenPadding)
+            .constrainAs(settings) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(userInfo.bottom, 24.dp)
+            }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.scrum_expand_statuses),
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.weight(0.8f, fill = false)
+            )
+
+            Switch(
+                checked = isScrumScreenExpandStatuses,
+                onCheckedChange = switchScrumScreenExpandStatuses,
+                modifier = Modifier.weight(0.2f, fill = false)
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.sprint_expand_statuses),
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.weight(0.8f, fill = false)
+            )
+
+            Switch(
+                checked = isSprintScreenExpandStatuses,
+                onCheckedChange = switchSprintScreenExpandStatuses,
+                modifier = Modifier.weight(0.2f, fill = false)
+            )
+        }
     }
 
     Text(

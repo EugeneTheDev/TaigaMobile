@@ -69,6 +69,8 @@
     <string name="username_template">\@%s</string>
     <string name="logout_title">Log out</string>
     <string name="logout_text">Are you sure you want to log out?</string>
+    <string name="scrum_expand_statuses">Expand statuses on scrum screen</string>
+    <string name="sprint_expand_statuses">Expand statuses on sprint screen</string>
 
     <string name="remove_user_title">Remove user</string>
     <string name="remove_user_text">Are you sure you want to remove user?</string>

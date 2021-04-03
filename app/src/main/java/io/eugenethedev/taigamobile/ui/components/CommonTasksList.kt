@@ -44,11 +44,12 @@ fun LazyListScope.CommonTasksList(
     loadingStatusIds: List<Long> = emptyList(),
     visibleStatusIds: List<Long> = emptyList(),
     onStatusClick: (Long) -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _ -> }
+    navigateToTask: NavigateToTask = { _, _, _ -> },
+    isInverseVisibility: Boolean = false
 ) {
     if (statuses.isNotEmpty()) {
         statuses.map { st -> st to commonTasks.filter { it.status.id == st.id } }.forEach { (status, stories) ->
-            val isCategoryVisible = status.id in visibleStatusIds
+            val isCategoryVisible = (status.id in visibleStatusIds && !isInverseVisibility) || (status.id !in visibleStatusIds && isInverseVisibility)
             val isCategoryLoading = status.id in loadingStatusIds
 
             item {

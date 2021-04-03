@@ -62,6 +62,7 @@ fun SprintScreen(
         finish = sprint.finish,
         isLoading = statuses?.resultStatus == ResultStatus.LOADING || (tasks?.resultStatus == ResultStatus.LOADING && tasks?.data.isNullOrEmpty()),
         isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
+        startStatusesExpanded = viewModel.startStatusesExpanded,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
         loadingStatusIds = loadingStatusIds.orEmpty(),
@@ -87,6 +88,7 @@ fun SprintScreenContent(
     finish: Date,
     isLoading: Boolean = false,
     isTasksLoading: Boolean = false,
+    startStatusesExpanded: Boolean = false,
     statuses: List<Status> = emptyList(),
     commonTasks: List<CommonTask> = emptyList(),
     loadingStatusIds: List<Long> = emptyList(),
@@ -156,7 +158,8 @@ fun SprintScreenContent(
                 visibleStatusIds = visibleStatusIds,
                 onStatusClick = onStatusClick,
                 loadData = loadStories,
-                navigateToTask = navigateToTask
+                navigateToTask = navigateToTask,
+                isInverseVisibility = startStatusesExpanded
             )
 
             item {

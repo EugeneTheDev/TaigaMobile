@@ -8,7 +8,7 @@ class Session(context: Context) {
     private val sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
     var token: String
-        get() = sharedPreferences.getString(TOKEN_KEY, "") ?: ""
+        get() = sharedPreferences.getString(TOKEN_KEY, "").orEmpty()
         set(value) {
             sharedPreferences.edit {
                 putString(TOKEN_KEY, value)
@@ -16,7 +16,7 @@ class Session(context: Context) {
         }
 
     var server: String
-        get() = sharedPreferences.getString(SERVER_KEY, "") ?: ""
+        get() = sharedPreferences.getString(SERVER_KEY, "").orEmpty()
         set(value) {
             sharedPreferences.edit {
                 putString(SERVER_KEY, value)
@@ -32,7 +32,7 @@ class Session(context: Context) {
         }
 
     var currentProjectName: String
-        get() = sharedPreferences.getString(PROJECT_NAME_KEY, "") ?: ""
+        get() = sharedPreferences.getString(PROJECT_NAME_KEY, "").orEmpty()
         set(value) {
             sharedPreferences.edit {
                 putString(PROJECT_NAME_KEY, value)
