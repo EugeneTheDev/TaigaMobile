@@ -9,6 +9,7 @@ class MainViewModel : ViewModel() {
 
     @Inject lateinit var session: Session
     val isLogged get() = session.isLogged
+    val isProjectSelected get() = session.isProjectSelected
 
     init {
         TaigaApp.appComponent.inject(this)

@@ -49,6 +49,8 @@ class Session(context: Context) {
 
     val isLogged: Boolean get() = token.isNotEmpty() && server.isNotEmpty()
 
+    val isProjectSelected get() = currentProjectId >= 0
+
     fun reset() {
         token = ""
         server = ""

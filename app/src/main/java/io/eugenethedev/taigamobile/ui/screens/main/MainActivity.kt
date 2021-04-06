@@ -30,7 +30,6 @@ import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     @ExperimentalComposeUiApi
@@ -67,8 +66,7 @@ class MainActivity : AppCompatActivity() {
                                 val items = listOf(Screen.Scrum, Screen.Team, Screen.Settings)
                                 val routes = items.map { it.route }
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                                val currentRoute =
-                                    navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                                val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
                                 // hide bottom bar for other screens
                                 if (currentRoute !in routes) return@Scaffold
@@ -128,8 +126,6 @@ object Routes {
     const val commonTask = "commonTask"
     const val createTask = "createTask"
 
-    const val startDestination = scrum
-
     object Arguments {
         const val sprint = "sprint"
         const val sprintId = "sprintId"
@@ -166,7 +162,7 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = if (viewModel.isLogged) Routes.startDestination else Routes.login
+            startDestination = if (viewModel.isLogged) Routes.scrum else Routes.login
         ) {
             composable(Routes.login) {
                 LoginScreen(
@@ -175,11 +171,19 @@ fun MainScreen(
                 )
             }
 
+            // start screen
             composable(Routes.scrum) {
                 ScrumScreen(
                     navController = navController,
                     onError = onError
                 )
+
+                // user must select project first
+                LaunchedEffect(null) {
+                    if (!viewModel.isProjectSelected) {
+                        navController.navigate(Routes.projectsSelector)
+                    }
+                }
             }
 
             composable(Routes.team) {

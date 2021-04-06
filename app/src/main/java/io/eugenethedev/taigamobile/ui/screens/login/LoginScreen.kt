@@ -48,7 +48,7 @@ fun LoginScreen(
         when(resultStatus) {
             ResultStatus.ERROR -> onError(message!!)
             ResultStatus.SUCCESS -> {
-                navController.navigate(Routes.startDestination) {
+                navController.navigate(Routes.scrum) {
                     popUpTo(Routes.login) { inclusive = true }
                     activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                 }
@@ -58,35 +58,25 @@ fun LoginScreen(
     }
 
     var taigaServerInput by remember { mutableStateOf(TextFieldValue()) }
-    var usernameInput by remember { mutableStateOf(TextFieldValue()) }
+    var loginInput by remember { mutableStateOf(TextFieldValue()) }
     var passwordInput by remember { mutableStateOf(TextFieldValue()) }
-
-    var isServerInputErrorValue by remember { mutableStateOf(false) }
-
-    fun String.validateServerInput() = this.matches(Regex("^https://.+"))
 
     LoginScreenContent(
         taigaServerInput = taigaServerInput,
-        usernameInput = usernameInput,
+        usernameInput = loginInput,
         passwordInput = passwordInput,
-        onTaigaServerInputChange = {
-            taigaServerInput = it
-            if (isServerInputErrorValue) isServerInputErrorValue = false
-        },
-        onUsernameInputChange = { usernameInput = it },
+        onTaigaServerInputChange = { taigaServerInput = it },
+        onUsernameInputChange = { loginInput = it },
         onPasswordInputChange = { passwordInput = it },
         onContinueClick = {
-            if (!taigaServerInput.text.validateServerInput()) {
-                isServerInputErrorValue = true
-            } else if (usernameInput.text.isNotBlank() && passwordInput.text.isNotBlank()) {
+            if (taigaServerInput.text.isNotBlank() && loginInput.text.isNotBlank() && passwordInput.text.isNotBlank()) {
                 viewModel.login(
-                    taigaServerInput.text.trimEnd('/'),
-                    usernameInput.text,
-                    passwordInput.text
+                    taigaServerInput.text.trim(),
+                    loginInput.text.trim(),
+                    passwordInput.text.trim()
                 )
             }
         },
-        isServerInputErrorValue = isServerInputErrorValue,
         isLoadingValue = loginResult?.resultStatus in listOf(ResultStatus.LOADING, ResultStatus.SUCCESS)
     )
 }
@@ -100,7 +90,6 @@ fun LoginScreenContent(
     onUsernameInputChange: (TextFieldValue) -> Unit = {},
     onPasswordInputChange: (TextFieldValue) -> Unit = {},
     onContinueClick: () -> Unit = {},
-    isServerInputErrorValue: Boolean = false,
     isLoadingValue: Boolean = false,
 ) = ConstraintLayout(
     modifier = Modifier.fillMaxSize(),
@@ -143,8 +132,7 @@ fun LoginScreenContent(
         LoginTextField(
             value = taigaServerInput,
             labelId = R.string.login_taiga_server,
-            onValueChange = onTaigaServerInputChange,
-            isErrorValue = isServerInputErrorValue
+            onValueChange = onTaigaServerInputChange
         )
 
         LoginTextField(
@@ -192,8 +180,7 @@ fun LoginTextField(
     @StringRes labelId: Int,
     onValueChange: (TextFieldValue) -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    isErrorValue: Boolean = false
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -210,8 +197,7 @@ fun LoginTextField(
         label = { Text(text = stringResource(labelId), style = textStyle) },
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        isError = isErrorValue
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
     )
 }
 

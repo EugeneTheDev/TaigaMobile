@@ -40,7 +40,7 @@ class DataModule {
                             proceed(
                                 request()
                                     .newBuilder()
-                                    .url(it.request().url.toUrl().toExternalForm().replace(baseUrlPlaceholder, session.server + TaigaApi.API_PREFIX))
+                                    .url(it.request().url.toUrl().toExternalForm().replace(baseUrlPlaceholder, "https://${session.server}/${TaigaApi.API_PREFIX}"))
                                     .addHeader("User-Agent", "Taiga App")
                                     .addHeader("Authorization", "Bearer ${session.token}")
                                     .build()
