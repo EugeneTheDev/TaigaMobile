@@ -24,7 +24,7 @@ How app looks (dark theme supported)
 * Coroutines
 * ... and other cool things
 
-## Desing
+## Design
 Probably sucks. I'm not very good at designing UI, but I'm doing my best. So, if you have any suggestions, please tell me. I'll be really glad to receive any feedback.  
 
 ## Download
