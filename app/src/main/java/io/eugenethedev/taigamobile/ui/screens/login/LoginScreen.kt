@@ -118,7 +118,7 @@ fun LoginScreenContent(
     ) {
 
         Image(
-            painter = painterResource(R.drawable.ic_taiga_logo),
+            painter = painterResource(R.drawable.ic_taiga_tree),
             contentDescription = null,
             modifier = Modifier
                 .size(130.dp)
