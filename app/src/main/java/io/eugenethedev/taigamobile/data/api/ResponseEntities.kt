@@ -49,7 +49,8 @@ data class CommonTaskResponse(
     val description: String,
     val epics: List<EpicShortInfo>?,
     val user_story_extra_info: UserStoryExtraInfo?,
-    val version: Int
+    val version: Int,
+    val color: String? // for epic
 ) {
     data class AssigneeInfo(
         val id: Long,

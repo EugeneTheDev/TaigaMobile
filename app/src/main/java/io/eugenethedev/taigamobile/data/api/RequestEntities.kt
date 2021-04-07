@@ -16,13 +16,13 @@ data class ChangeSprintRequest(
     val version: Int
 )
 
-data class ChangeAssigneesRequest(
+data class ChangeUserStoryAssigneesRequest(
     val assigned_to: Long?,
     val assigned_users: List<Long>,
     val version: Int
 )
 
-data class ChangeTaskAssigneesRequest(
+data class ChangeCommonTaskAssigneesRequest(
     val assigned_to: Long?,
     val version: Int
 )
@@ -37,13 +37,13 @@ data class CreateCommentRequest(
     val version: Int
 )
 
-data class EditTaskRequest(
+data class EditCommonTaskRequest(
     val subject: String,
     val description: String,
     val version: Int
 )
 
-data class CreateUserStoryRequest(
+data class CreateCommonTaskRequest(
     val project: Long,
     val subject: String,
     val description: String

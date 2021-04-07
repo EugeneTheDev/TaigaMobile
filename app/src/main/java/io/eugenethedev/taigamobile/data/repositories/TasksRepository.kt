@@ -16,31 +16,39 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.getUserStoriesFiltersData(session.currentProjectId)
             CommonTaskType.TASK -> taigaApi.getTasksFiltersData(session.currentProjectId)
+            CommonTaskType.EPIC -> taigaApi.getEpicsFiltersData(session.currentProjectId)
         }.statuses
     }
 
-    override suspend fun getStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
-        handlePage {
-            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page)
+    override suspend fun getUserStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
+        handle404 {
+            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, null, page)
+                .map { it.toCommonTask(CommonTaskType.USERSTORY) }
+        }
+    }
+
+    override suspend fun getEpicUserStories(epicId: Long) = withIO {
+        handle404 {
+            taigaApi.getUserStories(null, null, null, epicId, null)
                 .map { it.toCommonTask(CommonTaskType.USERSTORY) }
         }
     }
 
     override suspend fun getSprints(page: Int) = withIO {
-        handlePage {
+        handle404 {
             taigaApi.getSprints(session.currentProjectId, page).map { it.toSprint() }
         }
     }
 
     override suspend fun getSprintTasks(sprintId: Long, page: Int) = withIO {
-        handlePage {
+        handle404 {
             taigaApi.getTasks(session.currentProjectId, sprintId, "null", page)
                 .map { it.toCommonTask(CommonTaskType.TASK) }
         }
     }
 
     override suspend fun getUserStoryTasks(storyId: Long) = withIO {
-        handlePage {
+        handle404 {
             taigaApi.getTasks(session.currentProjectId, null, storyId, null)
                 .map { it.toCommonTask(CommonTaskType.TASK) }
         }
@@ -50,6 +58,7 @@ class TasksRepository @Inject constructor(
         when (type) {
             CommonTaskType.USERSTORY -> taigaApi.getUserStory(commonTaskId)
             CommonTaskType.TASK -> taigaApi.getTask(commonTaskId)
+            CommonTaskType.EPIC -> taigaApi.getEpic(commonTaskId)
         }.let {
             CommonTaskExtended(
                 id = it.id,
@@ -76,7 +85,8 @@ class TasksRepository @Inject constructor(
                         epicColor = it.epics?.first()?.color
                     )
                 },
-                version = it.version
+                version = it.version,
+                color = it.color
             )
         }
     }
@@ -85,6 +95,7 @@ class TasksRepository @Inject constructor(
         when (type) {
             CommonTaskType.USERSTORY -> taigaApi.getUserStoryComments(commonTaskId)
             CommonTaskType.TASK -> taigaApi.getTaskComments(commonTaskId)
+            CommonTaskType.EPIC -> taigaApi.getEpicComments(commonTaskId)
         }.sortedBy { it.postDateTime }
     }
 
@@ -119,7 +130,7 @@ class TasksRepository @Inject constructor(
         isClosed = closed
     )
 
-    private suspend fun <T> handlePage(action: suspend () -> List<T>): List<T> = try {
+    private suspend fun <T> handle404(action: suspend () -> List<T>): List<T> = try {
         action()
     } catch (e: HttpException) {
         // suppress error if page not found (maximum page was reached)
@@ -137,6 +148,7 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStoryStatus(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.changeTaskStatus(commonTaskId, body)
+            CommonTaskType.EPIC -> taigaApi.changeEpicStatus(commonTaskId, body)
         }
     }
 
@@ -150,6 +162,8 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStorySprint(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.changeTaskSprint(commonTaskId, body)
+            // TODO add issue here
+            else -> throw UnsupportedOperationException("Cannot change sprint for $commonTaskType")
         }
     }
 
@@ -162,11 +176,15 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStoryAssignees(
                 id = commonTaskId,
-                changeAssigneesRequest = ChangeAssigneesRequest(assignees.firstOrNull(), assignees, version)
+                changeAssigneesRequest = ChangeUserStoryAssigneesRequest(assignees.firstOrNull(), assignees, version)
             )
             CommonTaskType.TASK -> taigaApi.changeTaskAssignees(
                 id = commonTaskId,
-                changeAssigneesRequest = ChangeTaskAssigneesRequest(assignees.lastOrNull(), version)
+                changeAssigneesRequest = ChangeCommonTaskAssigneesRequest(assignees.lastOrNull(), version)
+            )
+            CommonTaskType.EPIC -> taigaApi.changeEpicAssignees(
+                id = commonTaskId,
+                changeAssigneesRequest = ChangeCommonTaskAssigneesRequest(assignees.lastOrNull(), version)
             )
         }
     }
@@ -181,6 +199,7 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStoryWatchers(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.changeTaskWatchers(commonTaskId, body)
+            CommonTaskType.EPIC -> taigaApi.changeEpicWatchers(commonTaskId, body)
         }
     }
 
@@ -194,6 +213,7 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.createUserStoryComment(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.createTaskComment(commonTaskId, body)
+            CommonTaskType.EPIC -> taigaApi.createEpicComment(commonTaskId, body)
         }
     }
 
@@ -205,6 +225,7 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.deleteUserStoryComment(commonTaskId, commentId)
             CommonTaskType.TASK -> taigaApi.deleteTaskComment(commonTaskId, commentId)
+            CommonTaskType.EPIC -> taigaApi.deleteEpicComment(commonTaskId, commentId)
         }
     }
 
@@ -215,10 +236,11 @@ class TasksRepository @Inject constructor(
         description: String,
         version: Int
     ) = withIO {
-        val body = EditTaskRequest(title, description, version)
+        val body = EditCommonTaskRequest(title, description, version)
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.editUserStory(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.editTask(commonTaskId, body)
+            CommonTaskType.EPIC -> taigaApi.editEpic(commonTaskId, body)
         }
     }
 
@@ -232,12 +254,17 @@ class TasksRepository @Inject constructor(
     ) = withIO {
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> {
-                val body = CreateUserStoryRequest(session.currentProjectId, title, description)
+                val body = CreateCommonTaskRequest(session.currentProjectId, title, description)
                 taigaApi.createUserStory(body).toCommonTask(commonTaskType)
             }
             CommonTaskType.TASK -> {
                 val body = CreateTaskRequest(session.currentProjectId, title, description, sprintId, parentId)
                 taigaApi.createTask(body).toCommonTask(commonTaskType)
+            }
+            CommonTaskType.EPIC -> {
+                // TODO check if it works
+                val body = CreateCommonTaskRequest(session.currentProjectId, title, description)
+                taigaApi.createEpic(body).toCommonTask(commonTaskType)
             }
         }
     }
@@ -246,6 +273,7 @@ class TasksRepository @Inject constructor(
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.deleteUserStory(commonTaskId)
             CommonTaskType.TASK -> taigaApi.deleteTask(commonTaskId)
+            CommonTaskType.EPIC -> taigaApi.deleteEpic(commonTaskId)
         }
         return@withIO
     }

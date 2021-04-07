@@ -41,6 +41,7 @@ fun CreateTaskScreen(
             when (commonTaskType) {
                 CommonTaskType.USERSTORY -> R.string.create_userstory
                 CommonTaskType.TASK -> R.string.create_task
+                CommonTaskType.EPIC -> R.string.create_epic
             }
         ),
         isLoading = creationResult?.resultStatus == ResultStatus.LOADING,

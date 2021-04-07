@@ -45,6 +45,7 @@
 
     <string name="userstory_slug">Userstory #%d</string>
     <string name="task_slug">Task #%d</string>
+    <string name="epic_slug">Epic #%d</string>
     
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to">Belongs to</string>
@@ -52,6 +53,7 @@
     <string name="created_by">Created by</string>
     <string name="assigned_to">Assigned to</string>
     <string name="watchers">Watchers</string>
+    <string name="userstories">User stories</string>
     <string name="tasks">Tasks</string>
     <string name="comments_template">Comments (%d)</string>
     <string name="comment_hint">Comment</string>
@@ -86,6 +88,7 @@
 
     <string name="create_task">New task</string>
     <string name="create_userstory">New userstory</string>
+    <string name="create_epic">New epic</string>
 
     <string name="loading">Loading…</string>
 </resources>

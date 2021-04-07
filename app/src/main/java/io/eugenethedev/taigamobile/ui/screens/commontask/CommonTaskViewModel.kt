@@ -27,12 +27,13 @@ class CommonTaskViewModel : ViewModel() {
     private var commonTaskId: Long = -1
     private lateinit var commonTaskType: CommonTaskType
 
-    val story = MutableLiveResult<CommonTaskExtended>()
-    private val commonTaskVersion get() = story.value?.data?.version ?: -1
+    val commonTask = MutableLiveResult<CommonTaskExtended>()
+    private val commonTaskVersion get() = commonTask.value?.data?.version ?: -1
     
     val creator = MutableLiveResult<User>()
     val assignees = MutableLiveResult<List<User>>()
     val watchers = MutableLiveResult<List<User>>()
+    val userStories = MutableLiveResult<List<CommonTask>>()
     val tasks = MutableLiveResult<List<CommonTask>>()
     val comments = MutableLiveResult<List<Comment>>()
 
@@ -47,21 +48,23 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     private fun loadData()  = viewModelScope.launch {
-        if (story.value == null) {
-            story.value = Result(ResultStatus.LOADING)
+        if (commonTask.value == null) {
+            commonTask.value = Result(ResultStatus.LOADING)
         }
 
-        story.value = try {
+        commonTask.value = try {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).let {
                 val creatorAsync = async { loadUser(it.creatorId) }
                 val assigneesAsyncs = it.assignedIds.map { async { loadUser(it) } }
                 val watchersAsyncs = it.watcherIds.map { async { loadUser(it) } }
+                val userStoriesAsync = async { tasksRepository.getEpicUserStories(commonTaskId) }
                 val tasksAsync = async { tasksRepository.getUserStoryTasks(commonTaskId) }
                 val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
 
                 creator.value = creatorAsync.await()
                 assignees.value = Result(ResultStatus.SUCCESS, assigneesAsyncs.mapNotNull { it.await().data })
                 watchers.value = Result(ResultStatus.SUCCESS, watchersAsyncs.mapNotNull { it.await().data })
+                userStories.value = Result(ResultStatus.SUCCESS, userStoriesAsync.await())
                 tasks.value = Result(ResultStatus.SUCCESS, tasksAsync.await())
                 comments.value = Result(
                     ResultStatus.SUCCESS,
@@ -217,7 +220,7 @@ class CommonTaskViewModel : ViewModel() {
         assigneesResult.value = try {
             tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
-                story.value?.data?.assignedIds.orEmpty().let {
+                commonTask.value?.data?.assignedIds.orEmpty().let {
                     if (remove) it - user.id
                     else it + user.id
                 },
@@ -245,7 +248,7 @@ class CommonTaskViewModel : ViewModel() {
         watchersResult.value = try {
             tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
-                story.value?.data?.watcherIds.orEmpty().let {
+                commonTask.value?.data?.watcherIds.orEmpty().let {
                     if (remove) it - user.id
                     else it + user.id
                 },

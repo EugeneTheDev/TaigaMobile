@@ -59,7 +59,7 @@ abstract class StoriesViewModel : ViewModel() {
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
 
             try {
-                tasksRepository.getStories(status.id, ++currentPage, sprintId)
+                tasksRepository.getUserStories(status.id, ++currentPage, sprintId)
                     .also { stories.value = Result(ResultStatus.SUCCESS, stories.value?.data.orEmpty() + it) }
                     .takeIf { it.isEmpty() }
                     ?.run { maxPage = currentPage /* reached maximum page */ }

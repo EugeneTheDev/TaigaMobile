@@ -1,9 +1,11 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -18,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -52,14 +55,16 @@ fun CommonTaskScreen(
         null
     }
 
-    val story by viewModel.story.observeAsState()
-    story?.subscribeOnError(onError)
+    val commonTask by viewModel.commonTask.observeAsState()
+    commonTask?.subscribeOnError(onError)
     val creator by viewModel.creator.observeAsState()
     creator?.subscribeOnError(onError)
     val assignees by viewModel.assignees.observeAsState()
     assignees?.subscribeOnError(onError)
     val watchers by viewModel.watchers.observeAsState()
     watchers?.subscribeOnError(onError)
+    val userStories by viewModel.userStories.observeAsState()
+    userStories?.subscribeOnError(onError)
     val tasks by viewModel.tasks.observeAsState()
     tasks?.subscribeOnError(onError)
     val comments by viewModel.comments.observeAsState()
@@ -96,15 +101,17 @@ fun CommonTaskScreen(
         navController.popBackStack()
     }
 
-    story?.data.let {
+    commonTask?.data.let {
         CommonTaskScreenContent(
             commonTaskType = commonTaskType,
             toolbarTitle = stringResource(
                 when (commonTaskType) {
                     CommonTaskType.USERSTORY -> R.string.userstory_slug
                     CommonTaskType.TASK -> R.string.task_slug
+                    CommonTaskType.EPIC -> R.string.epic_slug
                 }
             ).format(ref),
+            epicColor = it?.color ?: "#000000",
             statusName = it?.status?.name ?: "",
             statusColorHex = it?.status?.color ?: "#000000",
             sprintName = it?.sprint?.name,
@@ -116,9 +123,10 @@ fun CommonTaskScreen(
             creator = creator?.data,
             assignees = assignees?.data.orEmpty(),
             watchers = watchers?.data.orEmpty(),
+            userStories = userStories?.data.orEmpty(),
             tasks = tasks?.data.orEmpty(),
             comments = comments?.data.orEmpty(),
-            isLoading = story?.resultStatus == ResultStatus.LOADING,
+            isLoading = commonTask?.resultStatus == ResultStatus.LOADING,
             navigateBack = navController::popBackStack,
             navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.TASK, commonTaskId) },
             navigateToTask = navController::navigateToTaskScreen,
@@ -172,6 +180,7 @@ fun CommonTaskScreen(
 fun CommonTaskScreenContent(
     commonTaskType: CommonTaskType,
     toolbarTitle: String,
+    epicColor: String,
     statusName: String,
     statusColorHex: String,
     sprintName: String?,
@@ -183,6 +192,7 @@ fun CommonTaskScreenContent(
     creator: User?,
     assignees: List<User> = emptyList(),
     watchers: List<User> = emptyList(),
+    userStories: List<CommonTask> = emptyList(),
     tasks: List<CommonTask> = emptyList(),
     comments: List<Comment> = emptyList(),
     isLoading: Boolean = false,
@@ -293,6 +303,20 @@ fun CommonTaskScreenContent(
 
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        // epic color
+                        if (commonTaskType == CommonTaskType.EPIC) {
+                            Spacer(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .background(
+                                        color = Color(android.graphics.Color.parseColor(epicColor)),
+                                        shape = MaterialTheme.shapes.small
+                                    )
+                            )
+
+                            Spacer(Modifier.width(8.dp))
+                        }
+
                         // status
                         ClickableBadge(
                             text = statusName,
@@ -307,16 +331,19 @@ fun CommonTaskScreenContent(
                         Spacer(Modifier.width(8.dp))
 
                         // sprint
-                        ClickableBadge(
-                            text = sprintName ?: stringResource(R.string.no_sprint),
-                            color = sprintName?.let { MaterialTheme.colors.primary } ?: Color.Gray,
-                            onClick = {
-                                isSprintSelectorVisible = true
-                                editSprint.loadItems(null)
-                            },
-                            isLoading = editSprint.isResultLoading,
-                            isClickable = commonTaskType != CommonTaskType.TASK
-                        )
+                        if (commonTaskType != CommonTaskType.EPIC) {
+                            ClickableBadge(
+                                text = sprintName ?: stringResource(R.string.no_sprint),
+                                color = sprintName?.let { MaterialTheme.colors.primary }
+                                    ?: Color.Gray,
+                                onClick = {
+                                    isSprintSelectorVisible = true
+                                    editSprint.loadItems(null)
+                                },
+                                isLoading = editSprint.isResultLoading,
+                                isClickable = commonTaskType != CommonTaskType.TASK
+                            )
+                        }
 
                     }
 
@@ -339,7 +366,10 @@ fun CommonTaskScreenContent(
                     }
 
                     items(epics) {
-                        EpicItem(it)
+                        EpicItem(
+                            epic = it,
+                            onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) }
+                        )
                         Spacer(Modifier.height(2.dp))
                     }
                 }
@@ -455,42 +485,28 @@ fun CommonTaskScreenContent(
                     )
                 }
 
-
-                if (commonTaskType == CommonTaskType.USERSTORY) {
-                    item {
-                        Spacer(Modifier.height(sectionsMargin * 2))
-
-                        // tasks
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = stringResource(R.string.tasks),
-                                style = MaterialTheme.typography.h6
-                            )
-
-                            PlusButton(onClick = navigateToCreateTask)
-                        }
-
-                        if (tasks.isEmpty()) {
-                            NothingToSeeHereText()
-                        }
-                    }
-
-                    itemsIndexed(tasks) { index, item ->
-                        CommonTaskItem(
-                            commonTask = item,
-                            horizontalPadding = 0.dp,
-                            navigateToTask = navigateToTask
-                        )
-
-                        if (index < tasks.lastIndex) {
-                            Divider(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                color = Color.LightGray
-                            )
-                        }
-                    }
+                // user stories
+                if (commonTaskType == CommonTaskType.EPIC) {
+                    CommonTasksList(
+                        titleText = R.string.userstories,
+                        margin = sectionsMargin * 2,
+                        tasks = userStories,
+                        isCreateSupported = false,
+                        navigateToTask = navigateToTask
+                    )
                 }
 
+                // tasks
+                if (commonTaskType == CommonTaskType.USERSTORY) {
+                    CommonTasksList(
+                        titleText = R.string.tasks,
+                        margin = sectionsMargin * 2,
+                        tasks = tasks,
+                        isCreateSupported = true,
+                        navigateToTask = navigateToTask,
+                        navigateToCreateCommonTask = navigateToCreateTask
+                    )
+                }
 
                 item {
                     Divider(
@@ -575,7 +591,8 @@ fun CommonTaskScreenContent(
 
 @Composable
 private fun EpicItem(
-    epic: EpicShortInfo
+    epic: EpicShortInfo,
+    onClick: () -> Unit
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier.padding(bottom = 4.dp)
@@ -587,6 +604,7 @@ private fun EpicItem(
         modifier = Modifier
             .weight(0.9f, fill = false)
             .padding(end = 4.dp)
+            .clickableUnindicated(onClick = onClick)
     )
 
     Text(
@@ -606,7 +624,7 @@ private fun EpicItem(
 @Composable
 private fun UserStoryItem(
     story: UserStoryShortInfo,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier.padding(bottom = 4.dp)
@@ -615,7 +633,8 @@ private fun UserStoryItem(
         text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier.weight(0.9f, fill = false)
+        modifier = Modifier
+            .weight(0.9f, fill = false)
             .padding(end = 4.dp)
             .clickableUnindicated(onClick = onClick)
     )
@@ -669,10 +688,53 @@ private fun UserItemWithAction(
     }
 }
 
+private fun LazyListScope.CommonTasksList(
+    @StringRes titleText: Int,
+    margin: Dp,
+    tasks: List<CommonTask>,
+    isCreateSupported: Boolean,
+    navigateToTask: NavigateToTask,
+    navigateToCreateCommonTask: () -> Unit = {}
+) {
+    item {
+        Spacer(Modifier.height(margin))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(titleText),
+                style = MaterialTheme.typography.h6
+            )
+
+            if (isCreateSupported) {
+                PlusButton(onClick = navigateToCreateCommonTask)
+            }
+        }
+
+        if (tasks.isEmpty()) {
+            NothingToSeeHereText()
+        }
+    }
+
+    itemsIndexed(tasks) { index, item ->
+        CommonTaskItem(
+            commonTask = item,
+            horizontalPadding = 0.dp,
+            navigateToTask = navigateToTask
+        )
+
+        if (index < tasks.lastIndex) {
+            Divider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = Color.LightGray
+            )
+        }
+    }
+}
+
 @Composable
 private fun CommentItem(
     comment: Comment,
-    onDeleteClick: () -> Unit = {}
+    onDeleteClick: () -> Unit
 ) = Column {
     var isAlertVisible by remember { mutableStateOf(false) }
 
@@ -742,6 +804,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
     CommonTaskScreenContent(
         commonTaskType = CommonTaskType.USERSTORY,
         toolbarTitle = "Userstory #99",
+        epicColor = "#000000",
         statusName = "In progress",
         statusColorHex = "#729fcf",
         sprintName = "Very very very long sprint name",

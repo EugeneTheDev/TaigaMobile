@@ -31,7 +31,8 @@ data class Sprint(
 
 enum class CommonTaskType {
     USERSTORY,
-    TASK
+    TASK,
+    EPIC
 }
 
 
@@ -65,8 +66,9 @@ data class CommonTaskExtended(
     val description: String,
     val epics: List<EpicShortInfo>,
     val projectSlug: String,
-    val userStoryShortInfo: UserStoryShortInfo?,
-    val version: Int
+    val userStoryShortInfo: UserStoryShortInfo? = null,
+    val version: Int,
+    val color: String? = null // for epic
 )
 
 
