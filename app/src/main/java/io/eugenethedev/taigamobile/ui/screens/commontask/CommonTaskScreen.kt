@@ -329,8 +329,8 @@ fun CommonTaskScreenContent(
                     Spacer(Modifier.height(4.dp))
                 }
 
-                // belongs to
-                if (epics.isNotEmpty()) {
+                // belongs to (epic)
+                if (commonTaskType == CommonTaskType.USERSTORY) {
                     item {
                         Text(
                             text = stringResource(R.string.belongs_to),
@@ -345,14 +345,19 @@ fun CommonTaskScreenContent(
                 }
 
                 // belongs to (story)
-                story?.let {
-                    item {
-                        Text(
-                            text = stringResource(R.string.belongs_to),
-                            style = MaterialTheme.typography.subtitle1
-                        )
+                if (commonTaskType == CommonTaskType.TASK) {
+                    story?.let {
+                        item {
+                            Text(
+                                text = stringResource(R.string.belongs_to),
+                                style = MaterialTheme.typography.subtitle1
+                            )
 
-                        UserStoryItem(story)
+                            UserStoryItem(
+                                story = story,
+                                onClick = { navigateToTask(it.id, CommonTaskType.USERSTORY, it.ref) }
+                            )
+                        }
                     }
                 }
 
@@ -600,7 +605,8 @@ private fun EpicItem(
 
 @Composable
 private fun UserStoryItem(
-    story: UserStoryShortInfo
+    story: UserStoryShortInfo,
+    onClick: () -> Unit = {}
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier.padding(bottom = 4.dp)
@@ -609,9 +615,9 @@ private fun UserStoryItem(
         text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier
-            .weight(0.9f, fill = false)
+        modifier = Modifier.weight(0.9f, fill = false)
             .padding(end = 4.dp)
+            .clickableUnindicated(onClick = onClick)
     )
 
     story.epicColor?.let {
