@@ -176,7 +176,7 @@ fun CommonTaskScreenContent(
     statusColorHex: String,
     sprintName: String?,
     storyTitle: String,
-    epics: List<Epic> = emptyList(),
+    epics: List<EpicShortInfo> = emptyList(),
     story: UserStoryShortInfo?,
     description: String,
     creationDateTime: Date,
@@ -570,7 +570,7 @@ fun CommonTaskScreenContent(
 
 @Composable
 private fun EpicItem(
-    epic: Epic
+    epic: EpicShortInfo
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier.padding(bottom = 4.dp)
@@ -742,7 +742,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         storyTitle = "Very cool and important story. Need to do this quickly",
         story = null,
         epics = List(1) {
-            Epic(
+            EpicShortInfo(
                 id = 1L,
                 title = "Important epic",
                 ref = 1,

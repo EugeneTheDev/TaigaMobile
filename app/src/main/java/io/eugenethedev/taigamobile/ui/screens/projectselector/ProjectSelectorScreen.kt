@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
+import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorListConstants
@@ -71,14 +71,14 @@ fun ProjectSelectorScreen(
 @ExperimentalAnimationApi
 @Composable
 fun ProjectSelectorScreenContent(
-    projects: List<ProjectInSearch>,
+    projects: List<Project>,
     isVisible: Boolean = false,
     isLoading: Boolean = false,
     currentProjectId: Long = -1,
     selectorAnimationDuration: Int = SelectorListConstants.defaultAnimDurationMillis,
     navigateBack: () -> Unit = {},
     loadData: (String) -> Unit = {},
-    selectProject: (ProjectInSearch) -> Unit  = {}
+    selectProject: (Project) -> Unit  = {}
 ) = Box(
     Modifier.fillMaxSize(),
     contentAlignment = Alignment.TopStart
@@ -102,7 +102,7 @@ fun ProjectSelectorScreenContent(
 
 @Composable
 private fun ItemProject(
-    project: ProjectInSearch,
+    project: Project,
     currentProjectId: Long,
     onClick: () -> Unit = {}
 ) = ContainerBox(
@@ -156,8 +156,8 @@ private fun ItemProject(
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
     ProjectSelectorScreenContent(
         listOf(
-            ProjectInSearch(0, "Cool", "slug",false, false, false),
-            ProjectInSearch(1, "Cooler", "slug", true, false, false)
+            Project(0, "Cool", "slug",false, false, false),
+            Project(1, "Cooler", "slug", true, false, false)
         ),
         isVisible = true
     )

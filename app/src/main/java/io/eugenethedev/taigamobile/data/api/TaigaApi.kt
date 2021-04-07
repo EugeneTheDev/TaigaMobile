@@ -1,7 +1,7 @@
 package io.eugenethedev.taigamobile.data.api
 
 import io.eugenethedev.taigamobile.domain.entities.Comment
-import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
+import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.entities.User
 import retrofit2.Response
 import retrofit2.http.*
@@ -18,7 +18,7 @@ interface TaigaApi {
     suspend fun getProjects(
         @Query("q") query: String,
         @Query("page") page: Int
-    ): List<ProjectInSearch>
+    ): List<Project>
 
     @GET("projects/{id}")
     suspend fun getProject(@Path("id") projectId: Long): ProjectResponse

@@ -5,14 +5,9 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
-data class ProjectInSearch(
-    val id: Long,
-    val name: String,
-    val slug: String,
-    @SerializedName("i_am_member") val isMember: Boolean,
-    @SerializedName("i_am_admin") val isAdmin: Boolean,
-    @SerializedName("i_am_owner") val isOwner: Boolean
-)
+/**
+ * Tasks related entities
+ */
 
 data class Status(
     val id: Long,
@@ -21,10 +16,24 @@ data class Status(
     val order: Int = 0
 )
 
+
+@Parcelize
+data class Sprint(
+    val id: Long,
+    val name: String,
+    val order: Int,
+    val start: Date,
+    val finish: Date,
+    val storiesCount: Int,
+    val isClosed: Boolean
+) : Parcelable
+
+
 enum class CommonTaskType {
     USERSTORY,
     TASK
 }
+
 
 data class CommonTask(
     val id: Long,
@@ -42,16 +51,6 @@ data class CommonTask(
     )
 }
 
-@Parcelize
-data class Sprint(
-    val id: Long,
-    val name: String,
-    val order: Int,
-    val start: Date,
-    val finish: Date,
-    val storiesCount: Int,
-    val isClosed: Boolean
-) : Parcelable
 
 data class CommonTaskExtended(
     val id: Long,
@@ -64,18 +63,20 @@ data class CommonTaskExtended(
     val ref: Int,
     val title: String,
     val description: String,
-    val epics: List<Epic>,
+    val epics: List<EpicShortInfo>,
     val projectSlug: String,
     val userStoryShortInfo: UserStoryShortInfo?,
     val version: Int
 )
 
-data class Epic(
+
+data class EpicShortInfo(
     val id: Long,
     @SerializedName("subject") val title: String,
     val ref: Int,
     val color: String
 )
+
 
 data class UserStoryShortInfo(
     val id: Long,
@@ -83,20 +84,6 @@ data class UserStoryShortInfo(
     val title: String,
     val epicColor: String?
 )
-
-data class User(
-    @SerializedName("id") val _id: Long?,
-    @SerializedName("full_name_display") val fullName: String?,
-    val photo: String?,
-    @SerializedName("big_photo") val bigPhoto: String?,
-    val username: String,
-    val name: String? = null, // sometimes name appears here
-    val pk: Long? = null
-) {
-    val displayName get() = fullName ?: name!!
-    val avatarUrl get() = bigPhoto ?: photo
-    val id get() = _id ?: pk!!
-}
 
 data class Comment(
     val id: String,
@@ -106,21 +93,4 @@ data class Comment(
     @SerializedName("delete_comment_date") val deleteDate: Date?
 ) {
     var canDelete: Boolean? = null
-}
-
-data class TeamMember(
-    val id: Long,
-    val avatarUrl: String?,
-    val name: String,
-    val role: String,
-    val username: String,
-    val totalPower: Int
-) {
-    fun toUser() = User(
-        _id = id,
-        fullName = name,
-        photo = avatarUrl,
-        bigPhoto = null,
-        username = username
-    )
 }

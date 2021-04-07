@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
-import io.eugenethedev.taigamobile.domain.entities.Epic
+import io.eugenethedev.taigamobile.domain.entities.EpicShortInfo
 import io.eugenethedev.taigamobile.domain.entities.Status
 import java.util.*
 
@@ -47,7 +47,7 @@ data class CommonTaskResponse(
     val watchers: List<Long>,
     val owner: Long,
     val description: String,
-    val epics: List<Epic>?,
+    val epics: List<EpicShortInfo>?,
     val user_story_extra_info: UserStoryExtraInfo?,
     val version: Int
 ) {
@@ -69,7 +69,7 @@ data class CommonTaskResponse(
         val id: Long,
         val ref: Int,
         val subject: String,
-        val epics: List<Epic>?
+        val epics: List<EpicShortInfo>?
     )
 }
 

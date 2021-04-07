@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.data.api.TaigaApi
-import io.eugenethedev.taigamobile.domain.entities.ProjectInSearch
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
 import retrofit2.HttpException
 import javax.inject.Inject
