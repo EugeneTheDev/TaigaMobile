@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.Settings
 import io.eugenethedev.taigamobile.data.api.TaigaApi
@@ -41,7 +42,7 @@ class DataModule {
                                 request()
                                     .newBuilder()
                                     .url(it.request().url.toUrl().toExternalForm().replace(baseUrlPlaceholder, "https://${session.server}/${TaigaApi.API_PREFIX}"))
-                                    .addHeader("User-Agent", "Taiga App")
+                                    .addHeader("User-Agent", "TaigaMobile/${BuildConfig.VERSION_NAME}")
                                     .addHeader("Authorization", "Bearer ${session.token}")
                                     .build()
                             )
