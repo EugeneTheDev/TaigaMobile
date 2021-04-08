@@ -601,9 +601,8 @@ private fun EpicItem(
         text = stringResource(R.string.title_with_ref_pattern).format(epic.ref, epic.title),
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier
-            .weight(0.9f, fill = false)
-            .padding(end = 4.dp)
+        modifier = Modifier.weight(1f, fill = false)
+            .padding(end = 2.dp)
             .clickableUnindicated(onClick = onClick)
     )
 
@@ -617,7 +616,6 @@ private fun EpicItem(
                 shape = MaterialTheme.shapes.small
             )
             .padding(horizontal = 2.dp, vertical = 1.dp)
-            .weight(0.1f, fill = false)
     )
 }
 
@@ -633,21 +631,18 @@ private fun UserStoryItem(
         text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier
-            .weight(0.9f, fill = false)
-            .padding(end = 4.dp)
+        modifier = Modifier.weight(1f, fill = false)
+            .padding(end = 2.dp)
             .clickableUnindicated(onClick = onClick)
     )
 
     story.epicColor?.let {
         Spacer(
-            Modifier
-                .size(12.dp)
+            Modifier.size(12.dp)
                 .background(
                     color = Color(android.graphics.Color.parseColor(it)),
                     shape = CircleShape
                 )
-                .weight(0.1f, fill = false)
         )
     }
 }

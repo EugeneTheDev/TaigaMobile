@@ -207,7 +207,7 @@ fun CommonTaskItem(
                 style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier.let {
                     if (commonTask.taskType == CommonTaskType.EPIC) {
-                        it.weight(0.9f, fill = false).padding(end = 8.dp)
+                        it.weight(1f, fill = false).padding(end = 4.dp)
                     } else {
                         it
                     }
@@ -218,6 +218,7 @@ fun CommonTaskItem(
                 Text(
                     text = stringResource(R.string.epic),
                     style = MaterialTheme.typography.body2,
+                    maxLines = 1,
                     color = Color.White,
                     modifier = Modifier
                         .background(
@@ -225,7 +226,6 @@ fun CommonTaskItem(
                             shape = MaterialTheme.shapes.small
                         )
                         .padding(horizontal = 2.dp, vertical = 1.dp)
-                        .weight(0.1f, fill = false)
                 )
             }
         }
