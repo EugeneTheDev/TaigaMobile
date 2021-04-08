@@ -25,6 +25,7 @@ fun PlusButton(
     Icon(
         painter = painterResource(R.drawable.ic_add),
         contentDescription = null,
-        tint = MaterialTheme.colors.primary
+        tint = MaterialTheme.colors.primary,
+        modifier = Modifier.size(26.dp)
     )
 }

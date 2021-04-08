@@ -1,7 +1,7 @@
 package io.eugenethedev.taigamobile.ui.components.appbars
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,6 +19,7 @@ import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 @Composable
 fun ProjectAppBar(
     projectName: String,
+    actions: @Composable RowScope.() -> Unit = {},
     onTitleClick: () -> Unit
 ) = TopAppBar(
     title = {
@@ -31,7 +32,7 @@ fun ProjectAppBar(
                     ?: stringResource(R.string.choose_project_title),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 300.dp)
+                modifier = Modifier.weight(1f, fill = false)
             )
 
             Icon(
@@ -40,6 +41,7 @@ fun ProjectAppBar(
             )
         }
     },
+    actions = actions,
     backgroundColor = MaterialTheme.colors.surface,
     elevation = 0.dp
 )

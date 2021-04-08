@@ -15,17 +15,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.CommonTaskItem
+import io.eugenethedev.taigamobile.ui.components.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
-import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
-import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import io.eugenethedev.taigamobile.ui.utils.*
 
 @Composable
 fun EpicsScreen(
@@ -47,6 +46,10 @@ fun EpicsScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
+        navigateToCreateTask = {
+            navController.navigateToCreateTaskScreen(CommonTaskType.EPIC)
+            viewModel.reset()
+        },
         isLoading = epics?.resultStatus == ResultStatus.LOADING && epics?.data.isNullOrEmpty(),
         epics = epics?.data.orEmpty(),
         isEpicsLoading = epics?.resultStatus == ResultStatus.LOADING,
@@ -59,6 +62,7 @@ fun EpicsScreen(
 fun EpicsScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
+    navigateToCreateTask: () -> Unit = {},
     isLoading: Boolean = false,
     epics: List<CommonTask> = emptyList(),
     isEpicsLoading: Boolean = false,
@@ -70,6 +74,7 @@ fun EpicsScreenContent(
 ) {
     ProjectAppBar(
         projectName = projectName,
+        actions = { PlusButton(onClick = navigateToCreateTask) },
         onTitleClick = onTitleClick
     )
 
@@ -92,8 +97,6 @@ fun EpicsScreenContent(
         }
         else -> {
             LazyColumn(Modifier.fillMaxWidth()) {
-
-
                 itemsIndexed(epics) { index, item ->
                     CommonTaskItem(
                         commonTask = item,
