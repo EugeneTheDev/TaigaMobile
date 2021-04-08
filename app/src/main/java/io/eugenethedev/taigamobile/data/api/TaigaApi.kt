@@ -49,6 +49,12 @@ interface TaigaApi {
         @Query("page") page: Int?
     ): List<CommonTaskResponse>
 
+    @GET("epics")
+    suspend fun getEpics(
+        @Query("project") project: Long,
+        @Query("page") page: Int
+    ): List<CommonTaskResponse>
+
     @GET("milestones")
     suspend fun getSprints(
         @Query("project") project: Long,

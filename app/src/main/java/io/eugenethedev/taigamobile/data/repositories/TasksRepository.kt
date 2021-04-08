@@ -20,6 +20,12 @@ class TasksRepository @Inject constructor(
         }.statuses
     }
 
+    override suspend fun getEpics(page: Int) = withIO {
+        handle404 {
+            taigaApi.getEpics(session.currentProjectId, page).map { it.toCommonTask(CommonTaskType.EPIC) }
+        }
+    }
+
     override suspend fun getUserStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
         handle404 {
             taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, null, page)
@@ -117,7 +123,8 @@ class TasksRepository @Inject constructor(
             )
         },
         projectSlug = project_extra_info.slug,
-        taskType = commonTaskType
+        taskType = commonTaskType,
+        color = color
     )
     
     private fun SprintResponse.toSprint() = Sprint(

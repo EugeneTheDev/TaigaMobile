@@ -42,9 +42,10 @@ data class CommonTask(
     val title: String,
     val ref: Int,
     val status: Status,
-    val assignee: Assignee?,
+    val assignee: Assignee? = null,
     val projectSlug: String,
-    val taskType: CommonTaskType
+    val taskType: CommonTaskType,
+    val color: String? = null
 ) {
     data class Assignee(
         val id: Long,

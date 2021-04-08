@@ -6,6 +6,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -195,12 +196,39 @@ fun CommonTaskItem(
             )
         }
 
-        Text(
-            text = stringResource(R.string.title_with_ref_pattern).format(
-                commonTask.ref, commonTask.title
-            ),
-            style = MaterialTheme.typography.subtitle1,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.title_with_ref_pattern).format(
+                    commonTask.ref, commonTask.title
+                ),
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.let {
+                    if (commonTask.taskType == CommonTaskType.EPIC) {
+                        it.weight(0.9f, fill = false).padding(end = 8.dp)
+                    } else {
+                        it
+                    }
+                }
+            )
+
+            if (commonTask.taskType == CommonTaskType.EPIC) {
+                Text(
+                    text = stringResource(R.string.epic),
+                    style = MaterialTheme.typography.body2,
+                    color = Color.White,
+                    modifier = Modifier
+                        .background(
+                            color = commonTask.color?.let { Color(android.graphics.Color.parseColor(it)) } ?: Color.Black,
+                            shape = MaterialTheme.shapes.small
+                        )
+                        .padding(horizontal = 2.dp, vertical = 1.dp)
+                        .weight(0.1f, fill = false)
+                )
+            }
+        }
 
         Text(
             text = commonTask.assignee?.fullName?.let { stringResource(R.string.assignee_pattern).format(it) } ?: stringResource(R.string.unassigned),

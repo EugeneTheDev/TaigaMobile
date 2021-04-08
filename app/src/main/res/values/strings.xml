@@ -17,6 +17,7 @@
     <string name="login_error_message">Error during login. Check credentials or connection</string>
 
     <string name="scrum">Scrum</string>
+    <string name="epics">Epics</string>
     <string name="team">Team</string>
     <string name="settings">Settings</string>
 

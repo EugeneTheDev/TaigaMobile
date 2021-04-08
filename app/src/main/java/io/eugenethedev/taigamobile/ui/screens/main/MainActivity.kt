@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
@@ -27,6 +28,7 @@ import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskScreen
+import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -63,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             },
                             bottomBar = {
-                                val items = listOf(Screen.Scrum, Screen.Team, Screen.Settings)
+                                val items = listOf(Screen.Scrum, Screen.Epics, Screen.Team, Screen.Settings)
                                 val routes = items.map { it.route }
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                                 val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
@@ -71,15 +73,20 @@ class MainActivity : AppCompatActivity() {
                                 // hide bottom bar for other screens
                                 if (currentRoute !in routes) return@Scaffold
 
-                                BottomNavigation(backgroundColor = MaterialTheme.colors.surface) {
+                                BottomNavigation(
+                                    backgroundColor = MaterialTheme.colors.surface,
+                                    modifier = Modifier.height(48.dp)
+                                ) {
                                     items.forEach { screen ->
                                         BottomNavigationItem(
+                                            modifier = Modifier.offset(y = 4.dp),
                                             selectedContentColor = MaterialTheme.colors.primary,
                                             unselectedContentColor = Color.Gray,
                                             icon = {
                                                 Icon(
                                                     painter = painterResource(screen.iconId),
-                                                    contentDescription = null
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp)
                                                 )
                                             },
                                             label = { Text(stringResource(screen.resourceId)) },
@@ -111,7 +118,8 @@ class MainActivity : AppCompatActivity() {
 }
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
-    object Scrum : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_stories)
+    object Scrum : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_scrum)
+    object Epics : Screen(Routes.epics, R.string.epics, R.drawable.ic_epics)
     object Team : Screen(Routes.team, R.string.team, R.drawable.ic_team)
     object Settings : Screen(Routes.settings, R.string.settings, R.drawable.ic_settings)
 }
@@ -119,6 +127,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, @Drawable
 object Routes {
     const val login = "login"
     const val scrum = "scrum"
+    const val epics = "epics"
     const val team = "team"
     const val settings = "settings"
     const val projectsSelector = "projectsSelector"
@@ -184,6 +193,13 @@ fun MainScreen(
                         navController.navigate(Routes.projectsSelector)
                     }
                 }
+            }
+
+            composable(Routes.epics) {
+                EpicsScreen(
+                    navController = navController,
+                    onError = onError
+                )
             }
 
             composable(Routes.team) {
