@@ -269,7 +269,6 @@ class TasksRepository @Inject constructor(
                 taigaApi.createTask(body).toCommonTask(commonTaskType)
             }
             CommonTaskType.EPIC -> {
-                // TODO check if it works
                 val body = CreateCommonTaskRequest(session.currentProjectId, title, description)
                 taigaApi.createEpic(body).toCommonTask(commonTaskType)
             }
