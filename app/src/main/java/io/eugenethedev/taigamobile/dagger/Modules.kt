@@ -48,7 +48,11 @@ class DataModule {
                             )
                         }
                     }
-                    .addInterceptor(HttpLoggingInterceptor(Timber::d).setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .addInterceptor(
+                        HttpLoggingInterceptor(Timber::d)
+                            .setLevel(HttpLoggingInterceptor.Level.BODY)
+                            .also { it.redactHeader("Authorization") }
+                    )
                     .build()
             )
             .build()
