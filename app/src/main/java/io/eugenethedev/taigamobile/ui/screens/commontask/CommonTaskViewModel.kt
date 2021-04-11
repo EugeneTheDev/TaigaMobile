@@ -220,6 +220,7 @@ class CommonTaskViewModel : ViewModel() {
         epicsSelectResult.value = try {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
             loadData().join()
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -233,6 +234,7 @@ class CommonTaskViewModel : ViewModel() {
         epicsSelectResult.value = try {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
             loadData().join()
+            screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
