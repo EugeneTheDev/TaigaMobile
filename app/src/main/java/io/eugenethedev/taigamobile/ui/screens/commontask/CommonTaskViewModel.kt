@@ -12,6 +12,7 @@ import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -103,7 +104,7 @@ class CommonTaskViewModel : ViewModel() {
         }
 
         statuses.value = Result(ResultStatus.LOADING)
-        delay(200)
+        fixAnimation()
 
         statuses.value = try {
             Result(ResultStatus.SUCCESS, tasksRepository.getStatuses(commonTaskType))
@@ -144,7 +145,7 @@ class CommonTaskViewModel : ViewModel() {
         if (currentSprintPage == maxSprintPage) return@launch
 
         sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
-        delay(200)
+        fixAnimation()
 
         try {
             tasksRepository.getSprints(++currentSprintPage)
@@ -195,7 +196,7 @@ class CommonTaskViewModel : ViewModel() {
         if (currentEpicPage == maxEpicPage) return@launch
 
         epics.value = Result(ResultStatus.LOADING, epics.value?.data)
-        delay(200)
+        fixAnimation()
 
         try {
             tasksRepository.getEpics(++currentEpicPage, query)
@@ -263,7 +264,7 @@ class CommonTaskViewModel : ViewModel() {
                 }
             )
         } ?: run {
-            delay(200)
+            fixAnimation()
             try {
                 _team = usersRepository.getTeam().map { it.toUser() }
                 Result(ResultStatus.SUCCESS, _team)
