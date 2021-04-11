@@ -118,7 +118,7 @@ class CommonTaskViewModel : ViewModel() {
 
         statusSelectResult.value = try {
             tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, commonTaskVersion)
-            loadData()
+            loadData().join()
             screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -168,7 +168,7 @@ class CommonTaskViewModel : ViewModel() {
 
         sprintSelectResult.value = try {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
-            loadData()
+            loadData().join()
             screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
@@ -218,7 +218,7 @@ class CommonTaskViewModel : ViewModel() {
 
         epicsSelectResult.value = try {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
-            loadData()
+            loadData().join()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -231,7 +231,7 @@ class CommonTaskViewModel : ViewModel() {
 
         epicsSelectResult.value = try {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
-            loadData()
+            loadData().join()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -289,7 +289,7 @@ class CommonTaskViewModel : ViewModel() {
                 },
                 commonTaskVersion
             )
-            loadData()
+            loadData().join()
             screensState.modify()
             Result(ResultStatus.SUCCESS)
 
@@ -317,7 +317,7 @@ class CommonTaskViewModel : ViewModel() {
                 },
                 commonTaskVersion
             )
-            loadData()
+            loadData().join()
             Result(ResultStatus.SUCCESS)
 
         } catch (e: Exception) {
@@ -337,7 +337,7 @@ class CommonTaskViewModel : ViewModel() {
         
         commentsResult.value = try {
             tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
-            loadData()
+            loadData().join()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -350,7 +350,7 @@ class CommonTaskViewModel : ViewModel() {
 
         commentsResult.value = try {
             tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
-            loadData()
+            loadData().join()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {
             Timber.w(e)
@@ -366,7 +366,7 @@ class CommonTaskViewModel : ViewModel() {
 
         editResult.value = try {
             tasksRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
-            loadData()
+            loadData().join()
             screensState.modify()
             Result(ResultStatus.SUCCESS)
         } catch (e: Exception) {

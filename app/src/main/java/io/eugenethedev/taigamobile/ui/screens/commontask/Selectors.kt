@@ -24,6 +24,7 @@ import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
+import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import java.text.SimpleDateFormat
 
 @ExperimentalAnimationApi
@@ -212,35 +213,9 @@ private fun EpicItem(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(R.string.title_with_ref_pattern).format(
-                epic.ref,
-                epic.title
-            ),
-            style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier
-                .weight(1f, fill = false)
-                .padding(end = 4.dp),
-            color = if (epic.isClosed) Color.Gray else MaterialTheme.colors.onSurface
-        )
-
-        Text(
-            text = stringResource(R.string.epic),
-            style = MaterialTheme.typography.body2,
-            maxLines = 1,
-            color = Color.White,
-            modifier = Modifier
-                .background(
-                    color = epic.color?.let { Color(android.graphics.Color.parseColor(it)) }
-                        ?: Color.Black,
-                    shape = MaterialTheme.shapes.small
-                )
-                .padding(horizontal = 2.dp, vertical = 1.dp)
-        )
-
-    }
+   TitleWithIndicators(
+       ref = epic.ref,
+       title = epic.title,
+       indicatorColorsHex = epic.colors
+   )
 }

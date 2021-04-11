@@ -81,14 +81,14 @@ class TasksRepository @Inject constructor(
                 ref = it.ref,
                 title = it.subject,
                 description = it.description,
-                epics = it.epics.orEmpty(),
+                epicsShortInfo = it.epics.orEmpty(),
                 projectSlug = it.project_extra_info.slug,
                 userStoryShortInfo = it.user_story_extra_info?.let {
                     UserStoryShortInfo(
                         id = it.id,
                         ref = it.ref,
                         title = it.subject,
-                        epicColor = it.epics?.first()?.color
+                        epicColors = it.epics.orEmpty().map { it.color }
                     )
                 },
                 version = it.version,
@@ -124,7 +124,7 @@ class TasksRepository @Inject constructor(
         },
         projectSlug = project_extra_info.slug,
         taskType = commonTaskType,
-        color = color,
+        colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
         isClosed = is_closed
     )
     

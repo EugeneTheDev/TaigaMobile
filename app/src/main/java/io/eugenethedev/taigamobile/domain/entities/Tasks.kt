@@ -46,7 +46,7 @@ data class CommonTask(
     val projectSlug: String,
     val taskType: CommonTaskType,
     val isClosed: Boolean,
-    val color: String? = null
+    val colors: List<String> = emptyList() // colored indicators (for stories and epics)
 ) {
     data class Assignee(
         val id: Long,
@@ -66,7 +66,7 @@ data class CommonTaskExtended(
     val ref: Int,
     val title: String,
     val description: String,
-    val epics: List<EpicShortInfo>,
+    val epicsShortInfo: List<EpicShortInfo>,
     val projectSlug: String,
     val userStoryShortInfo: UserStoryShortInfo? = null,
     val version: Int,
@@ -86,7 +86,7 @@ data class UserStoryShortInfo(
     val id: Long,
     val ref: Int,
     val title: String,
-    val epicColor: String?
+    val epicColors: List<String>
 )
 
 data class Comment(

@@ -6,7 +6,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -27,6 +26,7 @@ import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
+import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
@@ -196,39 +196,11 @@ fun CommonTaskItem(
             )
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.title_with_ref_pattern).format(
-                    commonTask.ref, commonTask.title
-                ),
-                style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.let {
-                    if (commonTask.taskType == CommonTaskType.EPIC) {
-                        it.weight(1f, fill = false).padding(end = 4.dp)
-                    } else {
-                        it
-                    }
-                }
-            )
-
-            if (commonTask.taskType == CommonTaskType.EPIC) {
-                Text(
-                    text = stringResource(R.string.epic),
-                    style = MaterialTheme.typography.body2,
-                    maxLines = 1,
-                    color = Color.White,
-                    modifier = Modifier
-                        .background(
-                            color = commonTask.color?.let { Color(android.graphics.Color.parseColor(it)) } ?: Color.Black,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(horizontal = 2.dp, vertical = 1.dp)
-                )
-            }
-        }
+        TitleWithIndicators(
+            ref = commonTask.ref,
+            title = commonTask.title,
+            indicatorColorsHex = commonTask.colors
+        )
 
         Text(
             text = commonTask.assignee?.fullName?.let { stringResource(R.string.assignee_pattern).format(it) } ?: stringResource(R.string.unassigned),

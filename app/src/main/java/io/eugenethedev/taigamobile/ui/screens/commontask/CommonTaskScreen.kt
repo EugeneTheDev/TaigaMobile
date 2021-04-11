@@ -19,6 +19,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -35,6 +37,7 @@ import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
+import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
@@ -123,7 +126,7 @@ fun CommonTaskScreen(
             sprintName = it?.sprint?.name,
             storyTitle = it?.title ?: "",
             story = it?.userStoryShortInfo,
-            epics = it?.epics.orEmpty(),
+            epics = it?.epicsShortInfo.orEmpty(),
             description = it?.description ?: "",
             creationDateTime = it?.createdDateTime ?: Date(),
             creator = creator?.data,
@@ -391,6 +394,8 @@ fun CommonTaskScreenContent(
                             onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) },
                             onRemoveClick = { unlinkFromEpic(it) }
                         )
+
+                        Spacer(Modifier.height(2.dp))
                     }
 
                     item {
@@ -634,7 +639,8 @@ private fun EpicItemWithAction(
     onClick: () -> Unit,
     onRemoveClick: () -> Unit,
 ) = Row(
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.SpaceBetween
 ) {
     var isAlertVisible by remember { mutableStateOf(false) }
 
@@ -651,7 +657,15 @@ private fun EpicItemWithAction(
     }
 
     Text(
-        text = stringResource(R.string.title_with_ref_pattern).format(epic.ref, epic.title),
+        text = buildAnnotatedString {
+            append(stringResource(R.string.title_with_ref_pattern).format(epic.ref, epic.title))
+            append(" ")
+
+            pushStyle(SpanStyle(color = Color(android.graphics.Color.parseColor(epic.color))))
+
+            append("⬤") // 2B24
+
+        },
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
         modifier = Modifier
@@ -660,21 +674,11 @@ private fun EpicItemWithAction(
             .clickableUnindicated(onClick = onClick)
     )
 
-    Text(
-        text = stringResource(R.string.epic),
-        style = MaterialTheme.typography.caption,
-        color = Color.White,
-        modifier = Modifier
-            .background(
-                color = Color(android.graphics.Color.parseColor(epic.color)),
-                shape = MaterialTheme.shapes.small
-            )
-            .padding(horizontal = 2.dp, vertical = 1.dp)
-    )
-
     IconButton(
         onClick = { isAlertVisible = true },
-        modifier = Modifier.size(32.dp).clip(CircleShape)
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_remove),
@@ -688,31 +692,13 @@ private fun EpicItemWithAction(
 private fun UserStoryItem(
     story: UserStoryShortInfo,
     onClick: () -> Unit
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.padding(bottom = 4.dp)
-) {
-    Text(
-        text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
-        color = MaterialTheme.colors.primary,
-        style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier
-            .weight(1f, fill = false)
-            .padding(end = 2.dp)
-            .clickableUnindicated(onClick = onClick)
-    )
-
-    story.epicColor?.let {
-        Spacer(
-            Modifier
-                .size(12.dp)
-                .background(
-                    color = Color(android.graphics.Color.parseColor(it)),
-                    shape = CircleShape
-                )
-        )
-    }
-}
+) = TitleWithIndicators(
+    ref = story.ref,
+    title = story.title,
+    textColor = MaterialTheme.colors.primary,
+    indicatorColorsHex = story.epicColors,
+    modifier = Modifier.clickableUnindicated(onClick = onClick)
+)
 
 @Composable
 private fun UserItemWithAction(
