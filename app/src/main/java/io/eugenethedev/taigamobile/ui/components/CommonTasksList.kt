@@ -257,7 +257,8 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
                 fullName = "Name Name"
             ),
             projectSlug = "000",
-            taskType = CommonTaskType.USERSTORY
+            taskType = CommonTaskType.USERSTORY,
+            isClosed = false
         )
     )
 }
@@ -293,7 +294,8 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                         fullName = "Name Name"
                     ),
                     projectSlug = "000",
-                    taskType = CommonTaskType.USERSTORY
+                    taskType = CommonTaskType.USERSTORY,
+                    isClosed = false
                 )
             },
             visibleStatusIds = visibleStatusIds,

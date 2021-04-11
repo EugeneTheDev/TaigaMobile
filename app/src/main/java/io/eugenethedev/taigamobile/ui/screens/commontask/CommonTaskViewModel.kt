@@ -177,6 +177,69 @@ class CommonTaskViewModel : ViewModel() {
         }
     }
 
+    // Edit linked epic
+    val epics = MutableLiveResult<List<CommonTask>>()
+    val epicsSelectResult = MutableLiveResult<Unit>()
+    private var currentEpicQuery = ""
+    private var currentEpicPage = 0
+    private var maxEpicPage = Int.MAX_VALUE
+
+    fun loadEpics(query: String?) = viewModelScope.launch {
+        query.takeIf { it != currentEpicQuery }?.let {
+            currentEpicQuery = it
+            currentEpicPage = 0
+            maxEpicPage = Int.MAX_VALUE
+            epics.value = Result(ResultStatus.SUCCESS, emptyList())
+        }
+
+        if (currentEpicPage == maxEpicPage) return@launch
+
+        epics.value = Result(ResultStatus.LOADING, epics.value?.data)
+        delay(200)
+
+        try {
+            tasksRepository.getEpics(++currentEpicPage, query)
+                .also {
+                    epics.value = Result(
+                        ResultStatus.SUCCESS,
+                        data = epics.value?.data.orEmpty() + it
+                    )
+                }
+                .takeIf { it.isEmpty() }
+                ?.run { maxEpicPage = currentEpicPage }
+        } catch (e: Exception) {
+            Timber.w(e)
+            epics.value = Result(ResultStatus.ERROR, epics.value?.data, message = R.string.common_error_message)
+        }
+    }
+
+    fun linkToEpic(epic: CommonTask) = viewModelScope.launch {
+        epicsSelectResult.value = Result(ResultStatus.LOADING)
+
+        epicsSelectResult.value = try {
+            tasksRepository.linkToEpic(epic.id, commonTaskId)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
+    fun unlinkFromEpic(epic: EpicShortInfo) = viewModelScope.launch {
+        epicsSelectResult.value = Result(ResultStatus.LOADING)
+
+        epicsSelectResult.value = try {
+            tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
+            loadData()
+            Result(ResultStatus.SUCCESS)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
+
+
     // use team for both assignees and watchers
     val team = MutableLiveResult<List<User>>()
     private var _team = emptyList<User>()

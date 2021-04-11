@@ -51,6 +51,7 @@
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to">Belongs to</string>
     <string name="epic">Epic</string>
+    <string name="link_to_epic">Link to epic</string>
     <string name="created_by">Created by</string>
     <string name="assigned_to">Assigned to</string>
     <string name="watchers">Watchers</string>
@@ -66,6 +67,7 @@
     <string name="choose_sprint">Choose sprint</string>
     <string name="move_to_backlog">Move to backlog</string>
     <string name="search_members">Search members</string>
+    <string name="search_epics">Search epics</string>
 
     <string name="power">power</string>
 
@@ -75,11 +77,14 @@
     <string name="scrum_expand_statuses">Expand statuses on scrum screen</string>
     <string name="sprint_expand_statuses">Expand statuses on sprint screen</string>
 
+    <string name="unlink_epic_title">Unlink epic</string>
+    <string name="unlink_epic_text">Are you sure you want to unlink epic?</string>
+
     <string name="remove_user_title">Remove user</string>
     <string name="remove_user_text">Are you sure you want to remove user?</string>
 
     <string name="delete_task_title">Delete task</string>
-    <string name="delete_task_description">Are you sure you want to delete task?</string>
+    <string name="delete_task_text">Are you sure you want to delete task?</string>
 
     <string name="title_hint">Title</string>
     <string name="description_hint">Description</string>

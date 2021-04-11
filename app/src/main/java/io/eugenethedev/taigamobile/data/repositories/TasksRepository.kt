@@ -20,9 +20,9 @@ class TasksRepository @Inject constructor(
         }.statuses
     }
 
-    override suspend fun getEpics(page: Int) = withIO {
+    override suspend fun getEpics(page: Int, query: String?) = withIO {
         handle404 {
-            taigaApi.getEpics(session.currentProjectId, page).map { it.toCommonTask(CommonTaskType.EPIC) }
+            taigaApi.getEpics(session.currentProjectId, page, query).map { it.toCommonTask(CommonTaskType.EPIC) }
         }
     }
 
@@ -124,7 +124,8 @@ class TasksRepository @Inject constructor(
         },
         projectSlug = project_extra_info.slug,
         taskType = commonTaskType,
-        color = color
+        color = color,
+        isClosed = is_closed
     )
     
     private fun SprintResponse.toSprint() = Sprint(
@@ -172,6 +173,18 @@ class TasksRepository @Inject constructor(
             // TODO add issue here
             else -> throw UnsupportedOperationException("Cannot change sprint for $commonTaskType")
         }
+    }
+
+    override suspend fun linkToEpic(epicId: Long, userStoryId: Long) = withIO {
+        taigaApi.linkToEpic(
+            epicId = epicId,
+            linkToEpicRequest = LinkToEpicRequest(epicId.toString(), userStoryId)
+        )
+    }
+
+    override suspend fun unlinkFromEpic(epicId: Long, userStoryId: Long) = withIO {
+        taigaApi.unlinkFromEpic(epicId, userStoryId)
+        return@withIO
     }
 
     override suspend fun changeAssignees(

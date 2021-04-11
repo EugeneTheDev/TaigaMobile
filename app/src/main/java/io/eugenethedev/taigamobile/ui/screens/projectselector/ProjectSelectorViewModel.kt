@@ -46,7 +46,7 @@ class ProjectSelectorViewModel : ViewModel() {
     }
 
     fun loadData(query: String = "") = viewModelScope.launch {
-        query.toLowerCase(Locale.getDefault()).takeIf { it != currentQuery }?.let {
+        query.takeIf { it != currentQuery }?.let {
             currentQuery = it
             currentPage = 0
             maxPage = Int.MAX_VALUE

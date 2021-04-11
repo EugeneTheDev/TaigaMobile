@@ -15,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -80,6 +81,11 @@ fun CommonTaskScreen(
     val sprintSelectResult by viewModel.sprintSelectResult.observeAsState()
     sprintSelectResult?.subscribeOnError(onError)
 
+    val epics by viewModel.epics.observeAsState()
+    epics?.subscribeOnError(onError)
+    val epicsSelectResult by viewModel.epicsSelectResult.observeAsState()
+    epicsSelectResult?.subscribeOnError(onError)
+
     val team by viewModel.team.observeAsState()
     team?.subscribeOnError(onError)
 
@@ -144,6 +150,17 @@ fun CommonTaskScreen(
                 selectItem = viewModel::selectSprint,
                 isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.LOADING
             ),
+            editEpics = EditAction(
+                items = epics?.data.orEmpty(),
+                loadItems = viewModel::loadEpics,
+                isItemsLoading = epics?.resultStatus == ResultStatus.LOADING,
+                selectItem = viewModel::linkToEpic,
+                isResultLoading = epicsSelectResult?.resultStatus == ResultStatus.LOADING,
+                removeItem = {
+                    // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
+                }
+            ),
+            unlinkFromEpic = viewModel::unlinkFromEpic,
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
@@ -201,6 +218,8 @@ fun CommonTaskScreenContent(
     navigateToTask: NavigateToTask = { _, _, _ -> },
     editStatus: EditAction<Status> = EditAction(),
     editSprint: EditAction<Sprint?> = EditAction(),
+    editEpics: EditAction<CommonTask> = EditAction(),
+    unlinkFromEpic: (EpicShortInfo) -> Unit = {},
     editAssignees: EditAction<User> = EditAction(),
     editWatchers: EditAction<User> = EditAction(),
     editComments: EditCommentsAction = EditCommentsAction(),
@@ -215,6 +234,7 @@ fun CommonTaskScreenContent(
     var isSprintSelectorVisible by remember { mutableStateOf(false) }
     var isAssigneesSelectorVisible by remember { mutableStateOf(false) }
     var isWatchersSelectorVisible by remember { mutableStateOf(false) }
+    var isEpicsSelectorVisible by remember { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize()) {
         var isMenuExpanded by remember { mutableStateOf(false) }
@@ -241,7 +261,7 @@ fun CommonTaskScreenContent(
                     if (isDeleteAlertVisible) {
                         ConfirmActionAlert(
                             title = stringResource(R.string.delete_task_title),
-                            text = stringResource(R.string.delete_task_description),
+                            text = stringResource(R.string.delete_task_text),
                             onConfirm = {
                                 isDeleteAlertVisible = false
                                 deleteTask()
@@ -366,11 +386,25 @@ fun CommonTaskScreenContent(
                     }
 
                     items(epics) {
-                        EpicItem(
+                        EpicItemWithAction(
                             epic = it,
-                            onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) }
+                            onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) },
+                            onRemoveClick = { unlinkFromEpic(it) }
                         )
-                        Spacer(Modifier.height(2.dp))
+                    }
+
+                    item {
+                        if (editEpics.isResultLoading) {
+                            DotsLoader()
+                        }
+
+                        AddButton(
+                            text = stringResource(R.string.link_to_epic),
+                            onClick = {
+                                isEpicsSelectorVisible = true
+                                editEpics.loadItems(null)
+                            }
+                        )
                     }
                 }
 
@@ -442,7 +476,8 @@ fun CommonTaskScreenContent(
                     if (editAssignees.isResultLoading) {
                         DotsLoader()
                     }
-                    AddUserButton(
+                    AddButton(
+                        text = stringResource(R.string.add_user),
                         onClick = {
                             isAssigneesSelectorVisible = true
                             editAssignees.loadItems(null)
@@ -477,7 +512,8 @@ fun CommonTaskScreenContent(
                     if (editWatchers.isResultLoading) {
                         DotsLoader()
                     }
-                    AddUserButton(
+                    AddButton(
+                        text = stringResource(R.string.add_user),
                         onClick = {
                             isWatchersSelectorVisible = true
                             editWatchers.loadItems(null)
@@ -567,7 +603,10 @@ fun CommonTaskScreenContent(
         hideAssigneesSelector = { isAssigneesSelectorVisible = false },
         editWatchers = editWatchers,
         isWatchersSelectorVisible = isWatchersSelectorVisible,
-        hideWatchersSelector = { isWatchersSelectorVisible = false }
+        hideWatchersSelector = { isWatchersSelectorVisible = false },
+        editEpics = editEpics,
+        isEpicsSelectorVisible = isEpicsSelectorVisible,
+        hideEpicsSelector = { isEpicsSelectorVisible = false }
     )
 
     // Editor
@@ -590,19 +629,34 @@ fun CommonTaskScreenContent(
 }
 
 @Composable
-private fun EpicItem(
+private fun EpicItemWithAction(
     epic: EpicShortInfo,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onRemoveClick: () -> Unit,
 ) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.padding(bottom = 4.dp)
+    verticalAlignment = Alignment.CenterVertically
 ) {
+    var isAlertVisible by remember { mutableStateOf(false) }
+
+    if (isAlertVisible) {
+        ConfirmActionAlert(
+            title = stringResource(R.string.unlink_epic_title),
+            text = stringResource(R.string.unlink_epic_text),
+            onConfirm = {
+                isAlertVisible = false
+                onRemoveClick()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+
     Text(
         text = stringResource(R.string.title_with_ref_pattern).format(epic.ref, epic.title),
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier.weight(1f, fill = false)
-            .padding(end = 2.dp)
+        modifier = Modifier
+            .weight(1f, fill = false)
+            .padding(end = 4.dp)
             .clickableUnindicated(onClick = onClick)
     )
 
@@ -617,6 +671,17 @@ private fun EpicItem(
             )
             .padding(horizontal = 2.dp, vertical = 1.dp)
     )
+
+    IconButton(
+        onClick = { isAlertVisible = true },
+        modifier = Modifier.size(32.dp).clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_remove),
+            contentDescription = null,
+            tint = Color.Gray
+        )
+    }
 }
 
 @Composable
@@ -631,14 +696,16 @@ private fun UserStoryItem(
         text = stringResource(R.string.title_with_ref_pattern).format(story.ref, story.title),
         color = MaterialTheme.colors.primary,
         style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier.weight(1f, fill = false)
+        modifier = Modifier
+            .weight(1f, fill = false)
             .padding(end = 2.dp)
             .clickableUnindicated(onClick = onClick)
     )
 
     story.epicColor?.let {
         Spacer(
-            Modifier.size(12.dp)
+            Modifier
+                .size(12.dp)
                 .background(
                     color = Color(android.graphics.Color.parseColor(it)),
                     shape = CircleShape
@@ -773,9 +840,13 @@ private fun CommentItem(
 }
 
 @Composable
-private fun AddUserButton(
+private fun AddButton(
+    text: String,
     onClick: () -> Unit
-) = TextButton(onClick = onClick) {
+) = TextButton(
+    onClick = onClick,
+    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             painter = painterResource(R.drawable.ic_add),
@@ -784,7 +855,7 @@ private fun AddUserButton(
         )
 
         Text(
-            text = stringResource(R.string.add_user),
+            text = text,
             color = MaterialTheme.colors.primary
         )
     }
@@ -856,7 +927,8 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                     fullName = "Name Name"
                 ),
                 projectSlug = "000",
-                taskType = CommonTaskType.USERSTORY
+                taskType = CommonTaskType.USERSTORY,
+                isClosed = false
             )
         },
         comments = List(1) {

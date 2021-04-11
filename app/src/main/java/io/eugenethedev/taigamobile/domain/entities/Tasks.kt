@@ -45,6 +45,7 @@ data class CommonTask(
     val assignee: Assignee? = null,
     val projectSlug: String,
     val taskType: CommonTaskType,
+    val isClosed: Boolean,
     val color: String? = null
 ) {
     data class Assignee(

@@ -56,3 +56,8 @@ data class CreateTaskRequest(
     val milestone: Long?,
     val user_story: Long?
 )
+
+data class LinkToEpicRequest(
+    val epic: String,
+    val user_story: Long
+)

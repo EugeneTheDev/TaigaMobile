@@ -1,16 +1,23 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.User
@@ -28,6 +35,9 @@ fun Selectors(
     editSprint: EditAction<Sprint?>,
     isSprintSelectorVisible: Boolean,
     hideSprintSelector: () -> Unit,
+    editEpics: EditAction<CommonTask>,
+    isEpicsSelectorVisible: Boolean,
+    hideEpicsSelector: () -> Unit,
     editAssignees: EditAction<User>,
     isAssigneesSelectorVisible: Boolean,
     hideAssigneesSelector: () -> Unit,
@@ -73,6 +83,25 @@ fun Selectors(
         )
     }
 
+    // sprint editor
+    SelectorList(
+        titleHint = stringResource(R.string.search_epics),
+        items = editEpics.items,
+        isVisible = isEpicsSelectorVisible,
+        isLoading = editEpics.isItemsLoading,
+        loadData = editEpics.loadItems,
+        navigateBack = hideEpicsSelector
+    ) {
+        EpicItem(
+            epic = it,
+            onClick = {
+                editEpics.selectItem(it)
+                hideEpicsSelector()
+            }
+        )
+    }
+
+
     // assignees editor
     SelectorList(
         titleHint = stringResource(R.string.search_members),
@@ -108,13 +137,12 @@ fun Selectors(
             }
         )
     }
-
 }
 
 @Composable
 private fun StatusItem(
     status: Status,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
@@ -128,7 +156,7 @@ private fun StatusItem(
 @Composable
 private fun SprintItem(
     sprint: Sprint?,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
@@ -168,10 +196,51 @@ private fun SprintItem(
 @Composable
 private fun MemberItem(
     member: User,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
     UserItem(member)
+}
+
+@Composable
+private fun EpicItem(
+    epic: CommonTask,
+    onClick: () -> Unit
+) = ContainerBox(
+    verticalPadding = 16.dp,
+    onClick = onClick
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.title_with_ref_pattern).format(
+                epic.ref,
+                epic.title
+            ),
+            style = MaterialTheme.typography.subtitle1,
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(end = 4.dp),
+            color = if (epic.isClosed) Color.Gray else MaterialTheme.colors.onSurface
+        )
+
+        Text(
+            text = stringResource(R.string.epic),
+            style = MaterialTheme.typography.body2,
+            maxLines = 1,
+            color = Color.White,
+            modifier = Modifier
+                .background(
+                    color = epic.color?.let { Color(android.graphics.Color.parseColor(it)) }
+                        ?: Color.Black,
+                    shape = MaterialTheme.shapes.small
+                )
+                .padding(horizontal = 2.dp, vertical = 1.dp)
+        )
+
+    }
 }

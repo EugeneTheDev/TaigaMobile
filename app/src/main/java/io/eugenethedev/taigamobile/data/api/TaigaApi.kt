@@ -52,7 +52,8 @@ interface TaigaApi {
     @GET("epics")
     suspend fun getEpics(
         @Query("project") project: Long,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("q") query: String?
     ): List<CommonTaskResponse>
 
     @GET("milestones")
@@ -228,5 +229,17 @@ interface TaigaApi {
 
     @DELETE("epics/{id}")
     suspend fun deleteEpic(@Path("id") id: Long): Response<Void>
+
+    @POST("epics/{id}/related_userstories")
+    suspend fun linkToEpic(
+        @Path("id") epicId: Long,
+        @Body linkToEpicRequest: LinkToEpicRequest
+    )
+
+    @DELETE("epics/{epicId}/related_userstories/{userStoryId}")
+    suspend fun unlinkFromEpic(
+        @Path("epicId") epicId: Long,
+        @Path("userStoryId") userStoryId: Long
+    ): Response<Void>
 
 }
