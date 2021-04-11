@@ -65,6 +65,12 @@ interface TaigaApi {
     @GET("userstories/{id}")
     suspend fun getUserStory(@Path("id") storyId: Long): CommonTaskResponse
 
+    @GET("userstories/by_ref")
+    suspend fun getUserStoryByRef(
+        @Query("project") projectId: Long,
+        @Query("ref") ref: Int
+    ): CommonTaskResponse
+
     @GET("tasks/{id}")
     suspend fun getTask(@Path("id") taskId: Long): CommonTaskResponse
 
@@ -241,5 +247,11 @@ interface TaigaApi {
         @Path("epicId") epicId: Long,
         @Path("userStoryId") userStoryId: Long
     ): Response<Void>
+
+    @POST("/tasks/{id}/promote_to_user_story")
+    suspend fun promoteTaskToUserStory(
+        @Path("id") taskId: Long,
+        @Body promoteToUserStoryRequest: PromoteToUserStoryRequest
+    ): List<Int>
 
 }

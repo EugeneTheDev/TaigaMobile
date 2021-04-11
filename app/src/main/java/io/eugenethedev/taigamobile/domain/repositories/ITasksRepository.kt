@@ -13,7 +13,6 @@ interface ITasksRepository {
     suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType): CommonTaskExtended
     suspend fun getComments(commonTaskId: Long, type: CommonTaskType): List<Comment>
 
-
     // edit related
     suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, version: Int)
     suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
@@ -34,4 +33,6 @@ interface ITasksRepository {
     ): CommonTask
 
     suspend fun deleteCommonTask(commonTaskType: CommonTaskType, commonTaskId: Long)
+
+    suspend fun promoteTaskToUserStory(commonTaskId: Long): CommonTask
 }

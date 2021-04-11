@@ -61,3 +61,7 @@ data class LinkToEpicRequest(
     val epic: String,
     val user_story: Long
 )
+
+data class PromoteToUserStoryRequest(
+    val project_id: Long
+)

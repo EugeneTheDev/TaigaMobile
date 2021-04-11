@@ -391,4 +391,19 @@ class CommonTaskViewModel : ViewModel() {
             Result(ResultStatus.ERROR, message = R.string.permission_error)
         }
     }
+
+    val promoteResult = MutableLiveResult<CommonTask>()
+
+    fun promoteTask() = viewModelScope.launch {
+        promoteResult.value = Result(ResultStatus.LOADING)
+
+        promoteResult.value = try {
+            val result = tasksRepository.promoteTaskToUserStory(commonTaskId)
+            screensState.modify()
+            Result(ResultStatus.SUCCESS, result)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.ERROR, message = R.string.permission_error)
+        }
+    }
 }

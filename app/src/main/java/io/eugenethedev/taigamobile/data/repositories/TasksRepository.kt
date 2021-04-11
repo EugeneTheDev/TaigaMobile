@@ -296,4 +296,13 @@ class TasksRepository @Inject constructor(
         }
         return@withIO
     }
+
+    override suspend fun promoteTaskToUserStory(commonTaskId: Long) = withIO {
+        taigaApi.promoteTaskToUserStory(
+                taskId = commonTaskId,
+                promoteToUserStoryRequest = PromoteToUserStoryRequest(session.currentProjectId)
+            )
+            .first()
+            .let { taigaApi.getUserStoryByRef(session.currentProjectId, it).toCommonTask(CommonTaskType.USERSTORY) }
+    }
 }

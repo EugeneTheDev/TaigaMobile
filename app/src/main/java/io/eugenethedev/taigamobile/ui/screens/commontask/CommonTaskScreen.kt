@@ -110,6 +110,13 @@ fun CommonTaskScreen(
         navController.popBackStack()
     }
 
+    val promoteResult by viewModel.promoteResult.observeAsState()
+    promoteResult?.subscribeOnError(onError)
+    promoteResult?.takeIf { it.resultStatus == ResultStatus.SUCCESS }?.data?.let {
+        navController.popBackStack()
+        navController.navigateToTaskScreen(it.id, CommonTaskType.USERSTORY, it.ref)
+    }
+
     commonTask?.data.let {
         CommonTaskScreenContent(
             commonTaskType = commonTaskType,
@@ -188,7 +195,9 @@ fun CommonTaskScreen(
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,
             isEditLoading = editResult?.resultStatus == ResultStatus.LOADING,
-            isDeleteLoading = deleteResult?.resultStatus == ResultStatus.LOADING
+            isDeleteLoading = deleteResult?.resultStatus == ResultStatus.LOADING,
+            promoteTask = viewModel::promoteTask,
+            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.LOADING
         )
     }
 
@@ -229,7 +238,9 @@ fun CommonTaskScreenContent(
     editTask: (title: String, description: String) -> Unit = { _, _ -> },
     deleteTask: () -> Unit = {},
     isEditLoading: Boolean = false,
-    isDeleteLoading: Boolean = false
+    isDeleteLoading: Boolean = false,
+    promoteTask: () -> Unit = {},
+    isPromoteLoading: Boolean = false
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -273,6 +284,20 @@ fun CommonTaskScreenContent(
                         )
                     }
 
+                    // promote alert dialog
+                    var isPromoteAlertVisible by remember { mutableStateOf(false) }
+                    if (isPromoteAlertVisible) {
+                        ConfirmActionAlert(
+                            title = stringResource(R.string.delete_task_title),
+                            text = stringResource(R.string.delete_task_text),
+                            onConfirm = {
+                                isPromoteAlertVisible = false
+                                promoteTask()
+                            },
+                            onDismiss = { isPromoteAlertVisible = false }
+                        )
+                    }
+
                     DropdownMenu(
                         expanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false }
@@ -301,6 +326,20 @@ fun CommonTaskScreenContent(
                                 text = stringResource(R.string.delete),
                                 style = MaterialTheme.typography.body1
                             )
+                        }
+
+                        if (commonTaskType == CommonTaskType.TASK) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    isMenuExpanded = false
+                                    isPromoteAlertVisible = true
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.promote_to_user_story),
+                                    style = MaterialTheme.typography.body1
+                                )
+                            }
                         }
                     }
                 }
@@ -379,11 +418,11 @@ fun CommonTaskScreenContent(
                     Spacer(Modifier.height(4.dp))
                 }
 
-                // belongs to (epic)
+                // belongs to (epics)
                 if (commonTaskType == CommonTaskType.USERSTORY) {
                     item {
                         Text(
-                            text = stringResource(R.string.belongs_to),
+                            text = stringResource(R.string.belongs_to_epics),
                             style = MaterialTheme.typography.subtitle1
                         )
                     }
@@ -418,7 +457,7 @@ fun CommonTaskScreenContent(
                     story?.let {
                         item {
                             Text(
-                                text = stringResource(R.string.belongs_to),
+                                text = stringResource(R.string.belongs_to_story),
                                 style = MaterialTheme.typography.subtitle1
                             )
 
@@ -628,7 +667,7 @@ fun CommonTaskScreenContent(
         )
     }
 
-    if (isEditLoading || isDeleteLoading) {
+    if (isEditLoading || isDeleteLoading || isPromoteLoading) {
         LoadingDialog()
     }
 }
