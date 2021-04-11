@@ -288,8 +288,8 @@ fun CommonTaskScreenContent(
                     var isPromoteAlertVisible by remember { mutableStateOf(false) }
                     if (isPromoteAlertVisible) {
                         ConfirmActionAlert(
-                            title = stringResource(R.string.delete_task_title),
-                            text = stringResource(R.string.delete_task_text),
+                            title = stringResource(R.string.promote_title),
+                            text = stringResource(R.string.promote_text),
                             onConfirm = {
                                 isPromoteAlertVisible = false
                                 promoteTask()
@@ -328,6 +328,7 @@ fun CommonTaskScreenContent(
                             )
                         }
 
+                        // promote
                         if (commonTaskType == CommonTaskType.TASK) {
                             DropdownMenuItem(
                                 onClick = {
