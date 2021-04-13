@@ -32,6 +32,9 @@ interface TaigaApi {
     @GET("epics/filters_data")
     suspend fun getEpicsFiltersData(@Query("project") project: Long): FiltersDataResponse
 
+    @GET("issues/filters_data")
+    suspend fun getIssuesFiltersData(@Query("project") project: Long): FiltersDataResponse
+
     @GET("userstories")
     suspend fun getUserStories(
         @Query("project") project: Long?,
@@ -56,6 +59,14 @@ interface TaigaApi {
         @Query("q") query: String?
     ): List<CommonTaskResponse>
 
+    @GET("issues")
+    suspend fun getIssues(
+        @Query("project") project: Long,
+        @Query("page") page: Int,
+        @Query("q") query: String?,
+        @Query("milestone") sprint: Long?
+    ): List<CommonTaskResponse>
+
     @GET("milestones")
     suspend fun getSprints(
         @Query("project") project: Long,
@@ -77,6 +88,9 @@ interface TaigaApi {
     @GET("epics/{id}")
     suspend fun getEpic(@Path("id") epicId: Long): CommonTaskResponse
 
+    @GET("issues/{id}")
+    suspend fun getIssue(@Path("id") issueId: Long): CommonTaskResponse
+
     @GET("history/userstory/{id}?type=comment")
     suspend fun getUserStoryComments(@Path("id") userStoryId: Long): List<Comment>
 
@@ -85,6 +99,9 @@ interface TaigaApi {
 
     @GET("history/epic/{id}?type=comment")
     suspend fun getEpicComments(@Path("id") epicId: Long): List<Comment>
+
+    @GET("history/issue/{id}?type=comment")
+    suspend fun getIssueComments(@Path("id") issueId: Long): List<Comment>
 
     @POST("history/userstory/{id}/delete_comment")
     suspend fun deleteUserStoryComment(
@@ -101,6 +118,12 @@ interface TaigaApi {
     @POST("history/epic/{id}/delete_comment")
     suspend fun deleteEpicComment(
         @Path("id") epicId: Long,
+        @Query("id") commentId: String
+    )
+
+    @POST("history/issue/{id}/delete_comment")
+    suspend fun deleteIssueComment(
+        @Path("id") issueId: Long,
         @Query("id") commentId: String
     )
 
@@ -134,6 +157,12 @@ interface TaigaApi {
         @Body changeStatusRequest: ChangeStatusRequest
     )
 
+    @PATCH("issues/{id}")
+    suspend fun changeIssueStatus(
+        @Path("id") id: Long,
+        @Body changeStatusRequest: ChangeStatusRequest
+    )
+
     @PATCH("userstories/{id}")
     suspend fun changeUserStorySprint(
         @Path("id") id: Long,
@@ -142,6 +171,12 @@ interface TaigaApi {
 
     @PATCH("tasks/{id}")
     suspend fun changeTaskSprint(
+        @Path("id") id: Long,
+        @Body changeSprintRequest: ChangeSprintRequest
+    )
+
+    @PATCH("issues/{id}")
+    suspend fun changeIssueSprint(
         @Path("id") id: Long,
         @Body changeSprintRequest: ChangeSprintRequest
     )
@@ -170,6 +205,12 @@ interface TaigaApi {
         @Body changeAssigneesRequest: ChangeCommonTaskAssigneesRequest
     )
 
+    @PATCH("issues/{id}")
+    suspend fun changeIssueAssignees(
+        @Path("id") id: Long,
+        @Body changeAssigneesRequest: ChangeCommonTaskAssigneesRequest
+    )
+
     @PATCH("tasks/{id}")
     suspend fun changeTaskWatchers(
         @Path("id") id: Long,
@@ -178,6 +219,12 @@ interface TaigaApi {
 
     @PATCH("epics/{id}")
     suspend fun changeEpicWatchers(
+        @Path("id") id: Long,
+        @Body changeWatchersRequest: ChangeWatchersRequest
+    )
+
+    @PATCH("issues/{id}")
+    suspend fun changeIssuesWatchers(
         @Path("id") id: Long,
         @Body changeWatchersRequest: ChangeWatchersRequest
     )
@@ -200,6 +247,12 @@ interface TaigaApi {
         @Body createCommentRequest: CreateCommentRequest
     )
 
+    @PATCH("issues/{id}")
+    suspend fun createIssueComment(
+        @Path("id") id: Long,
+        @Body createCommentRequest: CreateCommentRequest
+    )
+
     @PATCH("userstories/{id}")
     suspend fun editUserStory(
         @Path("id") id: Long,
@@ -218,6 +271,12 @@ interface TaigaApi {
         @Body editRequest: EditCommonTaskRequest
     )
 
+    @PATCH("issues/{id}")
+    suspend fun editIssue(
+        @Path("id") id: Long,
+        @Body editRequest: EditCommonTaskRequest
+    )
+
     @POST("userstories")
     suspend fun createUserStory(@Body createUserStoryRequest: CreateCommonTaskRequest): CommonTaskResponse
 
@@ -227,6 +286,9 @@ interface TaigaApi {
     @POST("epics")
     suspend fun createEpic(@Body createEpicRequest: CreateCommonTaskRequest): CommonTaskResponse
 
+    @POST("issues")
+    suspend fun createIssue(@Body createIssueRequest: CreateCommonTaskRequest): CommonTaskResponse
+
     @DELETE("userstories/{id}")
     suspend fun deleteUserStory(@Path("id") id: Long): Response<Void>
 
@@ -235,6 +297,9 @@ interface TaigaApi {
 
     @DELETE("epics/{id}")
     suspend fun deleteEpic(@Path("id") id: Long): Response<Void>
+
+    @DELETE("issues/{id}")
+    suspend fun deleteIssue(@Path("id") id: Long): Response<Void>
 
     @POST("epics/{id}/related_userstories")
     suspend fun linkToEpic(

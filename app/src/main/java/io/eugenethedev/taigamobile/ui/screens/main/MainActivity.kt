@@ -29,6 +29,7 @@ import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
+import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             },
                             bottomBar = {
-                                val items = listOf(Screen.Scrum, Screen.Epics, Screen.Team, Screen.Settings)
+                                val items = listOf(Screen.Scrum, Screen.Epics, Screen.Issues, Screen.Team, Screen.Settings)
                                 val routes = items.map { it.route }
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                                 val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity() {
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
     object Scrum : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_scrum)
     object Epics : Screen(Routes.epics, R.string.epics, R.drawable.ic_epics)
+    object Issues : Screen(Routes.issues, R.string.issues, R.drawable.ic_issues)
     object Team : Screen(Routes.team, R.string.team, R.drawable.ic_team)
     object Settings : Screen(Routes.settings, R.string.settings, R.drawable.ic_settings)
 }
@@ -128,6 +130,7 @@ object Routes {
     const val login = "login"
     const val scrum = "scrum"
     const val epics = "epics"
+    const val issues = "issues"
     const val team = "team"
     const val settings = "settings"
     const val projectsSelector = "projectsSelector"
@@ -164,11 +167,7 @@ fun MainScreen(
         }
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
+    Box(Modifier.fillMaxSize().padding(paddingValues)) {
         NavHost(
             navController = navController,
             startDestination = if (viewModel.isLogged) Routes.scrum else Routes.login
@@ -197,6 +196,13 @@ fun MainScreen(
 
             composable(Routes.epics) {
                 EpicsScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
+
+            composable(Routes.issues) {
+                IssuesScreen(
                     navController = navController,
                     onError = onError
                 )

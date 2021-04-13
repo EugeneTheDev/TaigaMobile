@@ -125,6 +125,7 @@ fun CommonTaskScreen(
                     CommonTaskType.USERSTORY -> R.string.userstory_slug
                     CommonTaskType.TASK -> R.string.task_slug
                     CommonTaskType.EPIC -> R.string.epic_slug
+                    CommonTaskType.ISSUE -> R.string.issue_slug
                 }
             ).format(ref),
             epicColor = it?.color ?: "#000000",

@@ -32,7 +32,8 @@ data class Sprint(
 enum class CommonTaskType {
     USERSTORY,
     TASK,
-    EPIC
+    EPIC,
+    ISSUE
 }
 
 

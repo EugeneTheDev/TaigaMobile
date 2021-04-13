@@ -18,6 +18,7 @@
 
     <string name="scrum">Scrum</string>
     <string name="epics">Epics</string>
+    <string name="issues">Issues</string>
     <string name="team">Team</string>
     <string name="settings">Settings</string>
 
@@ -47,6 +48,7 @@
     <string name="userstory_slug">User story #%d</string>
     <string name="task_slug">Task #%d</string>
     <string name="epic_slug">Epic #%d</string>
+    <string name="issue_slug">Issue #%d</string>
     
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to_epics">Belongs to epics</string>
@@ -100,6 +102,7 @@
     <string name="create_task">New task</string>
     <string name="create_userstory">New user story</string>
     <string name="create_epic">New epic</string>
+    <string name="create_issue">New issue</string>
 
     <string name="loading">Loading…</string>
 </resources>

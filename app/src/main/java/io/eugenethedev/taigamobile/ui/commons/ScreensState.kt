@@ -37,9 +37,19 @@ class ScreensState @Inject constructor() {
             return value
         }
 
+    var shouldReloadIssuesScreen: Boolean = false
+        private set
+        get() {
+            val value = field
+            field = false
+            return value
+        }
+
+
     fun modify() {
         shouldReloadScrumScreen = true
         shouldReloadSprintScreen = true
         shouldReloadEpicsScreen = true
+        shouldReloadIssuesScreen = true
     }
 }
