@@ -287,7 +287,7 @@ interface TaigaApi {
     suspend fun createEpic(@Body createEpicRequest: CreateCommonTaskRequest): CommonTaskResponse
 
     @POST("issues")
-    suspend fun createIssue(@Body createIssueRequest: CreateCommonTaskRequest): CommonTaskResponse
+    suspend fun createIssue(@Body createIssueRequest: CreateIssueRequest): CommonTaskResponse
 
     @DELETE("userstories/{id}")
     suspend fun deleteUserStory(@Path("id") id: Long): Response<Void>

@@ -26,6 +26,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.lists.CommonTasksList
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -47,10 +48,13 @@ fun ScrumScreen(
     }
     val statuses by viewModel.statuses.observeAsState()
     statuses?.subscribeOnError(onError)
+
     val stories by viewModel.stories.observeAsState()
     stories?.subscribeOnError(onError)
+
     val sprints by viewModel.sprints.observeAsState()
     sprints?.subscribeOnError(onError)
+
     val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
     val visibleStatusIds by viewModel.visibleStatusIds.observeAsState()
 

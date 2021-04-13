@@ -16,7 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.components.CommonTaskItem
+import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.components.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader

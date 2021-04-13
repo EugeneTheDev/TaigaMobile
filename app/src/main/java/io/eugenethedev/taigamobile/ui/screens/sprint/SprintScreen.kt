@@ -3,13 +3,11 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,11 +19,10 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
+import io.eugenethedev.taigamobile.ui.components.lists.CommonTasksList
+import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
-import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
-import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
@@ -44,21 +41,29 @@ fun SprintScreen(
         viewModel.start(sprint.id)
         null
     }
+
     val statuses by viewModel.statuses.observeAsState()
     statuses?.subscribeOnError(onError)
+
     val stories by viewModel.stories.observeAsState()
     stories?.subscribeOnError(onError)
+
     val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
     val visibleStatusIds by viewModel.visibleStatusIds.observeAsState()
+
     val tasks by viewModel.tasks.observeAsState()
     tasks?.subscribeOnError(onError)
+
+    val issues by viewModel.issues.observeAsState()
+    issues?.subscribeOnError(onError)
 
     SprintScreenContent(
         sprintName = sprint.name,
         start = sprint.start,
         finish = sprint.finish,
-        isLoading = statuses?.resultStatus == ResultStatus.LOADING || (tasks?.resultStatus == ResultStatus.LOADING && tasks?.data.isNullOrEmpty()),
-        isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
+        isLoading = statuses?.resultStatus == ResultStatus.LOADING ||
+            (tasks?.resultStatus == ResultStatus.LOADING && tasks?.data.isNullOrEmpty()) ||
+            (issues?.resultStatus == ResultStatus.LOADING && issues?.data.isNullOrEmpty()),
         startStatusesExpanded = viewModel.startStatusesExpanded,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
@@ -68,11 +73,15 @@ fun SprintScreen(
         onStatusClick = viewModel::statusClick,
         navigateBack = navController::popBackStack,
         tasks = tasks?.data.orEmpty(),
+        isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
         loadTasks = viewModel::loadTasks,
+        issues = issues?.data.orEmpty(),
+        isIssuesLoading = issues?.resultStatus == ResultStatus.LOADING,
+        loadIssues = viewModel::loadIssues,
         navigateToTask = navController::navigateToTaskScreen,
         navigateToCreateTask = {
             viewModel.reset()
-            navController.navigateToCreateTaskScreen(CommonTaskType.TASK, sprintId = sprint.id)
+            navController.navigateToCreateTaskScreen(it, sprintId = sprint.id)
         }
     )
 }
@@ -84,7 +93,6 @@ fun SprintScreenContent(
     start: Date,
     finish: Date,
     isLoading: Boolean = false,
-    isTasksLoading: Boolean = false,
     startStatusesExpanded: Boolean = false,
     statuses: List<Status> = emptyList(),
     commonTasks: List<CommonTask> = emptyList(),
@@ -94,9 +102,13 @@ fun SprintScreenContent(
     onStatusClick: (Long) -> Unit = {},
     navigateBack: () -> Unit = {},
     tasks: List<CommonTask> = emptyList(),
+    isTasksLoading: Boolean = false,
     loadTasks: () -> Unit = {},
+    issues: List<CommonTask> = emptyList(),
+    isIssuesLoading: Boolean = false,
+    loadIssues: () -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
-    navigateToCreateTask: () -> Unit = {}
+    navigateToCreateTask: (CommonTaskType) -> Unit = { _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -134,10 +146,9 @@ fun SprintScreenContent(
             CircularLoader()
         }
     } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        val sectionsMargin = 18.dp
 
+        LazyColumn(Modifier.fillMaxWidth()) {
             item {
                 Row(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
                     Text(
@@ -147,7 +158,7 @@ fun SprintScreenContent(
                 }
             }
 
-
+            // stories
             CommonTasksList(
                 statuses = statuses,
                 commonTasks = commonTasks,
@@ -159,48 +170,30 @@ fun SprintScreenContent(
                 isInverseVisibility = startStatusesExpanded
             )
 
-            item {
-                Spacer(Modifier.height(24.dp))
+            // tasks
+            SimpleTasksListWithTitle(
+                titleText = R.string.tasks_without_story,
+                topMargin = sectionsMargin,
+                horizontalPadding = mainHorizontalScreenPadding,
+                commonTasks = tasks,
+                isTasksLoading = isTasksLoading,
+                navigateToTask = navigateToTask,
+                navigateToCreateCommonTask = { navigateToCreateTask(CommonTaskType.TASK) },
+                loadData = loadTasks
+            )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                ) {
-                    Text(
-                        text = stringResource(R.string.tasks_without_story),
-                        style = MaterialTheme.typography.h6,
-                    )
-
-                    PlusButton(onClick = navigateToCreateTask)
-                }
-            }
-
-            itemsIndexed(tasks) { index, item ->
-                CommonTaskItem(
-                    commonTask = item,
-                    navigateToTask = navigateToTask
-                )
-
-                if (index < tasks.lastIndex) {
-                    Divider(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = Color.LightGray
-                    )
-                }
-            }
-
-            item {
-                if (isTasksLoading) {
-                    DotsLoader()
-                } else if (tasks.isEmpty()) {
-                    NothingToSeeHereText()
-                }
-
-                LaunchedEffect(tasks.size) {
-                    loadTasks()
-                }
-                Spacer(Modifier.height(16.dp))
-            }
+            // issues
+            SimpleTasksListWithTitle(
+                titleText = R.string.sprint_issues,
+                topMargin = sectionsMargin,
+                bottomMargin = 16.dp,
+                horizontalPadding = mainHorizontalScreenPadding,
+                commonTasks = issues,
+                isTasksLoading = isIssuesLoading,
+                navigateToTask = navigateToTask,
+                navigateToCreateCommonTask = { navigateToCreateTask(CommonTaskType.ISSUE) },
+                loadData = loadIssues
+            )
         }
     }
 }

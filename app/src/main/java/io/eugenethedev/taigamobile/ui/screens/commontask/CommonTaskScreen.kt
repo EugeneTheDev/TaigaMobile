@@ -1,11 +1,9 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -23,7 +21,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -32,6 +29,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
+import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
@@ -567,24 +565,25 @@ fun CommonTaskScreenContent(
                     )
                 }
 
+                val listBottomMargin = 16.dp
                 // user stories
                 if (commonTaskType == CommonTaskType.EPIC) {
-                    CommonTasksList(
+                    SimpleTasksListWithTitle(
                         titleText = R.string.userstories,
-                        margin = sectionsMargin * 2,
-                        tasks = userStories,
-                        isCreateSupported = false,
+                        topMargin = sectionsMargin * 2,
+                        bottomMargin = listBottomMargin,
+                        commonTasks = userStories,
                         navigateToTask = navigateToTask
                     )
                 }
 
                 // tasks
                 if (commonTaskType == CommonTaskType.USERSTORY) {
-                    CommonTasksList(
+                    SimpleTasksListWithTitle(
                         titleText = R.string.tasks,
-                        margin = sectionsMargin * 2,
-                        tasks = tasks,
-                        isCreateSupported = true,
+                        topMargin = sectionsMargin * 2,
+                        bottomMargin = listBottomMargin,
+                        commonTasks = tasks,
                         navigateToTask = navigateToTask,
                         navigateToCreateCommonTask = navigateToCreateTask
                     )
@@ -772,49 +771,6 @@ private fun UserItemWithAction(
                 painter = painterResource(R.drawable.ic_remove),
                 contentDescription = null,
                 tint = Color.Gray
-            )
-        }
-    }
-}
-
-private fun LazyListScope.CommonTasksList(
-    @StringRes titleText: Int,
-    margin: Dp,
-    tasks: List<CommonTask>,
-    isCreateSupported: Boolean,
-    navigateToTask: NavigateToTask,
-    navigateToCreateCommonTask: () -> Unit = {}
-) {
-    item {
-        Spacer(Modifier.height(margin))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(titleText),
-                style = MaterialTheme.typography.h6
-            )
-
-            if (isCreateSupported) {
-                PlusButton(onClick = navigateToCreateCommonTask)
-            }
-        }
-
-        if (tasks.isEmpty()) {
-            NothingToSeeHereText()
-        }
-    }
-
-    itemsIndexed(tasks) { index, item ->
-        CommonTaskItem(
-            commonTask = item,
-            horizontalPadding = 0.dp,
-            navigateToTask = navigateToTask
-        )
-
-        if (index < tasks.lastIndex) {
-            Divider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                color = Color.LightGray
             )
         }
     }

@@ -68,6 +68,13 @@ class TasksRepository @Inject constructor(
         }
     }
 
+    override suspend fun getSprintIssues(sprintId: Long, page: Int) = withIO {
+        handle404 {
+            taigaApi.getIssues(session.currentProjectId, page, null, sprintId)
+                .map { it.toCommonTask(CommonTaskType.ISSUE) }
+        }
+    }
+
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
         when (type) {
             CommonTaskType.USERSTORY -> taigaApi.getUserStory(commonTaskId)
@@ -290,7 +297,9 @@ class TasksRepository @Inject constructor(
             )
             CommonTaskType.USERSTORY -> taigaApi.createUserStory(body)
             CommonTaskType.EPIC -> taigaApi.createEpic(body)
-            CommonTaskType.ISSUE -> taigaApi.createIssue(body)
+            CommonTaskType.ISSUE -> taigaApi.createIssue(
+                createIssueRequest = CreateIssueRequest(session.currentProjectId, title, description, sprintId)
+            )
         }.toCommonTask(commonTaskType)
     }
 
