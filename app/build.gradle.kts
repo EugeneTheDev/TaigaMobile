@@ -17,8 +17,8 @@ android {
         applicationId = "io.eugenethedev.taigamobile"
         minSdkVersion(22)
         targetSdkVersion(30)
-        versionCode(4)
-        versionName = "0.3.1-beta"
+        versionCode(5)
+        versionName = "0.4-beta"
         project.base.archivesBaseName = "TaigaMobile-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -72,8 +72,6 @@ android {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8", rootProject.extra["kotlinVersion"] as String))
-
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("com.google.android.material:material:1.3.0")
@@ -85,16 +83,16 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.0-alpha05")
+    implementation("androidx.activity:activity-compose:1.3.0-alpha06")
     // view model support
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha03")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04")
     // compose constraint layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05")
     // glide with compose
     implementation("dev.chrisbanes.accompanist:accompanist-glide:0.6.1")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
+    implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
 
     // ViewModel
     val lifecycleKtxVersion = "2.2.0"
