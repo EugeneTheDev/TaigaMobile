@@ -54,7 +54,7 @@ fun CommonTaskItem(
 
             Text(
                 text = dateFormatter.format(commonTask.createdDate),
-                color = androidx.compose.ui.graphics.Color.Gray,
+                color = Color.Gray,
                 style = MaterialTheme.typography.body2
             )
         }
@@ -62,7 +62,8 @@ fun CommonTaskItem(
         TitleWithIndicators(
             ref = commonTask.ref,
             title = commonTask.title,
-            indicatorColorsHex = commonTask.colors
+            indicatorColorsHex = commonTask.colors,
+            isInactive = commonTask.isClosed
         )
 
         Text(

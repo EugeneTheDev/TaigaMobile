@@ -66,6 +66,7 @@ data class CommonTaskExtended(
     val creatorId: Long,
     val ref: Int,
     val title: String,
+    val isClosed: Boolean,
     val description: String,
     val epicsShortInfo: List<EpicShortInfo>,
     val projectSlug: String,

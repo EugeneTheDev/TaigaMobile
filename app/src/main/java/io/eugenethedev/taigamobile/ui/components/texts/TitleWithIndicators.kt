@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import io.eugenethedev.taigamobile.R
 
 /**
@@ -18,11 +19,15 @@ fun TitleWithIndicators(
     ref: Int,
     title: String,
     modifier: Modifier = Modifier,
+    isInactive: Boolean = false,
     textColor: Color = MaterialTheme.colors.onSurface,
     indicatorColorsHex: List<String> = emptyList(),
 ) = Text(
     text = buildAnnotatedString {
+        if (isInactive) pushStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.LineThrough))
         append(stringResource(R.string.title_with_ref_pattern).format(ref, title))
+        if (isInactive) pop()
+
         append(" ")
 
         indicatorColorsHex.forEach {

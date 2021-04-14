@@ -216,6 +216,7 @@ private fun EpicItem(
    TitleWithIndicators(
        ref = epic.ref,
        title = epic.title,
-       indicatorColorsHex = epic.colors
+       indicatorColorsHex = epic.colors,
+       isInactive = epic.isClosed
    )
 }

@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -130,7 +130,8 @@ fun CommonTaskScreen(
             statusName = it?.status?.name ?: "",
             statusColorHex = it?.status?.color ?: "#000000",
             sprintName = it?.sprint?.name,
-            storyTitle = it?.title ?: "",
+            title = it?.title ?: "",
+            isClosed = it?.isClosed ?: false,
             story = it?.userStoryShortInfo,
             epics = it?.epicsShortInfo.orEmpty(),
             description = it?.description ?: "",
@@ -212,7 +213,8 @@ fun CommonTaskScreenContent(
     statusName: String,
     statusColorHex: String,
     sprintName: String?,
-    storyTitle: String,
+    title: String,
+    isClosed: Boolean,
     epics: List<EpicShortInfo> = emptyList(),
     story: UserStoryShortInfo?,
     description: String,
@@ -411,8 +413,14 @@ fun CommonTaskScreenContent(
 
                     // title
                     Text(
-                        text = storyTitle,
-                        style = MaterialTheme.typography.h5
+                        text = title,
+                        style = MaterialTheme.typography.h5.let {
+                            if (isClosed) {
+                                it.merge(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.LineThrough))
+                            } else {
+                                it
+                            }
+                        }
                     )
 
                     Spacer(Modifier.height(4.dp))
@@ -658,7 +666,7 @@ fun CommonTaskScreenContent(
     if (isTaskEditorVisible || isEditLoading) {
         TaskEditor(
             toolbarText = stringResource(R.string.edit),
-            title = storyTitle,
+            title = title,
             description = description,
             onSaveClick = { title, description ->
                 isTaskEditorVisible = false
@@ -696,20 +704,12 @@ private fun EpicItemWithAction(
         )
     }
 
-    Text(
-        text = buildAnnotatedString {
-            append(stringResource(R.string.title_with_ref_pattern).format(epic.ref, epic.title))
-            append(" ")
-
-            pushStyle(SpanStyle(color = Color(android.graphics.Color.parseColor(epic.color))))
-
-            append("⬤") // 2B24
-
-        },
-        color = MaterialTheme.colors.primary,
-        style = MaterialTheme.typography.subtitle1,
-        modifier = Modifier
-            .weight(1f, fill = false)
+    TitleWithIndicators(
+        ref = epic.ref,
+        title = epic.title,
+        textColor = MaterialTheme.colors.primary,
+        indicatorColorsHex = listOf(epic.color),
+        modifier = Modifier.weight(1f, fill = false)
             .padding(end = 4.dp)
             .clickableUnindicated(onClick = onClick)
     )
@@ -857,7 +857,8 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         statusName = "In progress",
         statusColorHex = "#729fcf",
         sprintName = "Very very very long sprint name",
-        storyTitle = "Very cool and important story. Need to do this quickly",
+        title = "Very cool and important story. Need to do this quickly",
+        isClosed = false,
         story = null,
         epics = List(1) {
             EpicShortInfo(

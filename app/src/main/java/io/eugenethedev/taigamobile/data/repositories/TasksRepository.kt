@@ -96,6 +96,7 @@ class TasksRepository @Inject constructor(
                 creatorId = it.owner,
                 ref = it.ref,
                 title = it.subject,
+                isClosed = it.is_closed,
                 description = it.description,
                 epicsShortInfo = it.epics.orEmpty(),
                 projectSlug = it.project_extra_info.slug,
