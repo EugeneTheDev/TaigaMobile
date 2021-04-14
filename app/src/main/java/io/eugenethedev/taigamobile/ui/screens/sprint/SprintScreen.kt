@@ -79,10 +79,7 @@ fun SprintScreen(
         isIssuesLoading = issues?.resultStatus == ResultStatus.LOADING,
         loadIssues = viewModel::loadIssues,
         navigateToTask = navController::navigateToTaskScreen,
-        navigateToCreateTask = {
-            viewModel.reset()
-            navController.navigateToCreateTaskScreen(it, sprintId = sprint.id)
-        }
+        navigateToCreateTask = { navController.navigateToCreateTaskScreen(it, sprintId = sprint.id) }
     )
 }
 

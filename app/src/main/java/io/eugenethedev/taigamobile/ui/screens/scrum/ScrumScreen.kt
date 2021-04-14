@@ -78,10 +78,7 @@ fun ScrumScreen(
             navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
         },
         navigateToTask = navController::navigateToTaskScreen,
-        navigateToCreateTask = {
-            viewModel.reset()
-            navController.navigateToCreateTaskScreen(CommonTaskType.USERSTORY)
-        }
+        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.USERSTORY) }
     )
 }
 
