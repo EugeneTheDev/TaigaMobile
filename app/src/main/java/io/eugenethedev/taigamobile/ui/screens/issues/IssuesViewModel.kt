@@ -22,7 +22,8 @@ class IssuesViewModel : ViewModel() {
 
     val projectName get() = session.currentProjectName
     val issues = MutableLiveResult<List<CommonTask>>()
-    
+
+    private var currentIssuesQuery = ""
     private var currentIssuesPage = 0
     private var maxIssuesPage = Int.MAX_VALUE
     
@@ -36,17 +37,24 @@ class IssuesViewModel : ViewModel() {
         }
 
         if (issues.value == null) {
-            loadIssues()
+            loadIssues("")
         }
     }
 
-    fun loadIssues() = viewModelScope.launch {
+    fun loadIssues(query: String) = viewModelScope.launch {
+        query.takeIf { it != currentIssuesQuery }?.let {
+            currentIssuesQuery = it
+            currentIssuesPage = 0
+            maxIssuesPage = Int.MAX_VALUE
+            issues.value = Result(ResultStatus.SUCCESS, emptyList())
+        }
+
         if (currentIssuesPage == maxIssuesPage) return@launch
 
         issues.value = Result(ResultStatus.LOADING, issues.value?.data)
 
         try {
-            tasksRepository.getIssues(++currentIssuesPage, "")
+            tasksRepository.getIssues(++currentIssuesPage, query)
                 .also { issues.value = Result(ResultStatus.SUCCESS, issues.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxIssuesPage = currentIssuesPage }
@@ -58,6 +66,7 @@ class IssuesViewModel : ViewModel() {
     
     fun reset() {
         issues.value = null
+        currentIssuesQuery = ""
         currentIssuesPage = 0
         maxIssuesPage = Int.MAX_VALUE
     }

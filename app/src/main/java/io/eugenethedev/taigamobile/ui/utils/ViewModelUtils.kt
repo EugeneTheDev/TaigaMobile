@@ -5,4 +5,4 @@ import kotlinx.coroutines.delay
 /**
  * Sometimes little delay is needed to make animations work smooth
  */
-suspend fun fixAnimation() = delay(300)
+suspend fun fixAnimation() = delay(200)

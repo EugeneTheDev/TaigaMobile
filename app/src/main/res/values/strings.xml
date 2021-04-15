@@ -109,4 +109,6 @@
     <string name="create_issue">New issue</string>
 
     <string name="loading">Loading…</string>
+
+    <string name="issues_search_hint">Search by ref or subject</string>
 </resources>

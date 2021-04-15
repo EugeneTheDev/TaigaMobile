@@ -74,8 +74,7 @@ fun <T> SelectorList(
                         BasicTextField(
                             value = query,
                             onValueChange = { query = it },
-                            modifier = Modifier.wrapContentHeight()
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
                             cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
                             singleLine = true,
