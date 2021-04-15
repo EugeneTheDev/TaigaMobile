@@ -21,7 +21,7 @@ import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorListConstants
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

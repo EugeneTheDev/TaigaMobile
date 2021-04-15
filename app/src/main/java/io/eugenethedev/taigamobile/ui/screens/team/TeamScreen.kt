@@ -30,7 +30,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable

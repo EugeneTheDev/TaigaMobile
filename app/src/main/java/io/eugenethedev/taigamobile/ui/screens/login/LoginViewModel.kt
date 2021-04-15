@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
-import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.utils.Result
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject

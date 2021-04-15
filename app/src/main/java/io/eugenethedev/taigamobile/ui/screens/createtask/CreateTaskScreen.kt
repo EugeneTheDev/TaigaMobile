@@ -14,7 +14,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 

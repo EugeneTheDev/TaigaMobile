@@ -9,9 +9,9 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.utils.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.utils.Result
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay

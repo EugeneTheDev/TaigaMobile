@@ -29,7 +29,7 @@ import androidx.navigation.compose.popUpTo
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 
 @ExperimentalMaterialApi
 @Composable

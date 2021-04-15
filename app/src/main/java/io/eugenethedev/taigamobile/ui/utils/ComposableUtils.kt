@@ -11,6 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalContext
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 
 /**
  * Utility function to handle press on back button
