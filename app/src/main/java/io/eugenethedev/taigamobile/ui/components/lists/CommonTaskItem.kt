@@ -18,6 +18,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.Status
+import io.eugenethedev.taigamobile.domain.entities.StatusType
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -87,7 +88,8 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
             status = Status(
                 id = 0L,
                 name = "In progress",
-                color = "#729fcf"
+                color = "#729fcf",
+                type = StatusType.STATUS
             ),
             assignee = CommonTask.Assignee(
                 id = 0,

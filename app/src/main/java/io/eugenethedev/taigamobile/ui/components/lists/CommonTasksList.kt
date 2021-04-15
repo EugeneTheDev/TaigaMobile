@@ -24,6 +24,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.StatusType
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
@@ -172,7 +173,8 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                 Status(
                     id = it.toLong(),
                     name = "In progress",
-                    color = "#729fcf"
+                    color = "#729fcf",
+                    type = StatusType.STATUS
                 )
             },
             commonTasks = List(10) {
@@ -184,7 +186,8 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                     status = Status(
                         id = (0..2).random().toLong(),
                         name = "In progress",
-                        color = "#729fcf"
+                        color = "#729fcf",
+                        type = StatusType.STATUS
                     ),
                     assignee = CommonTask.Assignee(
                         id = it.toLong(),

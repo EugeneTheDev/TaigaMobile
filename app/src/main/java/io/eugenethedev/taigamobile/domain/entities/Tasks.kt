@@ -13,9 +13,15 @@ data class Status(
     val id: Long,
     val name: String,
     val color: String,
-    val order: Int = 0
+    val type: StatusType
 )
 
+enum class StatusType {
+    STATUS,
+    TYPE,
+    SEVERITY,
+    PRIORITY
+}
 
 @Parcelize
 data class Sprint(
@@ -72,7 +78,11 @@ data class CommonTaskExtended(
     val projectSlug: String,
     val userStoryShortInfo: UserStoryShortInfo? = null,
     val version: Int,
-    val color: String? = null // for epic
+    val color: String? = null, // for epic
+    // for issue
+    val type: Status? = null,
+    val priority: Status? = null,
+    val severity: Status? = null
 )
 
 

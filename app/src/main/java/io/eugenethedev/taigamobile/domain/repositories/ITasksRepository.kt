@@ -4,6 +4,8 @@ import io.eugenethedev.taigamobile.domain.entities.*
 
 interface ITasksRepository {
     suspend fun getStatuses(commonTaskType: CommonTaskType): List<Status>
+    suspend fun getStatusByType(commonTaskType: CommonTaskType, statusType: StatusType): List<Status>
+
     suspend fun getSprints(page: Int): List<Sprint>
 
     suspend fun getEpics(page: Int, query: String? = null): List<CommonTask>
@@ -19,7 +21,7 @@ interface ITasksRepository {
     suspend fun getComments(commonTaskId: Long, type: CommonTaskType): List<Comment>
 
     // edit related
-    suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, version: Int)
+    suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, statusType: StatusType, version: Int)
     suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
     suspend fun linkToEpic(epicId: Long, userStoryId: Long)
     suspend fun unlinkFromEpic(epicId: Long, userStoryId: Long)

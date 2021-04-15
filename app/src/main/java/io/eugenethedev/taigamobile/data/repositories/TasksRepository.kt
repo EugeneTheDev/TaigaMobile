@@ -12,13 +12,37 @@ class TasksRepository @Inject constructor(
     private val session: Session
 ) : ITasksRepository {
 
+    private suspend fun getFiltersData(commonTaskType: CommonTaskType) = when (commonTaskType) {
+        CommonTaskType.USERSTORY -> taigaApi.getUserStoriesFiltersData(session.currentProjectId)
+        CommonTaskType.TASK -> taigaApi.getTasksFiltersData(session.currentProjectId)
+        CommonTaskType.EPIC -> taigaApi.getEpicsFiltersData(session.currentProjectId)
+        CommonTaskType.ISSUE -> taigaApi.getIssuesFiltersData(session.currentProjectId)
+    }
+
+    private fun FiltersDataResponse.Filter.toStatus(statusType: StatusType) = Status(
+        id = id,
+        name = name,
+        color = color,
+        type = statusType
+    )
+
     override suspend fun getStatuses(commonTaskType: CommonTaskType) = withIO {
-        when (commonTaskType) {
-            CommonTaskType.USERSTORY -> taigaApi.getUserStoriesFiltersData(session.currentProjectId)
-            CommonTaskType.TASK -> taigaApi.getTasksFiltersData(session.currentProjectId)
-            CommonTaskType.EPIC -> taigaApi.getEpicsFiltersData(session.currentProjectId)
-            CommonTaskType.ISSUE -> taigaApi.getIssuesFiltersData(session.currentProjectId)
-        }.statuses
+        getFiltersData(commonTaskType).statuses.map { it.toStatus(StatusType.STATUS) }
+    }
+
+    override suspend fun getStatusByType(commonTaskType: CommonTaskType, statusType: StatusType) = withIO {
+        if (commonTaskType != CommonTaskType.ISSUE && statusType != StatusType.STATUS) {
+            throw UnsupportedOperationException("Cannot change $statusType for $commonTaskType")
+        }
+
+        getFiltersData(commonTaskType).let {
+            when (statusType) {
+                StatusType.STATUS -> it.statuses.map { it.toStatus(statusType) }
+                StatusType.TYPE -> it.types.orEmpty().map { it.toStatus(statusType) }
+                StatusType.SEVERITY -> it.severities.orEmpty().map { it.toStatus(statusType) }
+                StatusType.PRIORITY -> it.priorities.orEmpty().map { it.toStatus(statusType) }
+            }
+        }
     }
 
     override suspend fun getEpics(page: Int, query: String?) = withIO {
@@ -76,6 +100,8 @@ class TasksRepository @Inject constructor(
     }
 
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
+        val filters = getFiltersData(type)
+
         when (type) {
             CommonTaskType.USERSTORY -> taigaApi.getUserStory(commonTaskId)
             CommonTaskType.TASK -> taigaApi.getTask(commonTaskId)
@@ -87,7 +113,8 @@ class TasksRepository @Inject constructor(
                 status = Status(
                     id = it.status,
                     name = it.status_extra_info.name,
-                    color = it.status_extra_info.color
+                    color = it.status_extra_info.color,
+                    type = StatusType.STATUS
                 ),
                 createdDateTime = it.created_date,
                 sprint = it.milestone?.let { taigaApi.getSprint(it).toSprint() },
@@ -109,7 +136,10 @@ class TasksRepository @Inject constructor(
                     )
                 },
                 version = it.version,
-                color = it.color
+                color = it.color,
+                type = it.type?.let { id -> filters.types?.find { it.id == id } }?.toStatus(StatusType.TYPE),
+                severity = it.severity?.let { id -> filters.severities?.find { it.id == id } }?.toStatus(StatusType.SEVERITY),
+                priority = it.priority?.let { id -> filters.priorities?.find { it.id == id } }?.toStatus(StatusType.PRIORITY)
             )
         }
     }
@@ -132,7 +162,8 @@ class TasksRepository @Inject constructor(
         status = Status(
             id = status,
             name = status_extra_info.name,
-            color = status_extra_info.color
+            color = status_extra_info.color,
+            type = StatusType.STATUS
         ),
         assignee = assigned_to_extra_info?.let {
             CommonTask.Assignee(
@@ -168,14 +199,33 @@ class TasksRepository @Inject constructor(
         commonTaskId: Long,
         commonTaskType: CommonTaskType,
         statusId: Long,
+        statusType: StatusType,
         version: Int
     ) = withIO {
+        if (commonTaskType != CommonTaskType.ISSUE && statusType != StatusType.STATUS) {
+            throw UnsupportedOperationException("Cannot change $statusType for $commonTaskType")
+        }
+
         val body = ChangeStatusRequest(statusId, version)
         when (commonTaskType) {
             CommonTaskType.USERSTORY -> taigaApi.changeUserStoryStatus(commonTaskId, body)
             CommonTaskType.TASK -> taigaApi.changeTaskStatus(commonTaskId, body)
             CommonTaskType.EPIC -> taigaApi.changeEpicStatus(commonTaskId, body)
-            CommonTaskType.ISSUE -> taigaApi.changeIssueStatus(commonTaskId, body)
+            CommonTaskType.ISSUE -> when (statusType) {
+                StatusType.STATUS -> taigaApi.changeIssueStatus(commonTaskId, body)
+                StatusType.TYPE -> taigaApi.changeIssueType(
+                    id = commonTaskId,
+                    changeTypeRequest = ChangeTypeRequest(statusId, version)
+                )
+                StatusType.SEVERITY -> taigaApi.changeIssueSeverity(
+                    id = commonTaskId,
+                    changeSeverityRequest = ChangeSeverityRequest(statusId, version)
+                )
+                StatusType.PRIORITY -> taigaApi.changeIssuePriority(
+                    id = commonTaskId,
+                    changePriorityRequest = ChangePriorityRequest(statusId, version)
+                )
+            }
         }
     }
 

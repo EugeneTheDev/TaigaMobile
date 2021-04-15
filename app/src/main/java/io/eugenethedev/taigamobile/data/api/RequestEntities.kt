@@ -11,6 +11,21 @@ data class ChangeStatusRequest(
     val version: Int
 )
 
+data class ChangeTypeRequest(
+    val type: Long,
+    val version: Int
+)
+
+data class ChangeSeverityRequest(
+    val severity: Long,
+    val version: Int
+)
+
+data class ChangePriorityRequest(
+    val priority: Long,
+    val version: Int
+)
+
 data class ChangeSprintRequest(
     val milestone: Long?,
     val version: Int

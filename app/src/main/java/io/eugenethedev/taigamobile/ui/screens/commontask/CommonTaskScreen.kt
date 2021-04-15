@@ -115,6 +115,13 @@ fun CommonTaskScreen(
         navController.popBackStack()
         navController.navigateToTaskScreen(it.id, CommonTaskType.USERSTORY, it.ref)
     }
+    
+    fun makeEditStatusAction(statusType: StatusType) = EditAction(
+        items = statuses?.data.orEmpty(),
+        isItemsLoading = statuses?.resultStatus == ResultStatus.LOADING,
+        selectItem = viewModel::selectStatus,
+        isResultLoading = statusSelectResult?.let { it.data == statusType && it.resultStatus == ResultStatus.LOADING } ?: false
+    )
 
     commonTask?.data.let {
         CommonTaskScreenContent(
@@ -128,8 +135,10 @@ fun CommonTaskScreen(
                 }
             ).format(ref),
             epicColor = it?.color ?: "#000000",
-            statusName = it?.status?.name ?: "",
-            statusColorHex = it?.status?.color ?: "#000000",
+            status = it?.status,
+            type = it?.type,
+            severity = it?.severity,
+            priority = it?.priority,
             sprintName = it?.sprint?.name,
             title = it?.title ?: "",
             isClosed = it?.isClosed ?: false,
@@ -147,13 +156,11 @@ fun CommonTaskScreen(
             navigateBack = navController::popBackStack,
             navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.TASK, commonTaskId) },
             navigateToTask = navController::navigateToTaskScreen,
-            editStatus = EditAction(
-                items = statuses?.data.orEmpty(),
-                loadItems = viewModel::loadStatuses,
-                isItemsLoading = statuses?.resultStatus == ResultStatus.LOADING,
-                selectItem = viewModel::selectStatus,
-                isResultLoading = statusSelectResult?.resultStatus == ResultStatus.LOADING
-            ),
+            editStatus = makeEditStatusAction(StatusType.STATUS),
+            editType = makeEditStatusAction(StatusType.TYPE),
+            editSeverity = makeEditStatusAction(StatusType.SEVERITY),
+            editPriority = makeEditStatusAction(StatusType.PRIORITY),
+            loadStatuses = { viewModel.loadStatuses(it) },
             editSprint = EditAction(
                 items = sprints?.data.orEmpty(),
                 loadItems = viewModel::loadSprints,
@@ -211,11 +218,13 @@ fun CommonTaskScreenContent(
     commonTaskType: CommonTaskType,
     toolbarTitle: String,
     epicColor: String,
-    statusName: String,
-    statusColorHex: String,
+    status: Status?,
     sprintName: String?,
     title: String,
     isClosed: Boolean,
+    type: Status? = null,
+    severity: Status? = null,
+    priority: Status? = null,
     epics: List<EpicShortInfo> = emptyList(),
     story: UserStoryShortInfo?,
     description: String,
@@ -230,7 +239,11 @@ fun CommonTaskScreenContent(
     navigateBack: () -> Unit = {},
     navigateToCreateTask: () -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
+    loadStatuses: (StatusType) -> Unit = { _ -> },
     editStatus: EditAction<Status> = EditAction(),
+    editType: EditAction<Status> = EditAction(),
+    editSeverity: EditAction<Status> = EditAction(),
+    editPriority: EditAction<Status> = EditAction(),
     editSprint: EditAction<Sprint?> = EditAction(),
     editEpics: EditAction<CommonTask> = EditAction(),
     unlinkFromEpic: (EpicShortInfo) -> Unit = {},
@@ -247,6 +260,9 @@ fun CommonTaskScreenContent(
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
     var isStatusSelectorVisible by remember { mutableStateOf(false) }
+    var isTypeSelectorVisible by remember { mutableStateOf(false) }
+    var isSeveritySelectorVisible by remember { mutableStateOf(false) }
+    var isPrioritySelectorVisible by remember { mutableStateOf(false) }
     var isSprintSelectorVisible by remember { mutableStateOf(false) }
     var isAssigneesSelectorVisible by remember { mutableStateOf(false) }
     var isWatchersSelectorVisible by remember { mutableStateOf(false) }
@@ -350,7 +366,7 @@ fun CommonTaskScreenContent(
             navigateBack = navigateBack
         )
 
-        if (isLoading || creator == null) {
+        if (isLoading || creator == null || status == null) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
@@ -359,6 +375,7 @@ fun CommonTaskScreenContent(
             }
         } else {
             val sectionsMargin = 10.dp
+            val badgesMargin = 8.dp
 
             LazyColumn(
                 modifier = Modifier
@@ -379,21 +396,21 @@ fun CommonTaskScreenContent(
                                     )
                             )
 
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(badgesMargin))
                         }
 
                         // status
                         ClickableBadge(
-                            text = statusName,
-                            colorHex = statusColorHex,
+                            text = status.name,
+                            colorHex = status.color,
                             onClick = {
                                 isStatusSelectorVisible = true
-                                editStatus.loadItems(null)
+                                loadStatuses(StatusType.STATUS)
                             },
                             isLoading = editStatus.isResultLoading
                         )
 
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(badgesMargin))
 
                         // sprint
                         if (commonTaskType != CommonTaskType.EPIC) {
@@ -409,8 +426,51 @@ fun CommonTaskScreenContent(
                                 isClickable = commonTaskType != CommonTaskType.TASK
                             )
                         }
-
                     }
+
+                    if (commonTaskType == CommonTaskType.ISSUE) {
+                        Spacer(Modifier.height(badgesMargin))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            // type
+                            ClickableBadge(
+                                text = type!!.name,
+                                colorHex = type.color,
+                                onClick = {
+                                    isTypeSelectorVisible = true
+                                    loadStatuses(StatusType.TYPE)
+                                },
+                                isLoading = editType.isResultLoading
+                            )
+
+                            Spacer(Modifier.width(badgesMargin))
+
+                            // severity
+                            ClickableBadge(
+                                text = severity!!.name,
+                                colorHex = severity.color,
+                                onClick = {
+                                    isSeveritySelectorVisible = true
+                                    loadStatuses(StatusType.SEVERITY)
+                                },
+                                isLoading = editSeverity.isResultLoading
+                            )
+
+                            Spacer(Modifier.width(badgesMargin))
+
+                            // priority
+                            ClickableBadge(
+                                text = priority!!.name,
+                                colorHex = priority.color,
+                                onClick = {
+                                    isPrioritySelectorVisible = true
+                                    loadStatuses(StatusType.PRIORITY)
+                                },
+                                isLoading = editPriority.isResultLoading
+                            )
+                        }
+                    }
+
 
                     // title
                     Text(
@@ -646,21 +706,46 @@ fun CommonTaskScreenContent(
 
     // Bunch of list selectors
     Selectors(
-        editStatus = editStatus,
-        isStatusSelectorVisible = isStatusSelectorVisible,
-        hideStatusSelector = { isStatusSelectorVisible = false },
-        editSprint = editSprint,
-        isSprintSelectorVisible = isSprintSelectorVisible,
-        hideSprintSelector = { isSprintSelectorVisible = false },
-        editAssignees = editAssignees,
-        isAssigneesSelectorVisible = isAssigneesSelectorVisible,
-        hideAssigneesSelector = { isAssigneesSelectorVisible = false },
-        editWatchers = editWatchers,
-        isWatchersSelectorVisible = isWatchersSelectorVisible,
-        hideWatchersSelector = { isWatchersSelectorVisible = false },
-        editEpics = editEpics,
-        isEpicsSelectorVisible = isEpicsSelectorVisible,
-        hideEpicsSelector = { isEpicsSelectorVisible = false }
+        statusEntry = SelectorEntry(
+            edit = editStatus,
+            isVisible = isStatusSelectorVisible,
+            hide = { isStatusSelectorVisible = false }
+        ),
+        typeEntry = SelectorEntry(
+            edit = editType,
+            isVisible = isTypeSelectorVisible,
+            hide = { isTypeSelectorVisible = false }
+        ),
+        severityEntry = SelectorEntry(
+            edit = editSeverity,
+            isVisible = isSeveritySelectorVisible,
+            hide = { isSeveritySelectorVisible = false }
+        ),
+        priorityEntry = SelectorEntry(
+            edit = editPriority,
+            isVisible = isPrioritySelectorVisible,
+            hide = { isPrioritySelectorVisible = false }
+        ),
+        sprintEntry = SelectorEntry(
+            edit = editSprint,
+            isVisible = isSprintSelectorVisible,
+            hide = { isSprintSelectorVisible = false }
+        ),
+        epicsEntry = SelectorEntry(
+            edit = editEpics,
+            isVisible = isEpicsSelectorVisible,
+            hide = { isEpicsSelectorVisible = false }
+        ),
+        assigneesEntry = SelectorEntry(
+            edit = editAssignees,
+            isVisible = isAssigneesSelectorVisible,
+            hide = { isAssigneesSelectorVisible = false }
+        ),
+        watchersEntry = SelectorEntry(
+            edit = editWatchers,
+            isVisible = isWatchersSelectorVisible,
+            hide = { isWatchersSelectorVisible = false }
+        )
     )
 
     // Editor
@@ -710,7 +795,8 @@ private fun EpicItemWithAction(
         title = epic.title,
         textColor = MaterialTheme.colors.primary,
         indicatorColorsHex = listOf(epic.color),
-        modifier = Modifier.weight(1f, fill = false)
+        modifier = Modifier
+            .weight(1f, fill = false)
             .padding(end = 4.dp)
             .clickableUnindicated(onClick = onClick)
     )
@@ -855,8 +941,12 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         commonTaskType = CommonTaskType.USERSTORY,
         toolbarTitle = "Userstory #99",
         epicColor = "#000000",
-        statusName = "In progress",
-        statusColorHex = "#729fcf",
+        status = Status(
+            id = 0,
+            name = "In progress",
+            color = "#729fcf",
+            type = StatusType.STATUS
+        ),
         sprintName = "Very very very long sprint name",
         title = "Very cool and important story. Need to do this quickly",
         isClosed = false,
@@ -905,7 +995,8 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 status = Status(
                     id = (0..2).random().toLong(),
                     name = "In progress",
-                    color = "#729fcf"
+                    color = "#729fcf",
+                    type = StatusType.STATUS
                 ),
                 assignee = CommonTask.Assignee(
                     id = it.toLong(),

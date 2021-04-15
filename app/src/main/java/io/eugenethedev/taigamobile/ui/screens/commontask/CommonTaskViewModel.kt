@@ -91,23 +91,17 @@ class CommonTaskViewModel : ViewModel() {
      * Edit related stuff
      */
 
-    // Edit status
+    // Edit status (and also type, severity, priority)
 
     val statuses = MutableLiveResult<List<Status>>()
-    val statusSelectResult = MutableLiveResult<Unit>()
+    val statusSelectResult = MutableLiveResult<StatusType>()
 
-    fun loadStatuses(query: String?) = viewModelScope.launch {
-        if (query == null) { // only handling null. search not supported
-            statuses.value = null
-        } else {
-            return@launch
-        }
-
+    fun loadStatuses(statusType: StatusType) = viewModelScope.launch {
         statuses.value = Result(ResultStatus.LOADING)
         fixAnimation()
 
         statuses.value = try {
-            Result(ResultStatus.SUCCESS, tasksRepository.getStatuses(commonTaskType))
+            Result(ResultStatus.SUCCESS, tasksRepository.getStatusByType(commonTaskType, statusType))
         } catch (e: Exception) {
             Timber.w(e)
             Result(ResultStatus.ERROR, message = R.string.common_error_message)
@@ -115,10 +109,10 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     fun selectStatus(status: Status) = viewModelScope.launch {
-        statusSelectResult.value = Result(ResultStatus.LOADING)
+        statusSelectResult.value = Result(ResultStatus.LOADING, status.type)
 
         statusSelectResult.value = try {
-            tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, commonTaskVersion)
+            tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion)
             loadData().join()
             screensState.modify()
             Result(ResultStatus.SUCCESS)

@@ -68,6 +68,9 @@
     <string name="add_user">Add user</string>
 
     <string name="choose_status">Choose status</string>
+    <string name="choose_type">Choose type</string>
+    <string name="choose_severity">Choose severity</string>
+    <string name="choose_priority">Choose priority</string>
     <string name="choose_sprint">Choose sprint</string>
     <string name="move_to_backlog">Move to backlog</string>
     <string name="search_members">Search members</string>

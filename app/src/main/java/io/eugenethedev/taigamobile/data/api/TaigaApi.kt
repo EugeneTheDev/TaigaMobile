@@ -163,6 +163,24 @@ interface TaigaApi {
         @Body changeStatusRequest: ChangeStatusRequest
     )
 
+    @PATCH("issues/{id}")
+    suspend fun changeIssueType(
+        @Path("id") id: Long,
+        @Body changeTypeRequest: ChangeTypeRequest
+    )
+
+    @PATCH("issues/{id}")
+    suspend fun changeIssueSeverity(
+        @Path("id") id: Long,
+        @Body changeSeverityRequest: ChangeSeverityRequest
+    )
+
+    @PATCH("issues/{id}")
+    suspend fun changeIssuePriority(
+        @Path("id") id: Long,
+        @Body changePriorityRequest: ChangePriorityRequest
+    )
+
     @PATCH("userstories/{id}")
     suspend fun changeUserStorySprint(
         @Path("id") id: Long,

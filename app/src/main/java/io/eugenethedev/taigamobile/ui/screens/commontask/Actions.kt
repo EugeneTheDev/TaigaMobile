@@ -4,7 +4,7 @@ import io.eugenethedev.taigamobile.domain.entities.Comment
 
 
 /**
- * Common fields when performing task editing (choosing something from list)
+ * Common fields when performing editing (choosing something from list)
  */
 class EditAction<T>(
     val items: List<T> = emptyList(),
