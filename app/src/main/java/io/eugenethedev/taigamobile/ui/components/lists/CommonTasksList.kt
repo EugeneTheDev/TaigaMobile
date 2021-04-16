@@ -30,6 +30,7 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.util.*
 
 /**
@@ -56,7 +57,7 @@ fun LazyListScope.CommonTasksList(
                     modifier = Modifier
                         .padding(horizontal = mainHorizontalScreenPadding)
                         .padding(top = 12.dp),
-                    contentColor = Color(android.graphics.Color.parseColor(status.color))
+                    contentColor = safeParseHexColor(status.color)
                 ) {
                     val transitionState = remember { MutableTransitionState(isCategoryVisible) }
                     Row(

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 
 /**
  * Badge on which you can click. With cool shimmer loading animation
@@ -117,7 +118,7 @@ fun ClickableBadge(
     isClickable: Boolean = true
 ) = ClickableBadge(
     text,
-    Color(android.graphics.Color.parseColor(colorHex)),
+    safeParseHexColor(colorHex),
     onClick,
     isLoading,
     isClickable

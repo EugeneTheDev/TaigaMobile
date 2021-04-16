@@ -391,7 +391,7 @@ fun CommonTaskScreenContent(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .background(
-                                        color = Color(android.graphics.Color.parseColor(epicColor)),
+                                        color = safeParseHexColor(epicColor),
                                         shape = MaterialTheme.shapes.small
                                     )
                             )

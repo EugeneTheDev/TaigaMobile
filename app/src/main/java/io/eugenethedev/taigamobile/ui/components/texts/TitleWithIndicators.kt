@@ -10,6 +10,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import timber.log.Timber
 
 /**
  * Text with colored dots (indicators) at the end
@@ -31,7 +33,7 @@ fun TitleWithIndicators(
         append(" ")
 
         indicatorColorsHex.forEach {
-            pushStyle(SpanStyle(color = Color(android.graphics.Color.parseColor(it))))
+            pushStyle(SpanStyle(color = safeParseHexColor(it)))
             append("⬤") // 2B24
             pop()
         }

@@ -19,6 +19,7 @@ import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.text.SimpleDateFormat
 
 /**
@@ -203,7 +204,7 @@ private fun StatusItem(
 ) {
     Text(
         text = status.name,
-        color = Color(android.graphics.Color.parseColor(status.color))
+        color = safeParseHexColor(status.color)
     )
 }
 

@@ -24,6 +24,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
+import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,7 +50,7 @@ fun CommonTaskItem(
         ) {
             Text(
                 text = commonTask.status.name,
-                color = Color(android.graphics.Color.parseColor(commonTask.status.color)),
+                color = safeParseHexColor(commonTask.status.color),
                 style = MaterialTheme.typography.body2
             )
 

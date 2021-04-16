@@ -10,9 +10,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import timber.log.Timber
 
 /**
  * Utility function to handle press on back button
@@ -54,3 +56,10 @@ fun Modifier.clickableUnindicated(
 
 @Composable
 inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.ERROR }?.let { onError(it.message!!) }
+
+fun safeParseHexColor(hexColor: String): Color = try {
+    Color(android.graphics.Color.parseColor(hexColor))
+} catch (e: IllegalArgumentException) {
+    Timber.w("'$hexColor' $e")
+    Color.Transparent
+}
