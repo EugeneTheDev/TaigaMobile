@@ -41,5 +41,5 @@ interface ITasksRepository {
 
     suspend fun deleteCommonTask(commonTaskType: CommonTaskType, commonTaskId: Long)
 
-    suspend fun promoteTaskToUserStory(commonTaskId: Long): CommonTask
+    suspend fun promoteCommonTaskToUserStory(commonTaskId: Long, commonTaskType: CommonTaskType): CommonTask
 }

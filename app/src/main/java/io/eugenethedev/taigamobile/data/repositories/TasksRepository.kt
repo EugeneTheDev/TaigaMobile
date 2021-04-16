@@ -364,12 +364,13 @@ class TasksRepository @Inject constructor(
         return@withIO
     }
 
-    override suspend fun promoteTaskToUserStory(commonTaskId: Long) = withIO {
-        taigaApi.promoteTaskToUserStory(
-                taskId = commonTaskId,
-                promoteToUserStoryRequest = PromoteToUserStoryRequest(session.currentProjectId)
-            )
-            .first()
-            .let { taigaApi.getUserStoryByRef(session.currentProjectId, it).toCommonTask(CommonTaskType.USERSTORY) }
+    override suspend fun promoteCommonTaskToUserStory(commonTaskId: Long, commonTaskType: CommonTaskType) = withIO {
+        val body = PromoteToUserStoryRequest(session.currentProjectId)
+        when (commonTaskType) {
+            CommonTaskType.TASK -> taigaApi.promoteTaskToUserStory(commonTaskId, body)
+            CommonTaskType.ISSUE -> taigaApi.promoteIssueToUserStory(commonTaskId, body)
+            else -> throw UnsupportedOperationException("Cannot promote to user story $commonTaskType")
+        }.first()
+         .let { taigaApi.getUserStoryByRef(session.currentProjectId, it).toCommonTask(CommonTaskType.USERSTORY) }
     }
 }

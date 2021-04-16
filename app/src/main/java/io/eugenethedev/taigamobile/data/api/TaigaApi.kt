@@ -337,4 +337,10 @@ interface TaigaApi {
         @Body promoteToUserStoryRequest: PromoteToUserStoryRequest
     ): List<Int>
 
+    @POST("/issues/{id}/promote_to_user_story")
+    suspend fun promoteIssueToUserStory(
+        @Path("id") issueId: Long,
+        @Body promoteToUserStoryRequest: PromoteToUserStoryRequest
+    ): List<Int>
+
 }

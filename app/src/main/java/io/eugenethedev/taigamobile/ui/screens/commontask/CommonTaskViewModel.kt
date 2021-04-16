@@ -391,11 +391,11 @@ class CommonTaskViewModel : ViewModel() {
 
     val promoteResult = MutableLiveResult<CommonTask>()
 
-    fun promoteTask() = viewModelScope.launch {
+    fun promoteToUserStory() = viewModelScope.launch {
         promoteResult.value = Result(ResultStatus.LOADING)
 
         promoteResult.value = try {
-            val result = tasksRepository.promoteTaskToUserStory(commonTaskId)
+            val result = tasksRepository.promoteCommonTaskToUserStory(commonTaskId, commonTaskType)
             screensState.modify()
             Result(ResultStatus.SUCCESS, result)
         } catch (e: Exception) {

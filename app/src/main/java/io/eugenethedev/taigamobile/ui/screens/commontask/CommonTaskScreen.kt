@@ -204,7 +204,7 @@ fun CommonTaskScreen(
             deleteTask = viewModel::deleteTask,
             isEditLoading = editResult?.resultStatus == ResultStatus.LOADING,
             isDeleteLoading = deleteResult?.resultStatus == ResultStatus.LOADING,
-            promoteTask = viewModel::promoteTask,
+            promoteTask = viewModel::promoteToUserStory,
             isPromoteLoading = promoteResult?.resultStatus == ResultStatus.LOADING
         )
     }
@@ -347,7 +347,7 @@ fun CommonTaskScreenContent(
                         }
 
                         // promote
-                        if (commonTaskType == CommonTaskType.TASK) {
+                        if (commonTaskType == CommonTaskType.TASK || commonTaskType == CommonTaskType.ISSUE) {
                             DropdownMenuItem(
                                 onClick = {
                                     isMenuExpanded = false
