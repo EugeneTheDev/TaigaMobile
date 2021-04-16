@@ -11,11 +11,13 @@ This is **unofficial** android app for [taiga.io](https://www.taiga.io/) (agile 
   * Epics
   * User stories 
   * Tasks
+  * Issues
   * Sprints
 * Create, edit and delete:
   * Epics
   * User stories
   * Tasks
+  * Issues
 * Leave and delete comments
 
 ## Some screens
