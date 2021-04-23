@@ -41,6 +41,7 @@
     <string name="taskboard">Board</string>
     <string name="closed">Closed</string>
     <string name="closed_sprint_name_template">%s (Closed)</string>
+    <string name="add_userstory">Add user story</string>
 
     <string name="stories">Stories</string>
     <string name="tasks_without_story">Storyless tasks</string>

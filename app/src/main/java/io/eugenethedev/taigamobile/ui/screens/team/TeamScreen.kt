@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.team
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
-import dev.chrisbanes.accompanist.glide.GlideImage
+import com.google.accompanist.glide.rememberGlidePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
@@ -109,15 +110,15 @@ private fun TeamMemberItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.weight(0.6f)
     ) {
-        GlideImage(
-            data = teamMember.avatarUrl ?: R.drawable.default_avatar,
+        Image(
+            painter = rememberGlidePainter(
+                request = teamMember.avatarUrl ?: R.drawable.default_avatar,
+                fadeIn = true,
+                requestBuilder = { error(R.drawable.default_avatar) },
+            ),
             contentDescription = null,
-            fadeIn = true,
-            requestBuilder = { error(R.drawable.default_avatar) },
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
+            modifier = Modifier.size(50.dp).clip(CircleShape)
         )
 
         Spacer(Modifier.width(6.dp))

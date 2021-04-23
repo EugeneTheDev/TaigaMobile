@@ -88,8 +88,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04")
     // compose constraint layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05")
-    // glide with compose
-    implementation("dev.chrisbanes.accompanist:accompanist-glide:0.6.1")
+
+    // Accompanist
+    val accompanistVersion = "0.8.1"
+    implementation("com.google.accompanist:accompanist-glide:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
 
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")

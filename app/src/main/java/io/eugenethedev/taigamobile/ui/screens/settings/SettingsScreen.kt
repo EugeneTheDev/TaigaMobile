@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -20,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.popUpTo
-import dev.chrisbanes.accompanist.glide.GlideImage
+import com.google.accompanist.glide.rememberGlidePainter
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
@@ -89,14 +90,15 @@ fun SettingsScreenContent(
         elevation = 0.dp
     )
 
-    GlideImage(
-        data = avatarUrl ?: R.drawable.default_avatar,
+    Image(
+        painter = rememberGlidePainter(
+            request = avatarUrl ?: R.drawable.default_avatar,
+            fadeIn = true,
+            requestBuilder = { error(R.drawable.default_avatar) },
+        ),
         contentDescription = null,
-        fadeIn = true,
-        requestBuilder = { error(R.drawable.default_avatar) },
         contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(120.dp)
+        modifier = Modifier.size(120.dp)
             .clip(MaterialTheme.shapes.large)
             .constrainAs(avatar) {
                 top.linkTo(topBar.bottom, margin = 20.dp)

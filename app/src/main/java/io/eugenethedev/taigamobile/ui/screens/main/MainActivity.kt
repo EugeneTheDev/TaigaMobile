@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import com.google.accompanist.insets.*
+import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
@@ -35,6 +36,7 @@ import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 
 class MainActivity : AppCompatActivity() {
+    @ExperimentalPagerApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimatedInsets
     @ExperimentalAnimationApi
@@ -149,6 +151,7 @@ object Routes {
     }
 }
 
+@ExperimentalPagerApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi

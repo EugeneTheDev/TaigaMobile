@@ -29,6 +29,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
+import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
@@ -908,29 +909,6 @@ private fun CommentItem(
         modifier = Modifier.padding(start = 4.dp)
     )
 }
-
-@Composable
-private fun AddButton(
-    text: String,
-    onClick: () -> Unit
-) = TextButton(
-    onClick = onClick,
-    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(R.drawable.ic_add),
-            contentDescription = null,
-            tint = MaterialTheme.colors.primary
-        )
-
-        Text(
-            text = text,
-            color = MaterialTheme.colors.primary
-        )
-    }
-}
-
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi

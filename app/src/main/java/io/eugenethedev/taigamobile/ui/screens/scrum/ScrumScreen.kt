@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.scrum
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.navigate
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
@@ -27,15 +29,19 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTasksList
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
+import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
 fun ScrumScreen(
@@ -83,6 +89,7 @@ fun ScrumScreen(
     )
 }
 
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
 fun ScrumScreenContent(
@@ -117,74 +124,112 @@ fun ScrumScreenContent(
         ) {
             CircularLoader()
         }
-    } else {
-        if (projectName.isNotEmpty()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                item {
-                    // backlog
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.backlog),
-                            style = MaterialTheme.typography.h6
-                        )
-
-                        PlusButton(onClick = navigateToCreateTask)
-                    }
-                }
-
-                CommonTasksList(
+    } else if (projectName.isNotEmpty()) {
+        HorizontalTabbedPager(
+            tabs = Tabs.values(),
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            when (Tabs.values()[page]) {
+                Tabs.Backlog -> BacklogTabContent(
+                    startStatusesExpanded = startStatusesExpanded,
                     statuses = statuses,
                     commonTasks = commonTasks,
                     loadingStatusIds = loadingStatusIds,
+                    loadStories = loadStories,
                     visibleStatusIds = visibleStatusIds,
                     onStatusClick = onStatusClick,
-                    loadData = loadStories,
                     navigateToTask = navigateToTask,
-                    isInverseVisibility = startStatusesExpanded
+                    navigateToCreateTask = navigateToCreateTask
                 )
-
-                item {
-                    Spacer(Modifier.height(24.dp))
-
-                    Text(
-                        text = stringResource(R.string.sprints_title),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
-                    )
-                }
-
-                itemsIndexed(sprints) { index, item ->
-                    SprintItem(
-                        sprint = item,
-                        navigateToBoard = navigateToBoard
-                    )
-
-                    if (index == sprints.lastIndex) {
-                        LaunchedEffect(sprints.size) {
-                            loadSprints()
-                        }
-                    }
-                }
-
-                item {
-                    if (sprints.isEmpty()) {
-                        NothingToSeeHereText()
-                    }
-                    Spacer(Modifier.height(32.dp))
-                }
+                Tabs.Sprints -> SprintsTabContent(
+                    sprints = sprints,
+                    navigateToBoard = navigateToBoard,
+                    loadSprints = loadSprints
+                )
             }
         }
     }
 }
 
+private enum class Tabs(@StringRes override val titleId: Int) : Tab {
+    Backlog(R.string.backlog),
+    Sprints(R.string.sprints_title)
+}
+
+@ExperimentalAnimationApi
 @Composable
-fun SprintItem(
+private fun BacklogTabContent(
+    startStatusesExpanded: Boolean,
+    statuses: List<Status>,
+    commonTasks: List<CommonTask>,
+    loadingStatusIds: List<Long>,
+    loadStories: (Status) -> Unit,
+    visibleStatusIds: List<Long>,
+    onStatusClick: (Long) -> Unit,
+    navigateToTask: NavigateToTask,
+    navigateToCreateTask: () -> Unit
+) = LazyColumn(Modifier.fillMaxSize()) {
+    item {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            AddButton(
+                text = stringResource(R.string.add_userstory),
+                onClick = navigateToCreateTask
+            )
+        }
+    }
+
+    CommonTasksList(
+        statuses = statuses,
+        commonTasks = commonTasks,
+        loadingStatusIds = loadingStatusIds,
+        visibleStatusIds = visibleStatusIds,
+        onStatusClick = onStatusClick,
+        loadData = loadStories,
+        navigateToTask = navigateToTask,
+        isInverseVisibility = startStatusesExpanded
+    )
+
+    item {
+        Spacer(Modifier.height(commonVerticalMargin))
+    }
+}
+
+@Composable
+private fun SprintsTabContent(
+    sprints: List<Sprint>,
+    navigateToBoard: (Sprint) -> Unit,
+    loadSprints: () -> Unit
+) = LazyColumn(Modifier.fillMaxSize()) {
+    item {
+
+    }
+
+    itemsIndexed(sprints) { index, item ->
+        SprintItem(
+            sprint = item,
+            navigateToBoard = navigateToBoard
+        )
+
+        if (index == sprints.lastIndex) {
+            LaunchedEffect(sprints.size) {
+                loadSprints()
+            }
+        }
+    }
+
+    item {
+        if (sprints.isEmpty()) {
+            NothingToSeeHereText()
+        }
+        Spacer(Modifier.height(commonVerticalMargin))
+    }
+}
+
+@Composable
+private fun SprintItem(
     sprint: Sprint,
     navigateToBoard: (Sprint) -> Unit = {}
 ) = ContainerBox(clickEnabled = false) {
@@ -261,6 +306,7 @@ fun SprintPreview() = TaigaMobileTheme {
     )
 }
 
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable

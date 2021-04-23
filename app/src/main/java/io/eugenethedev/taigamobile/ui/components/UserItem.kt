@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -13,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.accompanist.glide.GlideImage
+import com.google.accompanist.glide.rememberGlidePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -31,11 +32,13 @@ fun UserItem(
     val dateTimeFormatter = remember { SimpleDateFormat.getDateTimeInstance() }
     val imageSize = if (dateTime != null) 46.dp else 40.dp
 
-    GlideImage(
-        data = user.avatarUrl ?: R.drawable.default_avatar,
+    Image(
+        painter = rememberGlidePainter(
+            request = user.avatarUrl ?: R.drawable.default_avatar,
+            fadeIn = true,
+            requestBuilder = { error(R.drawable.default_avatar) }
+        ),
         contentDescription = null,
-        fadeIn = true,
-        requestBuilder = { error(R.drawable.default_avatar) },
         contentScale = ContentScale.Crop,
         modifier = Modifier.size(imageSize).clip(CircleShape)
     )

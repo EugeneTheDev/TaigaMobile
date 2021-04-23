@@ -17,7 +17,7 @@ import androidx.navigation.compose.navigate
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
-import io.eugenethedev.taigamobile.ui.components.PlusButton
+import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
