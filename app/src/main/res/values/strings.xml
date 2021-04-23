@@ -43,9 +43,10 @@
     <string name="closed_sprint_name_template">%s (Closed)</string>
     <string name="add_userstory">Add user story</string>
 
-    <string name="stories">Stories</string>
     <string name="tasks_without_story">Storyless tasks</string>
     <string name="sprint_issues">Sprint issues</string>
+    <string name="add_task">Add task</string>
+    <string name="add_issue">Add issue</string>
 
     <string name="userstory_slug">User story #%d</string>
     <string name="task_slug">Task #%d</string>

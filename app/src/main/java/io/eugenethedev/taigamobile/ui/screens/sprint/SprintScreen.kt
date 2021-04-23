@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.sprint
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,22 +15,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.components.HorizontalTabbedPager
+import io.eugenethedev.taigamobile.ui.components.Tab
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
+import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTasksList
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
 fun SprintScreen(
@@ -84,6 +91,7 @@ fun SprintScreen(
     )
 }
 
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
 fun SprintScreenContent(
@@ -144,58 +152,136 @@ fun SprintScreenContent(
             CircularLoader()
         }
     } else {
-        val sectionsMargin = 18.dp
-
-        LazyColumn(Modifier.fillMaxWidth()) {
-            item {
-                Row(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
-                    Text(
-                        text = stringResource(R.string.stories),
-                        style = MaterialTheme.typography.h6,
-                    )
-                }
+        HorizontalTabbedPager(
+            tabs = Tabs.values(),
+            modifier = Modifier.fillMaxSize(),
+            scrollable = true
+        ) { page ->
+            when (Tabs.values()[page]) {
+                Tabs.UserStories -> StoriesTabContent(
+                    startStatusesExpanded = startStatusesExpanded,
+                    statuses = statuses,
+                    commonTasks = commonTasks,
+                    loadingStatusIds = loadingStatusIds,
+                    loadStories = loadStories,
+                    visibleStatusIds = visibleStatusIds,
+                    onStatusClick = onStatusClick,
+                    navigateToTask = navigateToTask
+                )
+                Tabs.Tasks -> TasksTabContent(
+                    tasks = tasks,
+                    isTasksLoading = isTasksLoading,
+                    loadTasks = loadTasks,
+                    navigateToTask = navigateToTask,
+                    navigateToCreateTask = navigateToCreateTask
+                )
+                Tabs.Issues -> IssuesTabContent(
+                    issues = issues,
+                    isIssuesLoading = isIssuesLoading,
+                    loadIssues = loadIssues,
+                    navigateToTask = navigateToTask,
+                    navigateToCreateTask = navigateToCreateTask
+                )
             }
-
-            // stories
-            CommonTasksList(
-                statuses = statuses,
-                commonTasks = commonTasks,
-                loadingStatusIds = loadingStatusIds,
-                visibleStatusIds = visibleStatusIds,
-                onStatusClick = onStatusClick,
-                loadData = loadStories,
-                navigateToTask = navigateToTask,
-                isInverseVisibility = startStatusesExpanded
-            )
-
-            // tasks
-            SimpleTasksListWithTitle(
-                titleText = R.string.tasks_without_story,
-                topMargin = sectionsMargin,
-                horizontalPadding = mainHorizontalScreenPadding,
-                commonTasks = tasks,
-                isTasksLoading = isTasksLoading,
-                navigateToTask = navigateToTask,
-                navigateToCreateCommonTask = { navigateToCreateTask(CommonTaskType.TASK) },
-                loadData = loadTasks
-            )
-
-            // issues
-            SimpleTasksListWithTitle(
-                titleText = R.string.sprint_issues,
-                topMargin = sectionsMargin,
-                bottomMargin = 16.dp,
-                horizontalPadding = mainHorizontalScreenPadding,
-                commonTasks = issues,
-                isTasksLoading = isIssuesLoading,
-                navigateToTask = navigateToTask,
-                navigateToCreateCommonTask = { navigateToCreateTask(CommonTaskType.ISSUE) },
-                loadData = loadIssues
-            )
         }
     }
 }
 
+private enum class Tabs(@StringRes override val titleId: Int) : Tab {
+    UserStories(R.string.userstories),
+    Tasks(R.string.tasks_without_story),
+    Issues(R.string.sprint_issues)
+}
+
+@ExperimentalAnimationApi
+@Composable
+private fun StoriesTabContent(
+    startStatusesExpanded: Boolean,
+    statuses: List<Status>,
+    commonTasks: List<CommonTask>,
+    loadingStatusIds: List<Long>,
+    loadStories: (Status) -> Unit,
+    visibleStatusIds: List<Long>,
+    onStatusClick: (Long) -> Unit,
+    navigateToTask: NavigateToTask
+) = LazyColumn(Modifier.fillMaxSize()) {
+    CommonTasksList(
+        statuses = statuses,
+        commonTasks = commonTasks,
+        loadingStatusIds = loadingStatusIds,
+        visibleStatusIds = visibleStatusIds,
+        onStatusClick = onStatusClick,
+        loadData = loadStories,
+        navigateToTask = navigateToTask,
+        isInverseVisibility = startStatusesExpanded
+    )
+
+    item {
+        Spacer(Modifier.height(commonVerticalMargin))
+    }
+}
+
+@Composable
+private fun TasksTabContent(
+    tasks: List<CommonTask>,
+    isTasksLoading: Boolean,
+    loadTasks: () -> Unit,
+    navigateToTask: NavigateToTask,
+    navigateToCreateTask: (CommonTaskType) -> Unit
+) = LazyColumn(Modifier.fillMaxSize()) {
+    item {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            AddButton(
+                text = stringResource(R.string.add_task),
+                onClick = { navigateToCreateTask(CommonTaskType.TASK) }
+            )
+        }
+    }
+
+    SimpleTasksListWithTitle(
+        bottomMargin = commonVerticalMargin,
+        horizontalPadding = mainHorizontalScreenPadding,
+        commonTasks = tasks,
+        isTasksLoading = isTasksLoading,
+        navigateToTask = navigateToTask,
+        loadData = loadTasks
+    )
+}
+
+@Composable
+private fun IssuesTabContent(
+    issues: List<CommonTask>,
+    isIssuesLoading: Boolean,
+    loadIssues: () -> Unit,
+    navigateToTask: NavigateToTask,
+    navigateToCreateTask: (CommonTaskType) -> Unit
+) = LazyColumn(Modifier.fillMaxSize()) {
+    item {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            AddButton(
+                text = stringResource(R.string.add_issue),
+                onClick = { navigateToCreateTask(CommonTaskType.ISSUE) }
+            )
+        }
+    }
+
+    SimpleTasksListWithTitle(
+        bottomMargin = commonVerticalMargin,
+        horizontalPadding = mainHorizontalScreenPadding,
+        commonTasks = issues,
+        isTasksLoading = isIssuesLoading,
+        navigateToTask = navigateToTask,
+        loadData = loadIssues
+    )
+}
+
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable

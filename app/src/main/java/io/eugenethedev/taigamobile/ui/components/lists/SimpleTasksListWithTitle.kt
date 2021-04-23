@@ -23,8 +23,11 @@ import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 
+/**
+ * List of tasks with optional title
+ */
 fun LazyListScope.SimpleTasksListWithTitle(
-    @StringRes titleText: Int,
+    @StringRes titleText: Int? = null,
     commonTasks: List<CommonTask>,
     topMargin: Dp = 0.dp,
     horizontalPadding: Dp = 0.dp,
@@ -34,20 +37,22 @@ fun LazyListScope.SimpleTasksListWithTitle(
     navigateToCreateCommonTask: (() -> Unit)? = null,
     loadData: () -> Unit = {}
 ) {
-    item {
-        Spacer(Modifier.height(topMargin))
+    titleText?.let {
+        item {
+            Spacer(Modifier.height(topMargin))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = horizontalPadding)
-        ) {
-            Text(
-                text = stringResource(titleText),
-                style = MaterialTheme.typography.h6
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = horizontalPadding)
+            ) {
+                Text(
+                    text = stringResource(it),
+                    style = MaterialTheme.typography.h6
+                )
 
-            navigateToCreateCommonTask?.let {
-                PlusButton(onClick = it)
+                navigateToCreateCommonTask?.let {
+                    PlusButton(onClick = it)
+                }
             }
         }
     }

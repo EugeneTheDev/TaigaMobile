@@ -22,22 +22,20 @@ import kotlinx.coroutines.launch
 fun HorizontalTabbedPager(
     tabs: Array<out Tab>,
     modifier: Modifier = Modifier,
+    scrollable: Boolean = false,
+    offscreenLimit: Int = 10, // keep screens loaded
     content: @Composable PagerScope.(page: Int) -> Unit
 ) = Column(modifier = modifier) {
     val pagerState = rememberPagerState(pageCount = tabs.size)
     val coroutineScope = rememberCoroutineScope()
 
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        modifier = Modifier.fillMaxWidth(),
-        contentColor = MaterialTheme.colors.primary,
-        backgroundColor = MaterialTheme.colors.surface,
-        indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-            )
-        }
-    ) {
+    val indicator: @Composable (tabPositions: List<TabPosition>) -> Unit = { tabPositions ->
+        TabRowDefaults.Indicator(
+            Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+        )
+    }
+
+    val tabsRow: @Composable () -> Unit = {
         tabs.forEachIndexed { index, tab ->
             Tab(
                 selected = pagerState.currentPage == index,
@@ -49,10 +47,31 @@ fun HorizontalTabbedPager(
         }
     }
 
+    if (scrollable) {
+        ScrollableTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier.fillMaxWidth(),
+            contentColor = MaterialTheme.colors.primary,
+            backgroundColor = MaterialTheme.colors.surface,
+            indicator = indicator,
+            tabs = tabsRow
+        )
+    } else {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier.fillMaxWidth(),
+            contentColor = MaterialTheme.colors.primary,
+            backgroundColor = MaterialTheme.colors.surface,
+            indicator = indicator,
+            tabs = tabsRow
+        )
+    }
+
     Spacer(Modifier.height(8.dp))
 
     HorizontalPager(
         state = pagerState,
+        offscreenLimit = offscreenLimit,
         content = content
     )
 }

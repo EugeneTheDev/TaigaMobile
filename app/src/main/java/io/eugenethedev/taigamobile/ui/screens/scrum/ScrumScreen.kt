@@ -203,10 +203,6 @@ private fun SprintsTabContent(
     navigateToBoard: (Sprint) -> Unit,
     loadSprints: () -> Unit
 ) = LazyColumn(Modifier.fillMaxSize()) {
-    item {
-
-    }
-
     itemsIndexed(sprints) { index, item ->
         SprintItem(
             sprint = item,
