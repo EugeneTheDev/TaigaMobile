@@ -154,8 +154,7 @@ fun SprintScreenContent(
     } else {
         HorizontalTabbedPager(
             tabs = Tabs.values(),
-            modifier = Modifier.fillMaxSize(),
-            scrollable = true
+            modifier = Modifier.fillMaxSize()
         ) { page ->
             when (Tabs.values()[page]) {
                 Tabs.UserStories -> StoriesTabContent(

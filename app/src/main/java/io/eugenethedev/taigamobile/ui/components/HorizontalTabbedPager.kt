@@ -8,9 +8,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.*
+import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import kotlinx.coroutines.launch
 
 /**
@@ -22,8 +25,9 @@ import kotlinx.coroutines.launch
 fun HorizontalTabbedPager(
     tabs: Array<out Tab>,
     modifier: Modifier = Modifier,
-    scrollable: Boolean = false,
+    scrollable: Boolean = true,
     offscreenLimit: Int = 10, // keep screens loaded
+    edgePadding: Dp = mainHorizontalScreenPadding,
     content: @Composable PagerScope.(page: Int) -> Unit
 ) = Column(modifier = modifier) {
     val pagerState = rememberPagerState(pageCount = tabs.size)
@@ -38,11 +42,12 @@ fun HorizontalTabbedPager(
     val tabsRow: @Composable () -> Unit = {
         tabs.forEachIndexed { index, tab ->
             Tab(
-                selected = pagerState.currentPage == index,
+                selected = pagerState.run { targetPage?.takeIf { it != currentPage } ?: currentPage == index },
                 onClick = {
                     coroutineScope.launch { pagerState.animateScrollToPage(index) }
                 },
-                text = { Text(stringResource(tab.titleId)) }
+                text = { Text(stringResource(tab.titleId)) },
+                unselectedContentColor = Color.Gray
             )
         }
     }
@@ -54,7 +59,9 @@ fun HorizontalTabbedPager(
             contentColor = MaterialTheme.colors.primary,
             backgroundColor = MaterialTheme.colors.surface,
             indicator = indicator,
-            tabs = tabsRow
+            tabs = tabsRow,
+            divider = {},
+            edgePadding = edgePadding
         )
     } else {
         TabRow(
@@ -63,7 +70,8 @@ fun HorizontalTabbedPager(
             contentColor = MaterialTheme.colors.primary,
             backgroundColor = MaterialTheme.colors.surface,
             indicator = indicator,
-            tabs = tabsRow
+            tabs = tabsRow,
+            divider = {}
         )
     }
 
