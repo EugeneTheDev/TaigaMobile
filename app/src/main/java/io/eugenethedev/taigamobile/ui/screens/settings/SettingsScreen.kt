@@ -1,5 +1,8 @@
 package io.eugenethedev.taigamobile.ui.screens.settings
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -10,9 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +34,7 @@ import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -98,7 +105,8 @@ fun SettingsScreenContent(
         ),
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.size(120.dp)
+        modifier = Modifier
+            .size(120.dp)
             .clip(MaterialTheme.shapes.large)
             .constrainAs(avatar) {
                 top.linkTo(topBar.bottom, margin = 20.dp)
@@ -165,7 +173,7 @@ fun SettingsScreenContent(
     }
 
     Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .padding(horizontal = mainHorizontalScreenPadding)
             .constrainAs(settings) {
@@ -174,6 +182,13 @@ fun SettingsScreenContent(
                 top.linkTo(userInfo.bottom, 24.dp)
             }
     ) {
+        Text(
+            text = stringResource(R.string.expand_statuses),
+            style = MaterialTheme.typography.subtitle1
+        )
+
+        Spacer(Modifier.height(6.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,7 +196,6 @@ fun SettingsScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.scrum_expand_statuses),
-                style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier.weight(0.8f, fill = false)
             )
 
@@ -192,7 +206,7 @@ fun SettingsScreenContent(
             )
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(4.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -201,7 +215,6 @@ fun SettingsScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.sprint_expand_statuses),
-                style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier.weight(0.8f, fill = false)
             )
 
@@ -213,18 +226,30 @@ fun SettingsScreenContent(
         }
     }
 
-    Text(
-        text = stringResource(R.string.app_name_with_version_template).format(
-            stringResource(R.string.app_name), BuildConfig.VERSION_NAME
-        ),
-        style = MaterialTheme.typography.body1.merge(TextStyle(fontSize = 18.sp)),
-        color = Color.Gray,
+    Column(
         modifier = Modifier.constrainAs(appVersion) {
             start.linkTo(parent.start)
             end.linkTo(parent.end)
             bottom.linkTo(parent.bottom, 16.dp)
-        }
-    )
+        },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.app_name_with_version_template).format(
+                stringResource(R.string.app_name), BuildConfig.VERSION_NAME
+            ),
+            style = MaterialTheme.typography.body1.merge(TextStyle(fontSize = 18.sp)),
+            color = Color.Gray,
+        )
+
+        val activity = LocalContext.current as Activity
+        val githubUrl = stringResource(R.string.github_url)
+        Text(
+            text = stringResource(R.string.source_code),
+            style = MaterialTheme.typography.body1.merge(SpanStyle(color = MaterialTheme.colors.primary, textDecoration = TextDecoration.Underline)),
+            modifier = Modifier.clickableUnindicated { activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(githubUrl))) }
+        )
+    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
