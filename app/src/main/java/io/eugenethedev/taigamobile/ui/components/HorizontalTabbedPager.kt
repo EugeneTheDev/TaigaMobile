@@ -26,7 +26,6 @@ fun HorizontalTabbedPager(
     tabs: Array<out Tab>,
     modifier: Modifier = Modifier,
     scrollable: Boolean = true,
-    offscreenLimit: Int = 10, // keep screens loaded
     edgePadding: Dp = mainHorizontalScreenPadding,
     content: @Composable PagerScope.(page: Int) -> Unit
 ) = Column(modifier = modifier) {
@@ -79,7 +78,7 @@ fun HorizontalTabbedPager(
 
     HorizontalPager(
         state = pagerState,
-        offscreenLimit = offscreenLimit,
+        offscreenLimit = tabs.size,
         content = content
     )
 }
