@@ -9,6 +9,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +24,7 @@ import com.google.accompanist.insets.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScreen
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             },
                             bottomBar = {
-                                val items = listOf(Screen.Scrum, Screen.Epics, Screen.Issues, Screen.Team, Screen.Settings)
+                                val items = Screens.values()
                                 val routes = items.map { it.route }
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                                 val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
@@ -120,12 +122,11 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
-    object Scrum : Screen(Routes.scrum, R.string.scrum, R.drawable.ic_scrum)
-    object Epics : Screen(Routes.epics, R.string.epics, R.drawable.ic_epics)
-    object Issues : Screen(Routes.issues, R.string.issues, R.drawable.ic_issues)
-    object Team : Screen(Routes.team, R.string.team, R.drawable.ic_team)
-    object Settings : Screen(Routes.settings, R.string.settings, R.drawable.ic_settings)
+enum class Screens(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
+    Scrum(Routes.scrum, R.string.scrum, R.drawable.ic_scrum),
+    Epics(Routes.epics, R.string.epics, R.drawable.ic_epics),
+    Issues(Routes.issues, R.string.issues, R.drawable.ic_issues),
+    More(Routes.more, R.string.more, R.drawable.ic_more)
 }
 
 object Routes {
@@ -133,6 +134,7 @@ object Routes {
     const val scrum = "scrum"
     const val epics = "epics"
     const val issues = "issues"
+    const val more = "more"
     const val team = "team"
     const val settings = "settings"
     const val projectsSelector = "projectsSelector"
@@ -170,7 +172,10 @@ fun MainScreen(
         }
     }
 
-    Box(Modifier.fillMaxSize().padding(paddingValues)) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
         NavHost(
             navController = navController,
             startDestination = if (viewModel.isLogged) Routes.scrum else Routes.login
@@ -208,6 +213,12 @@ fun MainScreen(
                 IssuesScreen(
                     navController = navController,
                     onError = onError
+                )
+            }
+
+            composable(Routes.more) {
+                MoreScreen(
+                    navController = navController
                 )
             }
 
@@ -284,4 +295,42 @@ fun MainScreen(
         }
 
     }
+}
+
+@Composable
+fun MoreScreen(
+    navController: NavController
+) = Column(Modifier.fillMaxSize()) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.more)) },
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 0.dp
+    )
+
+    @Composable
+    fun Item(
+        @DrawableRes iconId: Int,
+        @StringRes nameId: Int,
+        route: String
+    ) = ContainerBox(onClick = { navController.navigate(route) }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                painter = painterResource(iconId),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = Color.Gray
+            )
+
+            Spacer(Modifier.width(8.dp))
+
+            Text(stringResource(nameId))
+        }
+    }
+
+    @Composable
+    fun Margin() = Spacer(Modifier.height(8.dp))
+
+    Item(R.drawable.ic_team, R.string.team, Routes.team)
+    Margin()
+    Item(R.drawable.ic_settings, R.string.settings, Routes.settings)
 }

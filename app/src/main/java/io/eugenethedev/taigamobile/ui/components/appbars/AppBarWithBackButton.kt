@@ -14,22 +14,26 @@ import io.eugenethedev.taigamobile.R
 
 @Composable
 fun AppBarWithBackButton(
+    modifier: Modifier = Modifier,
     title: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: (() -> Unit)? = null
 ) = TopAppBar(
     title = title,
-    navigationIcon = {
-        IconButton(onClick = navigateBack) {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_back),
-                contentDescription = null,
-                tint = MaterialTheme.colors.primary,
-                modifier = Modifier.size(28.dp)
-            )
+    navigationIcon = navigateBack?.let {
+        {
+            IconButton(onClick = it) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
     },
     actions = actions,
     backgroundColor = MaterialTheme.colors.surface,
-    elevation = 0.dp
+    elevation = 0.dp,
+    modifier = modifier
 )

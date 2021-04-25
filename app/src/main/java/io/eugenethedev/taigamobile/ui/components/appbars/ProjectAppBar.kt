@@ -19,9 +19,10 @@ import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 @Composable
 fun ProjectAppBar(
     projectName: String,
+    onTitleClick: () -> Unit,
     actions: @Composable RowScope.() -> Unit = {},
-    onTitleClick: () -> Unit
-) = TopAppBar(
+    navigateBack: (() -> Unit)? = null
+) = AppBarWithBackButton(
     title = {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -42,6 +43,5 @@ fun ProjectAppBar(
         }
     },
     actions = actions,
-    backgroundColor = MaterialTheme.colors.surface,
-    elevation = 0.dp
+    navigateBack = navigateBack
 )

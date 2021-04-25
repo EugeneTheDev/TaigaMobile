@@ -55,7 +55,8 @@ fun TeamScreen(
         onTitleClick = {
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
-        }
+        },
+        navigateBack = navController::popBackStack
     )
 }
 
@@ -64,11 +65,13 @@ fun TeamScreenContent(
     projectName: String,
     team: List<TeamMember> = emptyList(),
     isLoading: Boolean = false,
-    onTitleClick: () -> Unit = {}
+    onTitleClick: () -> Unit = {},
+    navigateBack: () -> Unit = {}
 ) = Column(Modifier.fillMaxSize()) {
     ProjectAppBar(
         projectName = projectName,
-        onTitleClick = onTitleClick
+        onTitleClick = onTitleClick,
+        navigateBack = navigateBack
     )
 
     when {

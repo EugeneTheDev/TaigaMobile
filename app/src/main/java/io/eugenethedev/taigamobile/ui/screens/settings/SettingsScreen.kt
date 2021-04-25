@@ -31,6 +31,7 @@ import com.google.accompanist.glide.rememberGlidePainter
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
@@ -59,6 +60,7 @@ fun SettingsScreen(
         displayName = user?.data?.displayName.orEmpty(),
         username = user?.data?.username.orEmpty(),
         serverUrl = viewModel.serverUrl,
+        navigateBack = navController::popBackStack,
         logout = {
             viewModel.logout()
             navController.navigate(Routes.login) {
@@ -78,6 +80,7 @@ fun SettingsScreenContent(
     displayName: String,
     username: String,
     serverUrl: String,
+    navigateBack: () -> Unit = {},
     logout: () -> Unit = {},
     isScrumScreenExpandStatuses: Boolean = false,
     switchScrumScreenExpandStatuses: (Boolean) -> Unit = { _ -> },
@@ -88,13 +91,12 @@ fun SettingsScreenContent(
 ) {
     val (topBar, avatar, logoutIcon, userInfo, settings, appVersion) = createRefs()
 
-    TopAppBar(
+    AppBarWithBackButton(
+        title = { Text(stringResource(R.string.settings)) },
+        navigateBack = navigateBack,
         modifier = Modifier.constrainAs(topBar) {
             top.linkTo(parent.top)
-        },
-        title = { Text(stringResource(R.string.settings)) },
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp
+        }
     )
 
     Image(
