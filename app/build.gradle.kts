@@ -10,14 +10,14 @@ plugins {
 val composeVersion = "1.0.0-beta05"
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
         applicationId = "io.eugenethedev.taigamobile"
-        minSdkVersion(22)
-        targetSdkVersion(30)
-        versionCode(6)
+        minSdk = 23
+        targetSdk = 30
+        versionCode = 6
         versionName = "1.0"
         project.base.archivesBaseName = "TaigaMobile-$versionName"
 
@@ -83,7 +83,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.0-alpha06")
+    implementation("androidx.activity:activity-compose:1.3.0-alpha07")
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04")
     // compose constraint layout
