@@ -50,7 +50,7 @@ data class CommonTask(
     val ref: Int,
     val status: Status,
     val assignee: Assignee? = null,
-    val projectSlug: String,
+    val projectInfo: Project,
     val taskType: CommonTaskType,
     val isClosed: Boolean,
     val colors: List<String> = emptyList() // colored indicators (for stories and epics)

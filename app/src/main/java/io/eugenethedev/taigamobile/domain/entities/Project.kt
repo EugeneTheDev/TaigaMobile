@@ -10,7 +10,7 @@ data class Project(
     val id: Long,
     val name: String,
     val slug: String,
-    @SerializedName("i_am_member") val isMember: Boolean,
-    @SerializedName("i_am_admin") val isAdmin: Boolean,
-    @SerializedName("i_am_owner") val isOwner: Boolean
+    @SerializedName("i_am_member") val isMember: Boolean = false,
+    @SerializedName("i_am_admin") val isAdmin: Boolean = false,
+    @SerializedName("i_am_owner") val isOwner: Boolean = false
 )

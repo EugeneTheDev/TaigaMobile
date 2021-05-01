@@ -37,34 +37,47 @@ interface TaigaApi {
 
     @GET("userstories")
     suspend fun getUserStories(
-        @Query("project") project: Long?,
-        @Query("milestone") sprint: Any?,
-        @Query("status") status: Long?,
-        @Query("epic") epic: Long?,
-        @Query("page") page: Int?
+        @Query("project") project: Long? = null,
+        @Query("milestone") sprint: Any? = null,
+        @Query("status") status: Long? = null,
+        @Query("epic") epic: Long? = null,
+        @Query("page") page: Int? = null,
+        @Query("assigned_users") assignedId: Long? = null,
+        @Query("status__is_closed") isClosed: Boolean? = null,
+        @Query("watchers") watcherId: Long? = null,
+        @Query("dashboard") isDashboard: Boolean? = null
     ): List<CommonTaskResponse>
 
     @GET("tasks?order_by=us_order")
     suspend fun getTasks(
-        @Query("project") project: Long,
-        @Query("milestone") sprint: Long?,
-        @Query("user_story") userStory: Any,
-        @Query("page") page: Int?
+        @Query("user_story") userStory: Any? = null,
+        @Query("project") project: Long? = null,
+        @Query("milestone") sprint: Long? = null,
+        @Query("page") page: Int? = null,
+        @Query("assigned_to") assignedId: Long? = null,
+        @Query("status__is_closed") isClosed: Boolean? = null,
+        @Query("watchers") watcherId: Long? = null
     ): List<CommonTaskResponse>
 
     @GET("epics")
     suspend fun getEpics(
-        @Query("project") project: Long,
-        @Query("page") page: Int,
-        @Query("q") query: String?
+        @Query("page") page: Int? = null,
+        @Query("project") project: Long? = null,
+        @Query("q") query: String? = null,
+        @Query("assigned_to") assignedId: Long? = null,
+        @Query("status__is_closed") isClosed: Boolean? = null,
+        @Query("watchers") watcherId: Long? = null
     ): List<CommonTaskResponse>
 
     @GET("issues")
     suspend fun getIssues(
-        @Query("project") project: Long,
-        @Query("page") page: Int,
-        @Query("q") query: String?,
-        @Query("milestone") sprint: Long?
+        @Query("page") page: Int? = null,
+        @Query("project") project: Long? = null,
+        @Query("q") query: String? = null,
+        @Query("milestone") sprint: Long? = null,
+        @Query("assigned_to") assignedId: Long? = null,
+        @Query("status__is_closed") isClosed: Boolean? = null,
+        @Query("watchers") watcherId: Long? = null
     ): List<CommonTaskResponse>
 
     @GET("milestones")

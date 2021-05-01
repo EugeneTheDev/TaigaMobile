@@ -28,13 +28,14 @@ import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
  * List of tasks with optional title
  */
 fun LazyListScope.SimpleTasksListWithTitle(
-    @StringRes titleText: Int? = null,
     commonTasks: List<CommonTask>,
+    navigateToTask: NavigateToTask,
+    @StringRes titleText: Int? = null,
     topMargin: Dp = 0.dp,
     horizontalPadding: Dp = 0.dp,
     bottomMargin: Dp = 0.dp,
     isTasksLoading: Boolean = false,
-    navigateToTask: NavigateToTask,
+    showExtendedTaskInfo: Boolean = false,
     navigateToCreateCommonTask: (() -> Unit)? = null,
     loadData: () -> Unit = {}
 ) {
@@ -62,7 +63,8 @@ fun LazyListScope.SimpleTasksListWithTitle(
         CommonTaskItem(
             commonTask = item,
             horizontalPadding = horizontalPadding,
-            navigateToTask = navigateToTask
+            navigateToTask = navigateToTask,
+            showExtendedInfo = showExtendedTaskInfo
         )
 
         if (index < commonTasks.lastIndex) {

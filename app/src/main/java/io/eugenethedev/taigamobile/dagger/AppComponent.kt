@@ -10,6 +10,7 @@ import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumViewModel
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintViewModel
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskViewModel
+import io.eugenethedev.taigamobile.ui.screens.dashboard.DashboardViewModel
 import io.eugenethedev.taigamobile.ui.screens.epics.EpicsViewModel
 import io.eugenethedev.taigamobile.ui.screens.issues.IssuesViewModel
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
@@ -28,6 +29,7 @@ interface AppComponent {
 
     fun inject(mainViewModel: MainViewModel)
     fun inject(loginViewModel: LoginViewModel)
+    fun inject(dashboardViewModel: DashboardViewModel)
     fun inject(scrumViewModel: ScrumViewModel)
     fun inject(epicsViewModel: EpicsViewModel)
     fun inject(projectSelectorViewModel: ProjectSelectorViewModel)

@@ -3,6 +3,9 @@ package io.eugenethedev.taigamobile.domain.repositories
 import io.eugenethedev.taigamobile.domain.entities.*
 
 interface ITasksRepository {
+    suspend fun getWorkingOn(): List<CommonTask>
+    suspend fun getWatching(): List<CommonTask>
+
     suspend fun getStatuses(commonTaskType: CommonTaskType): List<Status>
     suspend fun getStatusByType(commonTaskType: CommonTaskType, statusType: StatusType): List<Status>
 

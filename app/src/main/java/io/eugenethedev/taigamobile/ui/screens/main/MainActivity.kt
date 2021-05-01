@@ -34,6 +34,7 @@ import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintScreen
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskScreen
+import io.eugenethedev.taigamobile.ui.screens.dashboard.DashboardScreen
 import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
 import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
@@ -147,6 +148,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 enum class Screens(val route: String, @StringRes val resourceId: Int, @DrawableRes val iconId: Int) {
+    Dashboard(Routes.dashboard, R.string.dashboard_short, R.drawable.ic_dashboard),
     Scrum(Routes.scrum, R.string.scrum, R.drawable.ic_scrum),
     Epics(Routes.epics, R.string.epics, R.drawable.ic_epics),
     Issues(Routes.issues, R.string.issues, R.drawable.ic_issues),
@@ -155,6 +157,7 @@ enum class Screens(val route: String, @StringRes val resourceId: Int, @DrawableR
 
 object Routes {
     const val login = "login"
+    const val dashboard = "dashboard"
     const val scrum = "scrum"
     const val epics = "epics"
     const val issues = "issues"
@@ -196,13 +199,10 @@ fun MainScreen(
         }
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+    Box(Modifier.fillMaxSize().padding(paddingValues)) {
         NavHost(
             navController = navController,
-            startDestination = if (viewModel.isLogged) Routes.scrum else Routes.login
+            startDestination = if (viewModel.isLogged) Routes.dashboard else Routes.login
         ) {
             composable(Routes.login) {
                 LoginScreen(
@@ -212,8 +212,8 @@ fun MainScreen(
             }
 
             // start screen
-            composable(Routes.scrum) {
-                ScrumScreen(
+            composable(Routes.dashboard) {
+                DashboardScreen(
                     navController = navController,
                     onError = onError
                 )
@@ -224,6 +224,13 @@ fun MainScreen(
                         navController.navigate(Routes.projectsSelector)
                     }
                 }
+            }
+
+            composable(Routes.scrum) {
+                ScrumScreen(
+                    navController = navController,
+                    onError = onError
+                )
             }
 
             composable(Routes.epics) {

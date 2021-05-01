@@ -1,7 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.login
 
-import android.app.Activity
-import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -12,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,19 +36,14 @@ fun LoginScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: LoginViewModel = viewModel()
-    val activity = LocalContext.current as Activity
-    LaunchedEffect(null) {
-        activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-    }
 
     val loginResult by viewModel.loginResult.observeAsState()
     loginResult?.apply {
         when(resultStatus) {
             ResultStatus.ERROR -> onError(message!!)
             ResultStatus.SUCCESS -> {
-                navController.navigate(Routes.scrum) {
+                navController.navigate(Routes.dashboard) {
                     popUpTo(Routes.login) { inclusive = true }
-                    activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                 }
             }
             else -> {}

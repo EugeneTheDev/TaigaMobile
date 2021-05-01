@@ -22,10 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.domain.entities.StatusType
+import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
@@ -199,7 +196,7 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                         id = it.toLong(),
                         fullName = "Name Name"
                     ),
-                    projectSlug = "000",
+                    projectInfo = Project(0, "", ""),
                     taskType = CommonTaskType.USERSTORY,
                     isClosed = false
                 )

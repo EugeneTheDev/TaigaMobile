@@ -980,7 +980,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                     id = it.toLong(),
                     fullName = "Name Name"
                 ),
-                projectSlug = "000",
+                projectInfo = Project(0, "", ""),
                 taskType = CommonTaskType.USERSTORY,
                 isClosed = false
             )

@@ -15,10 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.StatusType
+import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -36,6 +33,7 @@ fun CommonTaskItem(
     commonTask: CommonTask,
     horizontalPadding: Dp = mainHorizontalScreenPadding,
     verticalPadding: Dp = 8.dp,
+    showExtendedInfo: Boolean = false,
     navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = ContainerBox(
     horizontalPadding, verticalPadding,
@@ -44,6 +42,22 @@ fun CommonTaskItem(
     val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        if (showExtendedInfo) {
+            Text(commonTask.projectInfo.name,)
+
+            Text(
+                text = stringResource(
+                    when (commonTask.taskType) {
+                        CommonTaskType.USERSTORY -> R.string.userstory_upper
+                        CommonTaskType.TASK -> R.string.task_upper
+                        CommonTaskType.EPIC -> R.string.epic_upper
+                        CommonTaskType.ISSUE -> R.string.issue_upper
+                    }
+                ),
+                color = MaterialTheme.colors.primaryVariant
+            )
+        }
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
@@ -96,9 +110,10 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
                 id = 0,
                 fullName = "Name Name"
             ),
-            projectSlug = "000",
+            projectInfo = Project(0, "Name", "slug"),
             taskType = CommonTaskType.USERSTORY,
             isClosed = false
-        )
+        ),
+        showExtendedInfo = true
     )
 }

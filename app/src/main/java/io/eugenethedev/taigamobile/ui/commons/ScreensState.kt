@@ -12,6 +12,13 @@ import javax.inject.Singleton
  **/
 @Singleton
 class ScreensState @Inject constructor() {
+    var shouldReloadDashboardScreen: Boolean = false
+        private set
+        get() {
+            val value = field
+            field = false
+            return value
+        }
 
     var shouldReloadScrumScreen: Boolean = false
         private set
@@ -47,6 +54,7 @@ class ScreensState @Inject constructor() {
 
 
     fun modify() {
+        shouldReloadDashboardScreen = true
         shouldReloadScrumScreen = true
         shouldReloadSprintScreen = true
         shouldReloadEpicsScreen = true
