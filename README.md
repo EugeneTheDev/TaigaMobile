@@ -13,6 +13,7 @@ This is **unofficial** android app for [taiga.io](https://www.taiga.io/) (agile 
   * Tasks
   * Issues
   * Sprints
+  * Working on / Watching (aka Dashboard)
 * Create, edit and delete:
   * Epics
   * User stories
