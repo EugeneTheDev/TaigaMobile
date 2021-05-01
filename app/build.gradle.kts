@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "io.eugenethedev.taigamobile"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 30
         versionCode = 6
         versionName = "1.0"
@@ -94,6 +94,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-glide:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")

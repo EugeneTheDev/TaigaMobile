@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -24,8 +21,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+
+private val elevation = 1.dp
 
 @ExperimentalComposeUiApi
 @Composable
@@ -35,9 +35,15 @@ fun CreateCommentBar(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
         .fillMaxWidth()
-        .background(if (isSystemInDarkTheme()) Color.DarkGray else MaterialTheme.colors.surface)
-        .shadow(elevation = if (isSystemInDarkTheme()) 0.dp else 1.dp)
+        .background(
+            LocalElevationOverlay.current?.apply(
+                color = MaterialTheme.colors.surface,
+                elevation = elevation * 2
+            ) ?: MaterialTheme.colors.surface
+        )
+        .shadow(if (!isSystemInDarkTheme()) elevation else 0.dp)
         .padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding)
+        .navigationBarsWithImePadding()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var commentTextValue by remember { mutableStateOf(TextFieldValue()) }

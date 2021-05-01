@@ -24,6 +24,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.imePadding
+import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -38,7 +40,7 @@ fun TaskEditor(
     onSaveClick: (title: String, description: String) -> Unit = { _, _ -> },
     navigateBack: () -> Unit = {}
 ) = Column(
-    modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
+    modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface).imePadding()
 ) {
     onBackPressed(navigateBack)
 
@@ -116,7 +118,7 @@ fun TaskEditor(
             )
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.navigationBarsHeight(8.dp))
     }
 
 }

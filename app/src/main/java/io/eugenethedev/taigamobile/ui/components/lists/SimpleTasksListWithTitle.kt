@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
@@ -82,6 +83,6 @@ fun LazyListScope.SimpleTasksListWithTitle(
         LaunchedEffect(commonTasks.size) {
             loadData()
         }
-        Spacer(Modifier.height(bottomMargin))
+        Spacer(Modifier.navigationBarsHeight(bottomMargin))
     }
 }

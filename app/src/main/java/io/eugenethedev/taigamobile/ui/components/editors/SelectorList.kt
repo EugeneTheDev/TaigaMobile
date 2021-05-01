@@ -21,6 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.utils.onBackPressed
@@ -110,8 +111,8 @@ fun <T> SelectorList(
             item {
                 if (isLoading) {
                     DotsLoader()
-                    Spacer(Modifier.height(6.dp))
                 }
+                Spacer(Modifier.navigationBarsHeight(8.dp))
             }
         }
     }

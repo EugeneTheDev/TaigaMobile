@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
@@ -129,6 +130,10 @@ fun LazyListScope.CommonTasksList(
                     }
                 }
             }
+        }
+
+        item {
+            Spacer(Modifier.navigationBarsHeight())
         }
 
     } else {

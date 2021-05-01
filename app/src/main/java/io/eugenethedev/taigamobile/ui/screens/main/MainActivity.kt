@@ -6,6 +6,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -22,6 +24,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.*
 import com.google.accompanist.insets.*
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
@@ -36,6 +39,7 @@ import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     @ExperimentalPagerApi
@@ -50,13 +54,19 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val scaffoldState = rememberScaffoldState()
             val navController = rememberNavController()
+            val systemUiController = rememberSystemUiController()
 
             TaigaMobileTheme {
                 ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                    systemUiController.let {
+                        it.setStatusBarColor(Color.Transparent, darkIcons = !isSystemInDarkTheme())
+                        it.setNavigationBarColor(Color.Transparent, darkIcons = !isSystemInDarkTheme())
+                    }
+                    Timber.w(MaterialTheme.colors.primarySurface.toString())
+
                     Box(
                         Modifier
-                            .statusBarsPadding()
-                            .navigationBarsWithImePadding()) {
+                            .statusBarsPadding()) {
                         Scaffold(
                             scaffoldState = scaffoldState,
                             snackbarHost = {
@@ -78,37 +88,51 @@ class MainActivity : AppCompatActivity() {
                                 // hide bottom bar for other screens
                                 if (currentRoute !in routes) return@Scaffold
 
-                                BottomNavigation(
-                                    backgroundColor = MaterialTheme.colors.surface,
-                                    modifier = Modifier.height(48.dp)
-                                ) {
-                                    items.forEach { screen ->
-                                        BottomNavigationItem(
-                                            modifier = Modifier.offset(y = 4.dp),
-                                            selectedContentColor = MaterialTheme.colors.primary,
-                                            unselectedContentColor = Color.Gray,
-                                            icon = {
-                                                Icon(
-                                                    painter = painterResource(screen.iconId),
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(24.dp)
-                                                )
-                                            },
-                                            label = { Text(stringResource(screen.resourceId)) },
-                                            selected = currentRoute == screen.route,
-                                            onClick = {
-                                                if (screen.route != currentRoute) {
-                                                    navController.navigate(screen.route) {
-                                                        currentRoute?.let {
-                                                            popUpTo(it) {
-                                                                inclusive = true
+                                Column {
+                                    BottomNavigation(
+                                        backgroundColor = MaterialTheme.colors.surface,
+                                        modifier = Modifier.height(48.dp)
+                                    ) {
+                                        items.forEach { screen ->
+                                            BottomNavigationItem(
+                                                modifier = Modifier.offset(y = 4.dp),
+                                                selectedContentColor = MaterialTheme.colors.primary,
+                                                unselectedContentColor = Color.Gray,
+                                                icon = {
+                                                    Icon(
+                                                        painter = painterResource(screen.iconId),
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                },
+                                                label = { Text(stringResource(screen.resourceId)) },
+                                                selected = currentRoute == screen.route,
+                                                onClick = {
+                                                    if (screen.route != currentRoute) {
+                                                        navController.navigate(screen.route) {
+                                                            currentRoute?.let {
+                                                                popUpTo(it) {
+                                                                    inclusive = true
+                                                                }
                                                             }
                                                         }
                                                     }
                                                 }
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
+
+                                    Spacer(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .background(
+                                                LocalElevationOverlay.current?.apply(
+                                                    color = MaterialTheme.colors.surface,
+                                                    elevation = BottomNavigationDefaults.Elevation
+                                                ) ?: MaterialTheme.colors.surface
+                                            )
+                                            .navigationBarsHeight()
+                                    )
                                 }
                             },
                             content = {

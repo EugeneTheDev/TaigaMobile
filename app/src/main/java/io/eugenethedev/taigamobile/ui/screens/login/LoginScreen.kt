@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.popUpTo
+import com.google.accompanist.insets.imePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -103,7 +104,7 @@ fun LoginScreenContent(
             end.linkTo(parent.end)
             top.linkTo(parent.top)
             bottom.linkTo(loginForm.top)
-        }
+        }.imePadding()
     ) {
 
         Image(
@@ -127,7 +128,7 @@ fun LoginScreenContent(
             end.linkTo(parent.end)
             top.linkTo(parent.top)
             bottom.linkTo(parent.bottom)
-        }
+        }.imePadding()
     ) {
         LoginTextField(
             value = taigaServerInput,

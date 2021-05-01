@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.popUpTo
 import com.google.accompanist.glide.rememberGlidePainter
+import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
@@ -251,6 +252,8 @@ fun SettingsScreenContent(
             style = MaterialTheme.typography.body1.merge(SpanStyle(color = MaterialTheme.colors.primary, textDecoration = TextDecoration.Underline)),
             modifier = Modifier.clickableUnindicated { activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(githubUrl))) }
         )
+
+        Spacer(Modifier.navigationBarsHeight())
     }
 }
 

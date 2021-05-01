@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.google.accompanist.glide.rememberGlidePainter
+import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
@@ -96,6 +97,10 @@ fun TeamScreenContent(
                 items(team) {
                     TeamMemberItem(it)
                     Spacer(Modifier.height(6.dp))
+                }
+
+                item {
+                    Spacer(Modifier.navigationBarsHeight(8.dp))
                 }
             }
         }
