@@ -96,7 +96,7 @@ fun LoginScreenContent(
             end.linkTo(parent.end)
             top.linkTo(parent.top)
             bottom.linkTo(loginForm.top)
-        }.imePadding()
+        }.imePadding().padding(bottom = 24.dp)
     ) {
 
         Image(

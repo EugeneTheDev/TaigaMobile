@@ -220,44 +220,46 @@ fun SettingsScreenContent(
                             }
                         )
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickableUnindicated {
-                                isMenuExpanded = !isMenuExpanded
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickableUnindicated {
+                                    isMenuExpanded = !isMenuExpanded
+                                }
+                            ) {
+
+                                Text(
+                                    text = titleForThemeSetting(themeSetting),
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = MaterialTheme.colors.primary
+                                )
+
+                                val arrowRotation by updateTransition(transitionState, label = "arrow").animateFloat { if (it) -180f else 0f }
+
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_arrow_down),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary,
+                                    modifier = Modifier.rotate(arrowRotation)
+                                )
                             }
-                        ) {
 
-                            Text(
-                                text = titleForThemeSetting(themeSetting),
-                                style = MaterialTheme.typography.subtitle1,
-                                color = MaterialTheme.colors.primary
-                            )
-
-                            val arrowRotation by updateTransition(transitionState, label = "arrow").animateFloat { if (it) -180f else 0f }
-
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_down),
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.primary,
-                                modifier = Modifier.rotate(arrowRotation)
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = isMenuExpanded,
-                            onDismissRequest = { isMenuExpanded = false }
-                        ) {
-                            ThemeSetting.values().forEach {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        isMenuExpanded = false
-                                        switchTheme(it)
+                            DropdownMenu(
+                                expanded = isMenuExpanded,
+                                onDismissRequest = { isMenuExpanded = false }
+                            ) {
+                                ThemeSetting.values().forEach {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded = false
+                                            switchTheme(it)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = titleForThemeSetting(it),
+                                            style = MaterialTheme.typography.body1
+                                        )
                                     }
-                                ) {
-                                    Text(
-                                        text = titleForThemeSetting(it),
-                                        style = MaterialTheme.typography.body1
-                                    )
                                 }
                             }
                         }

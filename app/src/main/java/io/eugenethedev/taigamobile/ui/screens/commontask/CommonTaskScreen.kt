@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
@@ -378,329 +379,346 @@ fun CommonTaskScreenContent(
             val sectionsMargin = 10.dp
             val badgesMargin = 8.dp
 
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = mainHorizontalScreenPadding)
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.BottomCenter
             ) {
 
-                item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        // epic color
-                        if (commonTaskType == CommonTaskType.EPIC) {
-                            Spacer(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .background(
-                                        color = safeParseHexColor(epicColor),
-                                        shape = MaterialTheme.shapes.small
-                                    )
-                            )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = mainHorizontalScreenPadding)
+                ) {
 
-                            Spacer(Modifier.width(badgesMargin))
-                        }
-
-                        // status
-                        ClickableBadge(
-                            text = status.name,
-                            colorHex = status.color,
-                            onClick = {
-                                isStatusSelectorVisible = true
-                                loadStatuses(StatusType.STATUS)
-                            },
-                            isLoading = editStatus.isResultLoading
-                        )
-
-                        Spacer(Modifier.width(badgesMargin))
-
-                        // sprint
-                        if (commonTaskType != CommonTaskType.EPIC) {
-                            ClickableBadge(
-                                text = sprintName ?: stringResource(R.string.no_sprint),
-                                color = sprintName?.let { MaterialTheme.colors.primary }
-                                    ?: Color.Gray,
-                                onClick = {
-                                    isSprintSelectorVisible = true
-                                    editSprint.loadItems(null)
-                                },
-                                isLoading = editSprint.isResultLoading,
-                                isClickable = commonTaskType != CommonTaskType.TASK
-                            )
-                        }
-                    }
-
-                    if (commonTaskType == CommonTaskType.ISSUE) {
-                        Spacer(Modifier.height(badgesMargin))
-
+                    item {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            // type
+                            // epic color
+                            if (commonTaskType == CommonTaskType.EPIC) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            color = safeParseHexColor(epicColor),
+                                            shape = MaterialTheme.shapes.small
+                                        )
+                                )
+
+                                Spacer(Modifier.width(badgesMargin))
+                            }
+
+                            // status
                             ClickableBadge(
-                                text = type!!.name,
-                                colorHex = type.color,
+                                text = status.name,
+                                colorHex = status.color,
                                 onClick = {
-                                    isTypeSelectorVisible = true
-                                    loadStatuses(StatusType.TYPE)
+                                    isStatusSelectorVisible = true
+                                    loadStatuses(StatusType.STATUS)
                                 },
-                                isLoading = editType.isResultLoading
+                                isLoading = editStatus.isResultLoading
                             )
 
                             Spacer(Modifier.width(badgesMargin))
 
-                            // severity
-                            ClickableBadge(
-                                text = severity!!.name,
-                                colorHex = severity.color,
-                                onClick = {
-                                    isSeveritySelectorVisible = true
-                                    loadStatuses(StatusType.SEVERITY)
-                                },
-                                isLoading = editSeverity.isResultLoading
-                            )
-
-                            Spacer(Modifier.width(badgesMargin))
-
-                            // priority
-                            ClickableBadge(
-                                text = priority!!.name,
-                                colorHex = priority.color,
-                                onClick = {
-                                    isPrioritySelectorVisible = true
-                                    loadStatuses(StatusType.PRIORITY)
-                                },
-                                isLoading = editPriority.isResultLoading
-                            )
-                        }
-                    }
-
-
-                    // title
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.h5.let {
-                            if (isClosed) {
-                                it.merge(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.LineThrough))
-                            } else {
-                                it
+                            // sprint
+                            if (commonTaskType != CommonTaskType.EPIC) {
+                                ClickableBadge(
+                                    text = sprintName ?: stringResource(R.string.no_sprint),
+                                    color = sprintName?.let { MaterialTheme.colors.primary }
+                                        ?: Color.Gray,
+                                    onClick = {
+                                        isSprintSelectorVisible = true
+                                        editSprint.loadItems(null)
+                                    },
+                                    isLoading = editSprint.isResultLoading,
+                                    isClickable = commonTaskType != CommonTaskType.TASK
+                                )
                             }
                         }
-                    )
 
-                    Spacer(Modifier.height(4.dp))
-                }
+                        if (commonTaskType == CommonTaskType.ISSUE) {
+                            Spacer(Modifier.height(badgesMargin))
 
-                // belongs to (epics)
-                if (commonTaskType == CommonTaskType.USERSTORY) {
-                    item {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                // type
+                                ClickableBadge(
+                                    text = type!!.name,
+                                    colorHex = type.color,
+                                    onClick = {
+                                        isTypeSelectorVisible = true
+                                        loadStatuses(StatusType.TYPE)
+                                    },
+                                    isLoading = editType.isResultLoading
+                                )
+
+                                Spacer(Modifier.width(badgesMargin))
+
+                                // severity
+                                ClickableBadge(
+                                    text = severity!!.name,
+                                    colorHex = severity.color,
+                                    onClick = {
+                                        isSeveritySelectorVisible = true
+                                        loadStatuses(StatusType.SEVERITY)
+                                    },
+                                    isLoading = editSeverity.isResultLoading
+                                )
+
+                                Spacer(Modifier.width(badgesMargin))
+
+                                // priority
+                                ClickableBadge(
+                                    text = priority!!.name,
+                                    colorHex = priority.color,
+                                    onClick = {
+                                        isPrioritySelectorVisible = true
+                                        loadStatuses(StatusType.PRIORITY)
+                                    },
+                                    isLoading = editPriority.isResultLoading
+                                )
+                            }
+                        }
+
+
+                        // title
                         Text(
-                            text = stringResource(R.string.belongs_to_epics),
+                            text = title,
+                            style = MaterialTheme.typography.h5.let {
+                                if (isClosed) {
+                                    it.merge(
+                                        SpanStyle(
+                                            color = Color.Gray,
+                                            textDecoration = TextDecoration.LineThrough
+                                        )
+                                    )
+                                } else {
+                                    it
+                                }
+                            }
+                        )
+
+                        Spacer(Modifier.height(4.dp))
+                    }
+
+                    // belongs to (epics)
+                    if (commonTaskType == CommonTaskType.USERSTORY) {
+                        item {
+                            Text(
+                                text = stringResource(R.string.belongs_to_epics),
+                                style = MaterialTheme.typography.subtitle1
+                            )
+                        }
+
+                        items(epics) {
+                            EpicItemWithAction(
+                                epic = it,
+                                onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) },
+                                onRemoveClick = { unlinkFromEpic(it) }
+                            )
+
+                            Spacer(Modifier.height(2.dp))
+                        }
+
+                        item {
+                            if (editEpics.isResultLoading) {
+                                DotsLoader()
+                            }
+
+                            AddButton(
+                                text = stringResource(R.string.link_to_epic),
+                                onClick = {
+                                    isEpicsSelectorVisible = true
+                                    editEpics.loadItems(null)
+                                }
+                            )
+                        }
+                    }
+
+                    // belongs to (story)
+                    if (commonTaskType == CommonTaskType.TASK) {
+                        story?.let {
+                            item {
+                                Text(
+                                    text = stringResource(R.string.belongs_to_story),
+                                    style = MaterialTheme.typography.subtitle1
+                                )
+
+                                UserStoryItem(
+                                    story = story,
+                                    onClick = {
+                                        navigateToTask(
+                                            it.id,
+                                            CommonTaskType.USERSTORY,
+                                            it.ref
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Spacer(Modifier.height(sectionsMargin * 2))
+
+                        // description
+                        if (description.isNotEmpty()) {
+                            MarkdownText(
+                                text = description,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        } else {
+                            NothingToSeeHereText()
+                        }
+
+                        Spacer(Modifier.height(sectionsMargin * 2))
+
+                        // created by
+                        Text(
+                            text = stringResource(R.string.created_by),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+
+                        UserItem(
+                            user = creator,
+                            dateTime = creationDateTime
+                        )
+
+                        Spacer(Modifier.height(sectionsMargin))
+
+                        // assigned to
+                        Text(
+                            text = stringResource(R.string.assigned_to),
                             style = MaterialTheme.typography.subtitle1
                         )
                     }
 
-                    items(epics) {
-                        EpicItemWithAction(
-                            epic = it,
-                            onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) },
-                            onRemoveClick = { unlinkFromEpic(it) }
+                    itemsIndexed(assignees) { index, item ->
+                        UserItemWithAction(
+                            user = item,
+                            onRemoveClick = { editAssignees.removeItem(item) }
                         )
 
-                        Spacer(Modifier.height(2.dp))
+                        if (index < assignees.lastIndex) {
+                            Spacer(Modifier.height(6.dp))
+                        }
                     }
 
+                    // add assignee & loader
                     item {
-                        if (editEpics.isResultLoading) {
+                        if (editAssignees.isResultLoading) {
                             DotsLoader()
                         }
-
                         AddButton(
-                            text = stringResource(R.string.link_to_epic),
+                            text = stringResource(R.string.add_user),
                             onClick = {
-                                isEpicsSelectorVisible = true
-                                editEpics.loadItems(null)
+                                isAssigneesSelectorVisible = true
+                                editAssignees.loadItems(null)
                             }
                         )
                     }
-                }
 
-                // belongs to (story)
-                if (commonTaskType == CommonTaskType.TASK) {
-                    story?.let {
-                        item {
-                            Text(
-                                text = stringResource(R.string.belongs_to_story),
-                                style = MaterialTheme.typography.subtitle1
-                            )
 
-                            UserStoryItem(
-                                story = story,
-                                onClick = { navigateToTask(it.id, CommonTaskType.USERSTORY, it.ref) }
-                            )
-                        }
-                    }
-                }
+                    item {
+                        Spacer(Modifier.height(sectionsMargin))
 
-                item {
-                    Spacer(Modifier.height(sectionsMargin * 2))
-
-                    // description
-                    if (description.isNotEmpty()) {
-                        MarkdownText(
-                            text = description,
-                            modifier = Modifier.fillMaxWidth()
+                        // watchers
+                        Text(
+                            text = stringResource(R.string.watchers),
+                            style = MaterialTheme.typography.subtitle1
                         )
-                    } else {
-                        NothingToSeeHereText()
                     }
 
-                    Spacer(Modifier.height(sectionsMargin * 2))
+                    itemsIndexed(watchers) { index, item ->
+                        UserItemWithAction(
+                            user = item,
+                            onRemoveClick = { editWatchers.removeItem(item) }
+                        )
 
-                    // created by
-                    Text(
-                        text = stringResource(R.string.created_by),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-
-                    UserItem(
-                        user = creator,
-                        dateTime = creationDateTime
-                    )
-
-                    Spacer(Modifier.height(sectionsMargin))
-
-                    // assigned to
-                    Text(
-                        text = stringResource(R.string.assigned_to),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-
-                itemsIndexed(assignees) { index, item ->
-                    UserItemWithAction(
-                        user = item,
-                        onRemoveClick = { editAssignees.removeItem(item) }
-                    )
-
-                    if (index < assignees.lastIndex) {
-                        Spacer(Modifier.height(6.dp))
-                    }
-                }
-
-                // add assignee & loader
-                item {
-                    if (editAssignees.isResultLoading) {
-                        DotsLoader()
-                    }
-                    AddButton(
-                        text = stringResource(R.string.add_user),
-                        onClick = {
-                            isAssigneesSelectorVisible = true
-                            editAssignees.loadItems(null)
+                        if (index < watchers.lastIndex) {
+                            Spacer(Modifier.height(6.dp))
                         }
-                    )
-                }
-
-
-                item {
-                    Spacer(Modifier.height(sectionsMargin))
-
-                    // watchers
-                    Text(
-                        text = stringResource(R.string.watchers),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-
-                itemsIndexed(watchers) { index, item ->
-                    UserItemWithAction(
-                        user = item,
-                        onRemoveClick = { editWatchers.removeItem(item) }
-                    )
-
-                    if (index < watchers.lastIndex) {
-                        Spacer(Modifier.height(6.dp))
                     }
-                }
 
-                // add watcher & loader
-                item {
-                    if (editWatchers.isResultLoading) {
-                        DotsLoader()
-                    }
-                    AddButton(
-                        text = stringResource(R.string.add_user),
-                        onClick = {
-                            isWatchersSelectorVisible = true
-                            editWatchers.loadItems(null)
+                    // add watcher & loader
+                    item {
+                        if (editWatchers.isResultLoading) {
+                            DotsLoader()
                         }
-                    )
-                }
+                        AddButton(
+                            text = stringResource(R.string.add_user),
+                            onClick = {
+                                isWatchersSelectorVisible = true
+                                editWatchers.loadItems(null)
+                            }
+                        )
+                    }
 
-                val listBottomMargin = 16.dp
-                // user stories
-                if (commonTaskType == CommonTaskType.EPIC) {
-                    SimpleTasksListWithTitle(
-                        titleText = R.string.userstories,
-                        topMargin = sectionsMargin * 2,
-                        bottomMargin = listBottomMargin,
-                        commonTasks = userStories,
-                        navigateToTask = navigateToTask
-                    )
-                }
+                    val listBottomMargin = 16.dp
+                    // user stories
+                    if (commonTaskType == CommonTaskType.EPIC) {
+                        SimpleTasksListWithTitle(
+                            titleText = R.string.userstories,
+                            topMargin = sectionsMargin * 2,
+                            bottomMargin = listBottomMargin,
+                            commonTasks = userStories,
+                            navigateToTask = navigateToTask
+                        )
+                    }
 
-                // tasks
-                if (commonTaskType == CommonTaskType.USERSTORY) {
-                    SimpleTasksListWithTitle(
-                        titleText = R.string.tasks,
-                        topMargin = sectionsMargin * 2,
-                        bottomMargin = listBottomMargin,
-                        commonTasks = tasks,
-                        navigateToTask = navigateToTask,
-                        navigateToCreateCommonTask = navigateToCreateTask
-                    )
-                }
+                    // tasks
+                    if (commonTaskType == CommonTaskType.USERSTORY) {
+                        SimpleTasksListWithTitle(
+                            titleText = R.string.tasks,
+                            topMargin = sectionsMargin * 2,
+                            bottomMargin = listBottomMargin,
+                            commonTasks = tasks,
+                            navigateToTask = navigateToTask,
+                            navigateToCreateCommonTask = navigateToCreateTask
+                        )
+                    }
 
-                item {
-                    Divider(
-                        modifier = Modifier.padding(
-                            top = sectionsMargin * 2,
-                            bottom = sectionsMargin
-                        ),
-                        color = Color.LightGray,
-                        thickness = 2.dp
-                    )
-
-                    // comments
-                    Text(
-                        text = stringResource(R.string.comments_template).format(comments.size),
-                        style = MaterialTheme.typography.h6
-                    )
-
-                    Spacer(Modifier.height(4.dp))
-                }
-
-                itemsIndexed(comments) { index, item ->
-                    CommentItem(
-                        comment = item,
-                        onDeleteClick = { editComments.deleteComment(item) }
-                    )
-
-                    if (index < comments.lastIndex) {
+                    item {
                         Divider(
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            color = Color.LightGray
+                            modifier = Modifier.padding(
+                                top = sectionsMargin * 2,
+                                bottom = sectionsMargin
+                            ),
+                            color = Color.LightGray,
+                            thickness = 2.dp
                         )
+
+                        // comments
+                        Text(
+                            text = stringResource(R.string.comments_template).format(comments.size),
+                            style = MaterialTheme.typography.h6
+                        )
+
+                        Spacer(Modifier.height(4.dp))
+                    }
+
+                    itemsIndexed(comments) { index, item ->
+                        CommentItem(
+                            comment = item,
+                            onDeleteClick = { editComments.deleteComment(item) }
+                        )
+
+                        if (index < comments.lastIndex) {
+                            Divider(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                color = Color.LightGray
+                            )
+                        }
+                    }
+
+                    item {
+                        if (editComments.isResultLoading) {
+                            DotsLoader()
+                        }
+                        Spacer(Modifier.navigationBarsWithImePadding().height(72.dp))
                     }
                 }
 
-                item {
-                    if (editComments.isResultLoading) {
-                        DotsLoader()
-                    }
-                    Spacer(Modifier.height(16.dp))
-                }
+                CreateCommentBar(editComments.createComment)
             }
-
-            CreateCommentBar(editComments.createComment)
         }
     }
 
