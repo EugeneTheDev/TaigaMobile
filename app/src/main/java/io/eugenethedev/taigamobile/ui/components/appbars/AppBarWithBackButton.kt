@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.statusBarsPadding
 import io.eugenethedev.taigamobile.R
 
 @Composable
@@ -35,5 +36,5 @@ fun AppBarWithBackButton(
     actions = actions,
     backgroundColor = MaterialTheme.colors.surface,
     elevation = 0.dp,
-    modifier = modifier
+    modifier = modifier.statusBarsPadding()
 )

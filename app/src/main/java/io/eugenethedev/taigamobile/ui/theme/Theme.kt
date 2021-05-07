@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 
 private val DarkColorPalette = darkColors(
         primary = taigaGreen,
@@ -15,6 +16,8 @@ private val LightColorPalette = lightColors(
         primary = taigaGreen,
         primaryVariant = taigaGreenDark
 )
+
+val LocalIsDarkMode = compositionLocalOf<Boolean> { error("No LocalIsDarkMode mode provided") }
 
 @Composable
 fun TaigaMobileTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {

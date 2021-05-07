@@ -3,6 +3,10 @@ package io.eugenethedev.taigamobile.ui.screens.settings
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.StringRes
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -11,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -31,13 +36,17 @@ import com.google.accompanist.glide.rememberGlidePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ThemeSetting
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
+import timber.log.Timber
+import java.util.*
 
 @Composable
 fun SettingsScreen(
@@ -55,6 +64,7 @@ fun SettingsScreen(
 
     val isScrumScreenExpandStatuses by viewModel.isScrumScreenExpandStatuses.observeAsState()
     val isSprintScreenExpandStatuses by viewModel.isSprintScreenExpandStatuses.observeAsState()
+    val themeSetting by viewModel.themeSetting.observeAsState()
 
     SettingsScreenContent(
         avatarUrl = user?.data?.avatarUrl,
@@ -71,7 +81,9 @@ fun SettingsScreen(
         isScrumScreenExpandStatuses = isScrumScreenExpandStatuses ?: false,
         switchScrumScreenExpandStatuses = viewModel::switchScrumScreenExpandStatuses,
         isSprintScreenExpandStatuses = isSprintScreenExpandStatuses ?: false,
-        switchSprintScreenExpandStatuses = viewModel::switchSprintScreenExpandStatuses
+        switchSprintScreenExpandStatuses = viewModel::switchSprintScreenExpandStatuses,
+        themeSetting = themeSetting ?: ThemeSetting.System,
+        switchTheme = viewModel::switchTheme
     )
 }
 
@@ -86,7 +98,9 @@ fun SettingsScreenContent(
     isScrumScreenExpandStatuses: Boolean = false,
     switchScrumScreenExpandStatuses: (Boolean) -> Unit = { _ -> },
     isSprintScreenExpandStatuses: Boolean = false,
-    switchSprintScreenExpandStatuses: (Boolean) -> Unit = { _ -> }
+    switchSprintScreenExpandStatuses: (Boolean) -> Unit = { _ -> },
+    themeSetting: ThemeSetting = ThemeSetting.System,
+    switchTheme: (ThemeSetting) -> Unit = {}
 ) = ConstraintLayout(
     modifier = Modifier.fillMaxSize()
 ) {
@@ -175,59 +189,101 @@ fun SettingsScreenContent(
         )
     }
 
+    // settings itself
     Column (
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .padding(horizontal = mainHorizontalScreenPadding)
-            .constrainAs(settings) {
+        modifier = Modifier.constrainAs(settings) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 top.linkTo(userInfo.bottom, 24.dp)
             }
     ) {
-        Text(
-            text = stringResource(R.string.expand_statuses),
-            style = MaterialTheme.typography.subtitle1
+        // appearance
+        SettingsBlock(
+            titleId = R.string.appearance,
+            items = listOf(
+                {
+                    SettingItem(
+                        textId = R.string.theme_title,
+                        itemWeight = 0.4f
+                    ) {
+                        var isMenuExpanded by remember { mutableStateOf(false) }
+                        val transitionState = remember { MutableTransitionState(isMenuExpanded) }
+                        transitionState.targetState = isMenuExpanded
+
+                        @Composable
+                        fun titleForThemeSetting(themeSetting: ThemeSetting) = stringResource(
+                            when (themeSetting) {
+                                ThemeSetting.System -> R.string.theme_system
+                                ThemeSetting.Light -> R.string.theme_light
+                                ThemeSetting.Dark -> R.string.theme_dark
+                            }
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickableUnindicated {
+                                isMenuExpanded = !isMenuExpanded
+                            }
+                        ) {
+
+                            Text(
+                                text = titleForThemeSetting(themeSetting),
+                                style = MaterialTheme.typography.subtitle1,
+                                color = MaterialTheme.colors.primary
+                            )
+
+                            val arrowRotation by updateTransition(transitionState, label = "arrow").animateFloat { if (it) -180f else 0f }
+
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_down),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary,
+                                modifier = Modifier.rotate(arrowRotation)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = { isMenuExpanded = false }
+                        ) {
+                            ThemeSetting.values().forEach {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        isMenuExpanded = false
+                                        switchTheme(it)
+                                    }
+                                ) {
+                                    Text(
+                                        text = titleForThemeSetting(it),
+                                        style = MaterialTheme.typography.body1
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    SettingItem(textId = R.string.scrum_expand_statuses) {
+                        Switch(
+                            checked = isScrumScreenExpandStatuses,
+                            onCheckedChange = switchScrumScreenExpandStatuses
+                        )
+                    }
+                },
+                {
+                    SettingItem(textId = R.string.sprint_expand_statuses) {
+                        Switch(
+                            checked = isSprintScreenExpandStatuses,
+                            onCheckedChange = switchSprintScreenExpandStatuses
+                        )
+                    }
+                }
+            )
         )
 
-        Spacer(Modifier.height(6.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(R.string.scrum_expand_statuses),
-                modifier = Modifier.weight(0.8f, fill = false)
-            )
-
-            Switch(
-                checked = isScrumScreenExpandStatuses,
-                onCheckedChange = switchScrumScreenExpandStatuses,
-                modifier = Modifier.weight(0.2f, fill = false)
-            )
-        }
-
-        Spacer(Modifier.height(4.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(R.string.sprint_expand_statuses),
-                modifier = Modifier.weight(0.8f, fill = false)
-            )
-
-            Switch(
-                checked = isSprintScreenExpandStatuses,
-                onCheckedChange = switchSprintScreenExpandStatuses,
-                modifier = Modifier.weight(0.2f, fill = false)
-            )
-        }
     }
+
 
     Column(
         modifier = Modifier.constrainAs(appVersion) {
@@ -254,6 +310,55 @@ fun SettingsScreenContent(
         )
 
         Spacer(Modifier.navigationBarsHeight())
+    }
+}
+
+@Composable
+private fun SettingsBlock(
+    @StringRes titleId: Int,
+    items: List<@Composable () -> Unit>
+) {
+    val verticalMargin = 4.dp
+
+    Text(
+        text = stringResource(titleId),
+        style = MaterialTheme.typography.subtitle2,
+        color = MaterialTheme.colors.primary,
+        modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
+    )
+
+    Spacer(Modifier.height(verticalMargin))
+
+    items.forEach { it() }
+
+    Spacer(Modifier.height(verticalMargin * 2))
+}
+
+@Composable
+private fun SettingItem(
+    @StringRes textId: Int,
+    itemWeight: Float = 0.2f,
+    item: @Composable BoxScope.() -> Unit
+) = ContainerBox(
+    verticalPadding = 4.dp
+) {
+    assert(itemWeight > 0 && itemWeight < 1) { Timber.w("Item weight must be between 0 and 1") }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(textId),
+            modifier = Modifier.weight(1 - itemWeight, fill = false)
+        )
+
+        Box(
+            modifier = Modifier.weight(itemWeight),
+            contentAlignment = Alignment.CenterEnd,
+            content = item
+        )
     }
 }
 

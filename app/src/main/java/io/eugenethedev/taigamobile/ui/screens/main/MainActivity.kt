@@ -11,6 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,8 +27,10 @@ import com.google.accompanist.insets.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ThemeSetting
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
+import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.login.LoginScreen
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorScreen
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumScreen
@@ -39,10 +42,13 @@ import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
 import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
+import io.eugenethedev.taigamobile.ui.theme.LocalIsDarkMode
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
+    @FlowPreview
     @ExperimentalPagerApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimatedInsets
@@ -57,17 +63,30 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             val systemUiController = rememberSystemUiController()
 
-            TaigaMobileTheme {
-                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
-                    systemUiController.let {
-                        it.setStatusBarColor(Color.Transparent, darkIcons = !isSystemInDarkTheme())
-                        it.setNavigationBarColor(Color.Transparent, darkIcons = !isSystemInDarkTheme())
-                    }
-                    Timber.w(MaterialTheme.colors.primarySurface.toString())
+            val viewModel: MainViewModel = viewModel()
+            val theme by viewModel.theme.observeAsState()
 
-                    Box(
-                        Modifier
-                            .statusBarsPadding()) {
+            CompositionLocalProvider(
+                LocalIsDarkMode provides when (theme) {
+                    ThemeSetting.Light -> false
+                    ThemeSetting.Dark -> true
+                    ThemeSetting.System, null -> isSystemInDarkTheme()
+                }
+            ) {
+                TaigaMobileTheme(darkTheme = LocalIsDarkMode.current) {
+                    ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                        systemUiController.let {
+                            it.setStatusBarColor(
+                                Color.Transparent,
+                                darkIcons = !LocalIsDarkMode.current
+                            )
+                            it.setNavigationBarColor(
+                                Color.Transparent,
+                                darkIcons = !LocalIsDarkMode.current
+                            )
+                        }
+                        Timber.w(MaterialTheme.colors.primarySurface.toString())
+
                         Scaffold(
                             scaffoldState = scaffoldState,
                             snackbarHost = {
@@ -84,7 +103,8 @@ class MainActivity : AppCompatActivity() {
                                 val items = Screens.values()
                                 val routes = items.map { it.route }
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                                val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                                val currentRoute =
+                                    navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
                                 // hide bottom bar for other screens
                                 if (currentRoute !in routes) return@Scaffold
@@ -137,9 +157,15 @@ class MainActivity : AppCompatActivity() {
                                 }
                             },
                             content = {
-                                MainScreen(scaffoldState, it, navController)
+                                MainScreen(
+                                    viewModel = viewModel,
+                                    scaffoldState = scaffoldState,
+                                    paddingValues = it,
+                                    navController = navController
+                                )
                             }
                         )
+
                     }
                 }
             }
@@ -186,12 +212,11 @@ object Routes {
 @ExperimentalMaterialApi
 @Composable
 fun MainScreen(
+    viewModel: MainViewModel,
     scaffoldState: ScaffoldState,
     paddingValues: PaddingValues,
     navController: NavHostController
 ) {
-    val viewModel: MainViewModel = viewModel()
-
     val onError: @Composable (Int) -> Unit = { message ->
         val strMessage = stringResource(message)
         LaunchedEffect(null) {
@@ -199,7 +224,11 @@ fun MainScreen(
         }
     }
 
-    Box(Modifier.fillMaxSize().padding(paddingValues)) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
         NavHost(
             navController = navController,
             startDestination = if (viewModel.isLogged) Routes.dashboard else Routes.login
@@ -332,10 +361,8 @@ fun MainScreen(
 fun MoreScreen(
     navController: NavController
 ) = Column(Modifier.fillMaxSize()) {
-    TopAppBar(
-        title = { Text(stringResource(R.string.more)) },
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp
+    AppBarWithBackButton(
+        title = { Text(stringResource(R.string.more)) }
     )
 
     @Composable

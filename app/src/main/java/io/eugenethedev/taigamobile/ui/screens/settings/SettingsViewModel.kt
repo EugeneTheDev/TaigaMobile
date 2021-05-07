@@ -3,10 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.settings
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.Session
-import io.eugenethedev.taigamobile.Settings
-import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.*
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
@@ -26,12 +23,14 @@ class SettingsViewModel : ViewModel() {
 
     val isScrumScreenExpandStatuses: MutableLiveData<Boolean>
     val isSprintScreenExpandStatuses: MutableLiveData<Boolean>
+    val themeSetting: MutableLiveData<ThemeSetting>
 
     init {
         TaigaApp.appComponent.inject(this)
 
         isScrumScreenExpandStatuses = MutableLiveData(settings.isScrumScreenExpandStatuses)
         isSprintScreenExpandStatuses = MutableLiveData(settings.isSprintScreenExpandStatuses)
+        themeSetting = MutableLiveData(settings.themeSetting)
     }
 
     fun start() = viewModelScope.launch {
@@ -60,6 +59,13 @@ class SettingsViewModel : ViewModel() {
         settings.let {
             it.isSprintScreenExpandStatuses = checked
             isSprintScreenExpandStatuses.value = it.isSprintScreenExpandStatuses
+        }
+    }
+
+    fun switchTheme(theme: ThemeSetting) = viewModelScope.launch {
+        settings.let {
+            it.themeSetting = theme
+            themeSetting.value = it.themeSetting
         }
     }
 

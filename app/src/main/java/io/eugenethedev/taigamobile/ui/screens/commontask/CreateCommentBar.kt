@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.theme.LocalIsDarkMode
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 
 private val elevation = 1.dp
@@ -41,7 +41,7 @@ fun CreateCommentBar(
                 elevation = elevation * 2
             ) ?: MaterialTheme.colors.surface
         )
-        .shadow(if (!isSystemInDarkTheme()) elevation else 0.dp)
+        .shadow(if (!LocalIsDarkMode.current) elevation else 0.dp)
         .padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding)
         .navigationBarsWithImePadding()
 ) {

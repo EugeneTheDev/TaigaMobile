@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Taiga Mobile</string>
     <string name="app_name_with_version_template" translatable="false">%s - %s</string>
-    <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
-    <string name="source_code">Source code</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -93,13 +91,6 @@
 
     <string name="power">power</string>
 
-    <string name="username_template" translatable="false">\@%s</string>
-    <string name="logout_title">Log out</string>
-    <string name="logout_text">Are you sure you want to log out?</string>
-    <string name="expand_statuses">Expand statuses</string>
-    <string name="scrum_expand_statuses">On scrum screen</string>
-    <string name="sprint_expand_statuses">On sprint screen</string>
-
     <string name="unlink_epic_title">Unlink epic</string>
     <string name="unlink_epic_text">Are you sure you want to unlink epic?</string>
 
@@ -127,4 +118,21 @@
     <string name="loading">Loading…</string>
 
     <string name="issues_search_hint">Search by ref or subject</string>
+
+    <!-- settings -->
+    <string name="username_template" translatable="false">\@%s</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_text">Are you sure you want to log out?</string>
+
+    <string name="appearance">Appearance</string>
+    <string name="scrum_expand_statuses">Expand statuses on scrum screen</string>
+    <string name="sprint_expand_statuses">Expand statuses on sprint screen</string>
+
+    <string name="theme_title">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
+    <string name="source_code">Source code</string>
 </resources>
