@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -24,68 +23,55 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 @Composable
 fun CreateCommentBar(
     createComment: (String) -> Unit
-) = Column(
-    modifier = Modifier.fillMaxWidth()
+) = Surface(
+    modifier = Modifier.fillMaxWidth(),
+    elevation = 8.dp
 ) {
-    val elevation = 8.dp
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
 
-    Spacer(Modifier.height(elevation))
-
-    Surface(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                LocalElevationOverlay.current?.apply(
-                    color = MaterialTheme.colors.surface,
-                    elevation = elevation
-                ) ?: MaterialTheme.colors.surface
-            ),
-        elevation = elevation
+            .padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding)
+            .navigationBarsWithImePadding(),
     ) {
-        val keyboardController = LocalSoftwareKeyboardController.current
-        var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding).navigationBarsWithImePadding(),
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.CenterStart
         ) {
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (commentTextValue.text.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.comment_hint),
-                        style = MaterialTheme.typography.body1,
-                        color = Color.Gray
-                    )
-                }
-                BasicTextField(
-                    value = commentTextValue,
-                    onValueChange = { commentTextValue = it },
-                    maxLines = 3,
-                    textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
-                    cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-            }
-
-            IconButton(
-                onClick = {
-                    commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
-                        createComment(it)
-                        commentTextValue = TextFieldValue()
-                        keyboardController?.hideSoftwareKeyboard()
-                    }
-                }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_send),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.primary
+            if (commentTextValue.text.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.comment_hint),
+                    style = MaterialTheme.typography.body1,
+                    color = Color.Gray
                 )
             }
+            BasicTextField(
+                value = commentTextValue,
+                onValueChange = { commentTextValue = it },
+                maxLines = 3,
+                textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
+                cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+        }
+
+        IconButton(
+            onClick = {
+                commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
+                    createComment(it)
+                    commentTextValue = TextFieldValue()
+                    keyboardController?.hide()
+                }
+            }
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_send),
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
+            )
         }
     }
 }

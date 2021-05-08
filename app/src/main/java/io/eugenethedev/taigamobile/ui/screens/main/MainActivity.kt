@@ -42,7 +42,6 @@ import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
 import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
-import io.eugenethedev.taigamobile.ui.theme.LocalIsDarkMode
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
@@ -66,107 +65,104 @@ class MainActivity : AppCompatActivity() {
             val viewModel: MainViewModel = viewModel()
             val theme by viewModel.theme.observeAsState()
 
-            CompositionLocalProvider(
-                LocalIsDarkMode provides when (theme) {
+            TaigaMobileTheme(
+                darkTheme = when (theme) {
                     ThemeSetting.Light -> false
                     ThemeSetting.Dark -> true
                     ThemeSetting.System, null -> isSystemInDarkTheme()
                 }
             ) {
-                TaigaMobileTheme(darkTheme = LocalIsDarkMode.current) {
-                    ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
-                        systemUiController.let {
-                            it.setStatusBarColor(
-                                Color.Transparent,
-                                darkIcons = !LocalIsDarkMode.current
-                            )
-                            it.setNavigationBarColor(
-                                Color.Transparent,
-                                darkIcons = !LocalIsDarkMode.current
-                            )
-                        }
-                        Timber.w(MaterialTheme.colors.primarySurface.toString())
+                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                    systemUiController.let {
+                        it.setStatusBarColor(
+                            Color.Transparent,
+                            darkIcons = MaterialTheme.colors.isLight
+                        )
+                        it.setNavigationBarColor(
+                            Color.Transparent,
+                            darkIcons = MaterialTheme.colors.isLight
+                        )
+                    }
+                    Timber.w(MaterialTheme.colors.primarySurface.toString())
 
-                        Scaffold(
-                            scaffoldState = scaffoldState,
-                            snackbarHost = {
-                                SnackbarHost(it) {
-                                    Snackbar(
-                                        snackbarData = it,
-                                        backgroundColor = MaterialTheme.colors.surface,
-                                        contentColor = contentColorFor(MaterialTheme.colors.surface),
-                                        shape = MaterialTheme.shapes.medium
-                                    )
-                                }
-                            },
-                            bottomBar = {
-                                val items = Screens.values()
-                                val routes = items.map { it.route }
-                                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                                val currentRoute =
-                                    navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        snackbarHost = {
+                            SnackbarHost(it) {
+                                Snackbar(
+                                    snackbarData = it,
+                                    backgroundColor = MaterialTheme.colors.surface,
+                                    contentColor = contentColorFor(MaterialTheme.colors.surface),
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                            }
+                        },
+                        bottomBar = {
+                            val items = Screens.values()
+                            val routes = items.map { it.route }
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentRoute =
+                                navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-                                // hide bottom bar for other screens
-                                if (currentRoute !in routes) return@Scaffold
+                            // hide bottom bar for other screens
+                            if (currentRoute !in routes) return@Scaffold
 
-                                Column {
-                                    BottomNavigation(
-                                        backgroundColor = MaterialTheme.colors.surface,
-                                        modifier = Modifier.height(48.dp)
-                                    ) {
-                                        items.forEach { screen ->
-                                            BottomNavigationItem(
-                                                modifier = Modifier.offset(y = 4.dp),
-                                                selectedContentColor = MaterialTheme.colors.primary,
-                                                unselectedContentColor = Color.Gray,
-                                                icon = {
-                                                    Icon(
-                                                        painter = painterResource(screen.iconId),
-                                                        contentDescription = null,
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                },
-                                                label = { Text(stringResource(screen.resourceId)) },
-                                                selected = currentRoute == screen.route,
-                                                onClick = {
-                                                    if (screen.route != currentRoute) {
-                                                        navController.navigate(screen.route) {
-                                                            currentRoute?.let {
-                                                                popUpTo(it) {
-                                                                    inclusive = true
-                                                                }
+                            Column {
+                                BottomNavigation(
+                                    backgroundColor = MaterialTheme.colors.surface,
+                                    modifier = Modifier.height(48.dp)
+                                ) {
+                                    items.forEach { screen ->
+                                        BottomNavigationItem(
+                                            modifier = Modifier.offset(y = 4.dp),
+                                            selectedContentColor = MaterialTheme.colors.primary,
+                                            unselectedContentColor = Color.Gray,
+                                            icon = {
+                                                Icon(
+                                                    painter = painterResource(screen.iconId),
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            },
+                                            label = { Text(stringResource(screen.resourceId)) },
+                                            selected = currentRoute == screen.route,
+                                            onClick = {
+                                                if (screen.route != currentRoute) {
+                                                    navController.navigate(screen.route) {
+                                                        currentRoute?.let {
+                                                            popUpTo(it) {
+                                                                inclusive = true
                                                             }
                                                         }
                                                     }
                                                 }
-                                            )
-                                        }
+                                            }
+                                        )
                                     }
-
-                                    Spacer(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .background(
-                                                LocalElevationOverlay.current?.apply(
-                                                    color = MaterialTheme.colors.surface,
-                                                    elevation = BottomNavigationDefaults.Elevation
-                                                ) ?: MaterialTheme.colors.surface
-                                            )
-                                            .navigationBarsHeight()
-                                    )
                                 }
-                            },
-                            content = {
-                                MainScreen(
-                                    viewModel = viewModel,
-                                    scaffoldState = scaffoldState,
-                                    paddingValues = it,
-                                    navController = navController
+
+                                Spacer(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            LocalElevationOverlay.current?.apply(
+                                                color = MaterialTheme.colors.surface,
+                                                elevation = BottomNavigationDefaults.Elevation
+                                            ) ?: MaterialTheme.colors.surface
+                                        )
+                                        .navigationBarsHeight()
                                 )
                             }
-                        )
-
-                    }
+                        },
+                        content = {
+                            MainScreen(
+                                viewModel = viewModel,
+                                scaffoldState = scaffoldState,
+                                paddingValues = it,
+                                navController = navController
+                            )
+                        }
+                    )
                 }
             }
         }
