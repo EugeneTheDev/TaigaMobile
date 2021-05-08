@@ -7,7 +7,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val composeVersion = "1.0.0-beta05"
+val composeVersion = "1.0.0-beta06"
 
 android {
     compileSdk = 30
@@ -87,7 +87,7 @@ dependencies {
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha06")
 
     // Accompanist
     val accompanistVersion = "0.8.1"
@@ -95,6 +95,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-insets:$accompanistVersion")
 
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
@@ -132,8 +133,6 @@ dependencies {
     val markwonVersion = "4.6.1"
     implementation("io.noties.markwon:core:$markwonVersion")
     implementation("io.noties.markwon:image-glide:$markwonVersion")
-
-    implementation("com.google.accompanist:accompanist-insets:0.7.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
