@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.lists
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

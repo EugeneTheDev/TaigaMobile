@@ -33,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
+import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
@@ -42,7 +43,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import java.util.*
+import java.util.Date
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi

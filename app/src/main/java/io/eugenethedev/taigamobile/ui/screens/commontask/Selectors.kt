@@ -16,7 +16,7 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.ContainerBox
-import io.eugenethedev.taigamobile.ui.components.UserItem
+import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
