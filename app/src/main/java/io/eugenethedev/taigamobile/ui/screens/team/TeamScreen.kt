@@ -52,7 +52,7 @@ fun TeamScreen(
     TeamScreenContent(
         projectName = viewModel.projectName,
         team = team?.data.orEmpty(),
-        isLoading = team?.resultStatus == ResultStatus.LOADING,
+        isLoading = team?.resultStatus == ResultStatus.Loading,
         onTitleClick = {
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()

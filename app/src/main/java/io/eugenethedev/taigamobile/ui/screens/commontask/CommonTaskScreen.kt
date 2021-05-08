@@ -107,22 +107,22 @@ fun CommonTaskScreen(
 
     val deleteResult by viewModel.deleteResult.observeAsState()
     deleteResult?.subscribeOnError(onError)
-    deleteResult?.takeIf { it.resultStatus == ResultStatus.SUCCESS }?.let {
+    deleteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.let {
         navController.popBackStack()
     }
 
     val promoteResult by viewModel.promoteResult.observeAsState()
     promoteResult?.subscribeOnError(onError)
-    promoteResult?.takeIf { it.resultStatus == ResultStatus.SUCCESS }?.data?.let {
+    promoteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
         navController.popBackStack()
-        navController.navigateToTaskScreen(it.id, CommonTaskType.USERSTORY, it.ref)
+        navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
     }
     
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses?.data.orEmpty(),
-        isItemsLoading = statuses?.resultStatus == ResultStatus.LOADING,
+        isItemsLoading = statuses?.resultStatus == ResultStatus.Loading,
         selectItem = viewModel::selectStatus,
-        isResultLoading = statusSelectResult?.let { it.data == statusType && it.resultStatus == ResultStatus.LOADING } ?: false
+        isResultLoading = statusSelectResult?.let { it.data == statusType && it.resultStatus == ResultStatus.Loading } ?: false
     )
 
     commonTask?.data.let {
@@ -130,10 +130,10 @@ fun CommonTaskScreen(
             commonTaskType = commonTaskType,
             toolbarTitle = stringResource(
                 when (commonTaskType) {
-                    CommonTaskType.USERSTORY -> R.string.userstory_slug
-                    CommonTaskType.TASK -> R.string.task_slug
-                    CommonTaskType.EPIC -> R.string.epic_slug
-                    CommonTaskType.ISSUE -> R.string.issue_slug
+                    CommonTaskType.UserStory -> R.string.userstory_slug
+                    CommonTaskType.Task -> R.string.task_slug
+                    CommonTaskType.Epic -> R.string.epic_slug
+                    CommonTaskType.Issue -> R.string.issue_slug
                 }
             ).format(ref),
             epicColor = it?.color ?: "#000000",
@@ -154,28 +154,28 @@ fun CommonTaskScreen(
             userStories = userStories?.data.orEmpty(),
             tasks = tasks?.data.orEmpty(),
             comments = comments?.data.orEmpty(),
-            isLoading = commonTask?.resultStatus == ResultStatus.LOADING,
+            isLoading = commonTask?.resultStatus == ResultStatus.Loading,
             navigateBack = navController::popBackStack,
-            navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.TASK, commonTaskId) },
+            navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Task, commonTaskId) },
             navigateToTask = navController::navigateToTaskScreen,
-            editStatus = makeEditStatusAction(StatusType.STATUS),
-            editType = makeEditStatusAction(StatusType.TYPE),
-            editSeverity = makeEditStatusAction(StatusType.SEVERITY),
-            editPriority = makeEditStatusAction(StatusType.PRIORITY),
+            editStatus = makeEditStatusAction(StatusType.Status),
+            editType = makeEditStatusAction(StatusType.Type),
+            editSeverity = makeEditStatusAction(StatusType.Severity),
+            editPriority = makeEditStatusAction(StatusType.Priority),
             loadStatuses = { viewModel.loadStatuses(it) },
             editSprint = EditAction(
                 items = sprints?.data.orEmpty(),
                 loadItems = viewModel::loadSprints,
-                isItemsLoading = sprints?.resultStatus == ResultStatus.LOADING,
+                isItemsLoading = sprints?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::selectSprint,
-                isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.LOADING
+                isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.Loading
             ),
             editEpics = EditAction(
                 items = epics?.data.orEmpty(),
                 loadItems = viewModel::loadEpics,
-                isItemsLoading = epics?.resultStatus == ResultStatus.LOADING,
+                isItemsLoading = epics?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::linkToEpic,
-                isResultLoading = epicsSelectResult?.resultStatus == ResultStatus.LOADING,
+                isResultLoading = epicsSelectResult?.resultStatus == ResultStatus.Loading,
                 removeItem = {
                     // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
                 }
@@ -184,30 +184,30 @@ fun CommonTaskScreen(
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team?.resultStatus == ResultStatus.LOADING,
+                isItemsLoading = team?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addAssignee,
-                isResultLoading = assigneesResult?.resultStatus == ResultStatus.LOADING,
+                isResultLoading = assigneesResult?.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team?.resultStatus == ResultStatus.LOADING,
+                isItemsLoading = team?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addWatcher,
-                isResultLoading = watchersResult?.resultStatus == ResultStatus.LOADING,
+                isResultLoading = watchersResult?.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeWatcher
             ),
             editComments = EditCommentsAction(
                 createComment = viewModel::createComment,
                 deleteComment = viewModel::deleteComment,
-                isResultLoading = commentsResult?.resultStatus == ResultStatus.LOADING
+                isResultLoading = commentsResult?.resultStatus == ResultStatus.Loading
             ),
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,
-            isEditLoading = editResult?.resultStatus == ResultStatus.LOADING,
-            isDeleteLoading = deleteResult?.resultStatus == ResultStatus.LOADING,
+            isEditLoading = editResult?.resultStatus == ResultStatus.Loading,
+            isDeleteLoading = deleteResult?.resultStatus == ResultStatus.Loading,
             promoteTask = viewModel::promoteToUserStory,
-            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.LOADING
+            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading
         )
     }
 
@@ -349,7 +349,7 @@ fun CommonTaskScreenContent(
                         }
 
                         // promote
-                        if (commonTaskType == CommonTaskType.TASK || commonTaskType == CommonTaskType.ISSUE) {
+                        if (commonTaskType == CommonTaskType.Task || commonTaskType == CommonTaskType.Issue) {
                             DropdownMenuItem(
                                 onClick = {
                                     isMenuExpanded = false
@@ -393,7 +393,7 @@ fun CommonTaskScreenContent(
                     item {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             // epic color
-                            if (commonTaskType == CommonTaskType.EPIC) {
+                            if (commonTaskType == CommonTaskType.Epic) {
                                 Spacer(
                                     modifier = Modifier
                                         .size(32.dp)
@@ -412,7 +412,7 @@ fun CommonTaskScreenContent(
                                 colorHex = status.color,
                                 onClick = {
                                     isStatusSelectorVisible = true
-                                    loadStatuses(StatusType.STATUS)
+                                    loadStatuses(StatusType.Status)
                                 },
                                 isLoading = editStatus.isResultLoading
                             )
@@ -420,7 +420,7 @@ fun CommonTaskScreenContent(
                             Spacer(Modifier.width(badgesMargin))
 
                             // sprint
-                            if (commonTaskType != CommonTaskType.EPIC) {
+                            if (commonTaskType != CommonTaskType.Epic) {
                                 ClickableBadge(
                                     text = sprintName ?: stringResource(R.string.no_sprint),
                                     color = sprintName?.let { MaterialTheme.colors.primary }
@@ -430,12 +430,12 @@ fun CommonTaskScreenContent(
                                         editSprint.loadItems(null)
                                     },
                                     isLoading = editSprint.isResultLoading,
-                                    isClickable = commonTaskType != CommonTaskType.TASK
+                                    isClickable = commonTaskType != CommonTaskType.Task
                                 )
                             }
                         }
 
-                        if (commonTaskType == CommonTaskType.ISSUE) {
+                        if (commonTaskType == CommonTaskType.Issue) {
                             Spacer(Modifier.height(badgesMargin))
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -445,7 +445,7 @@ fun CommonTaskScreenContent(
                                     colorHex = type.color,
                                     onClick = {
                                         isTypeSelectorVisible = true
-                                        loadStatuses(StatusType.TYPE)
+                                        loadStatuses(StatusType.Type)
                                     },
                                     isLoading = editType.isResultLoading
                                 )
@@ -458,7 +458,7 @@ fun CommonTaskScreenContent(
                                     colorHex = severity.color,
                                     onClick = {
                                         isSeveritySelectorVisible = true
-                                        loadStatuses(StatusType.SEVERITY)
+                                        loadStatuses(StatusType.Severity)
                                     },
                                     isLoading = editSeverity.isResultLoading
                                 )
@@ -471,7 +471,7 @@ fun CommonTaskScreenContent(
                                     colorHex = priority.color,
                                     onClick = {
                                         isPrioritySelectorVisible = true
-                                        loadStatuses(StatusType.PRIORITY)
+                                        loadStatuses(StatusType.Priority)
                                     },
                                     isLoading = editPriority.isResultLoading
                                 )
@@ -500,7 +500,7 @@ fun CommonTaskScreenContent(
                     }
 
                     // belongs to (epics)
-                    if (commonTaskType == CommonTaskType.USERSTORY) {
+                    if (commonTaskType == CommonTaskType.UserStory) {
                         item {
                             Text(
                                 text = stringResource(R.string.belongs_to_epics),
@@ -511,7 +511,7 @@ fun CommonTaskScreenContent(
                         items(epics) {
                             EpicItemWithAction(
                                 epic = it,
-                                onClick = { navigateToTask(it.id, CommonTaskType.EPIC, it.ref) },
+                                onClick = { navigateToTask(it.id, CommonTaskType.Epic, it.ref) },
                                 onRemoveClick = { unlinkFromEpic(it) }
                             )
 
@@ -534,7 +534,7 @@ fun CommonTaskScreenContent(
                     }
 
                     // belongs to (story)
-                    if (commonTaskType == CommonTaskType.TASK) {
+                    if (commonTaskType == CommonTaskType.Task) {
                         story?.let {
                             item {
                                 Text(
@@ -547,7 +547,7 @@ fun CommonTaskScreenContent(
                                     onClick = {
                                         navigateToTask(
                                             it.id,
-                                            CommonTaskType.USERSTORY,
+                                            CommonTaskType.UserStory,
                                             it.ref
                                         )
                                     }
@@ -654,7 +654,7 @@ fun CommonTaskScreenContent(
 
                     val listBottomMargin = 16.dp
                     // user stories
-                    if (commonTaskType == CommonTaskType.EPIC) {
+                    if (commonTaskType == CommonTaskType.Epic) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.userstories,
                             topMargin = sectionsMargin * 2,
@@ -665,7 +665,7 @@ fun CommonTaskScreenContent(
                     }
 
                     // tasks
-                    if (commonTaskType == CommonTaskType.USERSTORY) {
+                    if (commonTaskType == CommonTaskType.UserStory) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.tasks,
                             topMargin = sectionsMargin * 2,
@@ -934,14 +934,14 @@ private fun CommentItem(
 @Composable
 fun CommonTaskScreenPreview() = TaigaMobileTheme {
     CommonTaskScreenContent(
-        commonTaskType = CommonTaskType.USERSTORY,
+        commonTaskType = CommonTaskType.UserStory,
         toolbarTitle = "Userstory #99",
         epicColor = "#000000",
         status = Status(
             id = 0,
             name = "In progress",
             color = "#729fcf",
-            type = StatusType.STATUS
+            type = StatusType.Status
         ),
         sprintName = "Very very very long sprint name",
         title = "Very cool and important story. Need to do this quickly",
@@ -992,14 +992,14 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                     id = (0..2).random().toLong(),
                     name = "In progress",
                     color = "#729fcf",
-                    type = StatusType.STATUS
+                    type = StatusType.Status
                 ),
                 assignee = CommonTask.Assignee(
                     id = it.toLong(),
                     fullName = "Name Name"
                 ),
                 projectInfo = Project(0, "", ""),
-                taskType = CommonTaskType.USERSTORY,
+                taskType = CommonTaskType.UserStory,
                 isClosed = false
             )
         },

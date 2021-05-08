@@ -17,10 +17,10 @@ data class Status(
 )
 
 enum class StatusType {
-    STATUS,
-    TYPE,
-    SEVERITY,
-    PRIORITY
+    Status,
+    Type,
+    Severity,
+    Priority
 }
 
 @Parcelize
@@ -36,10 +36,10 @@ data class Sprint(
 
 
 enum class CommonTaskType {
-    USERSTORY,
-    TASK,
-    EPIC,
-    ISSUE
+    UserStory,
+    Task,
+    Epic,
+    Issue
 }
 
 

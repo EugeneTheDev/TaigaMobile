@@ -28,12 +28,12 @@ class TeamViewModel : ViewModel() {
 
     fun start() = viewModelScope.launch {
         if (team.value == null) {
-            team.value = Result(ResultStatus.LOADING)
+            team.value = Result(ResultStatus.Loading)
             team.value = try {
-                Result(ResultStatus.SUCCESS, usersRepository.getTeam())
+                Result(ResultStatus.Success, usersRepository.getTeam())
             } catch (e: Exception) {
                 Timber.w(e)
-                Result(ResultStatus.ERROR, message = R.string.common_error_message)
+                Result(ResultStatus.Error, message = R.string.common_error_message)
             }
         }
     }

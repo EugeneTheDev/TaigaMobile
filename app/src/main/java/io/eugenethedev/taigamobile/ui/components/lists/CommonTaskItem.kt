@@ -48,10 +48,10 @@ fun CommonTaskItem(
             Text(
                 text = stringResource(
                     when (commonTask.taskType) {
-                        CommonTaskType.USERSTORY -> R.string.userstory_upper
-                        CommonTaskType.TASK -> R.string.task_upper
-                        CommonTaskType.EPIC -> R.string.epic_upper
-                        CommonTaskType.ISSUE -> R.string.issue_upper
+                        CommonTaskType.UserStory -> R.string.userstory_upper
+                        CommonTaskType.Task -> R.string.task_upper
+                        CommonTaskType.Epic -> R.string.epic_upper
+                        CommonTaskType.Issue -> R.string.issue_upper
                     }
                 ),
                 color = MaterialTheme.colors.primaryVariant
@@ -104,14 +104,14 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
                 id = 0L,
                 name = "In progress",
                 color = "#729fcf",
-                type = StatusType.STATUS
+                type = StatusType.Status
             ),
             assignee = CommonTask.Assignee(
                 id = 0,
                 fullName = "Name Name"
             ),
             projectInfo = Project(0, "Name", "slug"),
-            taskType = CommonTaskType.USERSTORY,
+            taskType = CommonTaskType.UserStory,
             isClosed = false
         ),
         showExtendedInfo = true

@@ -55,7 +55,7 @@ fun ProjectSelectorScreen(
     ProjectSelectorScreenContent(
         projects = projects?.data.orEmpty(),
         isVisible = isSelectorVisible,
-        isLoading = projects?.resultStatus == ResultStatus.LOADING,
+        isLoading = projects?.resultStatus == ResultStatus.Loading,
         currentProjectId = currentProjectId,
         selectorAnimationDuration = selectorAnimationDuration,
         navigateBack = ::navigateBack,

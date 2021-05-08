@@ -46,16 +46,16 @@ class ScrumViewModel : StoriesViewModel() {
     fun loadSprints() = viewModelScope.launch {
         if (currentSprintPage == maxSprintPage) return@launch
 
-        sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
+        sprints.value = Result(ResultStatus.Loading, sprints.value?.data)
 
         try {
             tasksRepository.getSprints(++currentSprintPage)
-                .also { sprints.value = Result(ResultStatus.SUCCESS, sprints.value?.data.orEmpty() + it) }
+                .also { sprints.value = Result(ResultStatus.Success, sprints.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxSprintPage = currentSprintPage }
         } catch (e: Exception) {
             Timber.w(e)
-            sprints.value = Result(ResultStatus.ERROR, sprints.value?.data, message = R.string.common_error_message)
+            sprints.value = Result(ResultStatus.Error, sprints.value?.data, message = R.string.common_error_message)
         }
     }
 

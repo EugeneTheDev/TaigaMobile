@@ -43,16 +43,16 @@ class EpicsViewModel : ViewModel() {
     fun loadEpics() = viewModelScope.launch {
         if (currentEpicPage == maxEpicPage) return@launch
 
-        epics.value = Result(ResultStatus.LOADING, epics.value?.data)
+        epics.value = Result(ResultStatus.Loading, epics.value?.data)
 
         try {
             tasksRepository.getEpics(++currentEpicPage)
-                .also { epics.value = Result(ResultStatus.SUCCESS, epics.value?.data.orEmpty() + it) }
+                .also { epics.value = Result(ResultStatus.Success, epics.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxEpicPage = currentEpicPage }
         } catch (e: Exception) {
             Timber.w(e)
-            epics.value = Result(ResultStatus.ERROR, epics.value?.data, message = R.string.common_error_message)
+            epics.value = Result(ResultStatus.Error, epics.value?.data, message = R.string.common_error_message)
         }
     }
     

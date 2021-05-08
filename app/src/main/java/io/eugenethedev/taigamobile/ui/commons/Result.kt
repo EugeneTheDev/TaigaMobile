@@ -14,9 +14,9 @@ class Result<T>(
 )
 
 enum class ResultStatus {
-    SUCCESS,
-    ERROR,
-    LOADING
+    Success,
+    Error,
+    Loading
 }
 
 typealias LiveResult<T> = LiveData<Result<T>>

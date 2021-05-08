@@ -46,21 +46,21 @@ class IssuesViewModel : ViewModel() {
             currentIssuesQuery = it
             currentIssuesPage = 0
             maxIssuesPage = Int.MAX_VALUE
-            issues.value = Result(ResultStatus.SUCCESS, emptyList())
+            issues.value = Result(ResultStatus.Success, emptyList())
         }
 
         if (currentIssuesPage == maxIssuesPage) return@launch
 
-        issues.value = Result(ResultStatus.LOADING, issues.value?.data)
+        issues.value = Result(ResultStatus.Loading, issues.value?.data)
 
         try {
             tasksRepository.getIssues(++currentIssuesPage, query)
-                .also { issues.value = Result(ResultStatus.SUCCESS, issues.value?.data.orEmpty() + it) }
+                .also { issues.value = Result(ResultStatus.Success, issues.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxIssuesPage = currentIssuesPage }
         } catch (e: Exception) {
             Timber.w(e)
-            issues.value = Result(ResultStatus.ERROR, issues.value?.data, message = R.string.common_error_message)
+            issues.value = Result(ResultStatus.Error, issues.value?.data, message = R.string.common_error_message)
         }
     }
     

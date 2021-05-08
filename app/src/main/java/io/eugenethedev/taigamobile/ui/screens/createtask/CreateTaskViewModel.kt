@@ -32,15 +32,15 @@ class CreateTaskViewModel : ViewModel() {
         parentId: Long? = null,
         sprintId: Long? = null
     ) = viewModelScope.launch {
-        creationResult.value = Result(ResultStatus.LOADING)
+        creationResult.value = Result(ResultStatus.Loading)
 
         creationResult.value = try {
-            Result(ResultStatus.SUCCESS, tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId)).also {
+            Result(ResultStatus.Success, tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId)).also {
                 screensState.modify()
             }
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 }

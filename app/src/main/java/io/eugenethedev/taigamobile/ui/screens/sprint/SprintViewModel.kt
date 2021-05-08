@@ -51,32 +51,32 @@ class SprintViewModel : StoriesViewModel() {
     fun loadTasks() = viewModelScope.launch {
         if (currentTasksPage == maxTasksPage) return@launch
 
-        tasks.value = Result(ResultStatus.LOADING, tasks.value?.data)
+        tasks.value = Result(ResultStatus.Loading, tasks.value?.data)
 
         try {
             tasksRepository.getSprintTasks(sprintId!!, ++currentTasksPage)
-                .also { tasks.value = Result(ResultStatus.SUCCESS, tasks.value?.data.orEmpty() + it) }
+                .also { tasks.value = Result(ResultStatus.Success, tasks.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxTasksPage = currentTasksPage }
         } catch (e: Exception) {
             Timber.w(e)
-            tasks.value = Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            tasks.value = Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 
     fun loadIssues() = viewModelScope.launch {
         if (currentIssuesPage == maxIssuesPage) return@launch
 
-        issues.value = Result(ResultStatus.LOADING, issues.value?.data)
+        issues.value = Result(ResultStatus.Loading, issues.value?.data)
 
         try {
             tasksRepository.getSprintIssues(sprintId!!, ++currentIssuesPage)
-                .also { issues.value = Result(ResultStatus.SUCCESS, issues.value?.data.orEmpty() + it) }
+                .also { issues.value = Result(ResultStatus.Success, issues.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxIssuesPage = currentIssuesPage }
         } catch (e: Exception) {
             Timber.w(e)
-            issues.value = Result(ResultStatus.ERROR, issues.value?.data, message = R.string.common_error_message)
+            issues.value = Result(ResultStatus.Error, issues.value?.data, message = R.string.common_error_message)
         }
     }
 

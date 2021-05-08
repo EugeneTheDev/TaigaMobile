@@ -49,7 +49,7 @@ fun DashboardScreen(
     watching?.subscribeOnError(onError)
 
     DashboardScreenContent(
-        isLoading = workingOn?.resultStatus == ResultStatus.LOADING || watching?.resultStatus == ResultStatus.LOADING,
+        isLoading = workingOn?.resultStatus == ResultStatus.Loading || watching?.resultStatus == ResultStatus.Loading,
         workingOn = workingOn?.data.orEmpty(),
         watching = watching?.data.orEmpty(),
         navigateToTask = {

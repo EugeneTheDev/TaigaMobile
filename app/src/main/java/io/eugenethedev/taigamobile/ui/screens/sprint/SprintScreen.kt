@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -69,9 +68,9 @@ fun SprintScreen(
         sprintName = sprint.name,
         start = sprint.start,
         finish = sprint.finish,
-        isLoading = statuses?.resultStatus == ResultStatus.LOADING ||
-            (tasks?.resultStatus == ResultStatus.LOADING && tasks?.data.isNullOrEmpty()) ||
-            (issues?.resultStatus == ResultStatus.LOADING && issues?.data.isNullOrEmpty()),
+        isLoading = statuses?.resultStatus == ResultStatus.Loading ||
+            (tasks?.resultStatus == ResultStatus.Loading && tasks?.data.isNullOrEmpty()) ||
+            (issues?.resultStatus == ResultStatus.Loading && issues?.data.isNullOrEmpty()),
         startStatusesExpanded = viewModel.startStatusesExpanded,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
@@ -81,10 +80,10 @@ fun SprintScreen(
         onStatusClick = viewModel::statusClick,
         navigateBack = navController::popBackStack,
         tasks = tasks?.data.orEmpty(),
-        isTasksLoading = tasks?.resultStatus == ResultStatus.LOADING,
+        isTasksLoading = tasks?.resultStatus == ResultStatus.Loading,
         loadTasks = viewModel::loadTasks,
         issues = issues?.data.orEmpty(),
-        isIssuesLoading = issues?.resultStatus == ResultStatus.LOADING,
+        isIssuesLoading = issues?.resultStatus == ResultStatus.Loading,
         loadIssues = viewModel::loadIssues,
         navigateToTask = navController::navigateToTaskScreen,
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(it, sprintId = sprint.id) }
@@ -235,7 +234,7 @@ private fun TasksTabContent(
         ) {
             AddButton(
                 text = stringResource(R.string.add_task),
-                onClick = { navigateToCreateTask(CommonTaskType.TASK) }
+                onClick = { navigateToCreateTask(CommonTaskType.Task) }
             )
         }
     }
@@ -265,7 +264,7 @@ private fun IssuesTabContent(
         ) {
             AddButton(
                 text = stringResource(R.string.add_issue),
-                onClick = { navigateToCreateTask(CommonTaskType.ISSUE) }
+                onClick = { navigateToCreateTask(CommonTaskType.Issue) }
             )
         }
     }

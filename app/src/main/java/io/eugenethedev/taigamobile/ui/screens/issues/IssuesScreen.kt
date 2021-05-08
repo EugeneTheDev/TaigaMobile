@@ -60,8 +60,8 @@ fun IssuesScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
-        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.ISSUE) },
-        isLoading = issues?.resultStatus == ResultStatus.LOADING,
+        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
+        isLoading = issues?.resultStatus == ResultStatus.Loading,
         issues = issues?.data.orEmpty(),
         navigateToTask = navController::navigateToTaskScreen,
         loadIssues = viewModel::loadIssues

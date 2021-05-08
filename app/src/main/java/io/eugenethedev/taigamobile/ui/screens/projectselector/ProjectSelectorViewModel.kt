@@ -50,22 +50,22 @@ class ProjectSelectorViewModel : ViewModel() {
             currentQuery = it
             currentPage = 0
             maxPage = Int.MAX_VALUE
-            projects.value = Result(ResultStatus.SUCCESS, emptyList())
+            projects.value = Result(ResultStatus.Success, emptyList())
         }
 
         if (currentPage == maxPage) return@launch
 
-        projects.value = Result(ResultStatus.LOADING, projects.value?.data)
+        projects.value = Result(ResultStatus.Loading, projects.value?.data)
         fixAnimation()
 
         try {
             searchRepository.searchProjects(query, ++currentPage)
-                .also { projects.value = Result(ResultStatus.SUCCESS, projects.value?.data.orEmpty() + it) }
+                .also { projects.value = Result(ResultStatus.Success, projects.value?.data.orEmpty() + it) }
                 .takeIf { it.isEmpty() }
                 ?.run { maxPage = currentPage /* reached maximum page */ }
         } catch (e: Exception) {
             Timber.w(e)
-            projects.value = Result(ResultStatus.ERROR, projects.value?.data, message = R.string.common_error_message)
+            projects.value = Result(ResultStatus.Error, projects.value?.data, message = R.string.common_error_message)
         }
     }
 }

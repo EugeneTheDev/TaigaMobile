@@ -47,10 +47,10 @@ fun EpicsScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
-        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.EPIC) },
-        isLoading = epics?.resultStatus == ResultStatus.LOADING && epics?.data.isNullOrEmpty(),
+        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Epic) },
+        isLoading = epics?.resultStatus == ResultStatus.Loading && epics?.data.isNullOrEmpty(),
         epics = epics?.data.orEmpty(),
-        isEpicsLoading = epics?.resultStatus == ResultStatus.LOADING,
+        isEpicsLoading = epics?.resultStatus == ResultStatus.Loading,
         navigateToTask = navController::navigateToTaskScreen,
         loadEpics = viewModel::loadEpics
     )

@@ -50,7 +50,7 @@ class CommonTaskViewModel : ViewModel() {
 
     private fun loadData()  = viewModelScope.launch {
         if (commonTask.value == null) {
-            commonTask.value = Result(ResultStatus.LOADING)
+            commonTask.value = Result(ResultStatus.Loading)
         }
 
         commonTask.value = try {
@@ -63,28 +63,28 @@ class CommonTaskViewModel : ViewModel() {
                 val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
 
                 creator.value = creatorAsync.await()
-                assignees.value = Result(ResultStatus.SUCCESS, assigneesAsyncs.mapNotNull { it.await().data })
-                watchers.value = Result(ResultStatus.SUCCESS, watchersAsyncs.mapNotNull { it.await().data })
-                userStories.value = Result(ResultStatus.SUCCESS, userStoriesAsync.await())
-                tasks.value = Result(ResultStatus.SUCCESS, tasksAsync.await())
+                assignees.value = Result(ResultStatus.Success, assigneesAsyncs.mapNotNull { it.await().data })
+                watchers.value = Result(ResultStatus.Success, watchersAsyncs.mapNotNull { it.await().data })
+                userStories.value = Result(ResultStatus.Success, userStoriesAsync.await())
+                tasks.value = Result(ResultStatus.Success, tasksAsync.await())
                 comments.value = Result(
-                    ResultStatus.SUCCESS,
+                    ResultStatus.Success,
                     commentsAsync.await().filter { it.deleteDate == null }
                         .map { it.also { it.canDelete = it.author.id == session.currentUserId } }
                 )
-                Result(ResultStatus.SUCCESS, it)
+                Result(ResultStatus.Success, it)
             }
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 
     private suspend fun loadUser(userId: Long) = try {
-        Result(ResultStatus.SUCCESS, usersRepository.getUser(userId))
+        Result(ResultStatus.Success, usersRepository.getUser(userId))
     } catch (e: Exception) {
         Timber.w(e)
-        Result(ResultStatus.ERROR, message = R.string.common_error_message)
+        Result(ResultStatus.Error, message = R.string.common_error_message)
     }
 
     /**
@@ -97,28 +97,28 @@ class CommonTaskViewModel : ViewModel() {
     val statusSelectResult = MutableLiveResult<StatusType>()
 
     fun loadStatuses(statusType: StatusType) = viewModelScope.launch {
-        statuses.value = Result(ResultStatus.LOADING)
+        statuses.value = Result(ResultStatus.Loading)
         fixAnimation()
 
         statuses.value = try {
-            Result(ResultStatus.SUCCESS, tasksRepository.getStatusByType(commonTaskType, statusType))
+            Result(ResultStatus.Success, tasksRepository.getStatusByType(commonTaskType, statusType))
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 
     fun selectStatus(status: Status) = viewModelScope.launch {
-        statusSelectResult.value = Result(ResultStatus.LOADING, status.type)
+        statusSelectResult.value = Result(ResultStatus.Loading, status.type)
 
         statusSelectResult.value = try {
             tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -138,14 +138,14 @@ class CommonTaskViewModel : ViewModel() {
 
         if (currentSprintPage == maxSprintPage) return@launch
 
-        sprints.value = Result(ResultStatus.LOADING, sprints.value?.data)
+        sprints.value = Result(ResultStatus.Loading, sprints.value?.data)
         fixAnimation()
 
         try {
             tasksRepository.getSprints(++currentSprintPage)
                 .also {
                     sprints.value = Result(
-                        ResultStatus.SUCCESS,
+                        ResultStatus.Success,
                         // prepending null here to always show "remove from sprints" sprint first
                         data = listOf(null) + (sprints.value?.data.orEmpty().filterNotNull() + it)
                     )
@@ -154,21 +154,21 @@ class CommonTaskViewModel : ViewModel() {
                 ?.run { maxSprintPage = currentSprintPage }
         } catch (e: Exception) {
             Timber.w(e)
-            sprints.value = Result(ResultStatus.ERROR, sprints.value?.data, message = R.string.common_error_message)
+            sprints.value = Result(ResultStatus.Error, sprints.value?.data, message = R.string.common_error_message)
         }
     }
 
     fun selectSprint(sprint: Sprint?) = viewModelScope.launch {
-        sprintSelectResult.value = Result(ResultStatus.LOADING)
+        sprintSelectResult.value = Result(ResultStatus.Loading)
 
         sprintSelectResult.value = try {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -184,19 +184,19 @@ class CommonTaskViewModel : ViewModel() {
             currentEpicQuery = it
             currentEpicPage = 0
             maxEpicPage = Int.MAX_VALUE
-            epics.value = Result(ResultStatus.SUCCESS, emptyList())
+            epics.value = Result(ResultStatus.Success, emptyList())
         }
 
         if (currentEpicPage == maxEpicPage) return@launch
 
-        epics.value = Result(ResultStatus.LOADING, epics.value?.data)
+        epics.value = Result(ResultStatus.Loading, epics.value?.data)
         fixAnimation()
 
         try {
             tasksRepository.getEpics(++currentEpicPage, query)
                 .also {
                     epics.value = Result(
-                        ResultStatus.SUCCESS,
+                        ResultStatus.Success,
                         data = epics.value?.data.orEmpty() + it
                     )
                 }
@@ -204,35 +204,35 @@ class CommonTaskViewModel : ViewModel() {
                 ?.run { maxEpicPage = currentEpicPage }
         } catch (e: Exception) {
             Timber.w(e)
-            epics.value = Result(ResultStatus.ERROR, epics.value?.data, message = R.string.common_error_message)
+            epics.value = Result(ResultStatus.Error, epics.value?.data, message = R.string.common_error_message)
         }
     }
 
     fun linkToEpic(epic: CommonTask) = viewModelScope.launch {
-        epicsSelectResult.value = Result(ResultStatus.LOADING)
+        epicsSelectResult.value = Result(ResultStatus.Loading)
 
         epicsSelectResult.value = try {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
     fun unlinkFromEpic(epic: EpicShortInfo) = viewModelScope.launch {
-        epicsSelectResult.value = Result(ResultStatus.LOADING)
+        epicsSelectResult.value = Result(ResultStatus.Loading)
 
         epicsSelectResult.value = try {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -246,7 +246,7 @@ class CommonTaskViewModel : ViewModel() {
         if (query == currentTeamQuery) return@launch
         currentTeamQuery = query.orEmpty()
 
-        team.value = Result(ResultStatus.LOADING)
+        team.value = Result(ResultStatus.Loading)
         team.value = query?.let { q ->
             // FIXME I had to put a small delay here, otherwise results in search were always incorrect.
             // I don't have a fucking clue why this is happening and i don't like it, but i don't know how to fix it.
@@ -254,7 +254,7 @@ class CommonTaskViewModel : ViewModel() {
             // (but this is the sacrifice I'm willing to make for nice animations)
             delay(20)
             Result(
-                resultStatus = ResultStatus.SUCCESS,
+                resultStatus = ResultStatus.Success,
                 data = _team.filter {
                     val regex = Regex("^.*$q.*$", RegexOption.IGNORE_CASE)
                     it.displayName.matches(regex) || it.username.matches(regex)
@@ -264,10 +264,10 @@ class CommonTaskViewModel : ViewModel() {
             fixAnimation()
             try {
                 _team = usersRepository.getTeam().map { it.toUser() }
-                Result(ResultStatus.SUCCESS, _team)
+                Result(ResultStatus.Success, _team)
             } catch (e: Exception) {
                 Timber.w(e)
-                Result(ResultStatus.ERROR, message = R.string.common_error_message)
+                Result(ResultStatus.Error, message = R.string.common_error_message)
             }
         }
     }
@@ -276,7 +276,7 @@ class CommonTaskViewModel : ViewModel() {
     val assigneesResult = MutableLiveResult<Unit>()
 
     private fun changeAssignees(user: User, remove: Boolean) = viewModelScope.launch {
-        assigneesResult.value = Result(ResultStatus.LOADING)
+        assigneesResult.value = Result(ResultStatus.Loading)
 
         assigneesResult.value = try {
             tasksRepository.changeAssignees(
@@ -289,11 +289,11 @@ class CommonTaskViewModel : ViewModel() {
             )
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
 
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -304,7 +304,7 @@ class CommonTaskViewModel : ViewModel() {
     val watchersResult = MutableLiveResult<Unit>()
 
     private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
-        watchersResult.value = Result(ResultStatus.LOADING)
+        watchersResult.value = Result(ResultStatus.Loading)
 
         watchersResult.value = try {
             tasksRepository.changeWatchers(
@@ -316,11 +316,11 @@ class CommonTaskViewModel : ViewModel() {
                 commonTaskVersion
             )
             loadData().join()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
 
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -331,28 +331,28 @@ class CommonTaskViewModel : ViewModel() {
     val commentsResult = MutableLiveResult<Unit>()
     
     fun createComment(comment: String) = viewModelScope.launch { 
-        commentsResult.value = Result(ResultStatus.LOADING)
+        commentsResult.value = Result(ResultStatus.Loading)
         
         commentsResult.value = try {
             tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
             loadData().join()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
     fun deleteComment(comment: Comment) = viewModelScope.launch {
-        commentsResult.value = Result(ResultStatus.LOADING)
+        commentsResult.value = Result(ResultStatus.Loading)
 
         commentsResult.value = try {
             tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
             loadData().join()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -360,16 +360,16 @@ class CommonTaskViewModel : ViewModel() {
     val editResult = MutableLiveResult<Unit>()
 
     fun editTask(title: String, description: String) = viewModelScope.launch {
-        editResult.value = Result(ResultStatus.LOADING)
+        editResult.value = Result(ResultStatus.Loading)
 
         editResult.value = try {
             tasksRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
@@ -377,30 +377,30 @@ class CommonTaskViewModel : ViewModel() {
     val deleteResult = MutableLiveResult<Unit>()
 
     fun deleteTask() = viewModelScope.launch {
-        deleteResult.value = Result(ResultStatus.LOADING)
+        deleteResult.value = Result(ResultStatus.Loading)
 
         deleteResult.value = try {
             tasksRepository.deleteCommonTask(commonTaskType, commonTaskId)
             screensState.modify()
-            Result(ResultStatus.SUCCESS)
+            Result(ResultStatus.Success)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 
     val promoteResult = MutableLiveResult<CommonTask>()
 
     fun promoteToUserStory() = viewModelScope.launch {
-        promoteResult.value = Result(ResultStatus.LOADING)
+        promoteResult.value = Result(ResultStatus.Loading)
 
         promoteResult.value = try {
             val result = tasksRepository.promoteCommonTaskToUserStory(commonTaskId, commonTaskType)
             screensState.modify()
-            Result(ResultStatus.SUCCESS, result)
+            Result(ResultStatus.Success, result)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.permission_error)
+            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 }

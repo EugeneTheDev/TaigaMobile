@@ -67,7 +67,6 @@
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to_epics">Belongs to epics</string>
     <string name="belongs_to_story">Belong to user story</string>
-    <string name="epic">Epic</string>
     <string name="link_to_epic">Link to epic</string>
     <string name="created_by">Created by</string>
     <string name="assigned_to">Assigned to</string>

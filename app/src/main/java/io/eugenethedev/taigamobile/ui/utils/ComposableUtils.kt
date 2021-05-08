@@ -55,7 +55,7 @@ fun Modifier.clickableUnindicated(
 }
 
 @Composable
-inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.ERROR }?.let { onError(it.message!!) }
+inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.Error }?.let { onError(it.message!!) }
 
 fun safeParseHexColor(hexColor: String): Color = try {
     Color(android.graphics.Color.parseColor(hexColor))

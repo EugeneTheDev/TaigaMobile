@@ -177,7 +177,7 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                     id = it.toLong(),
                     name = "In progress",
                     color = "#729fcf",
-                    type = StatusType.STATUS
+                    type = StatusType.Status
                 )
             },
             commonTasks = List(10) {
@@ -190,14 +190,14 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                         id = (0..2).random().toLong(),
                         name = "In progress",
                         color = "#729fcf",
-                        type = StatusType.STATUS
+                        type = StatusType.Status
                     ),
                     assignee = CommonTask.Assignee(
                         id = it.toLong(),
                         fullName = "Name Name"
                     ),
                     projectInfo = Project(0, "", ""),
-                    taskType = CommonTaskType.USERSTORY,
+                    taskType = CommonTaskType.UserStory,
                     isClosed = false
                 )
             },

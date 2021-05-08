@@ -45,22 +45,22 @@ class DashboardViewModel : ViewModel() {
     }
 
     private suspend fun loadWorkingOn() {
-        workingOn.value = Result(ResultStatus.LOADING)
+        workingOn.value = Result(ResultStatus.Loading)
 
         workingOn.value = try {
-            Result(ResultStatus.SUCCESS, tasksRepository.getWorkingOn())
+            Result(ResultStatus.Success, tasksRepository.getWorkingOn())
         } catch (e: Exception) {
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 
     private suspend fun loadWatching() {
-        watching.value = Result(ResultStatus.LOADING)
+        watching.value = Result(ResultStatus.Loading)
 
         watching.value = try {
-            Result(ResultStatus.SUCCESS, tasksRepository.getWatching())
+            Result(ResultStatus.Success, tasksRepository.getWatching())
         } catch (e: Exception) {
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 

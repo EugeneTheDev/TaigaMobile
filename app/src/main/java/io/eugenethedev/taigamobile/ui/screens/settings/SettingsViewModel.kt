@@ -34,13 +34,13 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun start() = viewModelScope.launch {
-        user.value = Result(ResultStatus.LOADING)
+        user.value = Result(ResultStatus.Loading)
 
         user.value = try {
-            Result(ResultStatus.SUCCESS, userRepository.getMe())
+            Result(ResultStatus.Success, userRepository.getMe())
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 

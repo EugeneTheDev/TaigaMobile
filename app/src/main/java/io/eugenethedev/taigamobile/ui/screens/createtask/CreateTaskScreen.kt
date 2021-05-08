@@ -31,7 +31,7 @@ fun CreateTaskScreen(
     val creationResult by viewModel.creationResult.observeAsState()
     creationResult?.subscribeOnError(onError)
 
-    creationResult?.takeIf { it.resultStatus == ResultStatus.SUCCESS }?.data?.let {
+    creationResult?.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
         navController.popBackStack()
         navController.navigateToTaskScreen(it.id, it.taskType, it.ref)
     }
@@ -39,13 +39,13 @@ fun CreateTaskScreen(
     CreateTaskScreenContent(
         title = stringResource(
             when (commonTaskType) {
-                CommonTaskType.USERSTORY -> R.string.create_userstory
-                CommonTaskType.TASK -> R.string.create_task
-                CommonTaskType.EPIC -> R.string.create_epic
-                CommonTaskType.ISSUE -> R.string.create_issue
+                CommonTaskType.UserStory -> R.string.create_userstory
+                CommonTaskType.Task -> R.string.create_task
+                CommonTaskType.Epic -> R.string.create_epic
+                CommonTaskType.Issue -> R.string.create_issue
             }
         ),
-        isLoading = creationResult?.resultStatus == ResultStatus.LOADING,
+        isLoading = creationResult?.resultStatus == ResultStatus.Loading,
         createTask = { title, description -> viewModel.createTask(commonTaskType, title, description, parentId, sprintId) },
         navigateBack = navController::popBackStack
     )

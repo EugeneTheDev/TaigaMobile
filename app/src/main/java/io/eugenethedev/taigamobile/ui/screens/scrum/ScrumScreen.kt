@@ -35,9 +35,7 @@ import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
-import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -71,7 +69,7 @@ fun ScrumScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
-        isLoading = statuses?.resultStatus == ResultStatus.LOADING || (sprints?.resultStatus == ResultStatus.LOADING && sprints?.data.isNullOrEmpty()),
+        isLoading = statuses?.resultStatus == ResultStatus.Loading || (sprints?.resultStatus == ResultStatus.Loading && sprints?.data.isNullOrEmpty()),
         startStatusesExpanded = viewModel.startStatusesExpanded,
         statuses = statuses?.data.orEmpty(),
         commonTasks = stories?.data.orEmpty(),
@@ -85,7 +83,7 @@ fun ScrumScreen(
             navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
         },
         navigateToTask = navController::navigateToTaskScreen,
-        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.USERSTORY) }
+        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.UserStory) }
     )
 }
 

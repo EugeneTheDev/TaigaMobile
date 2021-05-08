@@ -32,20 +32,20 @@ abstract class StoriesViewModel : ViewModel() {
     protected var sprintId: Long? = null
 
     protected suspend fun loadStatuses() {
-        statuses.value = Result(ResultStatus.LOADING)
-        stories.value = Result(ResultStatus.SUCCESS)
+        statuses.value = Result(ResultStatus.Loading)
+        stories.value = Result(ResultStatus.Success)
 
         statuses.value = try {
              Result(
-                resultStatus = ResultStatus.SUCCESS,
-                tasksRepository.getStatuses(CommonTaskType.USERSTORY).onEach {
+                resultStatus = ResultStatus.Success,
+                tasksRepository.getStatuses(CommonTaskType.UserStory).onEach {
                     statusesStates[it] = StatusState()
                 }
             )
 
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.ERROR, message = R.string.common_error_message)
+            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 
@@ -57,12 +57,12 @@ abstract class StoriesViewModel : ViewModel() {
 
             try {
                 tasksRepository.getUserStories(status.id, ++currentPage, sprintId)
-                    .also { stories.value = Result(ResultStatus.SUCCESS, stories.value?.data.orEmpty() + it) }
+                    .also { stories.value = Result(ResultStatus.Success, stories.value?.data.orEmpty() + it) }
                     .takeIf { it.isEmpty() }
                     ?.run { maxPage = currentPage /* reached maximum page */ }
             } catch (e: Exception) {
                 Timber.w(e)
-                stories.value = Result(ResultStatus.ERROR, stories.value?.data.orEmpty(), message = R.string.common_error_message)
+                stories.value = Result(ResultStatus.Error, stories.value?.data.orEmpty(), message = R.string.common_error_message)
             }
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() - status.id
         }

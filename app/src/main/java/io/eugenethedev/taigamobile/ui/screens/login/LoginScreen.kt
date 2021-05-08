@@ -40,8 +40,8 @@ fun LoginScreen(
     val loginResult by viewModel.loginResult.observeAsState()
     loginResult?.apply {
         when(resultStatus) {
-            ResultStatus.ERROR -> onError(message!!)
-            ResultStatus.SUCCESS -> {
+            ResultStatus.Error -> onError(message!!)
+            ResultStatus.Success -> {
                 navController.navigate(Routes.dashboard) {
                     popUpTo(Routes.login) { inclusive = true }
                 }
@@ -70,7 +70,7 @@ fun LoginScreen(
                 )
             }
         },
-        isLoadingValue = loginResult?.resultStatus in listOf(ResultStatus.LOADING, ResultStatus.SUCCESS)
+        isLoadingValue = loginResult?.resultStatus in listOf(ResultStatus.Loading, ResultStatus.Success)
     )
 }
 
