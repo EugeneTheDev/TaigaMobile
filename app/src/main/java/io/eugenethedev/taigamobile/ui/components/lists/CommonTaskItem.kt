@@ -43,17 +43,17 @@ fun CommonTaskItem(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         if (showExtendedInfo) {
-            Text(commonTask.projectInfo.name,)
+            Text(commonTask.projectInfo.name)
 
             Text(
                 text = stringResource(
                     when (commonTask.taskType) {
-                        CommonTaskType.UserStory -> R.string.userstory_upper
-                        CommonTaskType.Task -> R.string.task_upper
-                        CommonTaskType.Epic -> R.string.epic_upper
-                        CommonTaskType.Issue -> R.string.issue_upper
+                        CommonTaskType.UserStory -> R.string.userstory
+                        CommonTaskType.Task -> R.string.task
+                        CommonTaskType.Epic -> R.string.epic
+                        CommonTaskType.Issue -> R.string.issue
                     }
-                ),
+                ).toUpperCase(Locale.getDefault()),
                 color = MaterialTheme.colors.primaryVariant
             )
         }
@@ -106,10 +106,7 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
                 color = "#729fcf",
                 type = StatusType.Status
             ),
-            assignee = CommonTask.Assignee(
-                id = 0,
-                fullName = "Name Name"
-            ),
+            assignee = null,
             projectInfo = Project(0, "Name", "slug"),
             taskType = CommonTaskType.UserStory,
             isClosed = false

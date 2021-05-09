@@ -192,10 +192,7 @@ fun CommonTasksListPreview() = TaigaMobileTheme {
                         color = "#729fcf",
                         type = StatusType.Status
                     ),
-                    assignee = CommonTask.Assignee(
-                        id = it.toLong(),
-                        fullName = "Name Name"
-                    ),
+                    assignee = null,
                     projectInfo = Project(0, "", ""),
                     taskType = CommonTaskType.UserStory,
                     isClosed = false

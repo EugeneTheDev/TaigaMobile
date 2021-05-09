@@ -176,14 +176,7 @@ class TasksRepository @Inject constructor(
                 description = it.description,
                 epicsShortInfo = it.epics.orEmpty(),
                 projectSlug = it.project_extra_info.slug,
-                userStoryShortInfo = it.user_story_extra_info?.let {
-                    UserStoryShortInfo(
-                        id = it.id,
-                        ref = it.ref,
-                        title = it.subject,
-                        epicColors = it.epics.orEmpty().map { it.color }
-                    )
-                },
+                userStoryShortInfo = it.user_story_extra_info,
                 version = it.version,
                 color = it.color,
                 type = it.type?.let { id -> filters.types?.find { it.id == id } }?.toStatus(StatusType.Type),
@@ -214,12 +207,7 @@ class TasksRepository @Inject constructor(
             color = status_extra_info.color,
             type = StatusType.Status
         ),
-        assignee = assigned_to_extra_info?.let {
-            CommonTask.Assignee(
-                id = it.id,
-                fullName = it.full_name_display
-            )
-        },
+        assignee = assigned_to_extra_info,
         projectInfo = project_extra_info,
         taskType = commonTaskType,
         colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },

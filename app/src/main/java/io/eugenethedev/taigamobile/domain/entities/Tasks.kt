@@ -49,17 +49,12 @@ data class CommonTask(
     val title: String,
     val ref: Int,
     val status: Status,
-    val assignee: Assignee? = null,
+    val assignee: User? = null,
     val projectInfo: Project,
     val taskType: CommonTaskType,
     val isClosed: Boolean,
     val colors: List<String> = emptyList() // colored indicators (for stories and epics)
-) {
-    data class Assignee(
-        val id: Long,
-        val fullName: String,
-    )
-}
+)
 
 
 data class CommonTaskExtended(
@@ -97,9 +92,11 @@ data class EpicShortInfo(
 data class UserStoryShortInfo(
     val id: Long,
     val ref: Int,
-    val title: String,
-    val epicColors: List<String>
-)
+    @SerializedName("subject") val title: String,
+    val epics: List<EpicShortInfo>?
+) {
+    val epicColors get() = epics?.map { it.color }.orEmpty()
+}
 
 data class Comment(
     val id: String,
