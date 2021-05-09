@@ -83,8 +83,8 @@ fun CommonTaskItem(
         )
 
         Text(
-            text = commonTask.assignee?.fullName?.let { stringResource(R.string.assignee_pattern).format(it) } ?: stringResource(
-                R.string.unassigned),
+            text = commonTask.assignee?.fullName?.let { stringResource(R.string.assignee_pattern)
+                .format(it) } ?: stringResource(R.string.unassigned),
             color = MaterialTheme.colors.primary,
             style = MaterialTheme.typography.body2
         )

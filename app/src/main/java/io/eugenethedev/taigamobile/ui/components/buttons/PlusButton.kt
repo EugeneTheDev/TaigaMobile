@@ -9,12 +9,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 
 @Composable
 fun PlusButton(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colors.primary,
     onClick: () -> Unit = {}
 ) = IconButton(
     onClick = onClick,
@@ -25,7 +28,7 @@ fun PlusButton(
     Icon(
         painter = painterResource(R.drawable.ic_add),
         contentDescription = null,
-        tint = MaterialTheme.colors.primary,
-        modifier = Modifier.size(26.dp)
+        tint = tint,
+        modifier = modifier.size(26.dp)
     )
 }

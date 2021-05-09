@@ -1,9 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.sprint
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -21,16 +19,9 @@ import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
-import io.eugenethedev.taigamobile.ui.components.HorizontalTabbedPager
-import io.eugenethedev.taigamobile.ui.components.Tab
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
-import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
-import io.eugenethedev.taigamobile.ui.components.lists.CommonTasksList
-import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
-import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -52,14 +43,11 @@ fun SprintScreen(
     val statuses by viewModel.statuses.observeAsState()
     statuses?.subscribeOnError(onError)
 
-    val stories by viewModel.stories.observeAsState()
-    stories?.subscribeOnError(onError)
+    val storiesWithTasks by viewModel.storiesWithTasks.observeAsState()
+    storiesWithTasks?.subscribeOnError(onError)
 
-    val loadingStatusIds by viewModel.loadingStatusIds.observeAsState()
-    val visibleStatusIds by viewModel.visibleStatusIds.observeAsState()
-
-    val tasks by viewModel.tasks.observeAsState()
-    tasks?.subscribeOnError(onError)
+    val storylessTasks by viewModel.storylessTasks.observeAsState()
+    storylessTasks?.subscribeOnError(onError)
 
     val issues by viewModel.issues.observeAsState()
     issues?.subscribeOnError(onError)
@@ -68,25 +56,14 @@ fun SprintScreen(
         sprintName = sprint.name,
         start = sprint.start,
         finish = sprint.finish,
-        isLoading = statuses?.resultStatus == ResultStatus.Loading ||
-            (tasks?.resultStatus == ResultStatus.Loading && tasks?.data.isNullOrEmpty()) ||
-            (issues?.resultStatus == ResultStatus.Loading && issues?.data.isNullOrEmpty()),
-        startStatusesExpanded = viewModel.startStatusesExpanded,
+        isLoading = listOf(statuses, storiesWithTasks, storylessTasks, issues).any { it?.resultStatus == ResultStatus.Loading },
         statuses = statuses?.data.orEmpty(),
-        commonTasks = stories?.data.orEmpty(),
-        loadingStatusIds = loadingStatusIds.orEmpty(),
-        loadStories = viewModel::loadStories,
-        visibleStatusIds = visibleStatusIds.orEmpty(),
-        onStatusClick = viewModel::statusClick,
-        navigateBack = navController::popBackStack,
-        tasks = tasks?.data.orEmpty(),
-        isTasksLoading = tasks?.resultStatus == ResultStatus.Loading,
-        loadTasks = viewModel::loadTasks,
+        storiesWithTasks = storiesWithTasks?.data.orEmpty(),
+        storylessTasks = storylessTasks?.data.orEmpty(),
         issues = issues?.data.orEmpty(),
-        isIssuesLoading = issues?.resultStatus == ResultStatus.Loading,
-        loadIssues = viewModel::loadIssues,
+        navigateBack = navController::popBackStack,
         navigateToTask = navController::navigateToTaskScreen,
-        navigateToCreateTask = { navController.navigateToCreateTaskScreen(it, sprintId = sprint.id) }
+        navigateToCreateTask = { type, parentId -> navController.navigateToCreateTaskScreen(type, parentId, sprint.id) }
     )
 }
 
@@ -98,22 +75,13 @@ fun SprintScreenContent(
     start: Date,
     finish: Date,
     isLoading: Boolean = false,
-    startStatusesExpanded: Boolean = false,
     statuses: List<Status> = emptyList(),
-    commonTasks: List<CommonTask> = emptyList(),
-    loadingStatusIds: List<Long> = emptyList(),
-    loadStories: (Status) -> Unit = {},
-    visibleStatusIds: List<Long> = emptyList(),
-    onStatusClick: (Long) -> Unit = {},
-    navigateBack: () -> Unit = {},
-    tasks: List<CommonTask> = emptyList(),
-    isTasksLoading: Boolean = false,
-    loadTasks: () -> Unit = {},
+    storiesWithTasks: Map<CommonTask, List<CommonTask>> = emptyMap(),
+    storylessTasks: List<CommonTask> = emptyList(),
     issues: List<CommonTask> = emptyList(),
-    isIssuesLoading: Boolean = false,
-    loadIssues: () -> Unit = {},
+    navigateBack: () -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
-    navigateToCreateTask: (CommonTaskType) -> Unit = { _ -> }
+    navigateToCreateTask: (type: CommonTaskType, parentId: Long?) -> Unit = { _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -151,133 +119,18 @@ fun SprintScreenContent(
             CircularLoader()
         }
     } else {
-        HorizontalTabbedPager(
-            tabs = Tabs.values(),
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            when (Tabs.values()[page]) {
-                Tabs.UserStories -> StoriesTabContent(
-                    startStatusesExpanded = startStatusesExpanded,
-                    statuses = statuses,
-                    commonTasks = commonTasks,
-                    loadingStatusIds = loadingStatusIds,
-                    loadStories = loadStories,
-                    visibleStatusIds = visibleStatusIds,
-                    onStatusClick = onStatusClick,
-                    navigateToTask = navigateToTask
-                )
-                Tabs.Tasks -> TasksTabContent(
-                    tasks = tasks,
-                    isTasksLoading = isTasksLoading,
-                    loadTasks = loadTasks,
-                    navigateToTask = navigateToTask,
-                    navigateToCreateTask = navigateToCreateTask
-                )
-                Tabs.Issues -> IssuesTabContent(
-                    issues = issues,
-                    isIssuesLoading = isIssuesLoading,
-                    loadIssues = loadIssues,
-                    navigateToTask = navigateToTask,
-                    navigateToCreateTask = navigateToCreateTask
-                )
-            }
-        }
+        SprintKanban(
+            statuses = statuses,
+            storiesWithTasks = storiesWithTasks,
+            storylessTasks = storylessTasks,
+            issues = issues,
+            navigateToTask = navigateToTask,
+            navigateToCreateTask = navigateToCreateTask
+        )
     }
 }
 
-private enum class Tabs(@StringRes override val titleId: Int) : Tab {
-    UserStories(R.string.userstories),
-    Tasks(R.string.tasks_without_story),
-    Issues(R.string.sprint_issues)
-}
 
-@ExperimentalAnimationApi
-@Composable
-private fun StoriesTabContent(
-    startStatusesExpanded: Boolean,
-    statuses: List<Status>,
-    commonTasks: List<CommonTask>,
-    loadingStatusIds: List<Long>,
-    loadStories: (Status) -> Unit,
-    visibleStatusIds: List<Long>,
-    onStatusClick: (Long) -> Unit,
-    navigateToTask: NavigateToTask
-) = LazyColumn(Modifier.fillMaxSize()) {
-    CommonTasksList(
-        statuses = statuses,
-        commonTasks = commonTasks,
-        loadingStatusIds = loadingStatusIds,
-        visibleStatusIds = visibleStatusIds,
-        onStatusClick = onStatusClick,
-        loadData = loadStories,
-        navigateToTask = navigateToTask,
-        isInverseVisibility = startStatusesExpanded
-    )
-
-    item {
-        Spacer(Modifier.height(commonVerticalMargin))
-    }
-}
-
-@Composable
-private fun TasksTabContent(
-    tasks: List<CommonTask>,
-    isTasksLoading: Boolean,
-    loadTasks: () -> Unit,
-    navigateToTask: NavigateToTask,
-    navigateToCreateTask: (CommonTaskType) -> Unit
-) = LazyColumn(Modifier.fillMaxSize()) {
-    item {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            AddButton(
-                text = stringResource(R.string.add_task),
-                onClick = { navigateToCreateTask(CommonTaskType.Task) }
-            )
-        }
-    }
-
-    SimpleTasksListWithTitle(
-        bottomMargin = commonVerticalMargin,
-        horizontalPadding = mainHorizontalScreenPadding,
-        commonTasks = tasks,
-        isTasksLoading = isTasksLoading,
-        navigateToTask = navigateToTask,
-        loadData = loadTasks
-    )
-}
-
-@Composable
-private fun IssuesTabContent(
-    issues: List<CommonTask>,
-    isIssuesLoading: Boolean,
-    loadIssues: () -> Unit,
-    navigateToTask: NavigateToTask,
-    navigateToCreateTask: (CommonTaskType) -> Unit
-) = LazyColumn(Modifier.fillMaxSize()) {
-    item {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            AddButton(
-                text = stringResource(R.string.add_issue),
-                onClick = { navigateToCreateTask(CommonTaskType.Issue) }
-            )
-        }
-    }
-
-    SimpleTasksListWithTitle(
-        bottomMargin = commonVerticalMargin,
-        horizontalPadding = mainHorizontalScreenPadding,
-        commonTasks = issues,
-        isTasksLoading = isIssuesLoading,
-        navigateToTask = navigateToTask,
-        loadData = loadIssues
-    )
-}
 
 @ExperimentalPagerApi
 @ExperimentalAnimationApi

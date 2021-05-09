@@ -49,6 +49,7 @@
     <string name="closed_sprint_name_template">%s (Closed)</string>
     <string name="add_userstory">Add user story</string>
 
+    <string name="user_story">User story</string>
     <string name="tasks_without_story">Storyless tasks</string>
     <string name="sprint_issues">Sprint issues</string>
     <string name="add_task">Add task</string>
@@ -59,10 +60,10 @@
     <string name="epic_slug">Epic #%d</string>
     <string name="issue_slug">Issue #%d</string>
 
-    <string name="epic_upper">EPIC</string>
-    <string name="userstory_upper">USER STORY</string>
-    <string name="task_upper">TASK</string>
-    <string name="issue_upper">ISSUE</string>
+    <string name="epic">Epic</string>
+    <string name="userstory">User story</string>
+    <string name="task">Task</string>
+    <string name="issue">Issue</string>
     
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to_epics">Belongs to epics</string>

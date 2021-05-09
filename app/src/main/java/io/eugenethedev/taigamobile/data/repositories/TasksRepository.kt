@@ -100,18 +100,22 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getUserStories(statusId: Long, page: Int, sprintId: Long?) = withIO {
+    override suspend fun getBacklogUserStories(statusId: Long, page: Int) = withIO {
         handle404 {
-            taigaApi.getUserStories(session.currentProjectId, sprintId ?: "null", statusId, page = page)
+            taigaApi.getUserStories(session.currentProjectId, sprint = "null", status = statusId, page = page)
                 .map { it.toCommonTask(CommonTaskType.UserStory) }
         }
     }
 
+    override suspend fun getSprintUserStories(sprintId: Long) = withIO {
+        taigaApi.getUserStories(project = session.currentProjectId, sprint = sprintId)
+            .map { it.toCommonTask(CommonTaskType.UserStory) }
+    }
+
     override suspend fun getEpicUserStories(epicId: Long) = withIO {
-        handle404 {
-            taigaApi.getUserStories(epic = epicId)
-                .map { it.toCommonTask(CommonTaskType.UserStory) }
-        }
+        taigaApi.getUserStories(epic = epicId)
+            .map { it.toCommonTask(CommonTaskType.UserStory) }
+
     }
 
     override suspend fun getSprints(page: Int) = withIO {
@@ -120,11 +124,9 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getSprintTasks(sprintId: Long, page: Int) = withIO {
-        handle404 {
-            taigaApi.getTasks(userStory = "null", project = session.currentProjectId, sprint = sprintId, page = page)
-                .map { it.toCommonTask(CommonTaskType.Task) }
-        }
+    override suspend fun getSprintTasks(sprintId: Long) = withIO {
+        taigaApi.getTasks(userStory = "null", project = session.currentProjectId, sprint = sprintId)
+            .map { it.toCommonTask(CommonTaskType.Task) }
     }
 
     override suspend fun getUserStoryTasks(storyId: Long) = withIO {
@@ -141,11 +143,10 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getSprintIssues(sprintId: Long, page: Int) = withIO {
-        handle404 {
-            taigaApi.getIssues(page = page, project = session.currentProjectId, sprint = sprintId)
-                .map { it.toCommonTask(CommonTaskType.Issue) }
-        }
+    override suspend fun getSprintIssues(sprintId: Long) = withIO {
+        taigaApi.getIssues(project = session.currentProjectId, sprint = sprintId)
+            .map { it.toCommonTask(CommonTaskType.Issue) }
+
     }
 
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
