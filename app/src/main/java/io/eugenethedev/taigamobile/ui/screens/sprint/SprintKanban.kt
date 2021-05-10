@@ -384,19 +384,21 @@ private fun TaskItem(
             )
         }
 
-        Image(
-            painter = rememberGlidePainter(
-                request = task.assignee?.avatarUrl ?: R.drawable.default_avatar,
-                fadeIn = true,
-                requestBuilder = { error(R.drawable.default_avatar) }
-            ),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .weight(0.2f, fill = false)
-        )
+        task.assignee?.let {
+            Image(
+                painter = rememberGlidePainter(
+                    request = it.avatarUrl ?: R.drawable.default_avatar,
+                    fadeIn = true,
+                    requestBuilder = { error(R.drawable.default_avatar) }
+                ),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .weight(0.2f, fill = false)
+            )
+        }
     }
 }
 
