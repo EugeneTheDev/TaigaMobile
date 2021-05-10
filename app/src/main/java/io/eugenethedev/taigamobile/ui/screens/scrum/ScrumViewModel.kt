@@ -1,13 +1,14 @@
 package io.eugenethedev.taigamobile.ui.screens.scrum
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
-import io.eugenethedev.taigamobile.Settings
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.Sprint
+import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.StoriesViewModel
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
@@ -15,16 +16,19 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class ScrumViewModel : StoriesViewModel() {
+class ScrumViewModel : ViewModel() {
+    @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
-    @Inject lateinit var settings: Settings
 
     val projectName: String get() = session.currentProjectName
-    val startStatusesExpanded get() = settings.isScrumScreenExpandStatuses
+
+    val stories = MutableLiveResult<List<CommonTask>>()
+    private var currentStoriesQuery = ""
+    private var currentStoriesPage = 0
+    private var maxStoriesPage = Int.MAX_VALUE
 
     val sprints = MutableLiveResult<List<Sprint>>()
-
     private var currentSprintPage = 0
     private var maxSprintPage = Int.MAX_VALUE
 
@@ -37,9 +41,32 @@ class ScrumViewModel : StoriesViewModel() {
             reset()
         }
 
-        if (statuses.value == null && session.currentProjectId > 0) {
-            viewModelScope.launch { loadStatuses() }
+        if (stories.value == null || sprints.value == null) {
+            
             loadSprints()
+        }
+    }
+    
+    fun loadStories(query: String) = viewModelScope.launch {
+        query.takeIf { it != currentStoriesQuery }?.let {
+            currentStoriesQuery = it
+            currentStoriesPage = 0
+            maxStoriesPage = Int.MAX_VALUE
+            stories.value = Result(ResultStatus.Success, emptyList())
+        }
+
+        if (currentStoriesPage == maxStoriesPage) return@launch
+
+        stories.value = Result(ResultStatus.Loading, stories.value?.data)
+
+        try {
+            tasksRepository.getBacklogUserStories(++currentStoriesPage, query)
+                .also { stories.value = Result(ResultStatus.Success, stories.value?.data.orEmpty() + it) }
+                .takeIf { it.isEmpty() }
+                ?.run { maxStoriesPage = currentStoriesPage }
+        } catch (e: Exception) {
+            Timber.w(e)
+            stories.value = Result(ResultStatus.Error, stories.value?.data, message = R.string.common_error_message)
         }
     }
 
@@ -59,8 +86,12 @@ class ScrumViewModel : StoriesViewModel() {
         }
     }
 
-    override fun reset() {
-        super.reset()
+    fun reset() {
+        stories.value = null
+        currentStoriesQuery = ""
+        currentStoriesPage = 0
+        maxStoriesPage = Int.MAX_VALUE
+
         sprints.value = null
         currentSprintPage = 0
         maxSprintPage = Int.MAX_VALUE

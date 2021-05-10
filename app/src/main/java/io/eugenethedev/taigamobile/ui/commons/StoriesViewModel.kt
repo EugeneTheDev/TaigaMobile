@@ -55,16 +55,16 @@ abstract class StoriesViewModel : ViewModel() {
 
             loadingStatusIds.value = loadingStatusIds.value.orEmpty() + status.id
 
-            try {
-                tasksRepository.getBacklogUserStories(status.id, ++currentPage)
-                    .also { stories.value = Result(ResultStatus.Success, stories.value?.data.orEmpty() + it) }
-                    .takeIf { it.isEmpty() }
-                    ?.run { maxPage = currentPage /* reached maximum page */ }
-            } catch (e: Exception) {
-                Timber.w(e)
-                stories.value = Result(ResultStatus.Error, stories.value?.data.orEmpty(), message = R.string.common_error_message)
-            }
-            loadingStatusIds.value = loadingStatusIds.value.orEmpty() - status.id
+//            try {
+//                tasksRepository.getBacklogUserStories(status.id, ++currentPage, "")
+//                    .also { stories.value = Result(ResultStatus.Success, stories.value?.data.orEmpty() + it) }
+//                    .takeIf { it.isEmpty() }
+//                    ?.run { maxPage = currentPage /* reached maximum page */ }
+//            } catch (e: Exception) {
+//                Timber.w(e)
+//                stories.value = Result(ResultStatus.Error, stories.value?.data.orEmpty(), message = R.string.common_error_message)
+//            }
+//            loadingStatusIds.value = loadingStatusIds.value.orEmpty() - status.id
         }
     }
 

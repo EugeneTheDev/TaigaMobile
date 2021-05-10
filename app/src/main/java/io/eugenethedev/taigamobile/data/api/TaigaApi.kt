@@ -45,7 +45,8 @@ interface TaigaApi {
         @Query("assigned_users") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
         @Query("watchers") watcherId: Long? = null,
-        @Query("dashboard") isDashboard: Boolean? = null
+        @Query("dashboard") isDashboard: Boolean? = null,
+        @Query("q") query: String? = null
     ): List<CommonTaskResponse>
 
     @GET("tasks?order_by=us_order")

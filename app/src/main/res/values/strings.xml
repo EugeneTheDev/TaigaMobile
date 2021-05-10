@@ -117,7 +117,7 @@
 
     <string name="loading">Loading…</string>
 
-    <string name="issues_search_hint">Search by ref or subject</string>
+    <string name="tasks_search_hint">Search by ref or subject</string>
 
     <!-- settings -->
     <string name="username_template" translatable="false">\@%s</string>

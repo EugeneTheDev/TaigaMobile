@@ -100,9 +100,9 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getBacklogUserStories(statusId: Long, page: Int) = withIO {
+    override suspend fun getBacklogUserStories(page: Int, query: String) = withIO {
         handle404 {
-            taigaApi.getUserStories(session.currentProjectId, sprint = "null", status = statusId, page = page)
+            taigaApi.getUserStories(session.currentProjectId, sprint = "null", page = page, query = query)
                 .map { it.toCommonTask(CommonTaskType.UserStory) }
         }
     }

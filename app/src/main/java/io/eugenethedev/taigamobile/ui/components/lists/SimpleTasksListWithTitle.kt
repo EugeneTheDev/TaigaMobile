@@ -37,6 +37,7 @@ fun LazyListScope.SimpleTasksListWithTitle(
     isTasksLoading: Boolean = false,
     showExtendedTaskInfo: Boolean = false,
     navigateToCreateCommonTask: (() -> Unit)? = null,
+    showEmptyMessage: Boolean = true,
     loadData: () -> Unit = {}
 ) {
     titleText?.let {
@@ -78,7 +79,7 @@ fun LazyListScope.SimpleTasksListWithTitle(
     item {
         if (isTasksLoading) {
             DotsLoader()
-        } else if (commonTasks.isEmpty()) {
+        } else if (commonTasks.isEmpty() && showEmptyMessage) {
             NothingToSeeHereText()
         }
 

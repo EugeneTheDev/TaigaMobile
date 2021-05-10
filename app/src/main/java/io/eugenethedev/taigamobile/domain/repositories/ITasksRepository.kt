@@ -13,7 +13,7 @@ interface ITasksRepository {
 
     suspend fun getEpics(page: Int, query: String? = null): List<CommonTask>
 
-    suspend fun getBacklogUserStories(statusId: Long, page: Int): List<CommonTask>
+    suspend fun getBacklogUserStories(page: Int, query: String): List<CommonTask>
     suspend fun getSprintUserStories(sprintId: Long): List<CommonTask>
     suspend fun getEpicUserStories(epicId: Long): List<CommonTask>
 
