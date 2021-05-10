@@ -38,7 +38,7 @@ import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ThemeSetting
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
-import io.eugenethedev.taigamobile.ui.components.ContainerBox
+import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -46,7 +46,6 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import timber.log.Timber
-import java.util.*
 
 @Composable
 fun SettingsScreen(
@@ -62,8 +61,6 @@ fun SettingsScreen(
     val user by viewModel.user.observeAsState()
     user?.subscribeOnError(onError)
 
-    val isScrumScreenExpandStatuses by viewModel.isScrumScreenExpandStatuses.observeAsState()
-    val isSprintScreenExpandStatuses by viewModel.isSprintScreenExpandStatuses.observeAsState()
     val themeSetting by viewModel.themeSetting.observeAsState()
 
     SettingsScreenContent(
@@ -78,11 +75,6 @@ fun SettingsScreen(
                 popUpTo(Routes.settings) { inclusive = true }
             }
         },
-        isScrumScreenExpandStatuses = isScrumScreenExpandStatuses ?: false,
-        switchScrumScreenExpandStatuses = viewModel::switchScrumScreenExpandStatuses,
-        isSprintScreenExpandStatuses = isSprintScreenExpandStatuses ?: false,
-        switchSprintScreenExpandStatuses = viewModel::switchSprintScreenExpandStatuses,
-        themeSetting = themeSetting ?: ThemeSetting.System,
         switchTheme = viewModel::switchTheme
     )
 }
@@ -95,10 +87,6 @@ fun SettingsScreenContent(
     serverUrl: String,
     navigateBack: () -> Unit = {},
     logout: () -> Unit = {},
-    isScrumScreenExpandStatuses: Boolean = false,
-    switchScrumScreenExpandStatuses: (Boolean) -> Unit = { _ -> },
-    isSprintScreenExpandStatuses: Boolean = false,
-    switchSprintScreenExpandStatuses: (Boolean) -> Unit = { _ -> },
     themeSetting: ThemeSetting = ThemeSetting.System,
     switchTheme: (ThemeSetting) -> Unit = {}
 ) = ConstraintLayout(
@@ -201,89 +189,73 @@ fun SettingsScreenContent(
         // appearance
         SettingsBlock(
             titleId = R.string.appearance,
-            items = listOf(
-                {
-                    SettingItem(
-                        textId = R.string.theme_title,
-                        itemWeight = 0.4f
-                    ) {
-                        var isMenuExpanded by remember { mutableStateOf(false) }
-                        val transitionState = remember { MutableTransitionState(isMenuExpanded) }
-                        transitionState.targetState = isMenuExpanded
+            items = listOf {
+                SettingItem(
+                    textId = R.string.theme_title,
+                    itemWeight = 0.4f
+                ) {
+                    var isMenuExpanded by remember { mutableStateOf(false) }
+                    val transitionState = remember { MutableTransitionState(isMenuExpanded) }
+                    transitionState.targetState = isMenuExpanded
 
-                        @Composable
-                        fun titleForThemeSetting(themeSetting: ThemeSetting) = stringResource(
-                            when (themeSetting) {
-                                ThemeSetting.System -> R.string.theme_system
-                                ThemeSetting.Light -> R.string.theme_light
-                                ThemeSetting.Dark -> R.string.theme_dark
+                    @Composable
+                    fun titleForThemeSetting(themeSetting: ThemeSetting) = stringResource(
+                        when (themeSetting) {
+                            ThemeSetting.System -> R.string.theme_system
+                            ThemeSetting.Light -> R.string.theme_light
+                            ThemeSetting.Dark -> R.string.theme_dark
+                        }
+                    )
+
+                    Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickableUnindicated {
+                                isMenuExpanded = !isMenuExpanded
                             }
-                        )
+                        ) {
 
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickableUnindicated {
-                                    isMenuExpanded = !isMenuExpanded
-                                }
-                            ) {
+                            Text(
+                                text = titleForThemeSetting(themeSetting),
+                                style = MaterialTheme.typography.subtitle1,
+                                color = MaterialTheme.colors.primary
+                            )
 
-                                Text(
-                                    text = titleForThemeSetting(themeSetting),
-                                    style = MaterialTheme.typography.subtitle1,
-                                    color = MaterialTheme.colors.primary
-                                )
+                            val arrowRotation by updateTransition(
+                                transitionState,
+                                label = "arrow"
+                            ).animateFloat { if (it) -180f else 0f }
 
-                                val arrowRotation by updateTransition(transitionState, label = "arrow").animateFloat { if (it) -180f else 0f }
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_down),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary,
+                                modifier = Modifier.rotate(arrowRotation)
+                            )
+                        }
 
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_arrow_down),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary,
-                                    modifier = Modifier.rotate(arrowRotation)
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = isMenuExpanded,
-                                onDismissRequest = { isMenuExpanded = false }
-                            ) {
-                                ThemeSetting.values().forEach {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            isMenuExpanded = false
-                                            switchTheme(it)
-                                        }
-                                    ) {
-                                        Text(
-                                            text = titleForThemeSetting(it),
-                                            style = MaterialTheme.typography.body1
-                                        )
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = { isMenuExpanded = false }
+                        ) {
+                            ThemeSetting.values().forEach {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        isMenuExpanded = false
+                                        switchTheme(it)
                                     }
+                                ) {
+                                    Text(
+                                        text = titleForThemeSetting(it),
+                                        style = MaterialTheme.typography.body1
+                                    )
                                 }
                             }
                         }
                     }
-                },
-                {
-                    SettingItem(textId = R.string.scrum_expand_statuses) {
-                        Switch(
-                            checked = isScrumScreenExpandStatuses,
-                            onCheckedChange = switchScrumScreenExpandStatuses
-                        )
-                    }
-                },
-                {
-                    SettingItem(textId = R.string.sprint_expand_statuses) {
-                        Switch(
-                            checked = isSprintScreenExpandStatuses,
-                            onCheckedChange = switchSprintScreenExpandStatuses
-                        )
-                    }
                 }
-            )
+            }
         )
-
     }
 
 

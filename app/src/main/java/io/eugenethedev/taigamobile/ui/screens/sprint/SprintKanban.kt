@@ -155,6 +155,7 @@ fun SprintKanban(
             )
         }
 
+        // issues
         item {
             IssueHeader(
                 width = screenWidth,
@@ -257,39 +258,36 @@ private fun UserStoryItem(
     userStory: CommonTask,
     onAddClick: () -> Unit,
     onUserStoryClick: () -> Unit
-) = Column(
+) = Row(
     modifier = Modifier
         .padding(end = cellMargin, bottom = cellMargin)
         .width(cellWidth)
-        .heightIn(min = minCellHeight)
+        .heightIn(min = minCellHeight),
+    horizontalArrangement = Arrangement.SpaceBetween
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier.fillMaxWidth().weight(0.8f, fill = false)
     ) {
         TitleWithIndicators(
             ref = userStory.ref,
             title = userStory.title,
             indicatorColorsHex = userStory.colors,
             isInactive = userStory.isClosed,
-            modifier = Modifier
-                .weight(0.8f, fill = false)
-                .padding(top = 4.dp)
+            modifier = Modifier.padding(top = 4.dp)
                 .clickableUnindicated(onClick = onUserStoryClick)
         )
 
-        PlusButton(
-            tint = Color.Gray,
-            onClick = onAddClick,
-            modifier = Modifier.weight(0.2f)
+        Text(
+            text = userStory.status.name,
+            color = safeParseHexColor(userStory.status.color),
+            style = MaterialTheme.typography.body2
         )
     }
 
-    Text(
-        text = userStory.status.name,
-        color = safeParseHexColor(userStory.status.color),
-        style = MaterialTheme.typography.body2
+    PlusButton(
+        tint = Color.Gray,
+        onClick = onAddClick,
+        modifier = Modifier.weight(0.2f)
     )
 }
 

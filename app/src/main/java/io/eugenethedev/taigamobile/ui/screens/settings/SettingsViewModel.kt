@@ -21,15 +21,11 @@ class SettingsViewModel : ViewModel() {
     val user = MutableLiveResult<User>()
     val serverUrl get() = session.server
 
-    val isScrumScreenExpandStatuses: MutableLiveData<Boolean>
-    val isSprintScreenExpandStatuses: MutableLiveData<Boolean>
     val themeSetting: MutableLiveData<ThemeSetting>
 
     init {
         TaigaApp.appComponent.inject(this)
 
-        isScrumScreenExpandStatuses = MutableLiveData(settings.isScrumScreenExpandStatuses)
-        isSprintScreenExpandStatuses = MutableLiveData(settings.isSprintScreenExpandStatuses)
         themeSetting = MutableLiveData(settings.themeSetting)
     }
 
@@ -46,20 +42,6 @@ class SettingsViewModel : ViewModel() {
 
     fun logout() {
         session.reset()
-    }
-
-    fun switchScrumScreenExpandStatuses(checked: Boolean) = viewModelScope.launch {
-        settings.let {
-            it.isScrumScreenExpandStatuses = checked
-            isScrumScreenExpandStatuses.value = it.isScrumScreenExpandStatuses
-        }
-    }
-
-    fun switchSprintScreenExpandStatuses(checked: Boolean) = viewModelScope.launch {
-        settings.let {
-            it.isSprintScreenExpandStatuses = checked
-            isSprintScreenExpandStatuses.value = it.isSprintScreenExpandStatuses
-        }
     }
 
     fun switchTheme(theme: ThemeSetting) = viewModelScope.launch {

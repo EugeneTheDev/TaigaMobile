@@ -20,8 +20,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
-import io.eugenethedev.taigamobile.ui.components.HorizontalTabbedPager
-import io.eugenethedev.taigamobile.ui.components.Tab
+import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
+import io.eugenethedev.taigamobile.ui.components.containers.Tab
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader

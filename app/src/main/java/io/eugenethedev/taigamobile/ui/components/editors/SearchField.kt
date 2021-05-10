@@ -27,7 +27,7 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
  * Outlined text field with hint
  */
 @Composable
-fun OutlinedTextFieldWithHint(
+fun SearchField(
     @StringRes hintId: Int,
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
@@ -35,7 +35,7 @@ fun OutlinedTextFieldWithHint(
     verticalPadding: Dp = 8.dp,
     onSearchClick: () -> Unit = {}
 ) = Box(
-    modifier = Modifier.fillMaxSize()
+    modifier = Modifier.fillMaxWidth()
         .padding(horizontal = horizontalPadding, vertical = verticalPadding),
     contentAlignment = Alignment.CenterStart
 ) {

@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.containers
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

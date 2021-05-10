@@ -17,7 +17,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.editors.OutlinedTextFieldWithHint
+import io.eugenethedev.taigamobile.ui.components.editors.SearchField
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -75,7 +75,7 @@ fun IssuesScreenContent(
 
     LazyColumn(Modifier.fillMaxSize()) {
         item {
-            OutlinedTextFieldWithHint(
+            SearchField(
                 hintId = R.string.tasks_search_hint,
                 value = query,
                 onValueChange = { query = it },

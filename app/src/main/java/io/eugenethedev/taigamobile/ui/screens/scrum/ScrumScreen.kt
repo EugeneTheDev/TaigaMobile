@@ -28,16 +28,16 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
-import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
-import io.eugenethedev.taigamobile.ui.components.editors.OutlinedTextFieldWithHint
+import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
+import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
+import io.eugenethedev.taigamobile.ui.components.containers.Tab
+import io.eugenethedev.taigamobile.ui.components.editors.SearchField
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
-import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
-import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
 import java.text.SimpleDateFormat
@@ -147,7 +147,7 @@ private fun BacklogTabContent(
 
     LazyColumn(Modifier.fillMaxSize()) {
         item {
-            OutlinedTextFieldWithHint(
+            SearchField(
                 hintId = R.string.tasks_search_hint,
                 value = query,
                 onValueChange = { query = it },

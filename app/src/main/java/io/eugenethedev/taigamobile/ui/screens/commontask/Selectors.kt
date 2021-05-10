@@ -15,7 +15,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.User
-import io.eugenethedev.taigamobile.ui.components.ContainerBox
+import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
@@ -39,7 +39,7 @@ fun Selectors(
 ) {
     // status editor
     SelectorList(
-        titleHint = stringResource(R.string.choose_status),
+        titleHintId = R.string.choose_status,
         items = statusEntry.edit.items,
         isVisible = statusEntry.isVisible,
         isLoading = statusEntry.edit.isItemsLoading,
@@ -58,7 +58,7 @@ fun Selectors(
 
     // type editor
     SelectorList(
-        titleHint = stringResource(R.string.choose_type),
+        titleHintId = R.string.choose_type,
         items = typeEntry.edit.items,
         isVisible = typeEntry.isVisible,
         isLoading = typeEntry.edit.isItemsLoading,
@@ -77,7 +77,7 @@ fun Selectors(
     
     // severity editor
     SelectorList(
-        titleHint = stringResource(R.string.choose_severity),
+        titleHintId = R.string.choose_severity,
         items = severityEntry.edit.items,
         isVisible = severityEntry.isVisible,
         isLoading = severityEntry.edit.isItemsLoading,
@@ -96,7 +96,7 @@ fun Selectors(
     
     // priority editor
     SelectorList(
-        titleHint = stringResource(R.string.choose_priority),
+        titleHintId = R.string.choose_priority,
         items = priorityEntry.edit.items,
         isVisible = priorityEntry.isVisible,
         isLoading = priorityEntry.edit.isItemsLoading,
@@ -115,7 +115,7 @@ fun Selectors(
 
     // sprint editor
     SelectorList(
-        titleHint = stringResource(R.string.choose_sprint),
+        titleHintId = R.string.choose_sprint,
         items = sprintEntry.edit.items,
         isVisible = sprintEntry.isVisible,
         isLoading = sprintEntry.edit.isItemsLoading,
@@ -134,7 +134,7 @@ fun Selectors(
 
     // epics editor
     SelectorList(
-        titleHint = stringResource(R.string.search_epics),
+        titleHintId = R.string.search_epics,
         items = epicsEntry.edit.items,
         isVisible = epicsEntry.isVisible,
         isLoading = epicsEntry.edit.isItemsLoading,
@@ -153,7 +153,7 @@ fun Selectors(
 
     // assignees editor
     SelectorList(
-        titleHint = stringResource(R.string.search_members),
+        titleHintId = R.string.search_members,
         items = assigneesEntry.edit.items,
         isVisible = assigneesEntry.isVisible,
         isLoading = assigneesEntry.edit.isItemsLoading,
@@ -171,7 +171,7 @@ fun Selectors(
 
     // watchers editor
     SelectorList(
-        titleHint = stringResource(R.string.search_members),
+        titleHintId = R.string.search_members,
         items = watchersEntry.edit.items,
         isVisible = watchersEntry.isVisible,
         isLoading = watchersEntry.edit.isItemsLoading,
