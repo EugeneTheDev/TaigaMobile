@@ -24,6 +24,7 @@
     <string name="team">Team</string>
     <string name="settings">Settings</string>
     <string name="more">More</string>
+    <string name="kanban">Kanban</string>
 
     <string name="choose_project_title">Choose project</string>
 
@@ -118,6 +119,8 @@
     <string name="loading">Loading…</string>
 
     <string name="tasks_search_hint">Search by ref or subject</string>
+
+    <string name="status_with_number_template" translatable="false">%s - %d</string>
 
     <!-- settings -->
     <string name="username_template" translatable="false">\@%s</string>

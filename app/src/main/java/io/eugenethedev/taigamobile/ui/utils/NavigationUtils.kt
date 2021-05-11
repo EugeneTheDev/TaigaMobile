@@ -24,6 +24,6 @@ typealias NavigateToTask = (id: Long, type: CommonTaskType, ref: Int) -> Unit
 fun NavController.navigateToTaskScreen(id: Long, type: CommonTaskType, ref: Int)
     = navigate("${Routes.commonTask}/$id/$type/$ref")
 
-typealias NavigateToCreateTask = (type: CommonTaskType, parentId: Long?, sprintId: Long?) -> Unit
-fun NavController.navigateToCreateTaskScreen(type: CommonTaskType, parentId: Long? = null, sprintId: Long? = null)
-    = Routes.Arguments.let { navigate("${Routes.createTask}/$type?${it.parentId}=${parentId ?: -1}&${it.sprintId}=${sprintId ?: -1}") }
+typealias NavigateToCreateTask = (type: CommonTaskType, parentId: Long?, sprintId: Long?, statusId: Long?) -> Unit
+fun NavController.navigateToCreateTaskScreen(type: CommonTaskType, parentId: Long? = null, sprintId: Long? = null, statusId: Long? = null)
+    = Routes.Arguments.let { navigate("${Routes.createTask}/$type?${it.parentId}=${parentId ?: -1}&${it.sprintId}=${sprintId ?: -1}&${it.statusId}=${statusId ?: -1}") }

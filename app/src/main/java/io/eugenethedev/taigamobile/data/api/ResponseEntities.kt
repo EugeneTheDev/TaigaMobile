@@ -59,7 +59,7 @@ data class CommonTaskResponse(
     val assigned_to: Long,
     val watchers: List<Long>,
     val owner: Long,
-    val description: String,
+    val description: String?,
     val epics: List<EpicShortInfo>?,
     val user_story_extra_info: UserStoryShortInfo?,
     val version: Int,

@@ -100,6 +100,11 @@ class TasksRepository @Inject constructor(
         }
     }
 
+    override suspend fun getAllUserStories() = withIO {
+        val filters = getFiltersData(CommonTaskType.UserStory)
+        taigaApi.getUserStories(project = session.currentProjectId).map { it.toCommonTaskExtended(filters, loadSprint = false) }
+    }
+    
     override suspend fun getBacklogUserStories(page: Int, query: String) = withIO {
         handle404 {
             taigaApi.getUserStories(session.currentProjectId, sprint = "null", page = page, query = query)
@@ -157,34 +162,7 @@ class TasksRepository @Inject constructor(
             CommonTaskType.Task -> taigaApi.getTask(commonTaskId)
             CommonTaskType.Epic -> taigaApi.getEpic(commonTaskId)
             CommonTaskType.Issue -> taigaApi.getIssue(commonTaskId)
-        }.let {
-            CommonTaskExtended(
-                id = it.id,
-                status = Status(
-                    id = it.status,
-                    name = it.status_extra_info.name,
-                    color = it.status_extra_info.color,
-                    type = StatusType.Status
-                ),
-                createdDateTime = it.created_date,
-                sprint = it.milestone?.let { taigaApi.getSprint(it).toSprint() },
-                assignedIds = it.assigned_users ?: listOf(it.assigned_to),
-                watcherIds = it.watchers,
-                creatorId = it.owner,
-                ref = it.ref,
-                title = it.subject,
-                isClosed = it.is_closed,
-                description = it.description,
-                epicsShortInfo = it.epics.orEmpty(),
-                projectSlug = it.project_extra_info.slug,
-                userStoryShortInfo = it.user_story_extra_info,
-                version = it.version,
-                color = it.color,
-                type = it.type?.let { id -> filters.types?.find { it.id == id } }?.toStatus(StatusType.Type),
-                severity = it.severity?.let { id -> filters.severities?.find { it.id == id } }?.toStatus(StatusType.Severity),
-                priority = it.priority?.let { id -> filters.priorities?.find { it.id == id } }?.toStatus(StatusType.Priority)
-            )
-        }
+        }.toCommonTaskExtended(filters)
     }
 
     override suspend fun getComments(commonTaskId: Long, type: CommonTaskType) = withIO {
@@ -214,6 +192,35 @@ class TasksRepository @Inject constructor(
         colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
         isClosed = is_closed
     )
+    
+    private suspend fun CommonTaskResponse.toCommonTaskExtended(filters: FiltersDataResponse, loadSprint: Boolean = true): CommonTaskExtended {
+        return CommonTaskExtended(
+            id = id,
+            status = Status(
+                id = status,
+                name = status_extra_info.name,
+                color = status_extra_info.color,
+                type = StatusType.Status
+            ),
+            createdDateTime = created_date,
+            sprint =  if (loadSprint) milestone?.let { taigaApi.getSprint(it).toSprint() } else null,
+            assignedIds = assigned_users ?: listOf(assigned_to),
+            watcherIds = watchers,
+            creatorId = owner,
+            ref = ref,
+            title = subject,
+            isClosed = is_closed,
+            description = description ?: "",
+            epicsShortInfo = epics.orEmpty(),
+            projectSlug = project_extra_info.slug,
+            userStoryShortInfo = user_story_extra_info,
+            version = version,
+            color = color,
+            type = type?.let { id -> filters.types?.find { id == id } }?.toStatus(StatusType.Type),
+            severity = severity?.let { id -> filters.severities?.find { id == id } }?.toStatus(StatusType.Severity),
+            priority = priority?.let { id -> filters.priorities?.find { id == id } }?.toStatus(StatusType.Priority)
+        )
+    }
     
     private fun SprintResponse.toSprint() = Sprint(
         id = id,
@@ -377,9 +384,10 @@ class TasksRepository @Inject constructor(
         title: String,
         description: String,
         parentId: Long?,
-        sprintId: Long?
+        sprintId: Long?,
+        statusId: Long?
     ) = withIO {
-        val body = CreateCommonTaskRequest(session.currentProjectId, title, description)
+        val body = CreateCommonTaskRequest(session.currentProjectId, title, description, statusId)
         when (commonTaskType) {
             CommonTaskType.Task -> taigaApi.createTask(
                 createTaskRequest = CreateTaskRequest(session.currentProjectId, title, description, sprintId, parentId)

@@ -27,7 +27,7 @@ import io.eugenethedev.taigamobile.ui.utils.*
 @Composable
 fun IssuesScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    onError: @Composable (message: Int) -> Unit = {}
 ) {
     val viewModel: IssuesViewModel = viewModel()
     remember {

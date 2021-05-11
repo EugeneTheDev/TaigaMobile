@@ -96,6 +96,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-insets:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-flowlayout:$accompanistVersion")
 
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")

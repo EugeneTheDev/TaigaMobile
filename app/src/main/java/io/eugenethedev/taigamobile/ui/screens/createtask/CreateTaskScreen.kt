@@ -24,6 +24,7 @@ fun CreateTaskScreen(
     commonTaskType: CommonTaskType,
     parentId: Long? = null,
     sprintId: Long? = null,
+    statusId: Long? = null,
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: CreateTaskViewModel = viewModel()
@@ -46,7 +47,7 @@ fun CreateTaskScreen(
             }
         ),
         isLoading = creationResult?.resultStatus == ResultStatus.Loading,
-        createTask = { title, description -> viewModel.createTask(commonTaskType, title, description, parentId, sprintId) },
+        createTask = { title, description -> viewModel.createTask(commonTaskType, title, description, parentId, sprintId, statusId) },
         navigateBack = navController::popBackStack
     )
 }

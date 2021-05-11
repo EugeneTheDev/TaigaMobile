@@ -52,6 +52,14 @@ class ScreensState @Inject constructor() {
             return value
         }
 
+    var shouldReloadKanbanScreen: Boolean = false
+        private set
+        get() {
+            val value = field
+            field = false
+            return value
+        }
+
 
     fun modify() {
         shouldReloadDashboardScreen = true
@@ -59,5 +67,6 @@ class ScreensState @Inject constructor() {
         shouldReloadSprintScreen = true
         shouldReloadEpicsScreen = true
         shouldReloadIssuesScreen = true
+        shouldReloadKanbanScreen = true
     }
 }

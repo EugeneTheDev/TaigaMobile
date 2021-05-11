@@ -30,12 +30,13 @@ class CreateTaskViewModel : ViewModel() {
         title: String,
         description: String,
         parentId: Long? = null,
-        sprintId: Long? = null
+        sprintId: Long? = null,
+        statusId: Long? = null
     ) = viewModelScope.launch {
         creationResult.value = Result(ResultStatus.Loading)
 
         creationResult.value = try {
-            Result(ResultStatus.Success, tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId)).also {
+            Result(ResultStatus.Success, tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId, statusId)).also {
                 screensState.modify()
             }
         } catch (e: Exception) {

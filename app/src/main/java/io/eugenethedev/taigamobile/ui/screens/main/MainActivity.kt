@@ -40,6 +40,7 @@ import io.eugenethedev.taigamobile.ui.screens.createtask.CreateTaskScreen
 import io.eugenethedev.taigamobile.ui.screens.dashboard.DashboardScreen
 import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
 import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
+import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -186,6 +187,7 @@ object Routes {
     const val more = "more"
     const val team = "team"
     const val settings = "settings"
+    const val kanban = "kanban"
     const val projectsSelector = "projectsSelector"
     const val sprint = "sprint"
     const val commonTask = "commonTask"
@@ -197,8 +199,8 @@ object Routes {
         const val commonTaskId = "taskId"
         const val commonTaskType = "taskType"
         const val ref = "ref"
-        const val projectSlug = "projectSlug"
         const val parentId = "parentId"
+        const val statusId = "statusId"
     }
 }
 
@@ -285,6 +287,13 @@ fun MainScreen(
                 )
             }
 
+            composable(Routes.kanban) {
+                KanbanScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
+
             composable(Routes.settings) {
                 SettingsScreen(
                     navController = navController,
@@ -326,7 +335,7 @@ fun MainScreen(
             }
 
             composable(
-                Routes.Arguments.run {"${Routes.createTask}/{$commonTaskType}?$parentId={$parentId}&$sprintId={$sprintId}" },
+                Routes.Arguments.run {"${Routes.createTask}/{$commonTaskType}?$parentId={$parentId}&$sprintId={$sprintId}&$statusId={$statusId}" },
                 arguments = listOf(
                     navArgument(Routes.Arguments.commonTaskType) { type = NavType.StringType },
                     navArgument(Routes.Arguments.parentId) {
@@ -334,6 +343,10 @@ fun MainScreen(
                         defaultValue = -1L // long does not allow null values
                     },
                     navArgument(Routes.Arguments.sprintId) {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    },
+                    navArgument(Routes.Arguments.statusId) {
                         type = NavType.LongType
                         defaultValue = -1L
                     }
@@ -344,6 +357,7 @@ fun MainScreen(
                     commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
                     parentId = it.arguments!!.getLong(Routes.Arguments.parentId).takeIf { it >= 0 },
                     sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId).takeIf { it >= 0 },
+                    statusId = it.arguments!!.getLong(Routes.Arguments.statusId).takeIf { it >= 0 },
                     onError = onError
                 )
             }
@@ -385,6 +399,8 @@ fun MoreScreen(
     fun Margin() = Spacer(Modifier.height(8.dp))
 
     Item(R.drawable.ic_team, R.string.team, Routes.team)
+    Margin()
+    Item(R.drawable.ic_kanban, R.string.kanban, Routes.kanban)
     Margin()
     Item(R.drawable.ic_settings, R.string.settings, Routes.settings)
 }

@@ -61,7 +61,8 @@ data class EditCommonTaskRequest(
 data class CreateCommonTaskRequest(
     val project: Long,
     val subject: String,
-    val description: String
+    val description: String,
+    val status: Long?
 )
 
 data class CreateTaskRequest(
