@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -288,6 +289,7 @@ fun SettingsScreenContent(
                 )
             }
         )
+
     }
 
 
@@ -299,6 +301,15 @@ fun SettingsScreenContent(
         },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = stringResource(R.string.credits_message),
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.height(6.dp))
+
         Text(
             text = stringResource(R.string.app_name_with_version_template).format(
                 stringResource(R.string.app_name), BuildConfig.VERSION_NAME

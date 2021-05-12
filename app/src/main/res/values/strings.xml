@@ -137,6 +137,8 @@
     <string name="help">Help</string>
     <string name="submit_report">Submit report</string>
 
+    <string name="credits_message">Made with ❤️ by EugeneTheDev. If you enjoy the app please consider rating it on Google Play and starring project on GitHub</string>
+
     <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
     <string name="source_code">Source code</string>
 </resources>
