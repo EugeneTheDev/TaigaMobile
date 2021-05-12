@@ -128,13 +128,14 @@
     <string name="logout_text">Are you sure you want to log out?</string>
 
     <string name="appearance">Appearance</string>
-    <string name="scrum_expand_statuses">Expand statuses on scrum screen</string>
-    <string name="sprint_expand_statuses">Expand statuses on sprint screen</string>
 
     <string name="theme_title">Theme</string>
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+
+    <string name="help">Help</string>
+    <string name="submit_report">Submit report</string>
 
     <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
     <string name="source_code">Source code</string>

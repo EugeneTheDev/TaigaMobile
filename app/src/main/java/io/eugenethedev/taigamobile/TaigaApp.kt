@@ -12,7 +12,7 @@ class TaigaApp : Application() {
 
     // logging
     private var fileLoggingTree: FileLoggingTree? = null
-    val currentLogFileUri get() = fileLoggingTree?.currentFile?.toUri()
+    val currentLogFile get() = fileLoggingTree?.currentFile
 
 
     override fun onCreate() {

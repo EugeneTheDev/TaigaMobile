@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.settings
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
@@ -36,6 +38,7 @@ import com.google.accompanist.glide.rememberGlidePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.ThemeSetting
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
@@ -257,6 +260,34 @@ fun SettingsScreenContent(
                 }
             }
         )
+
+        // help
+        val activity = LocalContext.current as Activity
+        SettingsBlock(
+            titleId = R.string.help,
+            items = listOf {
+                SettingItem(
+                    textId = R.string.submit_report,
+                    onClick = {
+                        activity.startActivity(
+                            Intent(Intent.ACTION_SEND).also {
+                                it.type = "text/plain"
+
+                                (activity.application as TaigaApp).currentLogFile?.let { file ->
+                                    it.putExtra(
+                                        Intent.EXTRA_STREAM,
+                                        FileProvider.getUriForFile(activity, "${activity.packageName}.provider", file)
+                                    )
+                                }
+
+                                it.putExtra(Intent.EXTRA_SUBJECT, "Report. Version ${BuildConfig.VERSION_NAME}")
+                                it.putExtra(Intent.EXTRA_TEXT, "Android: ${Build.VERSION.RELEASE}\nDevice: ${Build.MODEL}\nDescribe in details your problem:")
+                            }
+                        )
+                    }
+                )
+            }
+        )
     }
 
 
@@ -293,7 +324,7 @@ private fun SettingsBlock(
     @StringRes titleId: Int,
     items: List<@Composable () -> Unit>
 ) {
-    val verticalMargin = 4.dp
+    val verticalMargin = 2.dp
 
     Text(
         text = stringResource(titleId),
@@ -306,16 +337,18 @@ private fun SettingsBlock(
 
     items.forEach { it() }
 
-    Spacer(Modifier.height(verticalMargin * 2))
+    Spacer(Modifier.height(verticalMargin * 4))
 }
 
 @Composable
 private fun SettingItem(
     @StringRes textId: Int,
     itemWeight: Float = 0.2f,
-    item: @Composable BoxScope.() -> Unit
+    onClick: () -> Unit = {},
+    item: @Composable BoxScope.() -> Unit = {}
 ) = ContainerBox(
-    verticalPadding = 4.dp
+    verticalPadding = 10.dp,
+    onClick = onClick
 ) {
     assert(itemWeight > 0 && itemWeight < 1) { Timber.w("Item weight must be between 0 and 1") }
 
