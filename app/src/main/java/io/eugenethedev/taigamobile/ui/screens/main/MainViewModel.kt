@@ -14,12 +14,10 @@ class MainViewModel : ViewModel() {
     val isLogged get() = session.isLogged
     val isProjectSelected get() = session.isProjectSelected
 
-    val theme = MutableLiveData<ThemeSetting>()
+    val theme: LiveData<ThemeSetting>
 
     init {
         TaigaApp.appComponent.inject(this)
-
-        theme.value = settings.themeSetting
-        settings.themeSettingCallback = { theme.value = it }
+        theme = settings.themeSetting.asLiveData(viewModelScope.coroutineContext)
     }
 }

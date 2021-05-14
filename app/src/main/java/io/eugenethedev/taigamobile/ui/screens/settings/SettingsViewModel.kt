@@ -1,7 +1,8 @@
 package io.eugenethedev.taigamobile.ui.screens.settings
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.*
 import io.eugenethedev.taigamobile.domain.entities.User
@@ -21,12 +22,12 @@ class SettingsViewModel : ViewModel() {
     val user = MutableLiveResult<User>()
     val serverUrl get() = session.server
 
-    val themeSetting: MutableLiveData<ThemeSetting>
+    val themeSetting: LiveData<ThemeSetting>
 
     init {
         TaigaApp.appComponent.inject(this)
 
-        themeSetting = MutableLiveData(settings.themeSetting)
+        themeSetting = settings.themeSetting.asLiveData(viewModelScope.coroutineContext)
     }
 
     fun start() = viewModelScope.launch {
@@ -44,11 +45,8 @@ class SettingsViewModel : ViewModel() {
         session.reset()
     }
 
-    fun switchTheme(theme: ThemeSetting) = viewModelScope.launch {
-        settings.let {
-            it.themeSetting = theme
-            themeSetting.value = it.themeSetting
-        }
+    fun switchTheme(theme: ThemeSetting) {
+        settings.changeThemeSetting(theme)
     }
 
 }

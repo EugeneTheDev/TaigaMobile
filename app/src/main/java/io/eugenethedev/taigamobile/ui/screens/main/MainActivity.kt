@@ -89,7 +89,10 @@ class MainActivity : AppCompatActivity() {
                     Scaffold(
                         scaffoldState = scaffoldState,
                         snackbarHost = {
-                            SnackbarHost(it) {
+                            SnackbarHost(
+                                hostState = it,
+                                modifier = Modifier.navigationBarsPadding()
+                            ) {
                                 Snackbar(
                                     snackbarData = it,
                                     backgroundColor = MaterialTheme.colors.surface,
