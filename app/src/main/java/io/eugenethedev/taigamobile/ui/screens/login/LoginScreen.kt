@@ -62,7 +62,11 @@ fun LoginScreen(
         onUsernameInputChange = { loginInput = it },
         onPasswordInputChange = { passwordInput = it },
         onContinueClick = {
-            if (taigaServerInput.text.isNotBlank() && loginInput.text.isNotBlank() && passwordInput.text.isNotBlank()) {
+            if (
+                taigaServerInput.text.matches(Regex("""([\w\d-]+\.)+[\w\d-]+""")) &&
+                loginInput.text.isNotBlank() &&
+                passwordInput.text.isNotBlank()
+            ) {
                 viewModel.login(
                     taigaServerInput.text.trim(),
                     loginInput.text.trim(),
