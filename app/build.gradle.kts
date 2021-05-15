@@ -17,8 +17,8 @@ android {
         applicationId = "io.eugenethedev.taigamobile"
         minSdk = 21
         targetSdk = 30
-        versionCode = 8
-        versionName = "1.2"
+        versionCode = 9
+        versionName = "1.2.1"
         project.base.archivesBaseName = "TaigaMobile-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
