@@ -21,7 +21,7 @@ class IssuesViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
 
     val projectName get() = session.currentProjectName
-    val issues = MutableLiveResult<List<CommonTask>>()
+    val issues = MutableLiveResult<List<CommonTask>?>()
 
     private var currentIssuesQuery = ""
     private var currentIssuesPage = 0

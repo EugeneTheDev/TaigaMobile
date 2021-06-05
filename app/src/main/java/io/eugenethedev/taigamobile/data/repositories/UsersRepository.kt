@@ -25,7 +25,7 @@ class UsersRepository @Inject constructor(
                     iocaine_tasks.toList() + wiki_changes.toList())
                     .mapNotNull { p -> p.first.toLongOrNull()?.let { it to p.second } }
                     .groupBy { it.first }
-                    .map { (k, v) -> k to v.sumBy { it.second } }
+                    .map { (k, v) -> k to v.sumOf { it.second } }
                     .toMap()
             }
         }

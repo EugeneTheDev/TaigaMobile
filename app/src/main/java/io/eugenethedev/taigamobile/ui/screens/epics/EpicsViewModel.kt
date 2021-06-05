@@ -21,7 +21,7 @@ class EpicsViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
 
     val projectName get() = session.currentProjectName
-    val epics = MutableLiveResult<List<CommonTask>>()
+    val epics = MutableLiveResult<List<CommonTask>?>()
     
     private var currentEpicPage = 0
     private var maxEpicPage = Int.MAX_VALUE

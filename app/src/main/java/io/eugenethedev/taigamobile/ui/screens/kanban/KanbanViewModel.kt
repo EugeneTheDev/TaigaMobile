@@ -27,9 +27,9 @@ class KanbanViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val statuses = MutableLiveResult<List<Status>>()
-    val team = MutableLiveResult<List<User>>()
-    val stories = MutableLiveResult<List<CommonTaskExtended>>()
+    val statuses = MutableLiveResult<List<Status>?>()
+    val team = MutableLiveResult<List<User>?>()
+    val stories = MutableLiveResult<List<CommonTaskExtended>?>()
 
     init {
         TaigaApp.appComponent.inject(this)

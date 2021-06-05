@@ -78,7 +78,6 @@ fun HorizontalTabbedPager(
 
     HorizontalPager(
         state = pagerState,
-        offscreenLimit = tabs.size,
         content = content
     )
 }

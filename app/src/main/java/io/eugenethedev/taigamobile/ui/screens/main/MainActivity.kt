@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import com.google.accompanist.insets.*
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -105,8 +107,7 @@ class MainActivity : AppCompatActivity() {
                             val items = Screens.values()
                             val routes = items.map { it.route }
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute =
-                                navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                            val currentRoute = navBackStackEntry?.destination?.hierarchy?.first()?.route
 
                             // hide bottom bar for other screens
                             if (currentRoute !in routes) return@Scaffold
@@ -131,14 +132,12 @@ class MainActivity : AppCompatActivity() {
                                             label = { Text(stringResource(screen.resourceId)) },
                                             selected = currentRoute == screen.route,
                                             onClick = {
-                                                if (screen.route != currentRoute) {
-                                                    navController.navigate(screen.route) {
-                                                        currentRoute?.let {
-                                                            popUpTo(it) {
-                                                                inclusive = true
-                                                            }
-                                                        }
+                                                navController.navigate(screen.route) {
+                                                    popUpTo(navController.graph.findStartDestination().id) {
+                                                        saveState = true
                                                     }
+                                                    launchSingleTop = true
+                                                    restoreState = true
                                                 }
                                             }
                                         )

@@ -23,12 +23,12 @@ class ScrumViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val stories = MutableLiveResult<List<CommonTask>>()
+    val stories = MutableLiveResult<List<CommonTask>?>()
     private var currentStoriesQuery = ""
     private var currentStoriesPage = 0
     private var maxStoriesPage = Int.MAX_VALUE
 
-    val sprints = MutableLiveResult<List<Sprint>>()
+    val sprints = MutableLiveResult<List<Sprint>?>()
     private var currentSprintPage = 0
     private var maxSprintPage = Int.MAX_VALUE
 

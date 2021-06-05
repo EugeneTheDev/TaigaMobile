@@ -21,8 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
-import androidx.navigation.compose.popUpTo
 import com.google.accompanist.insets.imePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.screens.main.Routes

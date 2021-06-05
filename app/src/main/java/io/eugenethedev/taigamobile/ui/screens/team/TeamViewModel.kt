@@ -20,7 +20,7 @@ class TeamViewModel : ViewModel() {
     @Inject lateinit var session: Session
 
     val projectName: String get() = session.currentProjectName
-    val team = MutableLiveResult<List<TeamMember>>()
+    val team = MutableLiveResult<List<TeamMember>?>()
 
     init {
         TaigaApp.appComponent.inject(this)

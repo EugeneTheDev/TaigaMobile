@@ -207,7 +207,7 @@ private fun Header(
     horizontalAlignment = Alignment.Start
 ) {
     Text(
-        text = text.toUpperCase(Locale.getDefault()),
+        text = text.uppercase(),
         style = MaterialTheme.typography.subtitle1,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -239,7 +239,7 @@ private fun IssueHeader(
     verticalAlignment = Alignment.CenterVertically
 ) {
     Text(
-        text = stringResource(R.string.sprint_issues).toUpperCase(Locale.getDefault()),
+        text = stringResource(R.string.sprint_issues).uppercase(),
         modifier = Modifier.weight(0.8f, fill = false)
     )
 

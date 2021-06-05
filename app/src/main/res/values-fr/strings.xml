@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Taiga Mobile</string>
-    <string name="app_name_with_version_template" translatable="false">%s - %s</string>
 
     <string name="yes">Oui</string>
     <string name="no">Non</string>
@@ -29,7 +28,6 @@
     <string name="choose_project_title">Selectionner un projet</string>
 
     <string name="search_projects_hint">Rechercher les projets</string>
-    <string name="project_name_template" translatable="false">%s (%s)</string>
     <string name="project_member">Membres</string>
     <string name="project_admin">Admin</string>
     <string name="project_owner">Propriétaire</string>
@@ -37,13 +35,11 @@
     <string name="working_on">Travaille sur</string>
     <string name="watching">Observe</string>
 
-    <string name="title_with_ref_pattern" translatable="false">#%d %s</string>
     <string name="unassigned">Non assigné</string>
     <string name="assignee_pattern">Assigné à: %s</string>
     <string name="backlog">Reste à faire</string>
 
     <string name="sprints_title">Sprints</string>
-    <string name="sprint_dates_template" translatable="false">%s - %s</string>
     <string name="stories_count_template">Récits: %d</string>
     <string name="taskboard">Board</string>
     <string name="closed">Fermé</string>
@@ -120,10 +116,7 @@
 
     <string name="tasks_search_hint">Rechercher par ref ou sujet</string>
 
-    <string name="status_with_number_template" translatable="false">%s - %d</string>
-
     <!-- settings -->
-    <string name="username_template" translatable="false">\@%s</string>
     <string name="logout_title">Se déconnecter</string>
     <string name="logout_text">Etes vous sûr de vouloir vous déconnecter ?</string>
 
@@ -139,6 +132,5 @@
 
     <string name="credits_message">Réalisé avec ❤️ par EugeneTheDev. Si vous aimez l\'application, merci de donner une appréciation sur Google Play et sur le projet GitHub</string>
 
-    <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
     <string name="source_code">Code source</string>
 </resources>

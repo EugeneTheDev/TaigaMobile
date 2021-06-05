@@ -23,10 +23,10 @@ class SprintViewModel : ViewModel() {
 
     private var sprintId: Long? = null
 
-    val statuses = MutableLiveResult<List<Status>>()
-    val storiesWithTasks = MutableLiveResult<Map<CommonTask, List<CommonTask>>>()
-    val storylessTasks = MutableLiveResult<List<CommonTask>>()
-    val issues = MutableLiveResult<List<CommonTask>>()
+    val statuses = MutableLiveResult<List<Status>?>()
+    val storiesWithTasks = MutableLiveResult<Map<CommonTask, List<CommonTask>>?>()
+    val storylessTasks = MutableLiveResult<List<CommonTask>?>()
+    val issues = MutableLiveResult<List<CommonTask>?>()
 
     init {
         TaigaApp.appComponent.inject(this)

@@ -11,7 +11,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
-import timber.log.Timber
 
 /**
  * Text with colored dots (indicators) at the end

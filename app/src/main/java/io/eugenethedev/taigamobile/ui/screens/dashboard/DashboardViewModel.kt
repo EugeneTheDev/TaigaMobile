@@ -19,8 +19,8 @@ class DashboardViewModel : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
 
-    val workingOn = MutableLiveResult<List<CommonTask>>()
-    val watching = MutableLiveResult<List<CommonTask>>()
+    val workingOn = MutableLiveResult<List<CommonTask>?>()
+    val watching = MutableLiveResult<List<CommonTask>?>()
 
     init {
         TaigaApp.appComponent.inject(this)

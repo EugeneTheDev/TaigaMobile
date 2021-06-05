@@ -53,7 +53,7 @@ fun CommonTaskItem(
                         CommonTaskType.Epic -> R.string.epic
                         CommonTaskType.Issue -> R.string.issue
                     }
-                ).toUpperCase(Locale.getDefault()),
+                ).uppercase(),
                 color = MaterialTheme.colors.primaryVariant
             )
         }

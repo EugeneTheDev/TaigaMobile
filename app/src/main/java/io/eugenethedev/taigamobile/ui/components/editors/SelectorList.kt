@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.components.editors
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -39,10 +40,10 @@ fun <T> SelectorList(
     animationDurationMillis: Int = SelectorListConstants.defaultAnimDurationMillis,
     itemContent: @Composable (T) -> Unit
 ) = AnimatedVisibility(
-    visible = isVisible,
+    visibleState = remember { MutableTransitionState(false) }
+        .apply { targetState = isVisible },
     enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(animationDurationMillis)),
-    exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(animationDurationMillis)),
-    initiallyVisible = false // always show animation when becoming visible
+    exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(animationDurationMillis))
 ) {
     var query by remember { mutableStateOf(TextFieldValue()) }
 

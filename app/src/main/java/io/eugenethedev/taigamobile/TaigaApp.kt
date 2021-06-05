@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile
 
 import android.app.Application
 import android.util.Log
-import androidx.core.net.toUri
 import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.dagger.DaggerAppComponent
 import io.eugenethedev.taigamobile.utils.FileLoggingTree

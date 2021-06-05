@@ -32,7 +32,6 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.NavigateToCreateTask
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.util.*
 
@@ -136,7 +135,7 @@ private fun Header(
 
         Text(
             text = stringResource(R.string.status_with_number_template).format(
-                text.toUpperCase(Locale.getDefault()), storiesCount
+                text.uppercase(), storiesCount
             ),
             style = textStyle,
             maxLines = 1,

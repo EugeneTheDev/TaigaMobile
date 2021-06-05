@@ -124,7 +124,7 @@ class CommonTaskViewModel : ViewModel() {
 
     // Edit sprint
 
-    val sprints = MutableLiveResult<List<Sprint?>>()
+    val sprints = MutableLiveResult<List<Sprint?>?>()
     val sprintSelectResult = MutableLiveResult<Unit>()
     private var currentSprintPage = 0
     private var maxSprintPage = Int.MAX_VALUE
