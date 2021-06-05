@@ -6,7 +6,7 @@
     <string name="no">Non</string>
 
     <string name="common_error_message">Un problème est survenu. Vérifiez votre connexion.</string>
-    <string name="permission_error">Erreur, vous n'avez pas les autorisations suffisantes</string>
+    <string name="permission_error">Erreur, vous n\'avez pas les autorisations suffisantes</string>
 
     <string name="nothing_to_see">Rien à voir ici</string>
 
@@ -67,9 +67,9 @@
     <string name="issue">Ticket</string>
     
     <string name="no_sprint">Aucun sprint</string>
-    <string name="belongs_to_epics">Fait partie de l'épopée</string>
+    <string name="belongs_to_epics">Fait partie de l\'épopée</string>
     <string name="belongs_to_story">Fait partie du récit</string>
-    <string name="link_to_epic">Lien ver l'épopée</string>
+    <string name="link_to_epic">Lien ver l\'épopée</string>
     <string name="created_by">Créé par</string>
     <string name="assigned_to">Assigné à</string>
     <string name="watchers">Observateurs</string>
@@ -92,11 +92,11 @@
 
     <string name="power">power</string>
 
-    <string name="unlink_epic_title">Détacher de l'épopée</string>
-    <string name="unlink_epic_text">Etes vous sûr de vouloir détacher de l'épopée ?</string>
+    <string name="unlink_epic_title">Détacher de l\'épopée</string>
+    <string name="unlink_epic_text">Etes vous sûr de vouloir détacher de l\'épopée ?</string>
 
-    <string name="remove_user_title">Retirer l'utilisateur</string>
-    <string name="remove_user_text">Etes vous sûr de vouloir retirer l'utilisateur ?</string>
+    <string name="remove_user_title">Retirer l\'utilisateur</string>
+    <string name="remove_user_text">Etes vous sûr de vouloir retirer l\'utilisateur ?</string>
 
     <string name="delete_task_title">Supprimer la tâche</string>
     <string name="delete_task_text">Etes vous sûr de vouloir supprimer la tâche ?</string>
@@ -137,7 +137,7 @@
     <string name="help">Aide</string>
     <string name="submit_report">Soumettre un rapport</string>
 
-    <string name="credits_message">Réalisé avec ❤️ par EugeneTheDev. Si vous aimez l'application, merci de donner une appréciation sur Google Play et sur le projet GitHub</string>
+    <string name="credits_message">Réalisé avec ❤️ par EugeneTheDev. Si vous aimez l\'application, merci de donner une appréciation sur Google Play et sur le projet GitHub</string>
 
     <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
     <string name="source_code">Code source</string>
