@@ -37,11 +37,11 @@ class IssuesViewModel : ViewModel() {
         }
 
         if (issues.value == null) {
-            loadIssues("")
+            loadIssues()
         }
     }
 
-    fun loadIssues(query: String) = viewModelScope.launch {
+    fun loadIssues(query: String = "") = viewModelScope.launch {
         query.takeIf { it != currentIssuesQuery }?.let {
             currentIssuesQuery = it
             currentIssuesPage = 0

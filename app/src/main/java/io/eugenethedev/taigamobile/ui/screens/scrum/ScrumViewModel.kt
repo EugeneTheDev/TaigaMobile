@@ -42,12 +42,12 @@ class ScrumViewModel : ViewModel() {
         }
 
         if (stories.value == null || sprints.value == null) {
-            
+            loadStories()
             loadSprints()
         }
     }
     
-    fun loadStories(query: String) = viewModelScope.launch {
+    fun loadStories(query: String = "") = viewModelScope.launch {
         query.takeIf { it != currentStoriesQuery }?.let {
             currentStoriesQuery = it
             currentStoriesPage = 0

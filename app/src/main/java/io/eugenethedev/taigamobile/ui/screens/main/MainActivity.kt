@@ -115,11 +115,11 @@ class MainActivity : AppCompatActivity() {
                             Column {
                                 BottomNavigation(
                                     backgroundColor = MaterialTheme.colors.surface,
-                                    modifier = Modifier.height(48.dp)
+                                    modifier = Modifier.navigationBarsHeight(48.dp)
                                 ) {
                                     items.forEach { screen ->
                                         BottomNavigationItem(
-                                            modifier = Modifier.offset(y = 4.dp),
+                                            modifier = Modifier.offset(y = 4.dp).navigationBarsPadding(),
                                             selectedContentColor = MaterialTheme.colors.primary,
                                             unselectedContentColor = Color.Gray,
                                             icon = {
@@ -132,29 +132,22 @@ class MainActivity : AppCompatActivity() {
                                             label = { Text(stringResource(screen.resourceId)) },
                                             selected = currentRoute == screen.route,
                                             onClick = {
-                                                navController.navigate(screen.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
+                                                if (currentRoute != screen.route) {
+                                                    navController.navigate(screen.route) {
+                                                        popUpTo(navController.graph.findStartDestination().id) {
+                                                            // if start destination
+                                                            if (screen.route == Routes.dashboard) {
+                                                                inclusive = true
+                                                            }
+                                                        }
                                                     }
-                                                    launchSingleTop = true
-                                                    restoreState = true
                                                 }
                                             }
                                         )
                                     }
                                 }
 
-                                Spacer(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            LocalElevationOverlay.current?.apply(
-                                                color = MaterialTheme.colors.surface,
-                                                elevation = BottomNavigationDefaults.Elevation
-                                            ) ?: MaterialTheme.colors.surface
-                                        )
-                                        .navigationBarsHeight()
-                                )
+
                             }
                         },
                         content = {
