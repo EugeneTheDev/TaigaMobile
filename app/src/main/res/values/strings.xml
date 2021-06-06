@@ -80,6 +80,7 @@
     <string name="delete_comment_title">Delete comment</string>
     <string name="delete_comment_text">Are you sure you want to delete comment?</string>
     <string name="add_user">Add user</string>
+    <string name="attachments">Attachments</string>
 
     <string name="choose_status">Choose status</string>
     <string name="choose_type">Choose type</string>

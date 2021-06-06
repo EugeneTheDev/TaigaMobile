@@ -1,5 +1,8 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -93,6 +97,9 @@ fun CommonTaskScreen(
 
     val team by viewModel.team.observeAsState()
     team?.subscribeOnError(onError)
+
+    val attachments by viewModel.attachments.observeAsState()
+    attachments?.subscribeOnError(onError)
 
     val assigneesResult by viewModel.assigneesResult.observeAsState()
     assigneesResult?.subscribeOnError(onError)
@@ -182,6 +189,7 @@ fun CommonTaskScreen(
                 }
             ),
             unlinkFromEpic = viewModel::unlinkFromEpic,
+            attachments = attachments?.data.orEmpty(),
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
@@ -250,6 +258,7 @@ fun CommonTaskScreenContent(
     editSprint: EditAction<Sprint?> = EditAction(),
     editEpics: EditAction<CommonTask> = EditAction(),
     unlinkFromEpic: (EpicShortInfo) -> Unit = {},
+    attachments: List<Attachment> = emptyList(),
     editAssignees: EditAction<User> = EditAction(),
     editWatchers: EditAction<User> = EditAction(),
     editComments: EditCommentsAction = EditCommentsAction(),
@@ -546,11 +555,7 @@ fun CommonTaskScreenContent(
                                 UserStoryItem(
                                     story = story,
                                     onClick = {
-                                        navigateToTask(
-                                            it.id,
-                                            CommonTaskType.UserStory,
-                                            it.ref
-                                        )
+                                        navigateToTask(it.id, CommonTaskType.UserStory, it.ref)
                                     }
                                 )
                             }
@@ -571,6 +576,26 @@ fun CommonTaskScreenContent(
                         }
 
                         Spacer(Modifier.height(sectionsMargin * 2))
+
+                        // attachments
+                        Text(
+                            text = stringResource(R.string.attachments),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    }
+
+                    itemsIndexed(attachments) { index, item ->
+                        AttachmentItem(
+                            attachment = item
+                        )
+
+                        if (index < attachments.lastIndex) {
+                            Spacer(Modifier.height(4.dp))
+                        }
+                    }
+
+                    item {
+                        Spacer(Modifier.height(sectionsMargin))
 
                         // created by
                         Text(
@@ -714,7 +739,11 @@ fun CommonTaskScreenContent(
                         if (editComments.isResultLoading) {
                             DotsLoader()
                         }
-                        Spacer(Modifier.navigationBarsWithImePadding().height(72.dp))
+
+                        Spacer(
+                            Modifier
+                                .navigationBarsWithImePadding()
+                                .height(72.dp))
                     }
                 }
 
@@ -881,6 +910,24 @@ private fun UserItemWithAction(
             )
         }
     }
+}
+
+@Composable
+private fun AttachmentItem(attachment: Attachment) = Row(
+    verticalAlignment = Alignment.CenterVertically
+) {
+    val activity = LocalContext.current as Activity
+    Icon(
+        painter = painterResource(R.drawable.ic_attachment),
+        contentDescription = null,
+        tint = Color.Gray
+    )
+
+    Text(
+        text = attachment.name,
+        color = MaterialTheme.colors.primary,
+        modifier = Modifier.clickableUnindicated { activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url))) }
+    )
 }
 
 @Composable

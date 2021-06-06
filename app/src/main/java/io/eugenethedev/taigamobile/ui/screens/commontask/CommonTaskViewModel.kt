@@ -32,6 +32,7 @@ class CommonTaskViewModel : ViewModel() {
     private val commonTaskVersion get() = commonTask.value?.data?.version ?: -1
     
     val creator = MutableLiveResult<User>()
+    val attachments = MutableLiveResult<List<Attachment>>()
     val assignees = MutableLiveResult<List<User>>()
     val watchers = MutableLiveResult<List<User>>()
     val userStories = MutableLiveResult<List<CommonTask>>()
@@ -56,6 +57,7 @@ class CommonTaskViewModel : ViewModel() {
         commonTask.value = try {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).let {
                 val creatorAsync = async { loadUser(it.creatorId) }
+                val attachmentsAsync = async { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
                 val assigneesAsyncs = it.assignedIds.map { async { loadUser(it) } }
                 val watchersAsyncs = it.watcherIds.map { async { loadUser(it) } }
                 val userStoriesAsync = async { tasksRepository.getEpicUserStories(commonTaskId) }
@@ -63,6 +65,7 @@ class CommonTaskViewModel : ViewModel() {
                 val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
 
                 creator.value = creatorAsync.await()
+                attachments.value = Result(ResultStatus.Success, attachmentsAsync.await())
                 assignees.value = Result(ResultStatus.Success, assigneesAsyncs.mapNotNull { it.await().data })
                 watchers.value = Result(ResultStatus.Success, watchersAsyncs.mapNotNull { it.await().data })
                 userStories.value = Result(ResultStatus.Success, userStoriesAsync.await())
@@ -248,11 +251,6 @@ class CommonTaskViewModel : ViewModel() {
 
         team.value = Result(ResultStatus.Loading)
         team.value = query?.let { q ->
-            // FIXME I had to put a small delay here, otherwise results in search were always incorrect.
-            // I don't have a fucking clue why this is happening and i don't like it, but i don't know how to fix it.
-            // UPD: the problem disappears without AnimatedVisibility, so blame ExperimentalAnimationApi...
-            // (but this is the sacrifice I'm willing to make for nice animations)
-            delay(20)
             Result(
                 resultStatus = ResultStatus.Success,
                 data = _team.filter {

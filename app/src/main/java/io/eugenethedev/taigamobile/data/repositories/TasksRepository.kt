@@ -174,6 +174,15 @@ class TasksRepository @Inject constructor(
         }.sortedBy { it.postDateTime }
     }
 
+    override suspend fun getAttachments(commonTaskId: Long, type: CommonTaskType) = withIO {
+        when (type) {
+            CommonTaskType.UserStory -> taigaApi.getUserStoryAttachments(commonTaskId, session.currentProjectId)
+            CommonTaskType.Task -> taigaApi.getTaskAttachments(commonTaskId, session.currentProjectId)
+            CommonTaskType.Epic -> taigaApi.getEpicAttachments(commonTaskId, session.currentProjectId)
+            CommonTaskType.Issue -> taigaApi.getIssueAttachments(commonTaskId, session.currentProjectId)
+        }
+    }
+
 
     private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
         id = id,
@@ -239,6 +248,7 @@ class TasksRepository @Inject constructor(
         e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
     }
 
+    // edit related
 
     override suspend fun changeStatus(
         commonTaskId: Long,

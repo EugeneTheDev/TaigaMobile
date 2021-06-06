@@ -76,6 +76,7 @@
     <string name="delete_comment_title">Supprimer le commentaire</string>
     <string name="delete_comment_text">Etes vous sûr de vouloir supprimer le commentaire ?</string>
     <string name="add_user">Ajouter un utilisateur</string>
+    <string name="attachments">Pièces jointes</string>
 
     <string name="choose_status">Choisir un statut</string>
     <string name="choose_type">Choisir un type</string>

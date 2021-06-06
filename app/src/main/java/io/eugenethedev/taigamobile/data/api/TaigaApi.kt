@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
+import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.Comment
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.entities.User
@@ -345,16 +346,39 @@ interface TaigaApi {
         @Path("userStoryId") userStoryId: Long
     ): Response<Void>
 
-    @POST("/tasks/{id}/promote_to_user_story")
+    @POST("tasks/{id}/promote_to_user_story")
     suspend fun promoteTaskToUserStory(
         @Path("id") taskId: Long,
         @Body promoteToUserStoryRequest: PromoteToUserStoryRequest
     ): List<Int>
 
-    @POST("/issues/{id}/promote_to_user_story")
+    @POST("issues/{id}/promote_to_user_story")
     suspend fun promoteIssueToUserStory(
         @Path("id") issueId: Long,
         @Body promoteToUserStoryRequest: PromoteToUserStoryRequest
     ): List<Int>
 
+    @GET("epics/attachments")
+    suspend fun getEpicAttachments(
+        @Query("object_id") storyId: Long,
+        @Query("project") projectId: Long
+    ): List<Attachment>
+
+    @GET("userstories/attachments")
+    suspend fun getUserStoryAttachments(
+        @Query("object_id") storyId: Long,
+        @Query("project") projectId: Long
+    ): List<Attachment>
+
+    @GET("tasks/attachments")
+    suspend fun getTaskAttachments(
+        @Query("object_id") storyId: Long,
+        @Query("project") projectId: Long
+    ): List<Attachment>
+
+    @GET("issues/attachments")
+    suspend fun getIssueAttachments(
+        @Query("object_id") storyId: Long,
+        @Query("project") projectId: Long
+    ): List<Attachment>
 }

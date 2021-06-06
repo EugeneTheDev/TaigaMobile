@@ -28,6 +28,8 @@ interface ITasksRepository {
 
     suspend fun getComments(commonTaskId: Long, type: CommonTaskType): List<Comment>
 
+    suspend fun getAttachments(commonTaskId: Long, type: CommonTaskType): List<Attachment>
+
     // edit related
     suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, statusType: StatusType, version: Int)
     suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
