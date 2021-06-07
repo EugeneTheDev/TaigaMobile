@@ -4,6 +4,7 @@ import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.Comment
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.entities.User
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -381,4 +382,48 @@ interface TaigaApi {
         @Query("object_id") storyId: Long,
         @Query("project") projectId: Long
     ): List<Attachment>
+
+    @DELETE("epics/attachments/{id}")
+    suspend fun deleteEpicAttachment(@Path("id") attachmentId: Long): Response<Void>
+
+    @DELETE("userstories/attachments/{id}")
+    suspend fun deleteUserStoryAttachment(@Path("id") attachmentId: Long): Response<Void>
+
+    @DELETE("issues/attachments/{id}")
+    suspend fun deleteIssueAttachment(@Path("id") attachmentId: Long): Response<Void>
+
+    @DELETE("tasks/attachments/{id}")
+    suspend fun deleteTaskAttachment(@Path("id") attachmentId: Long): Response<Void>
+
+    @POST("epics/attachments")
+    @Multipart
+    suspend fun uploadEpicAttachment(
+        @Part file: MultipartBody.Part,
+        @Part project: MultipartBody.Part,
+        @Part objectId: MultipartBody.Part
+    )
+
+    @POST("userstories/attachments")
+    @Multipart
+    suspend fun uploadUserStoryAttachment(
+        @Part file: MultipartBody.Part,
+        @Part project: MultipartBody.Part,
+        @Part objectId: MultipartBody.Part
+    )
+
+    @POST("tasks/attachments")
+    @Multipart
+    suspend fun uploadTaskAttachment(
+        @Part file: MultipartBody.Part,
+        @Part project: MultipartBody.Part,
+        @Part objectId: MultipartBody.Part
+    )
+
+    @POST("issues/attachments")
+    @Multipart
+    suspend fun uploadIssueAttachment(
+        @Part file: MultipartBody.Part,
+        @Part project: MultipartBody.Part,
+        @Part objectId: MultipartBody.Part
+    )
 }

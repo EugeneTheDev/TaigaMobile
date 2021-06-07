@@ -14,9 +14,9 @@ import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.InputStream
 import javax.inject.Inject
 
 class CommonTaskViewModel : ViewModel() {
@@ -346,6 +346,34 @@ class CommonTaskViewModel : ViewModel() {
 
         commentsResult.value = try {
             tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
+            loadData().join()
+            Result(ResultStatus.Success)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.Error, message = R.string.permission_error)
+        }
+    }
+
+    val attachmentResult = MutableLiveResult<Unit>()
+
+    fun deleteAttachment(attachment: Attachment) = viewModelScope.launch {
+        attachmentResult.value = Result(ResultStatus.Loading)
+
+        attachmentResult.value = try {
+            tasksRepository.deleteAttachment(commonTaskType, attachment.id)
+            loadData().join()
+            Result(ResultStatus.Success)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.Error, message = R.string.permission_error)
+        }
+    }
+
+    fun addAttachment(fileName: String, inputStream: InputStream) = viewModelScope.launch {
+        attachmentResult.value = Result(ResultStatus.Loading)
+
+        attachmentResult.value = try {
+            tasksRepository.addAttachment(commonTaskId, commonTaskType, fileName, inputStream)
             loadData().join()
             Result(ResultStatus.Success)
         } catch (e: Exception) {

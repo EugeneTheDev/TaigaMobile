@@ -5,7 +5,13 @@ import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import kotlinx.coroutines.async
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import java.io.InputStream
 import javax.inject.Inject
 
 class TasksRepository @Inject constructor(
@@ -428,5 +434,32 @@ class TasksRepository @Inject constructor(
             else -> throw UnsupportedOperationException("Cannot promote to user story $commonTaskType")
         }.first()
          .let { taigaApi.getUserStoryByRef(session.currentProjectId, it).toCommonTask(CommonTaskType.UserStory) }
+    }
+
+    override suspend fun addAttachment(commonTaskId: Long, commonTaskType: CommonTaskType, fileName: String, inputStream: InputStream) = withIO {
+        val file = MultipartBody.Part.createFormData(
+            name = "attached_file",
+            filename = fileName,
+            body = inputStream.readBytes().toRequestBody("*/*".toMediaType())
+        )
+        val project = MultipartBody.Part.createFormData("project", session.currentProjectId.toString())
+        val objectId = MultipartBody.Part.createFormData("object_id", commonTaskId.toString())
+
+        when (commonTaskType) {
+            CommonTaskType.UserStory -> taigaApi.uploadUserStoryAttachment(file, project, objectId)
+            CommonTaskType.Task -> taigaApi.uploadTaskAttachment(file, project, objectId)
+            CommonTaskType.Epic -> taigaApi.uploadEpicAttachment(file, project, objectId)
+            CommonTaskType.Issue -> taigaApi.uploadIssueAttachment(file, project, objectId)
+        }
+    }
+
+    override suspend fun deleteAttachment(commonTaskType: CommonTaskType, attachmentId: Long) = withIO {
+        when (commonTaskType) {
+            CommonTaskType.UserStory -> taigaApi.deleteUserStoryAttachment(attachmentId)
+            CommonTaskType.Task -> taigaApi.deleteTaskAttachment(attachmentId)
+            CommonTaskType.Epic -> taigaApi.deleteEpicAttachment(attachmentId)
+            CommonTaskType.Issue -> taigaApi.deleteIssueAttachment(attachmentId)
+        }
+        return@withIO
     }
 }

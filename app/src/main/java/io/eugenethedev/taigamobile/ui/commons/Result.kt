@@ -19,5 +19,5 @@ enum class ResultStatus {
     Loading
 }
 
-typealias LiveResult<T> = LiveData<Result<T>>
-typealias MutableLiveResult<T> = MutableLiveData<Result<T>>
+typealias LiveResult<T> = LiveData<Result<T>?>
+typealias MutableLiveResult<T> = MutableLiveData<Result<T>?>

@@ -77,6 +77,7 @@
     <string name="delete_comment_text">Etes vous sûr de vouloir supprimer le commentaire ?</string>
     <string name="add_user">Ajouter un utilisateur</string>
     <string name="attachments">Pièces jointes</string>
+    <string name="add_attachment">Ajouter une pièce jointe</string>
 
     <string name="choose_status">Choisir un statut</string>
     <string name="choose_type">Choisir un type</string>
@@ -100,6 +101,9 @@
 
     <string name="promote_title">Promouvoir en récit utilisateur</string>
     <string name="promote_text">Etes vous sûr de vouloir promouvoir cette tâche en récit utilisateur ?</string>
+
+    <string name="remove_attachment_title">Supprimer la pièce jointe</string>
+    <string name="remove_attachment_text">Voulez-vous vraiment supprimer la pièce jointe ?</string>
 
     <string name="title_hint">Titre</string>
     <string name="description_hint">Description</string>

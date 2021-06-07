@@ -1,6 +1,8 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
+import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.Comment
+import java.io.InputStream
 
 
 /**
@@ -18,5 +20,11 @@ class EditAction<T>(
 class EditCommentsAction(
     val createComment: (String) -> Unit = {},
     val deleteComment: (Comment) -> Unit = {},
+    val isResultLoading: Boolean = false
+)
+
+class EditAttachmentsAction(
+    val deleteAttachment: (Attachment) -> Unit = {},
+    val addAttachment: (name: String, stream: InputStream) -> Unit = { _, _ -> },
     val isResultLoading: Boolean = false
 )

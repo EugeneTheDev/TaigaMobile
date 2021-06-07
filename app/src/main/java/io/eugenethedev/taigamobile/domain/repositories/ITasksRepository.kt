@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.domain.repositories
 
 import io.eugenethedev.taigamobile.domain.entities.*
+import java.io.InputStream
 
 interface ITasksRepository {
     suspend fun getWorkingOn(): List<CommonTask>
@@ -53,4 +54,7 @@ interface ITasksRepository {
     suspend fun deleteCommonTask(commonTaskType: CommonTaskType, commonTaskId: Long)
 
     suspend fun promoteCommonTaskToUserStory(commonTaskId: Long, commonTaskType: CommonTaskType): CommonTask
+
+    suspend fun addAttachment(commonTaskId: Long, commonTaskType: CommonTaskType, fileName: String, inputStream: InputStream)
+    suspend fun deleteAttachment(commonTaskType: CommonTaskType, attachmentId: Long)
 }

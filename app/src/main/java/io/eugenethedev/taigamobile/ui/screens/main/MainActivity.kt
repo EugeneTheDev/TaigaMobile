@@ -1,12 +1,13 @@
 package io.eugenethedev.taigamobile.ui.screens.main
 
 import android.os.Bundle
+import android.provider.OpenableColumns
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -46,11 +47,28 @@ import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import kotlinx.coroutines.FlowPreview
-import timber.log.Timber
+import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
-    @FlowPreview
+
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        it ?: return@registerForActivityResult
+        val inputStream = contentResolver.openInputStream(it) ?: return@registerForActivityResult
+        val fileName = contentResolver.query(it, null, null, null, null)?.use { cursor ->
+            cursor.moveToFirst()
+            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+        } ?: return@registerForActivityResult
+
+        filePicker.filePicked(fileName, inputStream)
+    }
+
+    private val filePicker: FilePicker = object : FilePicker() {
+        override fun requestFile(onFilePicked: (String, InputStream) -> Unit) {
+            super.requestFile(onFilePicked)
+            getContent.launch("*/*")
+        }
+    }
+
     @ExperimentalPagerApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimatedInsets
@@ -86,7 +104,6 @@ class MainActivity : AppCompatActivity() {
                             darkIcons = MaterialTheme.colors.isLight
                         )
                     }
-                    Timber.w(MaterialTheme.colors.primarySurface.toString())
 
                     Scaffold(
                         scaffoldState = scaffoldState,
@@ -151,12 +168,16 @@ class MainActivity : AppCompatActivity() {
                             }
                         },
                         content = {
-                            MainScreen(
-                                viewModel = viewModel,
-                                scaffoldState = scaffoldState,
-                                paddingValues = it,
-                                navController = navController
-                            )
+                            CompositionLocalProvider(
+                                LocalFilePicker provides filePicker
+                            ) {
+                                MainScreen(
+                                    viewModel = viewModel,
+                                    scaffoldState = scaffoldState,
+                                    paddingValues = it,
+                                    navController = navController
+                                )
+                            }
                         }
                     )
                 }

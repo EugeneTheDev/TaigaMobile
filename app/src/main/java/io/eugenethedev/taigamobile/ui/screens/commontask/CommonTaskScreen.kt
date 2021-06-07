@@ -44,6 +44,7 @@ import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
@@ -100,6 +101,8 @@ fun CommonTaskScreen(
 
     val attachments by viewModel.attachments.observeAsState()
     attachments?.subscribeOnError(onError)
+    val attachmentsResult by viewModel.attachmentResult.observeAsState()
+    attachmentsResult?.subscribeOnError(onError)
 
     val assigneesResult by viewModel.assigneesResult.observeAsState()
     assigneesResult?.subscribeOnError(onError)
@@ -190,6 +193,11 @@ fun CommonTaskScreen(
             ),
             unlinkFromEpic = viewModel::unlinkFromEpic,
             attachments = attachments?.data.orEmpty(),
+            editAttachments = EditAttachmentsAction(
+                deleteAttachment = viewModel::deleteAttachment,
+                addAttachment = viewModel::addAttachment,
+                isResultLoading = attachmentsResult?.resultStatus == ResultStatus.Loading
+            ),
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
@@ -241,6 +249,7 @@ fun CommonTaskScreenContent(
     description: String,
     creationDateTime: Date,
     creator: User?,
+    attachments: List<Attachment> = emptyList(),
     assignees: List<User> = emptyList(),
     watchers: List<User> = emptyList(),
     userStories: List<CommonTask> = emptyList(),
@@ -258,7 +267,7 @@ fun CommonTaskScreenContent(
     editSprint: EditAction<Sprint?> = EditAction(),
     editEpics: EditAction<CommonTask> = EditAction(),
     unlinkFromEpic: (EpicShortInfo) -> Unit = {},
-    attachments: List<Attachment> = emptyList(),
+    editAttachments: EditAttachmentsAction = EditAttachmentsAction(),
     editAssignees: EditAction<User> = EditAction(),
     editWatchers: EditAction<User> = EditAction(),
     editComments: EditCommentsAction = EditCommentsAction(),
@@ -584,17 +593,26 @@ fun CommonTaskScreenContent(
                         )
                     }
 
-                    itemsIndexed(attachments) { index, item ->
+                    items(attachments) {
                         AttachmentItem(
-                            attachment = item
+                            attachment = it,
+                            onRemoveClick = { editAttachments.deleteAttachment(it) }
                         )
-
-                        if (index < attachments.lastIndex) {
-                            Spacer(Modifier.height(4.dp))
-                        }
                     }
 
                     item {
+                        if (editAttachments.isResultLoading) {
+                            DotsLoader()
+                        }
+
+                        val filePicker = LocalFilePicker.current
+                        AddButton(
+                            text = stringResource(R.string.add_attachment),
+                            onClick = {
+                                filePicker.requestFile(editAttachments.addAttachment)
+                            }
+                        )
+
                         Spacer(Modifier.height(sectionsMargin))
 
                         // created by
@@ -913,21 +931,60 @@ private fun UserItemWithAction(
 }
 
 @Composable
-private fun AttachmentItem(attachment: Attachment) = Row(
-    verticalAlignment = Alignment.CenterVertically
+private fun AttachmentItem(
+    attachment: Attachment,
+    onRemoveClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.SpaceBetween,
+    modifier = Modifier.fillMaxWidth()
 ) {
-    val activity = LocalContext.current as Activity
-    Icon(
-        painter = painterResource(R.drawable.ic_attachment),
-        contentDescription = null,
-        tint = Color.Gray
-    )
+    var isAlertVisible by remember { mutableStateOf(false) }
 
-    Text(
-        text = attachment.name,
-        color = MaterialTheme.colors.primary,
-        modifier = Modifier.clickableUnindicated { activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url))) }
-    )
+    if (isAlertVisible) {
+        ConfirmActionAlert(
+            title = stringResource(R.string.remove_attachment_title),
+            text = stringResource(R.string.remove_user_text),
+            onConfirm = {
+                isAlertVisible = false
+                onRemoveClick()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .weight(1f, fill = false)
+            .padding(end = 4.dp)
+    ) {
+        val activity = LocalContext.current as Activity
+        Icon(
+            painter = painterResource(R.drawable.ic_attachment),
+            contentDescription = null,
+            tint = Color.Gray
+        )
+
+        Text(
+            text = attachment.name,
+            color = MaterialTheme.colors.primary,
+            modifier = Modifier.clickableUnindicated {
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url)))
+            }
+        )
+    }
+
+    IconButton(
+        onClick = { isAlertVisible = true },
+        modifier = Modifier.size(32.dp).clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_delete),
+            contentDescription = null,
+            tint = Color.Red
+        )
+    }
+
 }
 
 @Composable

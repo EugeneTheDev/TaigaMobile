@@ -68,6 +68,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = composeVersion
     }
+
+    lint { 
+        isAbortOnError = false
+    }
 }
 
 dependencies {
