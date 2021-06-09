@@ -48,47 +48,28 @@ fun LoginScreen(
         }
     }
 
-    var taigaServerInput by remember { mutableStateOf(TextFieldValue()) }
-    var loginInput by remember { mutableStateOf(TextFieldValue()) }
-    var passwordInput by remember { mutableStateOf(TextFieldValue()) }
-
     LoginScreenContent(
-        taigaServerInput = taigaServerInput,
-        usernameInput = loginInput,
-        passwordInput = passwordInput,
-        onTaigaServerInputChange = { taigaServerInput = it },
-        onUsernameInputChange = { loginInput = it },
-        onPasswordInputChange = { passwordInput = it },
-        onContinueClick = {
-            if (
-                taigaServerInput.text.matches(Regex("""([\w\d-]+\.)+[\w\d-]+""")) &&
-                loginInput.text.isNotBlank() &&
-                passwordInput.text.isNotBlank()
-            ) {
-                viewModel.login(
-                    taigaServerInput.text.trim(),
-                    loginInput.text.trim(),
-                    passwordInput.text.trim()
-                )
-            }
-        },
+        onContinueClick = viewModel::login,
         isLoadingValue = loginResult?.resultStatus in listOf(ResultStatus.Loading, ResultStatus.Success)
     )
 }
 
 @Composable
 fun LoginScreenContent(
-    taigaServerInput: TextFieldValue = TextFieldValue(),
-    usernameInput: TextFieldValue = TextFieldValue(),
-    passwordInput: TextFieldValue = TextFieldValue(),
-    onTaigaServerInputChange: (TextFieldValue) -> Unit = {},
-    onUsernameInputChange: (TextFieldValue) -> Unit = {},
-    onPasswordInputChange: (TextFieldValue) -> Unit = {},
-    onContinueClick: () -> Unit = {},
+    onContinueClick: (server: String, login: String, password: String) -> Unit = { _, _, _ -> },
     isLoadingValue: Boolean = false,
 ) = ConstraintLayout(
     modifier = Modifier.fillMaxSize(),
 ) {
+    val taigaGlobalHost = stringResource(R.string.global_taiga_host)
+    var taigaServerInput by remember { mutableStateOf(TextFieldValue(taigaGlobalHost)) }
+    var loginInput by remember { mutableStateOf(TextFieldValue()) }
+    var passwordInput by remember { mutableStateOf(TextFieldValue()) }
+
+    var isServerInputError by remember { mutableStateOf(false) }
+    var isLoginInputError by remember { mutableStateOf(false) }
+    var isPasswordInputError by remember { mutableStateOf(false) }
+
     val (logo, loginForm, button) = createRefs()
 
     Column(
@@ -127,21 +108,33 @@ fun LoginScreenContent(
         LoginTextField(
             value = taigaServerInput,
             labelId = R.string.login_taiga_server,
-            onValueChange = onTaigaServerInputChange
+            onValueChange = {
+                isServerInputError = false
+                taigaServerInput = it
+            },
+            isError = isServerInputError
         )
 
         LoginTextField(
-            value = usernameInput,
+            value = loginInput,
             labelId = R.string.login_username,
-            onValueChange = onUsernameInputChange,
+            onValueChange = {
+                isLoginInputError = false
+                loginInput = it
+            },
+            isError = isLoginInputError
         )
 
         LoginTextField(
             value = passwordInput,
             labelId = R.string.login_password,
-            onValueChange = onPasswordInputChange,
+            onValueChange = {
+                isPasswordInputError = false
+                passwordInput = it
+            },
             visualTransformation = PasswordVisualTransformation(),
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.Password,
+            isError = isPasswordInputError
         )
     }
 
@@ -157,7 +150,19 @@ fun LoginScreenContent(
             CircularProgressIndicator(modifier = Modifier.size(48.dp))
         } else {
             Button(
-                onClick = onContinueClick,
+                onClick = {
+                    isServerInputError = !taigaServerInput.text.matches(Regex("""([\w\d-]+\.)+[\w\d-]+(:\d+)?"""))
+                    isLoginInputError = loginInput.text.isBlank()
+                    isPasswordInputError = passwordInput.text.isBlank()
+
+                    if (!(isServerInputError || isLoginInputError || isPasswordInputError)) {
+                        onContinueClick(
+                            taigaServerInput.text.trim(),
+                            loginInput.text.trim(),
+                            passwordInput.text.trim()
+                        )
+                    }
+                },
                 contentPadding = PaddingValues(start = 40.dp, end = 40.dp)
             ) {
                 Text(
@@ -175,7 +180,8 @@ fun LoginTextField(
     @StringRes labelId: Int,
     onValueChange: (TextFieldValue) -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isError: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -192,7 +198,8 @@ fun LoginTextField(
         label = { Text(text = stringResource(labelId), style = textStyle) },
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+        isError = isError
     )
 }
 
