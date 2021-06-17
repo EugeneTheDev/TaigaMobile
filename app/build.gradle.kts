@@ -7,7 +7,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val composeVersion = "1.0.0-beta08"
+val composeVersion = "1.0.0-beta09"
 
 android {
     compileSdk = 30
@@ -86,14 +86,14 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.0-beta01")
+    implementation("androidx.activity:activity-compose:1.3.0-beta02")
     // view model support
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08")
 
     // Accompanist
-    val accompanistVersion = "0.11.1"
+    val accompanistVersion = "0.12.0"
     implementation("com.google.accompanist:accompanist-glide:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
@@ -102,7 +102,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-flowlayout:$accompanistVersion")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha03")
 
     // ViewModel
     val lifecycleKtxVersion = "2.3.1"
