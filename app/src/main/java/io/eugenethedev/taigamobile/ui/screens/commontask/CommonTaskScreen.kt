@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -863,7 +864,7 @@ private fun EpicItemWithAction(
         textColor = MaterialTheme.colors.primary,
         indicatorColorsHex = listOf(epic.color),
         modifier = Modifier
-            .weight(1f, fill = false)
+            .weight(1f)
             .padding(end = 4.dp)
             .clickableUnindicated(onClick = onClick)
     )
@@ -944,7 +945,7 @@ private fun AttachmentItem(
     if (isAlertVisible) {
         ConfirmActionAlert(
             title = stringResource(R.string.remove_attachment_title),
-            text = stringResource(R.string.remove_user_text),
+            text = stringResource(R.string.remove_attachment_text),
             onConfirm = {
                 isAlertVisible = false
                 onRemoveClick()
@@ -962,13 +963,14 @@ private fun AttachmentItem(
         Icon(
             painter = painterResource(R.drawable.ic_attachment),
             contentDescription = null,
-            tint = Color.Gray
+            tint = Color.Gray,
+            modifier = Modifier.padding(end = 2.dp)
         )
 
         Text(
             text = attachment.name,
             color = MaterialTheme.colors.primary,
-            modifier = Modifier.clickableUnindicated {
+            modifier = Modifier.clickable {
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url)))
             }
         )
