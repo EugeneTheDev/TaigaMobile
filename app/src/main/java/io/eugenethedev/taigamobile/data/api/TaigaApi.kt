@@ -19,6 +19,11 @@ interface TaigaApi {
     @POST("auth")
     suspend fun auth(@Body authRequest: AuthRequest): AuthResponse
 
+
+    /**
+     * Projects
+     */
+
     @GET("projects?order_by=user_order&slight=true")
     suspend fun getProjects(
         @Query("q") query: String,
@@ -28,6 +33,37 @@ interface TaigaApi {
     @GET("projects/{id}")
     suspend fun getProject(@Path("id") projectId: Long): ProjectResponse
 
+
+    /**
+     * Users
+     */
+
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") userId: Long): User
+
+    @GET("users/me")
+    suspend fun getMyProfile(): User
+
+    @GET("projects/{id}/member_stats")
+    suspend fun getMemberStats(@Path("id") projectId: Long): MemberStatsResponse
+
+
+    /**
+     * Sprints
+     */
+    @GET("milestones")
+    suspend fun getSprints(
+        @Query("project") project: Long,
+        @Query("page") page: Int
+    ): List<SprintResponse>
+
+    @GET("milestones/{id}")
+    suspend fun getSprint(@Path("id") sprintId: Long): SprintResponse
+
+
+    /**
+     * Everything related to common tasks (epics, user stories, etc.)
+     */
 
     @GET("{taskPath}/filters_data")
     suspend fun getCommonTaskFiltersData(
@@ -81,12 +117,6 @@ interface TaigaApi {
         @Query("watchers") watcherId: Long? = null
     ): List<CommonTaskResponse>
 
-    @GET("milestones")
-    suspend fun getSprints(
-        @Query("project") project: Long,
-        @Query("page") page: Int
-    ): List<SprintResponse>
-
     @GET("userstories/by_ref")
     suspend fun getUserStoryByRef(
         @Query("project") projectId: Long,
@@ -98,31 +128,6 @@ interface TaigaApi {
         @Path("taskPath") taskPath: CommonTaskPathPlural,
         @Path("id") id: Long
     ): CommonTaskResponse
-
-    @GET("history/{taskPath}/{id}?type=comment")
-    suspend fun getCommonTaskComments(
-        @Path("taskPath") taskPath: CommonTaskPathSingular,
-        @Path("id") id: Long
-    ): List<Comment>
-
-    @POST("history/{taskPath}/{id}/delete_comment")
-    suspend fun deleteCommonTaskComment(
-        @Path("taskPath") taskPath: CommonTaskPathSingular,
-        @Path("id") id: Long,
-        @Query("id") commentId: String
-    )
-
-    @GET("users/{id}")
-    suspend fun getUser(@Path("id") userId: Long): User
-
-    @GET("users/me")
-    suspend fun getMyProfile(): User
-
-    @GET("projects/{id}/member_stats")
-    suspend fun getMemberStats(@Path("id") projectId: Long): MemberStatsResponse
-
-    @GET("milestones/{id}")
-    suspend fun getSprint(@Path("id") sprintId: Long): SprintResponse
 
     @PATCH("{taskPath}/{id}")
     suspend fun changeCommonTaskStatus(
@@ -202,13 +207,11 @@ interface TaigaApi {
     @POST("issues")
     suspend fun createIssue(@Body createIssueRequest: CreateIssueRequest): CommonTaskResponse
 
-
     @DELETE("{taskPath}/{id}")
     suspend fun deleteCommonTask(
         @Path("taskPath") taskPath: CommonTaskPathPlural,
         @Path("id") id: Long
     ): Response<Void>
-
 
     @POST("epics/{id}/related_userstories")
     suspend fun linkToEpic(
@@ -228,6 +231,23 @@ interface TaigaApi {
         @Path("id") taskId: Long,
         @Body promoteToUserStoryRequest: PromoteToUserStoryRequest
     ): List<Int>
+
+    // Tasks comments
+
+    @GET("history/{taskPath}/{id}?type=comment")
+    suspend fun getCommonTaskComments(
+        @Path("taskPath") taskPath: CommonTaskPathSingular,
+        @Path("id") id: Long
+    ): List<Comment>
+
+    @POST("history/{taskPath}/{id}/delete_comment")
+    suspend fun deleteCommonTaskComment(
+        @Path("taskPath") taskPath: CommonTaskPathSingular,
+        @Path("id") id: Long,
+        @Query("id") commentId: String
+    )
+
+    // Tasks attachments
 
     @GET("{taskPath}/attachments")
     suspend fun getCommonTaskAttachments(
