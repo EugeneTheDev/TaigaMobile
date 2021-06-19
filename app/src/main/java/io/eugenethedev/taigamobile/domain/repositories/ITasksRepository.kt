@@ -40,7 +40,7 @@ interface ITasksRepository {
     suspend fun changeWatchers(commonTaskId: Long, commonTaskType: CommonTaskType, watchers: List<Long>, version: Int)
     suspend fun createComment(commonTaskId: Long, commonTaskType: CommonTaskType, comment: String, version: Int)
     suspend fun deleteComment(commonTaskId: Long, commonTaskType: CommonTaskType, commentId: String)
-    suspend fun editTask(commonTaskId: Long, commonTaskType: CommonTaskType, title: String, description: String, version: Int)
+    suspend fun editCommonTask(commonTaskId: Long, commonTaskType: CommonTaskType, title: String, description: String, version: Int)
 
     suspend fun createCommonTask(
         commonTaskType: CommonTaskType,

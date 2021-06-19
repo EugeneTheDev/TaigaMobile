@@ -389,7 +389,7 @@ class CommonTaskViewModel : ViewModel() {
         editResult.value = Result(ResultStatus.Loading)
 
         editResult.value = try {
-            tasksRepository.editTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
+            tasksRepository.editCommonTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
             loadData().join()
             screensState.modify()
             Result(ResultStatus.Success)
