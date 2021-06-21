@@ -33,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.veryLightGray
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
@@ -54,7 +55,7 @@ fun SprintKanban(
     val cellWidth = 280.dp
     val userStoryHeadingWidth = cellWidth - 20.dp
     val minCellHeight = 80.dp
-    val backgroundCellColor = Color.Gray.copy(alpha = 0.1f)
+    val backgroundCellColor = veryLightGray
     val screenWidth = LocalContext.current.resources.configuration.screenWidthDp.dp
     val totalWidth = cellWidth * statuses.size + userStoryHeadingWidth + cellMargin * statuses.size
 
@@ -85,7 +86,8 @@ fun SprintKanban(
                 Row(
                     Modifier
                         .height(IntrinsicSize.Max)
-                        .padding(start = cellMargin)) {
+                        .padding(start = cellMargin)
+                ) {
                     UserStoryItem(
                         cellMargin = cellMargin,
                         cellWidth = userStoryHeadingWidth,
@@ -119,7 +121,8 @@ fun SprintKanban(
             Row(
                 Modifier
                     .height(IntrinsicSize.Max)
-                    .padding(start = cellMargin)) {
+                    .padding(start = cellMargin)
+            ) {
                 CategoryItem(
                     titleId = R.string.tasks_without_story,
                     cellMargin = cellMargin,

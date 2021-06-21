@@ -33,6 +33,7 @@ fun TextFieldWithHint(
     verticalPadding: Dp = 0.dp,
     style: TextStyle = MaterialTheme.typography.body1,
     singleLine: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
     onSearchClick: (() -> Unit)? = null
 ) = Box(
     contentAlignment = Alignment.CenterStart,
@@ -54,6 +55,7 @@ fun TextFieldWithHint(
         textStyle = style.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
         cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
         singleLine = singleLine,
+        maxLines = maxLines,
         keyboardOptions = KeyboardOptions(imeAction = onSearchClick?.let { ImeAction.Search } ?: ImeAction.Default),
         keyboardActions = KeyboardActions(onSearch = { onSearchClick?.invoke() })
     )

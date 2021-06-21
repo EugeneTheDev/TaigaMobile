@@ -1,12 +1,16 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -17,6 +21,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 
 @ExperimentalComposeUiApi
@@ -25,7 +30,7 @@ fun CreateCommentBar(
     createComment: (String) -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth(),
-    elevation = 8.dp
+    elevation = 8.dp,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
@@ -33,29 +38,29 @@ fun CreateCommentBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(vertical = 2.dp, horizontal = mainHorizontalScreenPadding)
+            .padding(vertical = 8.dp, horizontal = mainHorizontalScreenPadding)
             .navigationBarsWithImePadding(),
     ) {
         Box(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colors.primary,
+                    shape = MaterialTheme.shapes.large
+                )
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.04f))
+                .padding(8.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            if (commentTextValue.text.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.comment_hint),
-                    style = MaterialTheme.typography.body1,
-                    color = Color.Gray
-                )
-            }
-            BasicTextField(
-                value = commentTextValue,
-                onValueChange = { commentTextValue = it },
+            TextFieldWithHint(
+                hintId = R.string.comment_hint,
                 maxLines = 3,
-                textStyle = MaterialTheme.typography.body1.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
-                cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
-                modifier = Modifier.fillMaxWidth()
+                value = commentTextValue,
+                onValueChange = { commentTextValue = it }
             )
-
         }
 
         IconButton(
@@ -65,12 +70,15 @@ fun CreateCommentBar(
                     commentTextValue = TextFieldValue()
                     keyboardController?.hide()
                 }
-            }
+            },
+            modifier = Modifier.size(36.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colors.primary)
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_send),
                 contentDescription = null,
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colors.onPrimary
             )
         }
     }

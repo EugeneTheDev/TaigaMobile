@@ -20,6 +20,7 @@ import io.eugenethedev.taigamobile.ui.components.editors.SearchField
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
 
@@ -88,7 +89,7 @@ fun IssuesScreenContent(
             isTasksLoading = isLoading,
             loadData = { loadIssues(query.text) },
             horizontalPadding = mainHorizontalScreenPadding,
-            showEmptyMessage = false
+            bottomMargin = commonVerticalMargin
         )
     }
 }

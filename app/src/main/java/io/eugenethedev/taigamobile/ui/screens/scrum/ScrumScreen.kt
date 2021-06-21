@@ -170,7 +170,6 @@ private fun BacklogTabContent(
             isTasksLoading = isStoriesLoading,
             loadData = { loadStories(query.text) },
             horizontalPadding = mainHorizontalScreenPadding,
-            showEmptyMessage = false
         )
     }
 }

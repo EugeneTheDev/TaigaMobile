@@ -44,7 +44,9 @@ import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
+import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.screens.main.FilePicker
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
@@ -584,37 +586,9 @@ fun CommonTaskScreenContent(
                         } else {
                             NothingToSeeHereText()
                         }
-
-                        Spacer(Modifier.height(sectionsMargin * 2))
-
-                        // attachments
-                        Text(
-                            text = stringResource(R.string.attachments),
-                            style = MaterialTheme.typography.subtitle1
-                        )
-                    }
-
-                    items(attachments) {
-                        AttachmentItem(
-                            attachment = it,
-                            onRemoveClick = { editAttachments.deleteAttachment(it) }
-                        )
                     }
 
                     item {
-                        if (editAttachments.isResultLoading) {
-                            DotsLoader()
-                        }
-
-                        val filePicker = LocalFilePicker.current
-                        AddButton(
-                            text = stringResource(R.string.add_attachment),
-                            onClick = {
-                                filePicker.requestFile(editAttachments.addAttachment)
-                            }
-                        )
-
-                        Spacer(Modifier.height(sectionsMargin))
 
                         // created by
                         Text(
@@ -661,7 +635,6 @@ fun CommonTaskScreenContent(
                         )
                     }
 
-
                     item {
                         Spacer(Modifier.height(sectionsMargin))
 
@@ -695,15 +668,38 @@ fun CommonTaskScreenContent(
                                 editWatchers.loadItems(null)
                             }
                         )
+
+                        Spacer(Modifier.height(sectionsMargin * 2))
+
+                        // attachments
+                        val filePicker = LocalFilePicker.current
+                        SectionTitle(
+                            text = stringResource(R.string.attachments),
+                            onAddClick = {
+                                filePicker.requestFile(editAttachments.addAttachment)
+                            }
+                        )
                     }
 
-                    val listBottomMargin = 16.dp
+                    items(attachments) {
+                        AttachmentItem(
+                            attachment = it,
+                            onRemoveClick = { editAttachments.deleteAttachment(it) }
+                        )
+                    }
+
+                    item {
+                        if (editAttachments.isResultLoading) {
+                            DotsLoader()
+                        }
+                    }
+
                     // user stories
                     if (commonTaskType == CommonTaskType.Epic) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.userstories,
                             topMargin = sectionsMargin * 2,
-                            bottomMargin = listBottomMargin,
+                            bottomMargin = sectionsMargin * 2,
                             commonTasks = userStories,
                             navigateToTask = navigateToTask
                         )
@@ -714,7 +710,7 @@ fun CommonTaskScreenContent(
                         SimpleTasksListWithTitle(
                             titleText = R.string.tasks,
                             topMargin = sectionsMargin * 2,
-                            bottomMargin = listBottomMargin,
+                            bottomMargin = sectionsMargin * 3,
                             commonTasks = tasks,
                             navigateToTask = navigateToTask,
                             navigateToCreateCommonTask = navigateToCreateTask
@@ -722,22 +718,8 @@ fun CommonTaskScreenContent(
                     }
 
                     item {
-                        Divider(
-                            modifier = Modifier.padding(
-                                top = sectionsMargin * 2,
-                                bottom = sectionsMargin
-                            ),
-                            color = Color.LightGray,
-                            thickness = 2.dp
-                        )
-
                         // comments
-                        Text(
-                            text = stringResource(R.string.comments_template).format(comments.size),
-                            style = MaterialTheme.typography.h6
-                        )
-
-                        Spacer(Modifier.height(4.dp))
+                        SectionTitle(stringResource(R.string.comments_template).format(comments.size))
                     }
 
                     itemsIndexed(comments) { index, item ->
@@ -759,10 +741,7 @@ fun CommonTaskScreenContent(
                             DotsLoader()
                         }
 
-                        Spacer(
-                            Modifier
-                                .navigationBarsWithImePadding()
-                                .height(72.dp))
+                        Spacer(Modifier.navigationBarsWithImePadding().height(72.dp))
                     }
                 }
 
@@ -978,7 +957,9 @@ private fun AttachmentItem(
 
     IconButton(
         onClick = { isAlertVisible = true },
-        modifier = Modifier.size(32.dp).clip(CircleShape)
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_delete),
@@ -1040,87 +1021,91 @@ private fun CommentItem(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun CommonTaskScreenPreview() = TaigaMobileTheme {
-    CommonTaskScreenContent(
-        commonTaskType = CommonTaskType.UserStory,
-        toolbarTitle = "Userstory #99",
-        epicColor = "#000000",
-        status = Status(
-            id = 0,
-            name = "In progress",
-            color = "#729fcf",
-            type = StatusType.Status
-        ),
-        sprintName = "Very very very long sprint name",
-        title = "Very cool and important story. Need to do this quickly",
-        isClosed = false,
-        story = null,
-        epics = List(1) {
-            EpicShortInfo(
-                id = 1L,
-                title = "Important epic",
-                ref = 1,
-                color = "#F2C94C"
-            )
-        },
-        description = "Some description about this wonderful task",
-        creationDateTime = Date(),
-        creator = User(
-            _id = 0L,
-            fullName = "Full Name",
-            photo = null,
-            bigPhoto = null,
-            username = "username"
-        ),
-        assignees = List(1) {
-            User(
+    CompositionLocalProvider(
+        LocalFilePicker provides object : FilePicker() {}
+    ) {
+        CommonTaskScreenContent(
+            commonTaskType = CommonTaskType.UserStory,
+            toolbarTitle = "Userstory #99",
+            epicColor = "#000000",
+            status = Status(
+                id = 0,
+                name = "In progress",
+                color = "#729fcf",
+                type = StatusType.Status
+            ),
+            sprintName = "Very very very long sprint name",
+            title = "Very cool and important story. Need to do this quickly",
+            isClosed = false,
+            story = null,
+            epics = List(1) {
+                EpicShortInfo(
+                    id = 1L,
+                    title = "Important epic",
+                    ref = 1,
+                    color = "#F2C94C"
+                )
+            },
+            description = "Some description about this wonderful task",
+            creationDateTime = Date(),
+            creator = User(
                 _id = 0L,
                 fullName = "Full Name",
                 photo = null,
                 bigPhoto = null,
                 username = "username"
-            )
-        },
-        watchers = List(2) {
-            User(
-                _id = 0L,
-                fullName = "Full Name",
-                photo = null,
-                bigPhoto = null,
-                username = "username"
-            )
-        },
-        tasks = List(1) {
-            CommonTask(
-                id = it.toLong(),
-                createdDate = Date(),
-                title = "Very cool story",
-                ref = 100,
-                status = Status(
-                    id = (0..2).random().toLong(),
-                    name = "In progress",
-                    color = "#729fcf",
-                    type = StatusType.Status
-                ),
-                assignee = null,
-                projectInfo = Project(0, "", ""),
-                taskType = CommonTaskType.UserStory,
-                isClosed = false
-            )
-        },
-        comments = List(1) {
-            Comment(
-                id = "",
-                author = User(
+            ),
+            assignees = List(1) {
+                User(
                     _id = 0L,
                     fullName = "Full Name",
                     photo = null,
                     bigPhoto = null,
                     username = "username"
-                ),
-                text = "This is comment text",
-                postDateTime = Date(),
-                deleteDate = null
-            )
-        }
-    )
+                )
+            },
+            watchers = List(2) {
+                User(
+                    _id = 0L,
+                    fullName = "Full Name",
+                    photo = null,
+                    bigPhoto = null,
+                    username = "username"
+                )
+            },
+            tasks = List(1) {
+                CommonTask(
+                    id = it.toLong(),
+                    createdDate = Date(),
+                    title = "Very cool story",
+                    ref = 100,
+                    status = Status(
+                        id = (0..2).random().toLong(),
+                        name = "In progress",
+                        color = "#729fcf",
+                        type = StatusType.Status
+                    ),
+                    assignee = null,
+                    projectInfo = Project(0, "", ""),
+                    taskType = CommonTaskType.UserStory,
+                    isClosed = false
+                )
+            },
+            comments = List(1) {
+                Comment(
+                    id = "",
+                    author = User(
+                        _id = 0L,
+                        fullName = "Full Name",
+                        photo = null,
+                        bigPhoto = null,
+                        username = "username"
+                    ),
+                    text = "This is comment text",
+                    postDateTime = Date(),
+                    deleteDate = null
+                )
+            }
+        )
+    }
 }

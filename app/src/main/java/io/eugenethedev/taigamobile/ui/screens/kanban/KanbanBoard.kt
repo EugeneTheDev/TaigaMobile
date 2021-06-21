@@ -32,6 +32,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.veryLightGray
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.util.*
 
@@ -46,7 +47,7 @@ fun KanbanBoard(
     val cellMargin = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
-    val backgroundCellColor = Color.Gray.copy(alpha = 0.1f)
+    val backgroundCellColor = veryLightGray
 
     Row(
         Modifier
