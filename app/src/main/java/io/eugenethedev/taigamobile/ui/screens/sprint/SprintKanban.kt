@@ -50,20 +50,20 @@ fun SprintKanban(
 ) = Column(
     modifier = Modifier.horizontalScroll(rememberScrollState())
 ) {
-    val cellMargin = 8.dp
+    val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
     val userStoryHeadingWidth = cellWidth - 20.dp
     val minCellHeight = 80.dp
     val backgroundCellColor = veryLightGray
     val screenWidth = LocalContext.current.resources.configuration.screenWidthDp.dp
-    val totalWidth = cellWidth * statuses.size + userStoryHeadingWidth + cellMargin * statuses.size
+    val totalWidth = cellWidth * statuses.size + userStoryHeadingWidth + cellPadding * statuses.size
 
-    Row(Modifier.padding(start = cellMargin, top = cellMargin)) {
+    Row(Modifier.padding(start = cellPadding, top = cellPadding)) {
         Header(
             text = stringResource(R.string.user_story),
             cellWidth = userStoryHeadingWidth,
-            cellMargin = cellMargin,
+            cellPadding = cellPadding,
             stripeColor = backgroundCellColor,
             backgroundColor = Color.Transparent
         )
@@ -72,7 +72,7 @@ fun SprintKanban(
             Header(
                 text = it.name,
                 cellWidth = cellWidth,
-                cellMargin = cellMargin,
+                cellPadding = cellPadding,
                 stripeColor = safeParseHexColor(it.color),
                 backgroundColor = backgroundCellColor
             )
@@ -86,10 +86,10 @@ fun SprintKanban(
                 Row(
                     Modifier
                         .height(IntrinsicSize.Max)
-                        .padding(start = cellMargin)
+                        .padding(start = cellPadding)
                 ) {
                     UserStoryItem(
-                        cellMargin = cellMargin,
+                        cellPadding = cellPadding,
                         cellWidth = userStoryHeadingWidth,
                         minCellHeight = minCellHeight,
                         userStory = story,
@@ -100,8 +100,8 @@ fun SprintKanban(
                     statuses.forEach { status ->
                         Cell(
                             cellWidth = cellWidth,
+                            cellOuterPadding = cellOuterPadding,
                             cellPadding = cellPadding,
-                            cellMargin = cellMargin,
                             backgroundCellColor = backgroundCellColor
                         ) {
                             tasks.filter { it.status == status }.forEach {
@@ -121,11 +121,11 @@ fun SprintKanban(
             Row(
                 Modifier
                     .height(IntrinsicSize.Max)
-                    .padding(start = cellMargin)
+                    .padding(start = cellPadding)
             ) {
                 CategoryItem(
                     titleId = R.string.tasks_without_story,
-                    cellMargin = cellMargin,
+                    cellPadding = cellPadding,
                     cellWidth = userStoryHeadingWidth,
                     minCellHeight = minCellHeight,
                     onAddClick = { navigateToCreateTask(CommonTaskType.Task, null) },
@@ -134,8 +134,8 @@ fun SprintKanban(
                 statuses.forEach { status ->
                     Cell(
                         cellWidth = cellWidth,
+                        cellOuterPadding = cellOuterPadding,
                         cellPadding = cellPadding,
-                        cellMargin = cellMargin,
                         backgroundCellColor = backgroundCellColor
                     ) {
                         storylessTasks.filter { it.status == status }.forEach {
@@ -152,7 +152,7 @@ fun SprintKanban(
         item {
             Spacer(
                 Modifier.height(4.dp)
-                    .padding(start = cellMargin)
+                    .padding(start = cellPadding)
                     .width(totalWidth)
                     .background(MaterialTheme.colors.primary.copy(alpha = 0.5f))
             )
@@ -162,7 +162,7 @@ fun SprintKanban(
         item {
             IssueHeader(
                 width = screenWidth,
-                margin = cellMargin,
+                padding = cellPadding,
                 backgroundColor = backgroundCellColor,
                 onAddClick = { navigateToCreateTask(CommonTaskType.Issue, null) }
             )
@@ -193,12 +193,12 @@ fun SprintKanban(
 private fun Header(
     text: String,
     cellWidth: Dp,
-    cellMargin: Dp,
+    cellPadding: Dp,
     stripeColor: Color,
     backgroundColor: Color,
 ) = Column(
     modifier = Modifier
-        .padding(end = cellMargin, bottom = cellMargin)
+        .padding(end = cellPadding, bottom = cellPadding)
         .width(cellWidth)
         .background(
             color = backgroundColor,
@@ -228,13 +228,13 @@ private fun Header(
 @Composable
 private fun IssueHeader(
     width: Dp,
-    margin: Dp,
+    padding: Dp,
     backgroundColor: Color,
     onAddClick: () -> Unit
 ) = Row(
     modifier = Modifier
         .width(width)
-        .padding(margin)
+        .padding(padding)
         .clip(MaterialTheme.shapes.small)
         .background(backgroundColor.copy(alpha = 0.15f))
         .padding(horizontal = 6.dp, vertical = 4.dp),
@@ -255,7 +255,7 @@ private fun IssueHeader(
 
 @Composable
 private fun UserStoryItem(
-    cellMargin: Dp,
+    cellPadding: Dp,
     cellWidth: Dp,
     minCellHeight: Dp,
     userStory: CommonTask,
@@ -263,7 +263,7 @@ private fun UserStoryItem(
     onUserStoryClick: () -> Unit
 ) = Row(
     modifier = Modifier
-        .padding(end = cellMargin, bottom = cellMargin)
+        .padding(end = cellPadding, bottom = cellPadding)
         .width(cellWidth)
         .heightIn(min = minCellHeight),
     horizontalArrangement = Arrangement.SpaceBetween
@@ -297,13 +297,13 @@ private fun UserStoryItem(
 @Composable
 private fun CategoryItem(
     @StringRes titleId: Int,
-    cellMargin: Dp,
+    cellPadding: Dp,
     cellWidth: Dp,
     minCellHeight: Dp,
     onAddClick: () -> Unit,
 ) = Column(
     modifier = Modifier
-        .padding(end = cellMargin, bottom = cellMargin)
+        .padding(end = cellPadding, bottom = cellPadding)
         .width(cellWidth)
         .heightIn(min = minCellHeight)
 ) {
@@ -329,14 +329,14 @@ private fun CategoryItem(
 @Composable
 private fun Cell(
     cellWidth: Dp,
+    cellOuterPadding: Dp,
     cellPadding: Dp,
-    cellMargin: Dp,
     backgroundCellColor: Color,
     content: @Composable ColumnScope.() -> Unit
 ) = Column(
     modifier = Modifier
         .fillMaxHeight()
-        .padding(end = cellMargin, bottom = cellMargin)
+        .padding(end = cellOuterPadding, bottom = cellOuterPadding)
         .width(cellWidth)
         .background(backgroundCellColor)
         .padding(cellPadding),

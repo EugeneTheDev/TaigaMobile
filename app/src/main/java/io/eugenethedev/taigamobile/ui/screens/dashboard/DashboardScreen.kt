@@ -26,7 +26,7 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.commonVerticalMargin
+import io.eugenethedev.taigamobile.ui.theme.commonVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
@@ -111,7 +111,7 @@ private fun TabContent(
     navigateToTask: (CommonTask) -> Unit,
 ) = LazyColumn(Modifier.fillMaxSize()) {
     SimpleTasksListWithTitle(
-        bottomMargin = commonVerticalMargin,
+        bottomPadding = commonVerticalPadding,
         horizontalPadding = mainHorizontalScreenPadding,
         showExtendedTaskInfo = true,
         commonTasks = commonTasks,

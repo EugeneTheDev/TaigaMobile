@@ -25,16 +25,16 @@ fun LazyListScope.SimpleTasksListWithTitle(
     commonTasks: List<CommonTask>,
     navigateToTask: NavigateToTask,
     @StringRes titleText: Int? = null,
-    topMargin: Dp = 0.dp,
+    topPadding: Dp = 0.dp,
     horizontalPadding: Dp = 0.dp,
-    bottomMargin: Dp = 0.dp,
+    bottomPadding: Dp = 0.dp,
     isTasksLoading: Boolean = false,
     showExtendedTaskInfo: Boolean = false,
     navigateToCreateCommonTask: (() -> Unit)? = null,
     loadData: () -> Unit = {}
 ) {
     item {
-        Spacer(Modifier.height(topMargin))
+        Spacer(Modifier.height(topPadding))
 
         titleText?.let {
             SectionTitle(
@@ -70,6 +70,6 @@ fun LazyListScope.SimpleTasksListWithTitle(
             loadData()
         }
 
-        Spacer(Modifier.height(bottomMargin))
+        Spacer(Modifier.height(bottomPadding))
     }
 }

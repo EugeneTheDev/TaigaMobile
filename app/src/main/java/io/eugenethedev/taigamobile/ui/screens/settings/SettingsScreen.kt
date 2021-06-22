@@ -333,7 +333,7 @@ private fun SettingsBlock(
     @StringRes titleId: Int,
     items: List<@Composable () -> Unit>
 ) {
-    val verticalMargin = 2.dp
+    val verticalPadding = 2.dp
 
     Text(
         text = stringResource(titleId),
@@ -342,11 +342,11 @@ private fun SettingsBlock(
         modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
     )
 
-    Spacer(Modifier.height(verticalMargin))
+    Spacer(Modifier.height(verticalPadding))
 
     items.forEach { it() }
 
-    Spacer(Modifier.height(verticalMargin * 4))
+    Spacer(Modifier.height(verticalPadding * 4))
 }
 
 @Composable

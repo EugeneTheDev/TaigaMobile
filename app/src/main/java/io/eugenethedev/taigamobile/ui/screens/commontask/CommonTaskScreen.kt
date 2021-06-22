@@ -398,8 +398,8 @@ fun CommonTaskScreenContent(
                 CircularLoader()
             }
         } else {
-            val sectionsMargin = 10.dp
-            val badgesMargin = 8.dp
+            val sectionsPadding = 10.dp
+            val badgesPadding = 8.dp
 
             Box(
                 modifier = Modifier.weight(1f),
@@ -425,7 +425,7 @@ fun CommonTaskScreenContent(
                                         )
                                 )
 
-                                Spacer(Modifier.width(badgesMargin))
+                                Spacer(Modifier.width(badgesPadding))
                             }
 
                             // status
@@ -439,7 +439,7 @@ fun CommonTaskScreenContent(
                                 isLoading = editStatus.isResultLoading
                             )
 
-                            Spacer(Modifier.width(badgesMargin))
+                            Spacer(Modifier.width(badgesPadding))
 
                             // sprint
                             if (commonTaskType != CommonTaskType.Epic) {
@@ -458,7 +458,7 @@ fun CommonTaskScreenContent(
                         }
 
                         if (commonTaskType == CommonTaskType.Issue) {
-                            Spacer(Modifier.height(badgesMargin))
+                            Spacer(Modifier.height(badgesPadding))
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 // type
@@ -472,7 +472,7 @@ fun CommonTaskScreenContent(
                                     isLoading = editType.isResultLoading
                                 )
 
-                                Spacer(Modifier.width(badgesMargin))
+                                Spacer(Modifier.width(badgesPadding))
 
                                 // severity
                                 ClickableBadge(
@@ -485,7 +485,7 @@ fun CommonTaskScreenContent(
                                     isLoading = editSeverity.isResultLoading
                                 )
 
-                                Spacer(Modifier.width(badgesMargin))
+                                Spacer(Modifier.width(badgesPadding))
 
                                 // priority
                                 ClickableBadge(
@@ -575,7 +575,7 @@ fun CommonTaskScreenContent(
                     }
 
                     item {
-                        Spacer(Modifier.height(sectionsMargin * 2))
+                        Spacer(Modifier.height(sectionsPadding * 2))
 
                         // description
                         if (description.isNotEmpty()) {
@@ -601,7 +601,7 @@ fun CommonTaskScreenContent(
                             dateTime = creationDateTime
                         )
 
-                        Spacer(Modifier.height(sectionsMargin))
+                        Spacer(Modifier.height(sectionsPadding))
 
                         // assigned to
                         Text(
@@ -636,7 +636,7 @@ fun CommonTaskScreenContent(
                     }
 
                     item {
-                        Spacer(Modifier.height(sectionsMargin))
+                        Spacer(Modifier.height(sectionsPadding))
 
                         // watchers
                         Text(
@@ -669,7 +669,7 @@ fun CommonTaskScreenContent(
                             }
                         )
 
-                        Spacer(Modifier.height(sectionsMargin * 2))
+                        Spacer(Modifier.height(sectionsPadding * 2))
 
                         // attachments
                         val filePicker = LocalFilePicker.current
@@ -698,7 +698,7 @@ fun CommonTaskScreenContent(
                     if (commonTaskType == CommonTaskType.Epic) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.userstories,
-                            topMargin = sectionsMargin * 2,
+                            topPadding = sectionsPadding * 2,
                             commonTasks = userStories,
                             navigateToTask = navigateToTask
                         )
@@ -708,7 +708,7 @@ fun CommonTaskScreenContent(
                     if (commonTaskType == CommonTaskType.UserStory) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.tasks,
-                            topMargin = sectionsMargin * 2,
+                            topPadding = sectionsPadding * 2,
                             commonTasks = tasks,
                             navigateToTask = navigateToTask,
                             navigateToCreateCommonTask = navigateToCreateTask
@@ -717,7 +717,7 @@ fun CommonTaskScreenContent(
 
                     item {
                         // comments
-                        Spacer(Modifier.height(sectionsMargin * 3))
+                        Spacer(Modifier.height(sectionsPadding * 3))
                         SectionTitle(stringResource(R.string.comments_template).format(comments.size))
                     }
 

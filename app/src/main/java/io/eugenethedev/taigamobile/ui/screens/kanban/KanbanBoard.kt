@@ -44,7 +44,7 @@ fun KanbanBoard(
     navigateToStory: (id: Long, ref: Int) -> Unit = { _, _ -> },
     navigateToCreateTask: (statusId: Long) -> Unit = { _ -> }
 ) {
-    val cellMargin = 8.dp
+    val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
     val backgroundCellColor = veryLightGray
@@ -55,7 +55,7 @@ fun KanbanBoard(
             .horizontalScroll(rememberScrollState())
     ) {
 
-       Spacer(Modifier.width(cellMargin))
+       Spacer(Modifier.width(cellPadding))
 
         statuses.forEach { status ->
             val statusStories = stories.filter { it.status == status }
@@ -65,7 +65,7 @@ fun KanbanBoard(
                     text = status.name,
                     storiesCount = statusStories.size,
                     cellWidth = cellWidth,
-                    cellMargin = cellMargin,
+                    cellOuterPadding = cellOuterPadding,
                     stripeColor = safeParseHexColor(status.color),
                     backgroundColor = backgroundCellColor,
                     onAddClick = { navigateToCreateTask(status.id) }
@@ -100,13 +100,13 @@ private fun Header(
     text: String,
     storiesCount: Int,
     cellWidth: Dp,
-    cellMargin: Dp,
+    cellOuterPadding: Dp,
     stripeColor: Color,
     backgroundColor: Color,
     onAddClick: () -> Unit
 ) = Row(
     modifier = Modifier
-        .padding(end = cellMargin, bottom = cellMargin)
+        .padding(end = cellOuterPadding, bottom = cellOuterPadding)
         .width(cellWidth)
         .background(
             color = backgroundColor.copy(alpha = 0.2f),
