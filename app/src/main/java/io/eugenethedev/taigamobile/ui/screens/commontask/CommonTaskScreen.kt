@@ -699,7 +699,6 @@ fun CommonTaskScreenContent(
                         SimpleTasksListWithTitle(
                             titleText = R.string.userstories,
                             topMargin = sectionsMargin * 2,
-                            bottomMargin = sectionsMargin * 2,
                             commonTasks = userStories,
                             navigateToTask = navigateToTask
                         )
@@ -710,7 +709,6 @@ fun CommonTaskScreenContent(
                         SimpleTasksListWithTitle(
                             titleText = R.string.tasks,
                             topMargin = sectionsMargin * 2,
-                            bottomMargin = sectionsMargin * 3,
                             commonTasks = tasks,
                             navigateToTask = navigateToTask,
                             navigateToCreateCommonTask = navigateToCreateTask
@@ -719,6 +717,7 @@ fun CommonTaskScreenContent(
 
                     item {
                         // comments
+                        Spacer(Modifier.height(sectionsMargin * 3))
                         SectionTitle(stringResource(R.string.comments_template).format(comments.size))
                     }
 
