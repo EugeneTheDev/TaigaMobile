@@ -1,0 +1,151 @@
+<resources>
+    <string name="app_name">Taiga Mobile</string>
+    <string name="app_name_with_version_template" translatable="false">%s - %s</string>
+    <string name="global_taiga_host" translatable="false">api.taiga.io</string>
+
+    <string name="yes">Так</string>
+    <string name="no">Ні</string>
+
+    <string name="common_error_message">Виникла помилка. Перевірте з'єднання</string>
+    <string name="permission_error">Помилка, у вас можливо недостатньо доступів</string>
+
+    <string name="nothing_to_see">Нічого цікавого</string>
+
+    <string name="login_taiga_server">Тайга сервер host:port</string>
+    <string name="login_username">Логін</string>
+    <string name="login_password">Пароль</string>
+    <string name="login_continue">Продовжити</string>
+    <string name="login_error_message">Помилка під час логіну. Перевірте дані чи з'єднання</string>
+
+    <string name="dashboard">Панель приладів</string>
+    <string name="dashboard_short">Панель</string>
+    <string name="scrum">Скрам</string>
+    <string name="epics">Епіки</string>
+    <string name="issues">Проблеми</string>
+    <string name="team">Команда</string>
+    <string name="settings">Налаштування</string>
+    <string name="more">Більше</string>
+    <string name="kanban">Канбан</string>
+
+    <string name="choose_project_title">Виберіть проєкт</string>
+
+    <string name="search_projects_hint">Пошук проєктів</string>
+    <string name="project_name_template" translatable="false">%s (%s)</string>
+    <string name="project_member">Учасник</string>
+    <string name="project_admin">Адмін</string>
+    <string name="project_owner">Власник</string>
+
+    <string name="working_on">В роботі</string>
+    <string name="watching">Відслідковується</string>
+
+    <string name="title_with_ref_pattern" translatable="false">#%d %s</string>
+    <string name="unassigned">Неназначено</string>
+    <string name="assignee_pattern">Назначено: %s</string>
+    <string name="backlog">Резерв</string>
+
+    <string name="sprints_title">Спринти</string>
+    <string name="sprint_dates_template" translatable="false">%s - %s</string>
+    <string name="stories_count_template">Історії: %d</string>
+    <string name="taskboard">Дошка</string>
+    <string name="closed">Закритий</string>
+    <string name="closed_sprint_name_template">%s (Закритий)</string>
+    <string name="add_userstory">Додати історію користувача</string>
+
+    <string name="user_story">Історія користувача</string>
+    <string name="tasks_without_story">Історії без завданнь</string>
+    <string name="sprint_issues">Проблеми із спринта</string>
+    <string name="add_task">Додати завдання</string>
+    <string name="add_issue">Додати проблему</string>
+
+    <string name="userstory_slug">Історія користувача #%d</string>
+    <string name="task_slug">Завдання #%d</string>
+    <string name="epic_slug">Епік #%d</string>
+    <string name="issue_slug">Проблема #%d</string>
+
+    <string name="epic">Епік</string>
+    <string name="userstory">Історія користувача</string>
+    <string name="task">Завдання</string>
+    <string name="issue">Проблема</string>
+    
+    <string name="no_sprint">Без спринта</string>
+    <string name="belongs_to_epics">Належить епікам</string>
+    <string name="belongs_to_story">Належить історіям користувача</string>
+    <string name="link_to_epic">Зв'язати з епіком</string>
+    <string name="created_by">Створений</string>
+    <string name="assigned_to">Назначено</string>
+    <string name="watchers">Відслідковують</string>
+    <string name="userstories">Історії користувача</string>
+    <string name="tasks">Завдання</string>
+    <string name="comments_template">Коментарі (%d)</string>
+    <string name="comment_hint">Коментар</string>
+    <string name="delete_comment_title">Видалити коментар</string>
+    <string name="delete_comment_text">Ви впевнені, що бажаєте видалити коментар?</string>
+    <string name="add_user">Додати користувача</string>
+    <string name="attachments">Прикріплення</string>
+    <string name="add_attachment">Додати прикріплення</string>
+
+    <string name="choose_status">Виберіть статус</string>
+    <string name="choose_type">Виберіть тип</string>
+    <string name="choose_severity">Виберіть важливість</string>
+    <string name="choose_priority">Виберіть пріорітет</string>
+    <string name="choose_sprint">Виберіть спринт</string>
+    <string name="move_to_backlog">Перемітити в резерв</string>
+    <string name="search_members">Пошук учасників</string>
+    <string name="search_epics">Пошук епіків</string>
+
+    <string name="power">сила</string>
+
+    <string name="unlink_epic_title">Відв'язати від епіку</string>
+    <string name="unlink_epic_text">Ви впевнені, що бажаєте відв'язати від епіку?</string>
+
+    <string name="remove_user_title">Видалити користувача</string>
+    <string name="remove_user_text">Ви впевнені, що бажаєте видалити користувача?</string>
+
+    <string name="delete_task_title">Видалити завдання</string>
+    <string name="delete_task_text">Ви впевнені, що бажаєте видалити завдання?</string>
+
+    <string name="promote_title">Підвищення</string>
+    <string name="promote_text">Ви впевнені, що бажаєте підвищити це завдання до історії користувача?</string>
+
+    <string name="remove_attachment_title">Видалити прикріплення</string>
+    <string name="remove_attachment_text">Ви впевнені, що бажаєте видалити прикріплення?</string>
+
+    <string name="title_hint">Заголовок</string>
+    <string name="description_hint">Опис</string>
+
+    <string name="edit">Редагувати</string>
+    <string name="delete">Видалити</string>
+    <string name="promote_to_user_story">Підвищити</string>
+
+    <string name="create_task">Нове завдання</string>
+    <string name="create_userstory">Нова історія користувача</string>
+    <string name="create_epic">Новий епік</string>
+    <string name="create_issue">Нова проблема</string>
+
+    <string name="loading">Завантаження…</string>
+
+    <string name="tasks_search_hint">Пошук по номеру чи заголовку?</string>
+
+    <string name="status_with_number_template" translatable="false">%s - %d</string>
+
+    <!-- settings -->
+    <string name="username_template" translatable="false">\@%s</string>
+    <string name="logout_title">Вийти</string>
+    <string name="logout_text">Ви впевнені, що бажаєте вийти?</string>
+
+    <string name="appearance">Вигляд</string>
+
+    <string name="theme_title">Тема</string>
+    <string name="theme_system">Системна</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+
+    <string name="help">Допомога</string>
+    <string name="submit_report">Надіслати репорт</string>
+
+    <string name="credits_message">Зроблено ❤️ by EugeneTheDev. Якщо вам подобається додаток незабудьте оцінити його на Google Play та GitHub</string>
+
+    <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
+    <string name="source_code">Джерело коду</string>
+</resources>
+
