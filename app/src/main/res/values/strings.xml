@@ -6,6 +6,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
     <string name="common_error_message">An error was occurred. Check your connection</string>
     <string name="permission_error">Error, you may not have sufficient permissions</string>
 
@@ -83,6 +86,18 @@
     <string name="add_user">Add user</string>
     <string name="attachments">Attachments</string>
     <string name="add_attachment">Add attachment</string>
+
+    <string name="custom_field_text">Text</string>
+    <string name="custom_field_multiline">Multiline text</string>
+    <string name="custom_field_rich_text">Rich text</string>
+    <string name="custom_field_number">Number</string>
+    <string name="custom_field_url">Url</string>
+    <string name="custom_field_date">Date</string>
+
+    <string name="open">Open</string>
+    <string name="clear">Clear</string>
+    <string name="select_date">Select date</string>
+    <string name="empty">Empty</string>
 
     <string name="choose_status">Choose status</string>
     <string name="choose_type">Choose type</string>

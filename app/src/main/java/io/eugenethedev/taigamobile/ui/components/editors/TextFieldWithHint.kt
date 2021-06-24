@@ -10,13 +10,18 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,7 +38,11 @@ fun TextFieldWithHint(
     verticalPadding: Dp = 0.dp,
     style: TextStyle = MaterialTheme.typography.body1,
     singleLine: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    onFocusChange: (Boolean) -> Unit = {},
+    focusRequester: FocusRequester = remember { FocusRequester() },
     maxLines: Int = Int.MAX_VALUE,
+    textColor: Color = MaterialTheme.colors.onSurface,
     onSearchClick: (() -> Unit)? = null
 ) = Box(
     contentAlignment = Alignment.CenterStart,
@@ -51,12 +60,17 @@ fun TextFieldWithHint(
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        textStyle = style.merge(TextStyle(color = MaterialTheme.colors.onSurface)),
+        modifier = Modifier.fillMaxWidth()
+            .focusRequester(focusRequester)
+            .onFocusChanged { onFocusChange(it.isFocused) },
+        textStyle = style.merge(TextStyle(color = textColor)),
         cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
         singleLine = singleLine,
         maxLines = maxLines,
-        keyboardOptions = KeyboardOptions(imeAction = onSearchClick?.let { ImeAction.Search } ?: ImeAction.Default),
+        keyboardOptions = KeyboardOptions(
+            imeAction = onSearchClick?.let { ImeAction.Search } ?: ImeAction.Default,
+            keyboardType = keyboardType
+        ),
         keyboardActions = KeyboardActions(onSearch = { onSearchClick?.invoke() })
     )
 }

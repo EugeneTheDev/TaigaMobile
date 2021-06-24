@@ -58,6 +58,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -75,6 +76,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+
     implementation("androidx.core:core-ktx:1.5.0")
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation("com.google.android.material:material:1.3.0")
@@ -137,6 +140,9 @@ dependencies {
     val markwonVersion = "4.6.2"
     implementation("io.noties.markwon:core:$markwonVersion")
     implementation("io.noties.markwon:image-glide:$markwonVersion")
+
+    // Compose Material Dialogs
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.4.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

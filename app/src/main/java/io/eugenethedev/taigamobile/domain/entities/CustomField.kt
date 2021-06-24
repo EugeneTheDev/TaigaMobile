@@ -18,7 +18,7 @@ data class CustomField(
     val type: CustomFieldType,
     val name: String,
     val description: String?,
-    val value: CustomFieldValue,
+    val value: CustomFieldValue?,
     val options: List<String>? = null // for CustomFieldType.Dropdown
 )
 
