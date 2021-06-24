@@ -34,7 +34,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.veryLightGray
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
-import java.util.*
+import java.time.LocalDateTime
 
 @Composable
 fun KanbanBoard(
@@ -268,7 +268,7 @@ fun KanbanBoardPreview() = TaigaMobileTheme {
                     color = "#E47C40",
                     type = StatusType.Status
                 ),
-                createdDateTime = Date(),
+                createdDateTime = LocalDateTime.now(),
                 sprint = null,
                 assignedIds = List(10) { it.toLong() },
                 watcherIds = emptyList(),

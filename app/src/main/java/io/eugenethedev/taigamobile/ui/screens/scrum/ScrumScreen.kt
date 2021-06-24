@@ -39,8 +39,9 @@ import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
@@ -208,7 +209,7 @@ private fun SprintItem(
     sprint: Sprint,
     navigateToBoard: (Sprint) -> Unit = {}
 ) = ContainerBox(clickEnabled = false) {
-    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -223,8 +224,8 @@ private fun SprintItem(
 
             Text(
                 stringResource(R.string.sprint_dates_template).format(
-                    dateFormatter.format(sprint.start),
-                    dateFormatter.format(sprint.finish)
+                    sprint.start.format(dateFormatter),
+                    sprint.finish.format(dateFormatter)
                 )
             )
 
@@ -273,8 +274,8 @@ fun SprintPreview() = TaigaMobileTheme {
             id = 0L,
             name = "1 sprint",
             order = 0,
-            start = Date(),
-            finish = Date(),
+            start = LocalDate.now(),
+            finish = LocalDate.now(),
             storiesCount = 4,
             isClosed = true
         )

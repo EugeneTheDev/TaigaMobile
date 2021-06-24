@@ -22,8 +22,9 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 /**
  * Single task item
@@ -39,7 +40,7 @@ fun CommonTaskItem(
     horizontalPadding, verticalPadding,
     onClick = { navigateToTask(commonTask.id, commonTask.taskType, commonTask.ref) }
 ) {
-    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+    val dateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         if (showExtendedInfo) {
@@ -69,7 +70,7 @@ fun CommonTaskItem(
             )
 
             Text(
-                text = dateFormatter.format(commonTask.createdDate),
+                text = commonTask.createdDate.format(dateTimeFormatter),
                 color = Color.Gray,
                 style = MaterialTheme.typography.body2
             )
@@ -97,7 +98,7 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
     CommonTaskItem(
         CommonTask(
             id = 0L,
-            createdDate = Date(),
+            createdDate = LocalDateTime.now(),
             title = "Very cool story",
             ref = 100,
             status = Status(

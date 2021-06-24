@@ -18,8 +18,9 @@ import com.google.accompanist.glide.rememberGlidePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 /**
  * User info (name and avatar).
@@ -27,9 +28,9 @@ import java.util.*
 @Composable
 fun UserItem(
     user: User,
-    dateTime: Date? = null
+    dateTime: LocalDateTime? = null
 ) = Row(verticalAlignment = Alignment.CenterVertically) {
-    val dateTimeFormatter = remember { SimpleDateFormat.getDateTimeInstance() }
+    val dateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
     val imageSize = if (dateTime != null) 46.dp else 40.dp
 
     Image(
@@ -53,7 +54,7 @@ fun UserItem(
 
         dateTime?.let {
             Text(
-                text = dateTimeFormatter.format(it),
+                text = it.format(dateTimeFormatter),
                 color = Color.Gray,
                 style = MaterialTheme.typography.body2
             )

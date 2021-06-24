@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.domain.entities
 
-import java.util.*
+import java.time.LocalDate
 
 
 enum class CustomFieldType {
@@ -27,12 +27,12 @@ value class CustomFieldValue(private val value: Any) {
     init {
         require(
             value is String ||
-            value is Date   ||
+            value is LocalDate ||
             value is Int
         )
     }
 
     val stringValue get() = value as? String ?: throw IllegalArgumentException("value is not String")
     val intValue get() = value as? Int ?: throw IllegalArgumentException("value is not Int")
-    val dateValue get() = value as? Date ?: throw IllegalArgumentException("value is not Date")
+    val dateValue get() = value as? LocalDate ?: throw IllegalArgumentException("value is not Date")
 }

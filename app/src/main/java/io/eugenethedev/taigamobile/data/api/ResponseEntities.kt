@@ -4,7 +4,8 @@ import io.eugenethedev.taigamobile.domain.entities.EpicShortInfo
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.entities.UserStoryShortInfo
-import java.util.*
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Some complicated api responses
@@ -47,7 +48,7 @@ data class FiltersDataResponse(
 data class CommonTaskResponse(
     val id: Long,
     val subject: String,
-    val created_date: Date,
+    val created_date: LocalDateTime,
     val status: Long,
     val ref: Int,
     val assigned_to_extra_info: User?,
@@ -79,8 +80,8 @@ data class CommonTaskResponse(
 data class SprintResponse(
     val id: Long,
     val name: String,
-    val estimated_start: Date,
-    val estimated_finish: Date,
+    val estimated_start: LocalDate,
+    val estimated_finish: LocalDate,
     val closed: Boolean,
     val order: Int,
     val user_stories: List<UserStory>

@@ -1,7 +1,8 @@
 package io.eugenethedev.taigamobile.domain.entities
 
 import com.google.gson.annotations.SerializedName
-import java.util.*
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Tasks related entities
@@ -31,7 +32,7 @@ enum class CommonTaskType {
 
 data class CommonTask(
     val id: Long,
-    val createdDate: Date,
+    val createdDate: LocalDateTime,
     val title: String,
     val ref: Int,
     val status: Status,
@@ -46,7 +47,7 @@ data class CommonTask(
 data class CommonTaskExtended(
     val id: Long,
     val status: Status,
-    val createdDateTime: Date,
+    val createdDateTime: LocalDateTime,
     val sprint: Sprint?,
     val assignedIds: List<Long>,
     val watcherIds: List<Long>,

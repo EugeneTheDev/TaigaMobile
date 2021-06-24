@@ -51,7 +51,7 @@ import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import java.util.Date
+import java.time.LocalDateTime
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
@@ -161,7 +161,7 @@ fun CommonTaskScreen(
             story = it?.userStoryShortInfo,
             epics = it?.epicsShortInfo.orEmpty(),
             description = it?.description ?: "",
-            creationDateTime = it?.createdDateTime ?: Date(),
+            creationDateTime = it?.createdDateTime ?: LocalDateTime.now(),
             creator = creator?.data,
             assignees = assignees?.data.orEmpty(),
             watchers = watchers?.data.orEmpty(),
@@ -250,7 +250,7 @@ fun CommonTaskScreenContent(
     epics: List<EpicShortInfo> = emptyList(),
     story: UserStoryShortInfo?,
     description: String,
-    creationDateTime: Date,
+    creationDateTime: LocalDateTime,
     creator: User?,
     attachments: List<Attachment> = emptyList(),
     assignees: List<User> = emptyList(),
@@ -1047,7 +1047,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 )
             },
             description = "Some description about this wonderful task",
-            creationDateTime = Date(),
+            creationDateTime = LocalDateTime.now(),
             creator = User(
                 _id = 0L,
                 fullName = "Full Name",
@@ -1076,7 +1076,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
             tasks = List(1) {
                 CommonTask(
                     id = it.toLong(),
-                    createdDate = Date(),
+                    createdDate = LocalDateTime.now(),
                     title = "Very cool story",
                     ref = 100,
                     status = Status(
@@ -1102,7 +1102,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                         username = "username"
                     ),
                     text = "This is comment text",
-                    postDateTime = Date(),
+                    postDateTime = LocalDateTime.now(),
                     deleteDate = null
                 )
             }

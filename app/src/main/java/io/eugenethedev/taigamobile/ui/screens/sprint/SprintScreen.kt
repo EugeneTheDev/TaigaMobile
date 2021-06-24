@@ -23,8 +23,9 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.*
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
@@ -72,8 +73,8 @@ fun SprintScreen(
 @Composable
 fun SprintScreenContent(
     sprintName: String,
-    start: Date,
-    finish: Date,
+    start: LocalDate,
+    finish: LocalDate,
     isLoading: Boolean = false,
     statuses: List<Status> = emptyList(),
     storiesWithTasks: Map<CommonTask, List<CommonTask>> = emptyMap(),
@@ -86,7 +87,7 @@ fun SprintScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
-    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
     AppBarWithBackButton(
         title = {
@@ -99,8 +100,8 @@ fun SprintScreenContent(
 
                 Text(
                     text = stringResource(R.string.sprint_dates_template).format(
-                        dateFormatter.format(start),
-                        dateFormatter.format(finish)
+                        start.format(dateFormatter),
+                        finish.format(dateFormatter)
                     ),
                     style = MaterialTheme.typography.body2,
                     maxLines = 1,
@@ -139,7 +140,7 @@ fun SprintScreenContent(
 fun SprintScreenPreview() = TaigaMobileTheme {
     SprintScreenContent(
         sprintName = "0 sprint",
-        start = Date(),
-        finish = Date()
+        start = LocalDate.now(),
+        finish = LocalDate.now()
     )
 }
