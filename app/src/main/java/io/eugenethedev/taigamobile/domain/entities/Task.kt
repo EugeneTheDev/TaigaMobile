@@ -1,8 +1,6 @@
 package io.eugenethedev.taigamobile.domain.entities
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 import java.util.*
 
 /**
@@ -22,18 +20,6 @@ enum class StatusType {
     Severity,
     Priority
 }
-
-@Parcelize
-data class Sprint(
-    val id: Long,
-    val name: String,
-    val order: Int,
-    val start: Date,
-    val finish: Date,
-    val storiesCount: Int,
-    val isClosed: Boolean
-) : Parcelable
-
 
 enum class CommonTaskType {
     UserStory,
@@ -97,20 +83,3 @@ data class UserStoryShortInfo(
 ) {
     val epicColors get() = epics?.map { it.color }.orEmpty()
 }
-
-data class Comment(
-    val id: String,
-    @SerializedName("user") val author: User,
-    @SerializedName("comment") val text: String,
-    @SerializedName("created_at") val postDateTime: Date,
-    @SerializedName("delete_comment_date") val deleteDate: Date?
-) {
-    var canDelete: Boolean? = null
-}
-
-data class Attachment(
-    val id: Long,
-    val name: String,
-    @SerializedName("size") val sizeInBytes: Long,
-    val url: String
-)
