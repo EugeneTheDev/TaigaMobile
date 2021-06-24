@@ -589,6 +589,7 @@ fun CommonTaskScreenContent(
                     }
 
                     item {
+                        Spacer(Modifier.height(sectionsPadding * 2))
 
                         // created by
                         Text(
