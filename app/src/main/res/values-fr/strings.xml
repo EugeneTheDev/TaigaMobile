@@ -74,12 +74,12 @@
     <string name="watchers">Observateurs</string>
     <string name="userstories">Récits utilisateur</string>
     <string name="tasks">Tâches</string>
-    <string name="comments_template">Commentaires (%d)</string>
+    <string name="comments_template">%d Commentaires</string>
     <string name="comment_hint">Commenter</string>
     <string name="delete_comment_title">Supprimer le commentaire</string>
     <string name="delete_comment_text">Etes vous sûr de vouloir supprimer le commentaire ?</string>
     <string name="add_user">Ajouter un utilisateur</string>
-    <string name="attachments">Pièces jointes</string>
+    <string name="attachments_template">%d Pièces jointes</string>
     <string name="add_attachment">Ajouter une pièce jointe</string>
 
     <string name="custom_field_text">Texte</string>

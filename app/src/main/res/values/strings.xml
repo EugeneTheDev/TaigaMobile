@@ -72,19 +72,19 @@
     
     <string name="no_sprint">No sprint</string>
     <string name="belongs_to_epics">Belongs to epics</string>
-    <string name="belongs_to_story">Belong to user story</string>
+    <string name="belongs_to_story">Belongs to user story</string>
     <string name="link_to_epic">Link to epic</string>
     <string name="created_by">Created by</string>
     <string name="assigned_to">Assigned to</string>
     <string name="watchers">Watchers</string>
     <string name="userstories">User stories</string>
     <string name="tasks">Tasks</string>
-    <string name="comments_template">Comments (%d)</string>
+    <string name="comments_template">%d Comments</string>
     <string name="comment_hint">Comment</string>
     <string name="delete_comment_title">Delete comment</string>
     <string name="delete_comment_text">Are you sure you want to delete comment?</string>
     <string name="add_user">Add user</string>
-    <string name="attachments">Attachments</string>
+    <string name="attachments_template">%d Attachments</string>
     <string name="add_attachment">Add attachment</string>
 
     <string name="custom_field_text">Text</string>

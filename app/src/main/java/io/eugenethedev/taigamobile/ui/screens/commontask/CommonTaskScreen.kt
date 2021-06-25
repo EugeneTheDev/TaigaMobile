@@ -675,7 +675,7 @@ fun CommonTaskScreenContent(
                         // attachments
                         val filePicker = LocalFilePicker.current
                         SectionTitle(
-                            text = stringResource(R.string.attachments),
+                            text = stringResource(R.string.attachments_template).format(attachments.size),
                             onAddClick = {
                                 filePicker.requestFile(editAttachments.addAttachment)
                             }
