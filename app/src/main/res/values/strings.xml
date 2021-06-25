@@ -85,7 +85,7 @@
     <string name="delete_comment_text">Are you sure you want to delete comment?</string>
     <string name="add_user">Add user</string>
     <string name="attachments_template">%d Attachments</string>
-    <string name="add_attachment">Add attachment</string>
+    <string name="custom_fields">Custom fields</string>
 
     <string name="custom_field_text">Text</string>
     <string name="custom_field_multiline">Multiline text</string>

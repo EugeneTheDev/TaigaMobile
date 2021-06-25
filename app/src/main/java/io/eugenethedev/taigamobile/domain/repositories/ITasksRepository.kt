@@ -31,6 +31,8 @@ interface ITasksRepository {
 
     suspend fun getAttachments(commonTaskId: Long, type: CommonTaskType): List<Attachment>
 
+    suspend fun getCustomFields(commonTaskId: Long, type: CommonTaskType): CustomFields
+
     // edit related
     suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, statusType: StatusType, version: Int)
     suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
@@ -57,4 +59,6 @@ interface ITasksRepository {
 
     suspend fun addAttachment(commonTaskId: Long, commonTaskType: CommonTaskType, fileName: String, inputStream: InputStream)
     suspend fun deleteAttachment(commonTaskType: CommonTaskType, attachmentId: Long)
+
+    suspend fun editCustomFields(commonTaskType: CommonTaskType, commonTaskId: Long, fields: Map<Long, CustomFieldValue?>, version: Int)
 }

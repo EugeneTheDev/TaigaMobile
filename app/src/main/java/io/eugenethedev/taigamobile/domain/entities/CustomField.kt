@@ -1,16 +1,18 @@
 package io.eugenethedev.taigamobile.domain.entities
 
+import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 
 
 enum class CustomFieldType {
-    Text,
-    Multiline,
-    RichText,
-    Date,
-    Url,
-    Dropdown,
-    Number
+    @SerializedName("text") Text,
+    @SerializedName("multiline") Multiline,
+    @SerializedName("richtext") RichText,
+    @SerializedName("date") Date,
+    @SerializedName("url") Url,
+    @SerializedName("dropdown") Dropdown,
+    @SerializedName("number") Number,
+    @SerializedName("checkbox") Checkbox
 }
 
 data class CustomField(
@@ -23,16 +25,24 @@ data class CustomField(
 )
 
 @JvmInline
-value class CustomFieldValue(private val value: Any) {
+value class CustomFieldValue(val value: Any) {
     init {
         require(
             value is String ||
             value is LocalDate ||
-            value is Int
+            value is Int ||
+            value is Boolean
         )
     }
 
     val stringValue get() = value as? String ?: throw IllegalArgumentException("value is not String")
     val intValue get() = value as? Int ?: throw IllegalArgumentException("value is not Int")
     val dateValue get() = value as? LocalDate ?: throw IllegalArgumentException("value is not Date")
+    val booleanValue get() = value as? Boolean ?: throw IllegalArgumentException("value is not Boolean")
 }
+
+
+data class CustomFields(
+    val fields: List<CustomField>,
+    val version: Int
+)

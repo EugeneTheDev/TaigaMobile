@@ -270,4 +270,25 @@ interface TaigaApi {
         @Part project: MultipartBody.Part,
         @Part objectId: MultipartBody.Part
     )
+
+    // Custom attributes
+
+    @GET("{taskPath}-custom-attributes")
+    suspend fun getCustomAttributes(
+        @Path("taskPath") taskPath: CommonTaskPathSingular,
+        @Query("project") projectId: Long
+    ): List<CustomAttributeResponse>
+
+    @GET("{taskPath}/custom-attributes-values/{id}")
+    suspend fun getCustomAttributesValues(
+        @Path("taskPath") taskPath: CommonTaskPathPlural,
+        @Path("id") taskId: Long
+    ): CustomAttributesValuesResponse
+
+    @PATCH("{taskPath}/custom-attributes-values/{id}")
+    suspend fun editCustomAttributesValues(
+        @Path("taskPath") taskPath: CommonTaskPathPlural,
+        @Path("id") taskId: Long,
+        @Body editRequest: EditCustomAttributesValuesRequest
+    )
 }

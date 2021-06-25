@@ -1,9 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
-import io.eugenethedev.taigamobile.domain.entities.EpicShortInfo
-import io.eugenethedev.taigamobile.domain.entities.Project
-import io.eugenethedev.taigamobile.domain.entities.User
-import io.eugenethedev.taigamobile.domain.entities.UserStoryShortInfo
+import io.eugenethedev.taigamobile.domain.entities.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -97,4 +94,18 @@ data class MemberStatsResponse(
     val created_bugs: Map<String, Int>,
     val iocaine_tasks: Map<String, Int>,
     val wiki_changes: Map<String, Int>
+)
+
+data class CustomAttributeResponse(
+    val id: Long,
+    val name: String,
+    val description: String?,
+    val order: Int,
+    val type: CustomFieldType,
+    val extra: List<String>?
+)
+
+data class CustomAttributesValuesResponse(
+    val attributes_values: Map<Long, Any?>,
+    val version: Int
 )

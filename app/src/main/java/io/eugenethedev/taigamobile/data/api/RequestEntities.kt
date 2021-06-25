@@ -88,3 +88,8 @@ data class LinkToEpicRequest(
 data class PromoteToUserStoryRequest(
     val project_id: Long
 )
+
+data class EditCustomAttributesValuesRequest(
+    val attributes_values: Map<Long, Any?>,
+    val version: Int
+)

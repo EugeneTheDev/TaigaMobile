@@ -32,6 +32,7 @@ class CommonTaskViewModel : ViewModel() {
     private val commonTaskVersion get() = commonTask.value?.data?.version ?: -1
     
     val creator = MutableLiveResult<User>()
+    val customFields = MutableLiveResult<CustomFields>()
     val attachments = MutableLiveResult<List<Attachment>>()
     val assignees = MutableLiveResult<List<User>>()
     val watchers = MutableLiveResult<List<User>>()
@@ -57,6 +58,7 @@ class CommonTaskViewModel : ViewModel() {
         commonTask.value = try {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).let {
                 val creatorAsync = async { loadUser(it.creatorId) }
+                val customFieldsAsync = async { tasksRepository.getCustomFields(commonTaskId, commonTaskType) }
                 val attachmentsAsync = async { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
                 val assigneesAsyncs = it.assignedIds.map { async { loadUser(it) } }
                 val watchersAsyncs = it.watcherIds.map { async { loadUser(it) } }
@@ -65,6 +67,7 @@ class CommonTaskViewModel : ViewModel() {
                 val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
 
                 creator.value = creatorAsync.await()
+                customFields.value = Result(ResultStatus.Success, customFieldsAsync.await())
                 attachments.value = Result(ResultStatus.Success, attachmentsAsync.await())
                 assignees.value = Result(ResultStatus.Success, assigneesAsyncs.mapNotNull { it.await().data })
                 watchers.value = Result(ResultStatus.Success, watchersAsyncs.mapNotNull { it.await().data })
@@ -428,5 +431,26 @@ class CommonTaskViewModel : ViewModel() {
             Timber.w(e)
             Result(ResultStatus.Error, message = R.string.permission_error)
         }
+    }
+
+    fun editCustomField(customField: CustomField, value: CustomFieldValue?) = viewModelScope.launch {
+        customFields.value = Result(ResultStatus.Loading, customFields.value?.data)
+
+        customFields.value = try {
+            tasksRepository.editCustomFields(
+                commonTaskType = commonTaskType,
+                commonTaskId = commonTaskId,
+                fields = customFields.value?.data?.fields.orEmpty().map {
+                    it.id to (if (it.id == customField.id) value else it.value)
+                }.toMap(),
+                version = customFields.value?.data?.version ?: 0
+            )
+            loadData().join()
+            Result(ResultStatus.Success, customFields.value?.data)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.Error, customFields.value?.data, message = R.string.permission_error)
+        }
+
     }
 }

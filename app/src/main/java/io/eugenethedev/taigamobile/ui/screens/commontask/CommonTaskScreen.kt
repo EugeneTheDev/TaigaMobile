@@ -102,6 +102,9 @@ fun CommonTaskScreen(
     val team by viewModel.team.observeAsState()
     team?.subscribeOnError(onError)
 
+    val customFields by viewModel.customFields.observeAsState()
+    customFields?.subscribeOnError(onError)
+
     val attachments by viewModel.attachments.observeAsState()
     attachments?.subscribeOnError(onError)
     val attachmentsResult by viewModel.attachmentResult.observeAsState()
@@ -195,6 +198,7 @@ fun CommonTaskScreen(
                 }
             ),
             unlinkFromEpic = viewModel::unlinkFromEpic,
+            customFields = customFields?.data?.fields.orEmpty(),
             attachments = attachments?.data.orEmpty(),
             editAttachments = EditAttachmentsAction(
                 deleteAttachment = viewModel::deleteAttachment,
@@ -227,7 +231,9 @@ fun CommonTaskScreen(
             isEditLoading = editResult?.resultStatus == ResultStatus.Loading,
             isDeleteLoading = deleteResult?.resultStatus == ResultStatus.Loading,
             promoteTask = viewModel::promoteToUserStory,
-            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading
+            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading,
+            isCustomFieldsLoading = customFields?.resultStatus == ResultStatus.Loading,
+            editCustomField = viewModel::editCustomField
         )
     }
 
@@ -252,6 +258,7 @@ fun CommonTaskScreenContent(
     description: String,
     creationDateTime: LocalDateTime,
     creator: User?,
+    customFields: List<CustomField> = emptyList(),
     attachments: List<Attachment> = emptyList(),
     assignees: List<User> = emptyList(),
     watchers: List<User> = emptyList(),
@@ -279,7 +286,9 @@ fun CommonTaskScreenContent(
     isEditLoading: Boolean = false,
     isDeleteLoading: Boolean = false,
     promoteTask: () -> Unit = {},
-    isPromoteLoading: Boolean = false
+    isPromoteLoading: Boolean = false,
+    editCustomField: (CustomField, CustomFieldValue?) -> Unit = { _, _ -> },
+    isCustomFieldsLoading: Boolean = false
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -398,7 +407,7 @@ fun CommonTaskScreenContent(
                 CircularLoader()
             }
         } else {
-            val sectionsPadding = 10.dp
+            val sectionsPadding = 16.dp
             val badgesPadding = 8.dp
 
             Box(
@@ -662,6 +671,7 @@ fun CommonTaskScreenContent(
                         if (editWatchers.isResultLoading) {
                             DotsLoader()
                         }
+
                         AddButton(
                             text = stringResource(R.string.add_user),
                             onClick = {
@@ -671,6 +681,31 @@ fun CommonTaskScreenContent(
                         )
 
                         Spacer(Modifier.height(sectionsPadding * 2))
+
+                        SectionTitle(text = stringResource(R.string.custom_fields))
+                    }
+
+                    itemsIndexed(customFields) { index, item ->
+                        CustomField(
+                            customField = item,
+                            onSaveClick = { editCustomField(item, it) }
+                        )
+
+                        if (index < customFields.lastIndex) {
+                            Divider(
+                              modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
+                              thickness = 2.dp
+                            )
+                        }
+                    }
+
+                    item {
+                        if (isCustomFieldsLoading) {
+                            Spacer(Modifier.height(8.dp))
+                            DotsLoader()
+                        }
+
+                        Spacer(Modifier.height(sectionsPadding * 3))
 
                         // attachments
                         val filePicker = LocalFilePicker.current

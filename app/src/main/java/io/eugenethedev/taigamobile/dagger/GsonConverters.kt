@@ -12,7 +12,7 @@ class LocalDateTypeAdapter : TypeAdapter<LocalDate>() {
         out.value(DateTimeFormatter.ISO_LOCAL_DATE.format(value))
     }
 
-    override fun read(input: JsonReader): LocalDate = LocalDate.parse(input.nextString())
+    override fun read(input: JsonReader): LocalDate = input.nextString().toLocalDate()
 }
 
 class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
@@ -29,3 +29,7 @@ class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime()
 }
+
+// used in TaskRepository
+fun String.toLocalDate() = LocalDate.parse(this)
+

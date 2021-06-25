@@ -1,14 +1,13 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.dagger.toLocalDate
 import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import kotlinx.coroutines.async
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.InputStream
@@ -167,6 +166,35 @@ class TasksRepository @Inject constructor(
 
     override suspend fun getAttachments(commonTaskId: Long, type: CommonTaskType) = withIO {
         taigaApi.getCommonTaskAttachments(CommonTaskPathPlural(type), commonTaskId, session.currentProjectId)
+    }
+
+    override suspend fun getCustomFields(commonTaskId: Long, type: CommonTaskType) = withIO {
+        val attributes = async { taigaApi.getCustomAttributes(CommonTaskPathSingular(type), session.currentProjectId) }
+        val values = taigaApi.getCustomAttributesValues(CommonTaskPathPlural(type), commonTaskId)
+
+        CustomFields(
+            version = values.version,
+            fields = attributes.await().sortedBy { it.order }
+                .map {
+                    CustomField(
+                        id = it.id,
+                        type = it.type,
+                        name = it.name,
+                        description = it.description?.takeIf { it.isNotEmpty() },
+                        value = values.attributes_values[it.id]?.let { value ->
+                            CustomFieldValue(
+                                when (it.type) {
+                                    CustomFieldType.Date -> (value as? String)?.takeIf { it.isNotEmpty() }?.toLocalDate()
+                                    CustomFieldType.Number -> (value as? Double)?.toInt()
+                                    CustomFieldType.Checkbox -> value as? Boolean
+                                    else -> value
+                                } ?: return@let null
+                            )
+                        },
+                        options = it.extra.orEmpty()
+                    )
+            }
+        )
     }
 
 
@@ -438,5 +466,18 @@ class TasksRepository @Inject constructor(
             attachmentId = attachmentId
         )
         return@withIO
+    }
+
+    override suspend fun editCustomFields(
+        commonTaskType: CommonTaskType,
+        commonTaskId: Long,
+        fields: Map<Long, CustomFieldValue?>,
+        version: Int
+    ) = withIO {
+        taigaApi.editCustomAttributesValues(
+            taskPath = CommonTaskPathPlural(commonTaskType),
+            taskId = commonTaskId,
+            editRequest = EditCustomAttributesValuesRequest(fields.mapValues { it.value?.value }, version)
+        )
     }
 }

@@ -68,23 +68,28 @@ fun CustomField(
     var showEditButton by remember { mutableStateOf(false) }
     var buttonsAlignment by remember { mutableStateOf(Alignment.CenterVertically) }
 
-    var getEditedCustomFieldValue: () -> CustomFieldValue? = { customField.value }
+    var editedCustomFieldValue by remember { mutableStateOf(customField.value) }
 
     var fieldState by remember { mutableStateOf(FieldState.Default) }
     val borderColor by mutableStateOf(
             when (fieldState) {
             FieldState.Focused -> MaterialTheme.colors.primary
             FieldState.Error -> MaterialTheme.colors.error
-            FieldState.Default -> Color.Gray
+            FieldState.Default -> if (editedCustomFieldValue == customField.value) Color.Gray else MaterialTheme.colors.primary
         }
     )
+
+    fun CustomFieldValue?.orShowError() = this ?: run {
+        if (fieldState != FieldState.Focused) fieldState = FieldState.Error
+        customField.value
+    }
 
     Row {
         Box(
             Modifier
                 .weight(1f)
                 .border(
-                    width = 2.dp,
+                    width = if (customField.type == CustomFieldType.Checkbox) 0.dp else 2.dp,
                     color = borderColor,
                     shape = MaterialTheme.shapes.small
                 )
@@ -95,7 +100,7 @@ fun CustomField(
             when (customField.type) {
                 CustomFieldType.Text -> {
                     var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    getEditedCustomFieldValue = { CustomFieldValue(text.text) }
+                    editedCustomFieldValue = CustomFieldValue(text.text)
 
                     TextValue(
                         hintId = R.string.custom_field_text,
@@ -109,7 +114,7 @@ fun CustomField(
                 CustomFieldType.Multiline -> {
                     buttonsAlignment = Alignment.Top
                     var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    getEditedCustomFieldValue = { CustomFieldValue(text.text) }
+                    editedCustomFieldValue = CustomFieldValue(text.text)
 
                     TextValue(
                         hintId = R.string.custom_field_multiline,
@@ -123,7 +128,7 @@ fun CustomField(
                     buttonsAlignment = Alignment.Top
                     showEditButton = true
                     var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    getEditedCustomFieldValue = { CustomFieldValue(text.text) }
+                    editedCustomFieldValue = CustomFieldValue(text.text)
 
                     if (fieldState == FieldState.Focused) {
                         TextValue(
@@ -143,34 +148,29 @@ fun CustomField(
 
                 CustomFieldType.Number -> {
                     var text by remember { mutableStateOf(TextFieldValue(customField.value?.intValue?.toString().orEmpty())) }
-                    getEditedCustomFieldValue = {
-                        text.text.takeIf { it.isNotEmpty() }
-                            ?.let {
-                                CustomFieldValue(
-                                    it.toIntOrNull() ?: throw IllegalArgumentException("Field is not Int")
-                                )
-                            }
-                    }
+                    editedCustomFieldValue = text.text.takeIf { it.isNotEmpty() }
+                        ?.toIntOrNull()
+                        ?.let { CustomFieldValue(it) }
+                        .orShowError()
 
                     TextValue(
                         hintId = R.string.custom_field_number,
                         text = text,
                         onTextChange = {
                             text = it
-                            fieldState = FieldState.Default
+                            fieldState = FieldState.Focused
                          },
                         onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Number,
+                        singleLine = true
                     )
                 }
 
                 CustomFieldType.Url -> {
                     var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    getEditedCustomFieldValue = {
-                        CustomFieldValue(
-                            text.text.takeIf { it.isEmpty() || Patterns.WEB_URL.matcher(it).matches() } ?: throw IllegalArgumentException("Field is not valid url")
-                        )
-                    }
+                    editedCustomFieldValue = text.text.takeIf { it.isEmpty() || Patterns.WEB_URL.matcher(it).matches() }
+                        ?.let { CustomFieldValue(it) }
+                        .orShowError()
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -182,7 +182,7 @@ fun CustomField(
                                 text = text,
                                 onTextChange = {
                                     text = it
-                                    fieldState = FieldState.Default
+                                    fieldState = FieldState.Focused
                                 },
                                 onFocusChange = {
                                     fieldState = if (it) FieldState.Focused else FieldState.Default
@@ -224,7 +224,7 @@ fun CustomField(
                     var date by remember { mutableStateOf(customField.value?.dateValue) }
                     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
-                    getEditedCustomFieldValue = { date?.let { CustomFieldValue(it) } }
+                    editedCustomFieldValue = date?.let { CustomFieldValue(it) }
 
                     val dialog = remember {
                         MaterialDialog(
@@ -274,7 +274,7 @@ fun CustomField(
                 CustomFieldType.Dropdown -> {
                     var option by remember { mutableStateOf(customField.value?.stringValue.orEmpty()) }
 
-                    getEditedCustomFieldValue = { CustomFieldValue(option) }
+                    editedCustomFieldValue = CustomFieldValue(option)
 
                     val transitionState = remember { MutableTransitionState(fieldState == FieldState.Focused) }
                     transitionState.targetState = fieldState == FieldState.Focused
@@ -329,6 +329,17 @@ fun CustomField(
                         } ?: throw IllegalStateException("Dropdown custom field without options")
                     }
                 }
+
+                CustomFieldType.Checkbox -> {
+                    var state by remember { mutableStateOf(customField.value?.booleanValue ?: false) }
+
+                    editedCustomFieldValue = CustomFieldValue(state)
+
+                    Checkbox(
+                        checked = state,
+                        onCheckedChange = { state = it }
+                    )
+                }
             }
         }
 
@@ -356,12 +367,9 @@ fun CustomField(
 
             IconButton(
                 onClick = {
-                    fieldState = try {
-                        onSaveClick(getEditedCustomFieldValue())
+                    if (fieldState != FieldState.Error) {
                         focusManager.clearFocus()
-                        FieldState.Default
-                    } catch (e: Exception) {
-                        FieldState.Error
+                        onSaveClick(editedCustomFieldValue)
                     }
                 },
                 modifier = Modifier
@@ -499,6 +507,19 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 description = "Description",
                 value = CustomFieldValue("Something 0"),
                 options = listOf("", "Something 0", "Something 1", "Something 2")
+            ),
+            onSaveClick = { }
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        CustomField(
+            customField = CustomField(
+                id = 0L,
+                type = CustomFieldType.Checkbox,
+                name = "Sample name",
+                description = "Description",
+                value = CustomFieldValue(true)
             ),
             onSaveClick = { }
         )
