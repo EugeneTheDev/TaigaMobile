@@ -71,16 +71,22 @@ fun CommonTaskScreen(
 
     val commonTask by viewModel.commonTask.observeAsState()
     commonTask?.subscribeOnError(onError)
+
     val creator by viewModel.creator.observeAsState()
     creator?.subscribeOnError(onError)
+
     val assignees by viewModel.assignees.observeAsState()
     assignees?.subscribeOnError(onError)
+
     val watchers by viewModel.watchers.observeAsState()
     watchers?.subscribeOnError(onError)
+
     val userStories by viewModel.userStories.observeAsState()
     userStories?.subscribeOnError(onError)
+
     val tasks by viewModel.tasks.observeAsState()
     tasks?.subscribeOnError(onError)
+
     val comments by viewModel.comments.observeAsState()
     comments?.subscribeOnError(onError)
 
@@ -91,13 +97,9 @@ fun CommonTaskScreen(
 
     val sprints by viewModel.sprints.observeAsState()
     sprints?.subscribeOnError(onError)
-    val sprintSelectResult by viewModel.sprintSelectResult.observeAsState()
-    sprintSelectResult?.subscribeOnError(onError)
 
     val epics by viewModel.epics.observeAsState()
     epics?.subscribeOnError(onError)
-    val epicsSelectResult by viewModel.epicsSelectResult.observeAsState()
-    epicsSelectResult?.subscribeOnError(onError)
 
     val team by viewModel.team.observeAsState()
     team?.subscribeOnError(onError)
@@ -107,17 +109,6 @@ fun CommonTaskScreen(
 
     val attachments by viewModel.attachments.observeAsState()
     attachments?.subscribeOnError(onError)
-    val attachmentsResult by viewModel.attachmentResult.observeAsState()
-    attachmentsResult?.subscribeOnError(onError)
-
-    val assigneesResult by viewModel.assigneesResult.observeAsState()
-    assigneesResult?.subscribeOnError(onError)
-
-    val watchersResult by viewModel.watchersResult.observeAsState()
-    watchersResult?.subscribeOnError(onError)
-
-    val commentsResult by viewModel.commentsResult.observeAsState()
-    commentsResult?.subscribeOnError(onError)
 
     val editResult by viewModel.editResult.observeAsState()
     editResult?.subscribeOnError(onError)
@@ -185,14 +176,14 @@ fun CommonTaskScreen(
                 loadItems = viewModel::loadSprints,
                 isItemsLoading = sprints?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::selectSprint,
-                isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = sprints?.resultStatus == ResultStatus.Loading
             ),
             editEpics = EditAction(
                 items = epics?.data.orEmpty(),
                 loadItems = viewModel::loadEpics,
                 isItemsLoading = epics?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::linkToEpic,
-                isResultLoading = epicsSelectResult?.resultStatus == ResultStatus.Loading,
+                isResultLoading = epics?.resultStatus == ResultStatus.Loading,
                 removeItem = {
                     // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
                 }
@@ -203,14 +194,14 @@ fun CommonTaskScreen(
             editAttachments = EditAttachmentsAction(
                 deleteAttachment = viewModel::deleteAttachment,
                 addAttachment = viewModel::addAttachment,
-                isResultLoading = attachmentsResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = attachments?.resultStatus == ResultStatus.Loading
             ),
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
                 isItemsLoading = team?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addAssignee,
-                isResultLoading = assigneesResult?.resultStatus == ResultStatus.Loading,
+                isResultLoading = assignees?.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
@@ -218,13 +209,13 @@ fun CommonTaskScreen(
                 loadItems = viewModel::loadTeam,
                 isItemsLoading = team?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addWatcher,
-                isResultLoading = watchersResult?.resultStatus == ResultStatus.Loading,
+                isResultLoading = watchers?.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeWatcher
             ),
             editComments = EditCommentsAction(
                 createComment = viewModel::createComment,
                 deleteComment = viewModel::deleteComment,
-                isResultLoading = commentsResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = comments?.resultStatus == ResultStatus.Loading
             ),
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,

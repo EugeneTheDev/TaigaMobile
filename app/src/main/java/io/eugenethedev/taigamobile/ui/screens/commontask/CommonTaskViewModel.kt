@@ -131,7 +131,6 @@ class CommonTaskViewModel : ViewModel() {
     // Edit sprint
 
     val sprints = MutableLiveResult<List<Sprint?>?>()
-    val sprintSelectResult = MutableLiveResult<Unit>()
     private var currentSprintPage = 0
     private var maxSprintPage = Int.MAX_VALUE
 
@@ -165,22 +164,21 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     fun selectSprint(sprint: Sprint?) = viewModelScope.launch {
-        sprintSelectResult.value = Result(ResultStatus.Loading)
+        sprints.value = Result(ResultStatus.Loading, sprints.value?.data)
 
-        sprintSelectResult.value = try {
+        sprints.value = try {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, sprints.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, sprints.value?.data, message = R.string.permission_error)
         }
     }
 
     // Edit linked epic
     val epics = MutableLiveResult<List<CommonTask>>()
-    val epicsSelectResult = MutableLiveResult<Unit>()
     private var currentEpicQuery = ""
     private var currentEpicPage = 0
     private var maxEpicPage = Int.MAX_VALUE
@@ -215,30 +213,30 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     fun linkToEpic(epic: CommonTask) = viewModelScope.launch {
-        epicsSelectResult.value = Result(ResultStatus.Loading)
+        epics.value = Result(ResultStatus.Loading, epics.value?.data)
 
-        epicsSelectResult.value = try {
+        epics.value = try {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, epics.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, epics.value?.data, message = R.string.permission_error)
         }
     }
 
     fun unlinkFromEpic(epic: EpicShortInfo) = viewModelScope.launch {
-        epicsSelectResult.value = Result(ResultStatus.Loading)
+        epics.value = Result(ResultStatus.Loading, epics.value?.data)
 
-        epicsSelectResult.value = try {
+        epics.value = try {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, epics.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, epics.value?.data, message = R.string.permission_error)
         }
     }
 
@@ -274,12 +272,11 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Edit assignees
-    val assigneesResult = MutableLiveResult<Unit>()
 
     private fun changeAssignees(user: User, remove: Boolean) = viewModelScope.launch {
-        assigneesResult.value = Result(ResultStatus.Loading)
+        assignees.value = Result(ResultStatus.Loading, assignees.value?.data)
 
-        assigneesResult.value = try {
+        assignees.value = try {
             tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
                 commonTask.value?.data?.assignedIds.orEmpty().let {
@@ -290,11 +287,11 @@ class CommonTaskViewModel : ViewModel() {
             )
             loadData().join()
             screensState.modify()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, assignees.value?.data)
 
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, assignees.value?.data, message = R.string.permission_error)
         }
     }
 
@@ -302,12 +299,11 @@ class CommonTaskViewModel : ViewModel() {
     fun removeAssignee(user: User) = changeAssignees(user, remove = true)
 
     // Edit watchers
-    val watchersResult = MutableLiveResult<Unit>()
 
     private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
-        watchersResult.value = Result(ResultStatus.Loading)
+        watchers.value = Result(ResultStatus.Loading, watchers.value?.data)
 
-        watchersResult.value = try {
+        watchers.value = try {
             tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
                 commonTask.value?.data?.watcherIds.orEmpty().let {
@@ -317,11 +313,11 @@ class CommonTaskViewModel : ViewModel() {
                 commonTaskVersion
             )
             loadData().join()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, watchers.value?.data)
 
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, watchers.value?.data, message = R.string.permission_error)
         }
     }
 
@@ -329,59 +325,57 @@ class CommonTaskViewModel : ViewModel() {
     fun removeWatcher(user: User) = changeWatchers(user, remove = true)
 
     // Edit comments
-    val commentsResult = MutableLiveResult<Unit>()
-    
+
     fun createComment(comment: String) = viewModelScope.launch { 
-        commentsResult.value = Result(ResultStatus.Loading)
-        
-        commentsResult.value = try {
+        comments.value = Result(ResultStatus.Loading, comments.value?.data)
+
+        comments.value = try {
             tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
             loadData().join()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, comments.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, comments.value?.data, message = R.string.permission_error)
         }
     }
 
     fun deleteComment(comment: Comment) = viewModelScope.launch {
-        commentsResult.value = Result(ResultStatus.Loading)
+        comments.value = Result(ResultStatus.Loading)
 
-        commentsResult.value = try {
+        comments.value = try {
             tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
             loadData().join()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, comments.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, comments.value?.data, message = R.string.permission_error)
         }
     }
 
-    val attachmentResult = MutableLiveResult<Unit>()
 
     fun deleteAttachment(attachment: Attachment) = viewModelScope.launch {
-        attachmentResult.value = Result(ResultStatus.Loading)
+        attachments.value = Result(ResultStatus.Loading, attachments.value?.data)
 
-        attachmentResult.value = try {
+        attachments.value = try {
             tasksRepository.deleteAttachment(commonTaskType, attachment.id)
             loadData().join()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, attachments.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, attachments.value?.data, message = R.string.permission_error)
         }
     }
 
     fun addAttachment(fileName: String, inputStream: InputStream) = viewModelScope.launch {
-        attachmentResult.value = Result(ResultStatus.Loading)
+        attachments.value = Result(ResultStatus.Loading, attachments.value?.data)
 
-        attachmentResult.value = try {
+        attachments.value = try {
             tasksRepository.addAttachment(commonTaskId, commonTaskType, fileName, inputStream)
             loadData().join()
-            Result(ResultStatus.Success)
+            Result(ResultStatus.Success, attachments.value?.data)
         } catch (e: Exception) {
             Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
+            Result(ResultStatus.Error, attachments.value?.data, message = R.string.permission_error)
         }
     }
 
