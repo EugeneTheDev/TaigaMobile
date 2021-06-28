@@ -202,7 +202,8 @@ private fun StoryItem(
         TitleWithIndicators(
             ref = story.ref,
             title = story.title,
-            isInactive = story.isClosed
+            isInactive = story.isClosed,
+            tags = story.tags
         )
 
         Spacer(Modifier.height(8.dp))

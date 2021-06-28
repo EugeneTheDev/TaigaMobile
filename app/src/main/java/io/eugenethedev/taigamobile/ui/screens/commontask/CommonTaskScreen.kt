@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
@@ -157,6 +159,9 @@ fun CommonTaskScreen(
             description = it?.description ?: "",
             creationDateTime = it?.createdDateTime ?: LocalDateTime.now(),
             creator = creator?.data,
+            tags = it?.tags.orEmpty(),
+            customFields = customFields?.data?.fields.orEmpty(),
+            attachments = attachments?.data.orEmpty(),
             assignees = assignees?.data.orEmpty(),
             watchers = watchers?.data.orEmpty(),
             userStories = userStories?.data.orEmpty(),
@@ -189,8 +194,6 @@ fun CommonTaskScreen(
                 }
             ),
             unlinkFromEpic = viewModel::unlinkFromEpic,
-            customFields = customFields?.data?.fields.orEmpty(),
-            attachments = attachments?.data.orEmpty(),
             editAttachments = EditAttachmentsAction(
                 deleteAttachment = viewModel::deleteAttachment,
                 addAttachment = viewModel::addAttachment,
@@ -224,7 +227,7 @@ fun CommonTaskScreen(
             promoteTask = viewModel::promoteToUserStory,
             isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading,
             isCustomFieldsLoading = customFields?.resultStatus == ResultStatus.Loading,
-            editCustomField = viewModel::editCustomField
+            editCustomField = viewModel::editCustomField,
         )
     }
 
@@ -249,6 +252,7 @@ fun CommonTaskScreenContent(
     description: String,
     creationDateTime: LocalDateTime,
     creator: User?,
+    tags: List<Tag> = emptyList(),
     customFields: List<CustomField> = emptyList(),
     attachments: List<Attachment> = emptyList(),
     assignees: List<User> = emptyList(),
@@ -575,7 +579,7 @@ fun CommonTaskScreenContent(
                     }
 
                     item {
-                        Spacer(Modifier.height(sectionsPadding * 2))
+                        Spacer(Modifier.height(sectionsPadding))
 
                         // description
                         if (description.isNotEmpty()) {
@@ -586,10 +590,27 @@ fun CommonTaskScreenContent(
                         } else {
                             NothingToSeeHereText()
                         }
+
+                        Spacer(Modifier.height(sectionsPadding))
+
+                        // tags
+                        FlowRow(
+                            crossAxisAlignment = FlowCrossAxisAlignment.Center,
+                            mainAxisSpacing = 8.dp,
+                            crossAxisSpacing = 8.dp
+                        ) {
+                            tags.forEach { TagItem(it, {}) }
+                            
+                            AddButton(
+                                text = stringResource(R.string.add_tag),
+                                onClick = {}
+                            )
+                        }
+
                     }
 
                     item {
-                        Spacer(Modifier.height(sectionsPadding * 2))
+                        Spacer(Modifier.height(sectionsPadding))
 
                         // created by
                         Text(
@@ -884,6 +905,34 @@ private fun EpicItemWithAction(
             painter = painterResource(R.drawable.ic_remove),
             contentDescription = null,
             tint = Color.Gray
+        )
+    }
+}
+
+@Composable
+private fun TagItem(
+    tag: Tag,
+    onRemoveClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.background(color = safeParseHexColor(tag.color), shape = MaterialTheme.shapes.small)
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+) {
+    Text(
+        text = tag.name,
+        color = Color.White
+    )
+
+    Spacer(Modifier.width(2.dp))
+
+    IconButton(
+        onClick = onRemoveClick,
+        modifier = Modifier.size(26.dp).clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_remove),
+            contentDescription = null,
+            tint = Color.White
         )
     }
 }

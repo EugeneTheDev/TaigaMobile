@@ -74,6 +74,7 @@
     <string name="belongs_to_epics">Belongs to epics</string>
     <string name="belongs_to_story">Belongs to user story</string>
     <string name="link_to_epic">Link to epic</string>
+    <string name="add_tag">Add tag</string>
     <string name="created_by">Created by</string>
     <string name="assigned_to">Assigned to</string>
     <string name="watchers">Watchers</string>

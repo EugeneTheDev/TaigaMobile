@@ -69,6 +69,7 @@
     <string name="belongs_to_epics">Fait partie de l\'épopée</string>
     <string name="belongs_to_story">Fait partie du récit</string>
     <string name="link_to_epic">Lien ver l\'épopée</string>
+    <string name="add_tag">Ajouter une étiquette</string>
     <string name="created_by">Créé par</string>
     <string name="assigned_to">Assigné à</string>
     <string name="watchers">Observateurs</string>

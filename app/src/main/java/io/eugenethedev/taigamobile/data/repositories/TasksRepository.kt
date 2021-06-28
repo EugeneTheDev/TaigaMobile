@@ -197,6 +197,7 @@ class TasksRepository @Inject constructor(
         )
     }
 
+    private fun String?.fixNullTagColor() = this ?: "#A9AABC" /* gray, because api returns null instead of gray -_- */
 
     private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
         id = id,
@@ -213,7 +214,8 @@ class TasksRepository @Inject constructor(
         projectInfo = project_extra_info,
         taskType = commonTaskType,
         colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
-        isClosed = is_closed
+        isClosed = is_closed,
+        tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullTagColor()) }
     )
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(filters: FiltersDataResponse, loadSprint: Boolean = true): CommonTaskExtended {
@@ -236,6 +238,7 @@ class TasksRepository @Inject constructor(
             description = description ?: "",
             epicsShortInfo = epics.orEmpty(),
             projectSlug = project_extra_info.slug,
+            tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullTagColor()) },
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,

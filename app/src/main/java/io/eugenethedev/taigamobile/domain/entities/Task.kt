@@ -40,6 +40,7 @@ data class CommonTask(
     val projectInfo: Project,
     val taskType: CommonTaskType,
     val isClosed: Boolean,
+    val tags: List<Tag> = emptyList(),
     val colors: List<String> = emptyList() // colored indicators (for stories and epics)
 )
 
@@ -56,10 +57,11 @@ data class CommonTaskExtended(
     val title: String,
     val isClosed: Boolean,
     val description: String,
-    val epicsShortInfo: List<EpicShortInfo>,
     val projectSlug: String,
-    val userStoryShortInfo: UserStoryShortInfo? = null,
     val version: Int,
+    val epicsShortInfo: List<EpicShortInfo> = emptyList(),
+    val tags: List<Tag> = emptyList(),
+    val userStoryShortInfo: UserStoryShortInfo? = null,
     val color: String? = null, // for epic
     // for issue
     val type: Status? = null,

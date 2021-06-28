@@ -80,7 +80,8 @@ fun CommonTaskItem(
             ref = commonTask.ref,
             title = commonTask.title,
             indicatorColorsHex = commonTask.colors,
-            isInactive = commonTask.isClosed
+            isInactive = commonTask.isClosed,
+            tags = commonTask.tags
         )
 
         Text(

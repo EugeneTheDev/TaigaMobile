@@ -276,6 +276,7 @@ private fun UserStoryItem(
             title = userStory.title,
             indicatorColorsHex = userStory.colors,
             isInactive = userStory.isClosed,
+            tags = userStory.tags,
             modifier = Modifier.padding(top = 4.dp)
                 .clickableUnindicated(onClick = onUserStoryClick)
         )
@@ -374,6 +375,7 @@ private fun TaskItem(
                 title = task.title,
                 indicatorColorsHex = task.colors,
                 isInactive = task.isClosed,
+                tags = task.tags
             )
 
             Text(
