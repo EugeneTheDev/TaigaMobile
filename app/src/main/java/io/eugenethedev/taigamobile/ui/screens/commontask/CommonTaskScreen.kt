@@ -693,31 +693,39 @@ fun CommonTaskScreenContent(
                         )
 
                         Spacer(Modifier.height(sectionsPadding * 2))
-
-                        SectionTitle(text = stringResource(R.string.custom_fields))
                     }
 
-                    itemsIndexed(customFields) { index, item ->
-                        CustomField(
-                            customField = item,
-                            onSaveClick = { editCustomField(item, it) }
-                        )
+                    if (customFields.isNotEmpty()) {
 
-                        if (index < customFields.lastIndex) {
-                            Divider(
-                              modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
-                              thickness = 2.dp
+                        item {
+                            SectionTitle(text = stringResource(R.string.custom_fields))
+                        }
+
+                        itemsIndexed(customFields) { index, item ->
+                            CustomField(
+                                customField = item,
+                                onSaveClick = { editCustomField(item, it) }
                             )
+
+                            if (index < customFields.lastIndex) {
+                                Divider(
+                                    modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
+                                    thickness = 2.dp
+                                )
+                            }
+                        }
+
+                        item {
+                            if (isCustomFieldsLoading) {
+                                Spacer(Modifier.height(8.dp))
+                                DotsLoader()
+                            }
+
+                            Spacer(Modifier.height(sectionsPadding * 3))
                         }
                     }
 
                     item {
-                        if (isCustomFieldsLoading) {
-                            Spacer(Modifier.height(8.dp))
-                            DotsLoader()
-                        }
-
-                        Spacer(Modifier.height(sectionsPadding * 3))
 
                         // attachments
                         val filePicker = LocalFilePicker.current
