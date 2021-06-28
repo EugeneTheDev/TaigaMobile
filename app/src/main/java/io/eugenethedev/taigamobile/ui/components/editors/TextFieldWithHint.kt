@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.components.editors
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,8 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 
 /**
  * You've read it right. Text field. With hint.
@@ -43,34 +44,54 @@ fun TextFieldWithHint(
     focusRequester: FocusRequester = remember { FocusRequester() },
     maxLines: Int = Int.MAX_VALUE,
     textColor: Color = MaterialTheme.colors.onSurface,
-    onSearchClick: (() -> Unit)? = null
-) = Box(
-    contentAlignment = Alignment.CenterStart,
-    modifier = Modifier.fillMaxWidth()
-        .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+    onSearchClick: (() -> Unit)? = null,
+    hasBorder: Boolean = false
 ) {
-    if (value.text.isEmpty()) {
-        Text(
-            text = stringResource(hintId),
-            style = style,
-            color = Color.Gray
+    val primaryColor = MaterialTheme.colors.primary
+    var outlineColor by remember { mutableStateOf(Color.Gray) }
+
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+            .let {
+                if (hasBorder) {
+                    it.border(width = 2.dp, color = outlineColor, shape = MaterialTheme.shapes.medium)
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                } else {
+                    it
+                }
+            }
+    ) {
+        if (value.text.isEmpty()) {
+            Text(
+                text = stringResource(hintId),
+                style = style,
+                color = Color.Gray
+            )
+        }
+
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    onFocusChange(it.isFocused)
+                    outlineColor = if (it.isFocused) primaryColor else Color.Gray
+                },
+            textStyle = style.merge(TextStyle(color = textColor)),
+            cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
+            singleLine = singleLine,
+            maxLines = maxLines,
+            keyboardOptions = KeyboardOptions(
+                imeAction = onSearchClick?.let { ImeAction.Search } ?: ImeAction.Default,
+                keyboardType = keyboardType
+            ),
+            keyboardActions = KeyboardActions(onSearch = { onSearchClick?.invoke() })
         )
     }
-
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth()
-            .focusRequester(focusRequester)
-            .onFocusChanged { onFocusChange(it.isFocused) },
-        textStyle = style.merge(TextStyle(color = textColor)),
-        cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
-        singleLine = singleLine,
-        maxLines = maxLines,
-        keyboardOptions = KeyboardOptions(
-            imeAction = onSearchClick?.let { ImeAction.Search } ?: ImeAction.Default,
-            keyboardType = keyboardType
-        ),
-        keyboardActions = KeyboardActions(onSearch = { onSearchClick?.invoke() })
-    )
 }
+
+val searchFieldHorizontalPadding = mainHorizontalScreenPadding
+val searchFieldVerticalPadding = 8.dp

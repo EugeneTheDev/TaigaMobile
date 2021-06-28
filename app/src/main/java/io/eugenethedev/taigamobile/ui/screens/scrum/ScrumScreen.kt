@@ -32,7 +32,9 @@ import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
-import io.eugenethedev.taigamobile.ui.components.editors.SearchField
+import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
+import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
+import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
@@ -147,11 +149,14 @@ private fun BacklogTabContent(
 
     LazyColumn(Modifier.fillMaxSize()) {
         item {
-            SearchField(
+            TextFieldWithHint(
                 hintId = R.string.tasks_search_hint,
                 value = query,
                 onValueChange = { query = it },
-                onSearchClick = { loadStories(query.text) }
+                onSearchClick = { loadStories(query.text) },
+                horizontalPadding = searchFieldHorizontalPadding,
+                verticalPadding = searchFieldVerticalPadding,
+                hasBorder = true
             )
 
             Row(
