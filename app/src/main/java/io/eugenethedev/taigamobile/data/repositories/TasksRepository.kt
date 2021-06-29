@@ -24,7 +24,7 @@ class TasksRepository @Inject constructor(
     private fun FiltersDataResponse.Filter.toStatus(statusType: StatusType) = Status(
         id = id,
         name = name,
-        color = color,
+        color = color.fixNullColor(),
         type = statusType
     )
 
@@ -197,7 +197,11 @@ class TasksRepository @Inject constructor(
         )
     }
 
-    private fun String?.fixNullTagColor() = this ?: "#A9AABC" /* gray, because api returns null instead of gray -_- */
+    override suspend fun getAllTags(commonTaskType: CommonTaskType) = withIO {
+        getFiltersData(commonTaskType).tags.orEmpty().map { Tag(it.name, it.color.fixNullColor()) }
+    }
+
+    private fun String?.fixNullColor() = this ?: "#A9AABC" /* gray, because api returns null instead of gray -_- */
 
     private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
         id = id,
@@ -215,7 +219,7 @@ class TasksRepository @Inject constructor(
         taskType = commonTaskType,
         colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
         isClosed = is_closed,
-        tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullTagColor()) }
+        tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
     )
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(filters: FiltersDataResponse, loadSprint: Boolean = true): CommonTaskExtended {
@@ -238,7 +242,7 @@ class TasksRepository @Inject constructor(
             description = description ?: "",
             epicsShortInfo = epics.orEmpty(),
             projectSlug = project_extra_info.slug,
-            tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullTagColor()) },
+            tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
@@ -481,6 +485,19 @@ class TasksRepository @Inject constructor(
             taskPath = CommonTaskPathPlural(commonTaskType),
             taskId = commonTaskId,
             editRequest = EditCustomAttributesValuesRequest(fields.mapValues { it.value?.value }, version)
+        )
+    }
+
+    override suspend fun editTags(
+        commonTaskType: CommonTaskType,
+        commonTaskId: Long,
+        tags: List<Tag>,
+        version: Int
+    ) = withIO {
+        taigaApi.editTags(
+            taskPath = CommonTaskPathPlural(commonTaskType),
+            taskId = commonTaskId,
+            editRequest = EditTagsRequest(tags = tags.map { listOf(it.name, it.color) }, version = version)
         )
     }
 }

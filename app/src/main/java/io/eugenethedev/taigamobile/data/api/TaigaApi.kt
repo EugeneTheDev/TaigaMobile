@@ -291,4 +291,13 @@ interface TaigaApi {
         @Path("id") taskId: Long,
         @Body editRequest: EditCustomAttributesValuesRequest
     )
+
+    // Tags
+
+    @PATCH("{taskPath}/{id}")
+    suspend fun editTags(
+        @Path("taskPath") taskPath: CommonTaskPathPlural,
+        @Path("id") taskId: Long,
+        @Body editRequest: EditTagsRequest
+    )
 }

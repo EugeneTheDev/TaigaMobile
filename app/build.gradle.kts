@@ -142,7 +142,9 @@ dependencies {
     implementation("io.noties.markwon:image-glide:$markwonVersion")
 
     // Compose Material Dialogs
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.4.3")
+    val composeMaterialDialogsVersion = "0.4.3"
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:$composeMaterialDialogsVersion")
+    implementation("io.github.vanpra.compose-material-dialogs:color:$composeMaterialDialogsVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

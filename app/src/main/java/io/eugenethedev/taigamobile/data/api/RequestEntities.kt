@@ -93,3 +93,8 @@ data class EditCustomAttributesValuesRequest(
     val attributes_values: Map<Long, Any?>,
     val version: Int
 )
+
+data class EditTagsRequest(
+    val tags: List<List<String>>,
+    val version: Int
+)

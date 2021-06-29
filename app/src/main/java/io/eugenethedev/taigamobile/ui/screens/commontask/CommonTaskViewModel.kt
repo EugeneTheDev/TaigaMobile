@@ -65,6 +65,7 @@ class CommonTaskViewModel : ViewModel() {
                 val userStoriesAsync = async { tasksRepository.getEpicUserStories(commonTaskId) }
                 val tasksAsync = async { tasksRepository.getUserStoryTasks(commonTaskId) }
                 val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
+                val tagsAsync = async { tasksRepository.getAllTags(commonTaskType) }
 
                 creator.value = creatorAsync.await()
                 customFields.value = Result(ResultStatus.Success, customFieldsAsync.await())
@@ -447,4 +448,59 @@ class CommonTaskViewModel : ViewModel() {
         }
 
     }
+
+    // Tags
+    val tags = MutableLiveResult<List<Tag>>()
+    private var _tags = emptyList<Tag>()
+    private var currentTagsQuery: String = ""
+
+    fun loadTags(query: String?) = viewModelScope.launch {
+        if (query == null) {
+            tags.value = Result(ResultStatus.Success)
+            return@launch
+        }
+
+        if (query == currentTagsQuery) return@launch
+        currentTagsQuery = query.orEmpty()
+
+        fun getResult() = Result(
+            resultStatus = ResultStatus.Success,
+            data = _tags.filter { query.isNotEmpty() && query.lowercase() in it.name.lowercase() }
+        )
+
+        tags.value = _team.takeIf { it.isNotEmpty() }?.let {
+            getResult()
+        } ?: run {
+            try {
+                _tags = tasksRepository.getAllTags(commonTaskType)
+                getResult()
+            } catch (e: Exception) {
+                Timber.w(e)
+                Result(ResultStatus.Error, message = R.string.common_error_message)
+            }
+        }
+    }
+
+    private fun editTag(tag: Tag, remove: Boolean) = viewModelScope.launch {
+        tags.value = Result(ResultStatus.Loading, tags.value?.data)
+
+        tags.value = try {
+            tasksRepository.editTags(
+                commonTaskType = commonTaskType,
+                commonTaskId = commonTaskId,
+                tags = commonTask.value?.data?.tags.orEmpty().let { if (remove) it - tag else it + tag },
+                version = commonTaskVersion
+            )
+            loadData().join()
+            screensState.modify()
+            Result(ResultStatus.Success, tags.value?.data)
+        } catch (e: Exception) {
+            Timber.w(e)
+            Result(ResultStatus.Error, tags.value?.data, message = R.string.permission_error)
+        }
+    }
+
+    fun addTag(tag: Tag) = editTag(tag, remove = false)
+    fun deleteTag(tag: Tag) = editTag(tag, remove = true)
+
 }

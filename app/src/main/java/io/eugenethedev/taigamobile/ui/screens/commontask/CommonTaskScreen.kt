@@ -23,15 +23,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.vanpra.composematerialdialogs.color.ColorPalette
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
@@ -39,11 +42,13 @@ import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
+import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
+import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
@@ -111,6 +116,9 @@ fun CommonTaskScreen(
 
     val attachments by viewModel.attachments.observeAsState()
     attachments?.subscribeOnError(onError)
+
+    val tags by viewModel.tags.observeAsState()
+    tags?.subscribeOnError(onError)
 
     val editResult by viewModel.editResult.observeAsState()
     editResult?.subscribeOnError(onError)
@@ -228,6 +236,13 @@ fun CommonTaskScreen(
             isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading,
             isCustomFieldsLoading = customFields?.resultStatus == ResultStatus.Loading,
             editCustomField = viewModel::editCustomField,
+            editTags = EditAction(
+                items = tags?.data.orEmpty(),
+                loadItems = viewModel::loadTags,
+                selectItem = viewModel::addTag,
+                removeItem = viewModel::deleteTag,
+                isResultLoading = tags?.resultStatus == ResultStatus.Loading
+            )
         )
     }
 
@@ -283,7 +298,8 @@ fun CommonTaskScreenContent(
     promoteTask: () -> Unit = {},
     isPromoteLoading: Boolean = false,
     editCustomField: (CustomField, CustomFieldValue?) -> Unit = { _, _ -> },
-    isCustomFieldsLoading: Boolean = false
+    isCustomFieldsLoading: Boolean = false,
+    editTags: EditAction<Tag> = EditAction()
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -599,12 +615,33 @@ fun CommonTaskScreenContent(
                             mainAxisSpacing = 8.dp,
                             crossAxisSpacing = 8.dp
                         ) {
-                            tags.forEach { TagItem(it, {}) }
-                            
-                            AddButton(
-                                text = stringResource(R.string.add_tag),
-                                onClick = {}
-                            )
+                            var isAddTagFieldVisible by remember { mutableStateOf(false) }
+
+                            tags.forEach {
+                                TagItem(
+                                    tag = it,
+                                    onRemoveClick = { editTags.removeItem(it) }
+                                )
+                            }
+
+                            when {
+                                editTags.isResultLoading -> CircularProgressIndicator(
+                                    modifier = Modifier.size(28.dp),
+                                    strokeWidth = 2.dp
+                                )
+                                isAddTagFieldVisible -> AddTagField(
+                                    tags = editTags.items,
+                                    onInputChange = editTags.loadItems,
+                                    onSaveClick = {
+                                        editTags.loadItems(null)
+                                        editTags.selectItem(it)
+                                    }
+                                )
+                                else -> AddButton(
+                                    text = stringResource(R.string.add_tag),
+                                    onClick = { isAddTagFieldVisible = true }
+                                )
+                            }
                         }
 
                     }
@@ -923,7 +960,8 @@ private fun TagItem(
     onRemoveClick: () -> Unit
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.background(color = safeParseHexColor(tag.color), shape = MaterialTheme.shapes.small)
+    modifier = Modifier
+        .background(color = safeParseHexColor(tag.color), shape = MaterialTheme.shapes.small)
         .padding(horizontal = 4.dp, vertical = 2.dp)
 ) {
     Text(
@@ -935,7 +973,9 @@ private fun TagItem(
 
     IconButton(
         onClick = onRemoveClick,
-        modifier = Modifier.size(26.dp).clip(CircleShape)
+        modifier = Modifier
+            .size(26.dp)
+            .clip(CircleShape)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_remove),
@@ -944,6 +984,87 @@ private fun TagItem(
         )
     }
 }
+
+@Composable
+private fun AddTagField(
+    tags: List<Tag>,
+    onInputChange: (String) -> Unit,
+    onSaveClick: (Tag) -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically
+) {
+    var value by remember { mutableStateOf(TextFieldValue()) }
+    var color by remember { mutableStateOf(ColorPalette.Primary.first()) }
+
+    Column {
+        TextFieldWithHint(
+            hintId = R.string.tag,
+            value = value,
+            onValueChange = {
+                value = it
+                onInputChange(it.text)
+            },
+            width = 180.dp,
+            hasBorder = true,
+            singleLine = true
+        )
+
+        DropdownMenu(
+            expanded = tags.isNotEmpty(),
+            onDismissRequest = {},
+            properties = PopupProperties(clippingEnabled = false),
+            modifier = Modifier.heightIn(max = 200.dp)
+        ) {
+            tags.forEach {
+                DropdownMenuItem(onClick = { onSaveClick(it) }) {
+                    Spacer(
+                        Modifier.size(22.dp)
+                            .background(
+                                color = safeParseHexColor(it.color),
+                                shape = MaterialTheme.shapes.small
+                            )
+                    )
+
+                    Spacer(Modifier.width(4.dp))
+
+                    Text(
+                        text = it.name,
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(Modifier.width(4.dp))
+
+    ColorPicker(
+        size = 32.dp,
+        color = color,
+        onColorPicked = { color = it }
+    )
+
+    Spacer(Modifier.width(2.dp))
+
+    IconButton(
+        onClick = {
+            value.text.takeIf { it.isNotEmpty() }?.let {
+                onSaveClick(Tag(it, "#${color.copy(alpha = 0f).toArgb().toString(16)}"))
+                value = TextFieldValue()
+            }
+        },
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_save),
+            contentDescription = null,
+            tint = Color.Gray
+        )
+    }
+}
+
 
 @Composable
 private fun UserStoryItem(

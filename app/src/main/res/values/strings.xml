@@ -98,6 +98,8 @@
     <string name="open">Open</string>
     <string name="clear">Clear</string>
     <string name="select_date">Select date</string>
+    <string name="select_color">Select color</string>
+    <string name="tag">Tag</string>
     <string name="empty">Empty</string>
 
     <string name="choose_status">Choose status</string>

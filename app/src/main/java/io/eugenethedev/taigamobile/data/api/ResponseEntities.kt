@@ -29,6 +29,7 @@ data class ProjectResponse(
 
 data class FiltersDataResponse(
     val statuses: List<Filter>,
+    val tags: List<Filter>?,
 
     // issue filters
     val priorities: List<Filter>?,
@@ -38,7 +39,7 @@ data class FiltersDataResponse(
     data class Filter(
         val id: Long,
         val name: String,
-        val color: String,
+        val color: String?,
     )
 }
 
