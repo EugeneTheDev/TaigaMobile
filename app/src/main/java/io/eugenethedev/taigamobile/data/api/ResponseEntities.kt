@@ -63,7 +63,7 @@ data class CommonTaskResponse(
     val user_story_extra_info: UserStoryShortInfo?,
     val version: Int,
     val is_closed: Boolean,
-    val tags: List<List<String?>>,
+    val tags: List<List<String?>>?,
     val color: String?, // for epic
     // for issue
     val type: Long?,

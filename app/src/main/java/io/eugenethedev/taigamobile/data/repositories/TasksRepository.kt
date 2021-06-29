@@ -219,7 +219,7 @@ class TasksRepository @Inject constructor(
         taskType = commonTaskType,
         colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
         isClosed = is_closed,
-        tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
+        tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
     )
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(filters: FiltersDataResponse, loadSprint: Boolean = true): CommonTaskExtended {
@@ -242,7 +242,7 @@ class TasksRepository @Inject constructor(
             description = description ?: "",
             epicsShortInfo = epics.orEmpty(),
             projectSlug = project_extra_info.slug,
-            tags = tags.map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
+            tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
