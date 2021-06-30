@@ -185,7 +185,6 @@ class TasksRepository @Inject constructor(
                             CustomFieldValue(
                                 when (it.type) {
                                     CustomFieldType.Date -> (value as? String)?.takeIf { it.isNotEmpty() }?.toLocalDate()
-                                    CustomFieldType.Number -> (value as? Double)?.toInt()
                                     CustomFieldType.Checkbox -> value as? Boolean
                                     else -> value
                                 } ?: return@let null

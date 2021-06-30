@@ -312,6 +312,10 @@ fun CommonTaskScreenContent(
     var isWatchersSelectorVisible by remember { mutableStateOf(false) }
     var isEpicsSelectorVisible by remember { mutableStateOf(false) }
 
+
+    var customFieldsValues by remember { mutableStateOf(emptyMap<Long, CustomFieldValue?>()) }
+    customFieldsValues = customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
+
     Column(Modifier.fillMaxSize()) {
         var isMenuExpanded by remember { mutableStateOf(false) }
         AppBarWithBackButton(
@@ -741,7 +745,9 @@ fun CommonTaskScreenContent(
                         itemsIndexed(customFields) { index, item ->
                             CustomField(
                                 customField = item,
-                                onSaveClick = { editCustomField(item, it) }
+                                value = customFieldsValues[item.id],
+                                onValueChange = { customFieldsValues = customFieldsValues - item.id + Pair(item.id, it) },
+                                onSaveClick = { editCustomField(item, customFieldsValues[item.id]) }
                             )
 
                             if (index < customFields.lastIndex) {

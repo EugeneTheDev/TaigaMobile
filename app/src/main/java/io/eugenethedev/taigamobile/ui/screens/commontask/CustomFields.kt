@@ -42,11 +42,14 @@ import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.math.floor
 
 @Composable
 fun CustomField(
     customField: CustomField,
-    onSaveClick: (CustomFieldValue?) -> Unit
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    onSaveClick: () -> Unit
 ) = Column {
     Text(
        text = customField.name,
@@ -65,23 +68,14 @@ fun CustomField(
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    var showEditButton by remember { mutableStateOf(false) }
-    var buttonsAlignment by remember { mutableStateOf(Alignment.CenterVertically) }
-
-    var editedCustomFieldValue by remember { mutableStateOf(customField.value) }
+    var showEditButton = false
+    var buttonsAlignment = Alignment.CenterVertically
 
     var fieldState by remember { mutableStateOf(FieldState.Default) }
-    val borderColor by mutableStateOf(
-            when (fieldState) {
-            FieldState.Focused -> MaterialTheme.colors.primary
-            FieldState.Error -> MaterialTheme.colors.error
-            FieldState.Default -> if (editedCustomFieldValue == customField.value) Color.Gray else MaterialTheme.colors.primary
-        }
-    )
-
-    fun CustomFieldValue?.orShowError() = this ?: run {
-        if (fieldState != FieldState.Focused) fieldState = FieldState.Error
-        customField.value
+    val borderColor = when (fieldState) {
+        FieldState.Focused -> MaterialTheme.colors.primary
+        FieldState.Error -> MaterialTheme.colors.error
+        FieldState.Default -> if (value == customField.value) Color.Gray else MaterialTheme.colors.primary
     }
 
     Row {
@@ -99,13 +93,15 @@ fun CustomField(
 
             when (customField.type) {
                 CustomFieldType.Text -> {
-                    var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    editedCustomFieldValue = CustomFieldValue(text.text)
+                    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
                     TextValue(
                         hintId = R.string.custom_field_text,
                         text = text,
-                        onTextChange = { text = it },
+                        onTextChange = {
+                            text = it
+                            onValueChange(CustomFieldValue(it.text))
+                         },
                         onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
                         singleLine = true
                     )
@@ -113,13 +109,15 @@ fun CustomField(
 
                 CustomFieldType.Multiline -> {
                     buttonsAlignment = Alignment.Top
-                    var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    editedCustomFieldValue = CustomFieldValue(text.text)
+                    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
                     TextValue(
                         hintId = R.string.custom_field_multiline,
                         text = text,
-                        onTextChange = { text = it },
+                        onTextChange = {
+                            text = it
+                            onValueChange(CustomFieldValue(it.text))
+                        },
                         onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
                     )
                 }
@@ -127,14 +125,16 @@ fun CustomField(
                 CustomFieldType.RichText -> {
                     buttonsAlignment = Alignment.Top
                     showEditButton = true
-                    var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    editedCustomFieldValue = CustomFieldValue(text.text)
+                    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
                     if (fieldState == FieldState.Focused) {
                         TextValue(
                             hintId = R.string.custom_field_rich_text,
                             text = text,
-                            onTextChange = { text = it },
+                            onTextChange = {
+                                text = it
+                                onValueChange(CustomFieldValue(it.text))
+                            },
                             onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
                             focusRequester = focusRequester
                         )
@@ -147,20 +147,32 @@ fun CustomField(
                 }
 
                 CustomFieldType.Number -> {
-                    var text by remember { mutableStateOf(TextFieldValue(customField.value?.intValue?.toString().orEmpty())) }
-                    editedCustomFieldValue = text.text.takeIf { it.isNotEmpty() }
-                        ?.toIntOrNull()
-                        ?.let { CustomFieldValue(it) }
-                        .orShowError()
+                    // do not display trailing zeros, like 1.0
+                    fun Double?.prettyDisplay() = this?.let { if (floor(it) != it) toString() else "%.0f".format(it) }.orEmpty()
+
+                    var text by remember { mutableStateOf(TextFieldValue(value?.doubleValue.prettyDisplay())) }
 
                     TextValue(
                         hintId = R.string.custom_field_number,
                         text = text,
                         onTextChange = {
                             text = it
-                            fieldState = FieldState.Focused
+                            if (it.text.isEmpty()) {
+                                onValueChange(null)
+                                fieldState = FieldState.Focused
+                            } else {
+                                it.text.toDoubleOrNull()?.let {
+                                    onValueChange(CustomFieldValue(it))
+                                    fieldState = FieldState.Focused
+                                } ?: run {
+                                    fieldState = FieldState.Error
+                                }
+                            }
                          },
-                        onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
+                        onFocusChange = {
+                            text = TextFieldValue(value?.doubleValue.prettyDisplay())
+                            fieldState = if (it) FieldState.Focused else FieldState.Default
+                        },
                         keyboardType = KeyboardType.Number,
                         singleLine = true
                     )
@@ -168,9 +180,6 @@ fun CustomField(
 
                 CustomFieldType.Url -> {
                     var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
-                    editedCustomFieldValue = text.text.takeIf { it.isEmpty() || Patterns.WEB_URL.matcher(it).matches() }
-                        ?.let { CustomFieldValue(it) }
-                        .orShowError()
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -182,9 +191,17 @@ fun CustomField(
                                 text = text,
                                 onTextChange = {
                                     text = it
-                                    fieldState = FieldState.Focused
+
+                                    it.text.takeIf { it.isEmpty() || Patterns.WEB_URL.matcher(it).matches() }
+                                        ?.let {
+                                            fieldState = FieldState.Focused
+                                            onValueChange(CustomFieldValue(it))
+                                        } ?: run {
+                                            fieldState = FieldState.Error
+                                        }
                                 },
                                 onFocusChange = {
+                                    text = TextFieldValue(value?.stringValue.orEmpty())
                                     fieldState = if (it) FieldState.Focused else FieldState.Default
                                 },
                                 keyboardType = KeyboardType.Uri,
@@ -221,10 +238,8 @@ fun CustomField(
                 }
 
                 CustomFieldType.Date -> {
-                    var date by remember { mutableStateOf(customField.value?.dateValue) }
+                    val date = value?.dateValue
                     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
-
-                    editedCustomFieldValue = date?.let { CustomFieldValue(it) }
 
                     val dialog = remember {
                         MaterialDialog(
@@ -233,9 +248,10 @@ fun CustomField(
                         )
                     }
                     dialog.build {
-                        datepicker(title = stringResource(R.string.select_date).uppercase()) {
-                            date = it
-                        }
+                        datepicker(
+                            title = stringResource(R.string.select_date).uppercase(),
+                            onDateChange = { onValueChange(CustomFieldValue(it)) }
+                        )
 
                         buttons {
                             positiveButton(
@@ -249,7 +265,7 @@ fun CustomField(
                             button(
                                 res = R.string.clear,
                                 onClick = {
-                                    date = null
+                                    onValueChange(null)
                                     dialog.hide()
                                     fieldState = FieldState.Default
                                 }
@@ -272,9 +288,7 @@ fun CustomField(
                 }
 
                 CustomFieldType.Dropdown -> {
-                    var option by remember { mutableStateOf(customField.value?.stringValue.orEmpty()) }
-
-                    editedCustomFieldValue = CustomFieldValue(option)
+                    val option = value?.stringValue.orEmpty()
 
                     val transitionState = remember { MutableTransitionState(fieldState == FieldState.Focused) }
                     transitionState.targetState = fieldState == FieldState.Focused
@@ -313,7 +327,7 @@ fun CustomField(
                         customField.options?.forEach {
                             DropdownMenuItem(
                                 onClick = {
-                                    option = it
+                                    onValueChange(CustomFieldValue(it))
                                     fieldState = FieldState.Default
                                 }
                             ) {
@@ -331,13 +345,11 @@ fun CustomField(
                 }
 
                 CustomFieldType.Checkbox -> {
-                    var state by remember { mutableStateOf(customField.value?.booleanValue ?: false) }
-
-                    editedCustomFieldValue = CustomFieldValue(state)
+                    val state = value?.booleanValue ?: false
 
                     Checkbox(
                         checked = state,
-                        onCheckedChange = { state = it }
+                        onCheckedChange = { onValueChange(CustomFieldValue(it)) }
                     )
                 }
             }
@@ -367,9 +379,9 @@ fun CustomField(
 
             IconButton(
                 onClick = {
-                    if (fieldState != FieldState.Error) {
+                    if (fieldState != FieldState.Error && value != customField.value) {
                         focusManager.clearFocus()
-                        onSaveClick(editedCustomFieldValue)
+                        onSaveClick()
                     }
                 },
                 modifier = Modifier
@@ -418,6 +430,8 @@ private fun TextValue(
 @Composable
 fun CustomFieldsPreview() = TaigaMobileTheme {
     Column {
+        var value1 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue("Sample value")) }
+
         CustomField(
             customField = CustomField(
                 id = 0L,
@@ -427,10 +441,14 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 value = CustomFieldValue("Sample value"),
 
             ),
+            value = value1,
+            onValueChange = { value1 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+        var value2 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue("Sample value")) }
 
         CustomField(
             customField = CustomField(
@@ -441,10 +459,14 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 value = CustomFieldValue("Sample value"),
 
             ),
+            value = value2,
+            onValueChange = { value2 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+        var value3 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue("__Sample__ `value`")) }
 
         CustomField(
             customField = CustomField(
@@ -455,10 +477,15 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 value = CustomFieldValue("__Sample__ `value`"),
 
             ),
+            value = value3,
+            onValueChange = { value3 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+
+        var value4 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue(42.0)) }
 
         CustomField(
             customField = CustomField(
@@ -466,12 +493,16 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 type = CustomFieldType.Number,
                 name = "Sample name",
                 description = "Description",
-                value = CustomFieldValue(42)
+                value = CustomFieldValue(42.0)
             ),
+            value = value4,
+            onValueChange = { value4 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+        var value5 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue("https://x.com")) }
 
         CustomField(
             customField = CustomField(
@@ -481,10 +512,14 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 description = "Description",
                 value = CustomFieldValue("https://x.com")
             ),
+            value = value5,
+            onValueChange = { value5 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+        var value6 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue(LocalDate.of(1970, 1, 1))) }
 
         CustomField(
             customField = CustomField(
@@ -492,12 +527,16 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 type = CustomFieldType.Date,
                 name = "Sample name",
                 description = "Description",
-                value = CustomFieldValue(LocalDate.now())
+                value = CustomFieldValue(LocalDate.of(1970, 1, 1))
             ),
+            value = value6,
+            onValueChange = { value6 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+        var value7 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue("Something 0")) }
 
         CustomField(
             customField = CustomField(
@@ -508,10 +547,14 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 value = CustomFieldValue("Something 0"),
                 options = listOf("", "Something 0", "Something 1", "Something 2")
             ),
+            value = value7,
+            onValueChange = { value7 = it },
             onSaveClick = { }
         )
 
         Spacer(Modifier.height(8.dp))
+
+        var value8 by remember { mutableStateOf<CustomFieldValue?>(CustomFieldValue(true)) }
 
         CustomField(
             customField = CustomField(
@@ -521,6 +564,8 @@ fun CustomFieldsPreview() = TaigaMobileTheme {
                 description = "Description",
                 value = CustomFieldValue(true)
             ),
+            value = value8,
+            onValueChange = { value8 = it },
             onSaveClick = { }
         )
     }

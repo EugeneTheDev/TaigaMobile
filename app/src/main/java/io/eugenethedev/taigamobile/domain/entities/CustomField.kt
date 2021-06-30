@@ -30,13 +30,13 @@ value class CustomFieldValue(val value: Any) {
         require(
             value is String ||
             value is LocalDate ||
-            value is Int ||
+            value is Double ||
             value is Boolean
         )
     }
 
     val stringValue get() = value as? String ?: throw IllegalArgumentException("value is not String")
-    val intValue get() = value as? Int ?: throw IllegalArgumentException("value is not Int")
+    val doubleValue get() = value as? Double ?: throw IllegalArgumentException("value is not Int")
     val dateValue get() = value as? LocalDate ?: throw IllegalArgumentException("value is not Date")
     val booleanValue get() = value as? Boolean ?: throw IllegalArgumentException("value is not Boolean")
 }
