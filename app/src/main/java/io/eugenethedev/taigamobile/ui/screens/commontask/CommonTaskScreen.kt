@@ -753,7 +753,7 @@ fun CommonTaskScreenContent(
                             if (index < customFields.lastIndex) {
                                 Divider(
                                     modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
-                                    thickness = 2.dp
+                                    color = Color.LightGray
                                 )
                             }
                         }
@@ -1055,7 +1055,7 @@ private fun AddTagField(
     IconButton(
         onClick = {
             value.text.takeIf { it.isNotEmpty() }?.let {
-                onSaveClick(Tag(it, "#${color.copy(alpha = 0f).toArgb().toString(16)}"))
+                onSaveClick(Tag(it, "#%08X".format(color.toArgb()).replace("#FF", "#")))
                 value = TextFieldValue()
             }
         },
