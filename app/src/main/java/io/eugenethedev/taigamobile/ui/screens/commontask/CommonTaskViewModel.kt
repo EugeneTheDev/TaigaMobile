@@ -65,7 +65,6 @@ class CommonTaskViewModel : ViewModel() {
                 val userStoriesAsync = async { tasksRepository.getEpicUserStories(commonTaskId) }
                 val tasksAsync = async { tasksRepository.getUserStoryTasks(commonTaskId) }
                 val commentsAsync = async { tasksRepository.getComments(commonTaskId, commonTaskType) }
-                val tagsAsync = async { tasksRepository.getAllTags(commonTaskType) }
 
                 creator.value = creatorAsync.await()
                 customFields.value = Result(ResultStatus.Success, customFieldsAsync.await())
