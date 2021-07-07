@@ -17,8 +17,8 @@ android {
         applicationId = "io.eugenethedev.taigamobile"
         minSdk = 21
         targetSdk = 30
-        versionCode = 10
-        versionName = "1.3.0"
+        versionCode = 12
+        versionName = "1.4.1"
         project.base.archivesBaseName = "TaigaMobile-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -56,11 +56,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -75,6 +76,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+
     implementation("androidx.core:core-ktx:1.5.0")
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation("com.google.android.material:material:1.3.0")
@@ -125,7 +128,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Dagger 2
-    val daggerVersion = "2.36"
+    val daggerVersion = "2.37"
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -137,6 +140,11 @@ dependencies {
     val markwonVersion = "4.6.2"
     implementation("io.noties.markwon:core:$markwonVersion")
     implementation("io.noties.markwon:image-glide:$markwonVersion")
+
+    // Compose Material Dialogs
+    val composeMaterialDialogsVersion = "0.4.3"
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:$composeMaterialDialogsVersion")
+    implementation("io.github.vanpra.compose-material-dialogs:color:$composeMaterialDialogsVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

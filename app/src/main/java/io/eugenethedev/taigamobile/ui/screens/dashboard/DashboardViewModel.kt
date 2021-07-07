@@ -11,7 +11,9 @@ import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class DashboardViewModel : ViewModel() {
@@ -31,9 +33,11 @@ class DashboardViewModel : ViewModel() {
             reset()
         }
 
-        if (workingOn.value == null) {
-            launch { loadWorkingOn() }
-            launch { loadWatching() }
+        if (workingOn.value == null || watching.value == null) {
+            joinAll(
+                launch { loadWorkingOn() },
+                launch { loadWatching() }
+            )
         }
     }
 
@@ -50,6 +54,7 @@ class DashboardViewModel : ViewModel() {
         workingOn.value = try {
             Result(ResultStatus.Success, tasksRepository.getWorkingOn())
         } catch (e: Exception) {
+            Timber.w(e)
             Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
@@ -60,6 +65,7 @@ class DashboardViewModel : ViewModel() {
         watching.value = try {
             Result(ResultStatus.Success, tasksRepository.getWatching())
         } catch (e: Exception) {
+            Timber.w(e)
             Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }

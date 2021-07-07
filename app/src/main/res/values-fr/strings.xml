@@ -4,6 +4,9 @@
     <string name="yes">Oui</string>
     <string name="no">Non</string>
 
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+
     <string name="common_error_message">Un problème est survenu. Vérifiez votre connexion.</string>
     <string name="permission_error">Erreur, vous n\'avez pas les autorisations suffisantes</string>
 
@@ -66,18 +69,33 @@
     <string name="belongs_to_epics">Fait partie de l\'épopée</string>
     <string name="belongs_to_story">Fait partie du récit</string>
     <string name="link_to_epic">Lien ver l\'épopée</string>
+    <string name="add_tag">Ajouter une étiquette</string>
     <string name="created_by">Créé par</string>
     <string name="assigned_to">Assigné à</string>
     <string name="watchers">Observateurs</string>
     <string name="userstories">Récits utilisateur</string>
     <string name="tasks">Tâches</string>
-    <string name="comments_template">Commentaires (%d)</string>
+    <string name="comments_template">%d Commentaires</string>
     <string name="comment_hint">Commenter</string>
     <string name="delete_comment_title">Supprimer le commentaire</string>
     <string name="delete_comment_text">Etes vous sûr de vouloir supprimer le commentaire ?</string>
     <string name="add_user">Ajouter un utilisateur</string>
-    <string name="attachments">Pièces jointes</string>
-    <string name="add_attachment">Ajouter une pièce jointe</string>
+    <string name="attachments_template">%d Pièces jointes</string>
+    <string name="custom_fields">Champs personnalisés</string>
+
+    <string name="custom_field_text">Texte</string>
+    <string name="custom_field_multiline">Texte multiligne</string>
+    <string name="custom_field_rich_text">Texte riche</string>
+    <string name="custom_field_number">Nombre</string>
+    <string name="custom_field_url">Url</string>
+    <string name="custom_field_date">Date</string>
+
+    <string name="open">Ouvert</string>
+    <string name="clear">Dégager</string>
+    <string name="select_color">Sélectionnez la couleur</string>
+    <string name="tag">Tag</string>
+    <string name="select_date">Sélectionner une date</string>
+    <string name="empty">Vider</string>
 
     <string name="choose_status">Choisir un statut</string>
     <string name="choose_type">Choisir un type</string>

@@ -37,7 +37,7 @@ import io.eugenethedev.taigamobile.ui.theme.veryLightGray
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
-import java.util.*
+import java.time.LocalDateTime
 
 @Composable
 fun SprintKanban(
@@ -276,6 +276,7 @@ private fun UserStoryItem(
             title = userStory.title,
             indicatorColorsHex = userStory.colors,
             isInactive = userStory.isClosed,
+            tags = userStory.tags,
             modifier = Modifier.padding(top = 4.dp)
                 .clickableUnindicated(onClick = onUserStoryClick)
         )
@@ -374,6 +375,7 @@ private fun TaskItem(
                 title = task.title,
                 indicatorColorsHex = task.colors,
                 isInactive = task.isClosed,
+                tags = task.tags
             )
 
             Text(
@@ -437,7 +439,7 @@ fun SprintKanbanPreview() = TaigaMobileTheme {
         storiesWithTasks = List(5) {
             CommonTask(
                 id = it.toLong(),
-                createdDate = Date(),
+                createdDate = LocalDateTime.now(),
                 title = "Very cool story",
                 ref = 100,
                 status = Status(
@@ -459,7 +461,7 @@ fun SprintKanbanPreview() = TaigaMobileTheme {
             ) to listOf(
                 CommonTask(
                     id = it.toLong(),
-                    createdDate = Date(),
+                    createdDate = LocalDateTime.now(),
                     title = "Very cool story Very cool story Very cool story",
                     ref = 100,
                     status = Status(
@@ -481,7 +483,7 @@ fun SprintKanbanPreview() = TaigaMobileTheme {
                 ),
                 CommonTask(
                     id = it.toLong() + 2,
-                    createdDate = Date(),
+                    createdDate = LocalDateTime.now(),
                     title = "Very cool story",
                     ref = 100,
                     status = Status(
@@ -503,7 +505,7 @@ fun SprintKanbanPreview() = TaigaMobileTheme {
                 ),
                 CommonTask(
                     id = it.toLong() + 2,
-                    createdDate = Date(),
+                    createdDate = LocalDateTime.now(),
                     title = "Very cool story",
                     ref = 100,
                     status = Status(
@@ -528,7 +530,7 @@ fun SprintKanbanPreview() = TaigaMobileTheme {
         issues = List(10) {
             CommonTask(
                 id = it.toLong() + 1,
-                createdDate = Date(),
+                createdDate = LocalDateTime.now(),
                 title = "Very cool story",
                 ref = 100,
                 status = Status(

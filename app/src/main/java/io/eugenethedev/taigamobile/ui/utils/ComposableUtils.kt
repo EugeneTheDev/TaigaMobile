@@ -59,7 +59,7 @@ inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Uni
 
 fun safeParseHexColor(hexColor: String): Color = try {
     Color(android.graphics.Color.parseColor(hexColor))
-} catch (e: IllegalArgumentException) {
+} catch (e: Exception) {
     Timber.w("'$hexColor' $e")
     Color.Transparent
 }

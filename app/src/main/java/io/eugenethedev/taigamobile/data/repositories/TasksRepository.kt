@@ -1,14 +1,13 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.dagger.toLocalDate
 import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import kotlinx.coroutines.async
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.InputStream
@@ -25,7 +24,7 @@ class TasksRepository @Inject constructor(
     private fun FiltersDataResponse.Filter.toStatus(statusType: StatusType) = Status(
         id = id,
         name = name,
-        color = color,
+        color = color.fixNullColor(),
         type = statusType
     )
 
@@ -169,6 +168,39 @@ class TasksRepository @Inject constructor(
         taigaApi.getCommonTaskAttachments(CommonTaskPathPlural(type), commonTaskId, session.currentProjectId)
     }
 
+    override suspend fun getCustomFields(commonTaskId: Long, type: CommonTaskType) = withIO {
+        val attributes = async { taigaApi.getCustomAttributes(CommonTaskPathSingular(type), session.currentProjectId) }
+        val values = taigaApi.getCustomAttributesValues(CommonTaskPathPlural(type), commonTaskId)
+
+        CustomFields(
+            version = values.version,
+            fields = attributes.await().sortedBy { it.order }
+                .map {
+                    CustomField(
+                        id = it.id,
+                        type = it.type,
+                        name = it.name,
+                        description = it.description?.takeIf { it.isNotEmpty() },
+                        value = values.attributes_values[it.id]?.let { value ->
+                            CustomFieldValue(
+                                when (it.type) {
+                                    CustomFieldType.Date -> (value as? String)?.takeIf { it.isNotEmpty() }?.toLocalDate()
+                                    CustomFieldType.Checkbox -> value as? Boolean
+                                    else -> value
+                                } ?: return@let null
+                            )
+                        },
+                        options = it.extra.orEmpty()
+                    )
+            }
+        )
+    }
+
+    override suspend fun getAllTags(commonTaskType: CommonTaskType) = withIO {
+        getFiltersData(commonTaskType).tags.orEmpty().map { Tag(it.name, it.color.fixNullColor()) }
+    }
+
+    private fun String?.fixNullColor() = this ?: "#A9AABC" /* gray, because api returns null instead of gray -_- */
 
     private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
         id = id,
@@ -185,7 +217,8 @@ class TasksRepository @Inject constructor(
         projectInfo = project_extra_info,
         taskType = commonTaskType,
         colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
-        isClosed = is_closed
+        isClosed = is_closed,
+        tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
     )
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(filters: FiltersDataResponse, loadSprint: Boolean = true): CommonTaskExtended {
@@ -208,6 +241,7 @@ class TasksRepository @Inject constructor(
             description = description ?: "",
             epicsShortInfo = epics.orEmpty(),
             projectSlug = project_extra_info.slug,
+            tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
@@ -438,5 +472,31 @@ class TasksRepository @Inject constructor(
             attachmentId = attachmentId
         )
         return@withIO
+    }
+
+    override suspend fun editCustomFields(
+        commonTaskType: CommonTaskType,
+        commonTaskId: Long,
+        fields: Map<Long, CustomFieldValue?>,
+        version: Int
+    ) = withIO {
+        taigaApi.editCustomAttributesValues(
+            taskPath = CommonTaskPathPlural(commonTaskType),
+            taskId = commonTaskId,
+            editRequest = EditCustomAttributesValuesRequest(fields.mapValues { it.value?.value }, version)
+        )
+    }
+
+    override suspend fun editTags(
+        commonTaskType: CommonTaskType,
+        commonTaskId: Long,
+        tags: List<Tag>,
+        version: Int
+    ) = withIO {
+        taigaApi.editTags(
+            taskPath = CommonTaskPathPlural(commonTaskType),
+            taskId = commonTaskId,
+            editRequest = EditTagsRequest(tags = tags.map { listOf(it.name, it.color) }, version = version)
+        )
     }
 }

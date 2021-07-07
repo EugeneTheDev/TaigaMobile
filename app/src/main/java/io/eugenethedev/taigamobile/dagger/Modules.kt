@@ -22,6 +22,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Singleton
 
 @Module
@@ -33,7 +35,14 @@ class DataModule {
         val baseUrlPlaceholder = "https://nothing.nothing"
         return Retrofit.Builder()
             .baseUrl(baseUrlPlaceholder) // base url is set dynamically in interceptor
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().serializeNulls().create()))
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().serializeNulls()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
+                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
+                        .create()
+                )
+            )
             .client(
                 OkHttpClient.Builder()
                     .addInterceptor {

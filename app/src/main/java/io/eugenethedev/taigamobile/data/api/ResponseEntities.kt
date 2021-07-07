@@ -1,10 +1,8 @@
 package io.eugenethedev.taigamobile.data.api
 
-import io.eugenethedev.taigamobile.domain.entities.EpicShortInfo
-import io.eugenethedev.taigamobile.domain.entities.Project
-import io.eugenethedev.taigamobile.domain.entities.User
-import io.eugenethedev.taigamobile.domain.entities.UserStoryShortInfo
-import java.util.*
+import io.eugenethedev.taigamobile.domain.entities.*
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Some complicated api responses
@@ -31,6 +29,7 @@ data class ProjectResponse(
 
 data class FiltersDataResponse(
     val statuses: List<Filter>,
+    val tags: List<Filter>?,
 
     // issue filters
     val priorities: List<Filter>?,
@@ -40,14 +39,14 @@ data class FiltersDataResponse(
     data class Filter(
         val id: Long,
         val name: String,
-        val color: String,
+        val color: String?,
     )
 }
 
 data class CommonTaskResponse(
     val id: Long,
     val subject: String,
-    val created_date: Date,
+    val created_date: LocalDateTime,
     val status: Long,
     val ref: Int,
     val assigned_to_extra_info: User?,
@@ -63,8 +62,9 @@ data class CommonTaskResponse(
     val epics: List<EpicShortInfo>?,
     val user_story_extra_info: UserStoryShortInfo?,
     val version: Int,
-    val color: String?, // for epic
     val is_closed: Boolean,
+    val tags: List<List<String?>>?,
+    val color: String?, // for epic
     // for issue
     val type: Long?,
     val severity: Long?,
@@ -79,8 +79,8 @@ data class CommonTaskResponse(
 data class SprintResponse(
     val id: Long,
     val name: String,
-    val estimated_start: Date,
-    val estimated_finish: Date,
+    val estimated_start: LocalDate,
+    val estimated_finish: LocalDate,
     val closed: Boolean,
     val order: Int,
     val user_stories: List<UserStory>
@@ -96,4 +96,18 @@ data class MemberStatsResponse(
     val created_bugs: Map<String, Int>,
     val iocaine_tasks: Map<String, Int>,
     val wiki_changes: Map<String, Int>
+)
+
+data class CustomAttributeResponse(
+    val id: Long,
+    val name: String,
+    val description: String?,
+    val order: Int,
+    val type: CustomFieldType,
+    val extra: List<String>?
+)
+
+data class CustomAttributesValuesResponse(
+    val attributes_values: Map<Long, Any?>,
+    val version: Int
 )

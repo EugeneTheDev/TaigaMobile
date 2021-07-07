@@ -23,13 +23,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.vanpra.composematerialdialogs.color.ColorPalette
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
@@ -37,11 +42,13 @@ import io.eugenethedev.taigamobile.ui.components.*
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
+import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
+import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
@@ -51,7 +58,7 @@ import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import java.util.Date
+import java.time.LocalDateTime
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
@@ -71,16 +78,22 @@ fun CommonTaskScreen(
 
     val commonTask by viewModel.commonTask.observeAsState()
     commonTask?.subscribeOnError(onError)
+
     val creator by viewModel.creator.observeAsState()
     creator?.subscribeOnError(onError)
+
     val assignees by viewModel.assignees.observeAsState()
     assignees?.subscribeOnError(onError)
+
     val watchers by viewModel.watchers.observeAsState()
     watchers?.subscribeOnError(onError)
+
     val userStories by viewModel.userStories.observeAsState()
     userStories?.subscribeOnError(onError)
+
     val tasks by viewModel.tasks.observeAsState()
     tasks?.subscribeOnError(onError)
+
     val comments by viewModel.comments.observeAsState()
     comments?.subscribeOnError(onError)
 
@@ -91,30 +104,21 @@ fun CommonTaskScreen(
 
     val sprints by viewModel.sprints.observeAsState()
     sprints?.subscribeOnError(onError)
-    val sprintSelectResult by viewModel.sprintSelectResult.observeAsState()
-    sprintSelectResult?.subscribeOnError(onError)
 
     val epics by viewModel.epics.observeAsState()
     epics?.subscribeOnError(onError)
-    val epicsSelectResult by viewModel.epicsSelectResult.observeAsState()
-    epicsSelectResult?.subscribeOnError(onError)
 
     val team by viewModel.team.observeAsState()
     team?.subscribeOnError(onError)
 
+    val customFields by viewModel.customFields.observeAsState()
+    customFields?.subscribeOnError(onError)
+
     val attachments by viewModel.attachments.observeAsState()
     attachments?.subscribeOnError(onError)
-    val attachmentsResult by viewModel.attachmentResult.observeAsState()
-    attachmentsResult?.subscribeOnError(onError)
 
-    val assigneesResult by viewModel.assigneesResult.observeAsState()
-    assigneesResult?.subscribeOnError(onError)
-
-    val watchersResult by viewModel.watchersResult.observeAsState()
-    watchersResult?.subscribeOnError(onError)
-
-    val commentsResult by viewModel.commentsResult.observeAsState()
-    commentsResult?.subscribeOnError(onError)
+    val tags by viewModel.tags.observeAsState()
+    tags?.subscribeOnError(onError)
 
     val editResult by viewModel.editResult.observeAsState()
     editResult?.subscribeOnError(onError)
@@ -161,8 +165,11 @@ fun CommonTaskScreen(
             story = it?.userStoryShortInfo,
             epics = it?.epicsShortInfo.orEmpty(),
             description = it?.description ?: "",
-            creationDateTime = it?.createdDateTime ?: Date(),
+            creationDateTime = it?.createdDateTime ?: LocalDateTime.now(),
             creator = creator?.data,
+            tags = it?.tags.orEmpty(),
+            customFields = customFields?.data?.fields.orEmpty(),
+            attachments = attachments?.data.orEmpty(),
             assignees = assignees?.data.orEmpty(),
             watchers = watchers?.data.orEmpty(),
             userStories = userStories?.data.orEmpty(),
@@ -182,31 +189,30 @@ fun CommonTaskScreen(
                 loadItems = viewModel::loadSprints,
                 isItemsLoading = sprints?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::selectSprint,
-                isResultLoading = sprintSelectResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = sprints?.resultStatus == ResultStatus.Loading
             ),
             editEpics = EditAction(
                 items = epics?.data.orEmpty(),
                 loadItems = viewModel::loadEpics,
                 isItemsLoading = epics?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::linkToEpic,
-                isResultLoading = epicsSelectResult?.resultStatus == ResultStatus.Loading,
+                isResultLoading = epics?.resultStatus == ResultStatus.Loading,
                 removeItem = {
                     // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
                 }
             ),
             unlinkFromEpic = viewModel::unlinkFromEpic,
-            attachments = attachments?.data.orEmpty(),
             editAttachments = EditAttachmentsAction(
                 deleteAttachment = viewModel::deleteAttachment,
                 addAttachment = viewModel::addAttachment,
-                isResultLoading = attachmentsResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = attachments?.resultStatus == ResultStatus.Loading
             ),
             editAssignees = EditAction(
                 items = team?.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
                 isItemsLoading = team?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addAssignee,
-                isResultLoading = assigneesResult?.resultStatus == ResultStatus.Loading,
+                isResultLoading = assignees?.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
@@ -214,20 +220,29 @@ fun CommonTaskScreen(
                 loadItems = viewModel::loadTeam,
                 isItemsLoading = team?.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addWatcher,
-                isResultLoading = watchersResult?.resultStatus == ResultStatus.Loading,
+                isResultLoading = watchers?.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeWatcher
             ),
             editComments = EditCommentsAction(
                 createComment = viewModel::createComment,
                 deleteComment = viewModel::deleteComment,
-                isResultLoading = commentsResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = comments?.resultStatus == ResultStatus.Loading
             ),
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,
             isEditLoading = editResult?.resultStatus == ResultStatus.Loading,
             isDeleteLoading = deleteResult?.resultStatus == ResultStatus.Loading,
             promoteTask = viewModel::promoteToUserStory,
-            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading
+            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading,
+            isCustomFieldsLoading = customFields?.resultStatus == ResultStatus.Loading,
+            editCustomField = viewModel::editCustomField,
+            editTags = EditAction(
+                items = tags?.data.orEmpty(),
+                loadItems = viewModel::loadTags,
+                selectItem = viewModel::addTag,
+                removeItem = viewModel::deleteTag,
+                isResultLoading = tags?.resultStatus == ResultStatus.Loading
+            )
         )
     }
 
@@ -250,8 +265,10 @@ fun CommonTaskScreenContent(
     epics: List<EpicShortInfo> = emptyList(),
     story: UserStoryShortInfo?,
     description: String,
-    creationDateTime: Date,
+    creationDateTime: LocalDateTime,
     creator: User?,
+    tags: List<Tag> = emptyList(),
+    customFields: List<CustomField> = emptyList(),
     attachments: List<Attachment> = emptyList(),
     assignees: List<User> = emptyList(),
     watchers: List<User> = emptyList(),
@@ -279,7 +296,10 @@ fun CommonTaskScreenContent(
     isEditLoading: Boolean = false,
     isDeleteLoading: Boolean = false,
     promoteTask: () -> Unit = {},
-    isPromoteLoading: Boolean = false
+    isPromoteLoading: Boolean = false,
+    editCustomField: (CustomField, CustomFieldValue?) -> Unit = { _, _ -> },
+    isCustomFieldsLoading: Boolean = false,
+    editTags: EditAction<Tag> = EditAction()
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -291,6 +311,10 @@ fun CommonTaskScreenContent(
     var isAssigneesSelectorVisible by remember { mutableStateOf(false) }
     var isWatchersSelectorVisible by remember { mutableStateOf(false) }
     var isEpicsSelectorVisible by remember { mutableStateOf(false) }
+
+
+    var customFieldsValues by remember { mutableStateOf(emptyMap<Long, CustomFieldValue?>()) }
+    customFieldsValues = customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
 
     Column(Modifier.fillMaxSize()) {
         var isMenuExpanded by remember { mutableStateOf(false) }
@@ -398,7 +422,7 @@ fun CommonTaskScreenContent(
                 CircularLoader()
             }
         } else {
-            val sectionsPadding = 10.dp
+            val sectionsPadding = 16.dp
             val badgesPadding = 8.dp
 
             Box(
@@ -575,7 +599,7 @@ fun CommonTaskScreenContent(
                     }
 
                     item {
-                        Spacer(Modifier.height(sectionsPadding * 2))
+                        Spacer(Modifier.height(sectionsPadding))
 
                         // description
                         if (description.isNotEmpty()) {
@@ -586,9 +610,48 @@ fun CommonTaskScreenContent(
                         } else {
                             NothingToSeeHereText()
                         }
+
+                        Spacer(Modifier.height(sectionsPadding))
+
+                        // tags
+                        FlowRow(
+                            crossAxisAlignment = FlowCrossAxisAlignment.Center,
+                            mainAxisSpacing = 8.dp,
+                            crossAxisSpacing = 8.dp
+                        ) {
+                            var isAddTagFieldVisible by remember { mutableStateOf(false) }
+
+                            tags.forEach {
+                                TagItem(
+                                    tag = it,
+                                    onRemoveClick = { editTags.removeItem(it) }
+                                )
+                            }
+
+                            when {
+                                editTags.isResultLoading -> CircularProgressIndicator(
+                                    modifier = Modifier.size(28.dp),
+                                    strokeWidth = 2.dp
+                                )
+                                isAddTagFieldVisible -> AddTagField(
+                                    tags = editTags.items,
+                                    onInputChange = editTags.loadItems,
+                                    onSaveClick = {
+                                        editTags.loadItems(null)
+                                        editTags.selectItem(it)
+                                    }
+                                )
+                                else -> AddButton(
+                                    text = stringResource(R.string.add_tag),
+                                    onClick = { isAddTagFieldVisible = true }
+                                )
+                            }
+                        }
+
                     }
 
                     item {
+                        Spacer(Modifier.height(sectionsPadding))
 
                         // created by
                         Text(
@@ -661,6 +724,7 @@ fun CommonTaskScreenContent(
                         if (editWatchers.isResultLoading) {
                             DotsLoader()
                         }
+
                         AddButton(
                             text = stringResource(R.string.add_user),
                             onClick = {
@@ -670,11 +734,46 @@ fun CommonTaskScreenContent(
                         )
 
                         Spacer(Modifier.height(sectionsPadding * 2))
+                    }
+
+                    if (customFields.isNotEmpty()) {
+
+                        item {
+                            SectionTitle(text = stringResource(R.string.custom_fields))
+                        }
+
+                        itemsIndexed(customFields) { index, item ->
+                            CustomField(
+                                customField = item,
+                                value = customFieldsValues[item.id],
+                                onValueChange = { customFieldsValues = customFieldsValues - item.id + Pair(item.id, it) },
+                                onSaveClick = { editCustomField(item, customFieldsValues[item.id]) }
+                            )
+
+                            if (index < customFields.lastIndex) {
+                                Divider(
+                                    modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
+                                    color = Color.LightGray
+                                )
+                            }
+                        }
+
+                        item {
+                            if (isCustomFieldsLoading) {
+                                Spacer(Modifier.height(8.dp))
+                                DotsLoader()
+                            }
+
+                            Spacer(Modifier.height(sectionsPadding * 3))
+                        }
+                    }
+
+                    item {
 
                         // attachments
                         val filePicker = LocalFilePicker.current
                         SectionTitle(
-                            text = stringResource(R.string.attachments),
+                            text = stringResource(R.string.attachments_template).format(attachments.size),
                             onAddClick = {
                                 filePicker.requestFile(editAttachments.addAttachment)
                             }
@@ -862,6 +961,118 @@ private fun EpicItemWithAction(
 }
 
 @Composable
+private fun TagItem(
+    tag: Tag,
+    onRemoveClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+        .background(color = safeParseHexColor(tag.color), shape = MaterialTheme.shapes.small)
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+) {
+    Text(
+        text = tag.name,
+        color = Color.White
+    )
+
+    Spacer(Modifier.width(2.dp))
+
+    IconButton(
+        onClick = onRemoveClick,
+        modifier = Modifier
+            .size(26.dp)
+            .clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_remove),
+            contentDescription = null,
+            tint = Color.White
+        )
+    }
+}
+
+@Composable
+private fun AddTagField(
+    tags: List<Tag>,
+    onInputChange: (String) -> Unit,
+    onSaveClick: (Tag) -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically
+) {
+    var value by remember { mutableStateOf(TextFieldValue()) }
+    var color by remember { mutableStateOf(ColorPalette.Primary.first()) }
+
+    Column {
+        TextFieldWithHint(
+            hintId = R.string.tag,
+            value = value,
+            onValueChange = {
+                value = it
+                onInputChange(it.text)
+            },
+            width = 180.dp,
+            hasBorder = true,
+            singleLine = true
+        )
+
+        DropdownMenu(
+            expanded = tags.isNotEmpty(),
+            onDismissRequest = {},
+            properties = PopupProperties(clippingEnabled = false),
+            modifier = Modifier.heightIn(max = 200.dp)
+        ) {
+            tags.forEach {
+                DropdownMenuItem(onClick = { onSaveClick(it) }) {
+                    Spacer(
+                        Modifier.size(22.dp)
+                            .background(
+                                color = safeParseHexColor(it.color),
+                                shape = MaterialTheme.shapes.small
+                            )
+                    )
+
+                    Spacer(Modifier.width(4.dp))
+
+                    Text(
+                        text = it.name,
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(Modifier.width(4.dp))
+
+    ColorPicker(
+        size = 32.dp,
+        color = color,
+        onColorPicked = { color = it }
+    )
+
+    Spacer(Modifier.width(2.dp))
+
+    IconButton(
+        onClick = {
+            value.text.takeIf { it.isNotEmpty() }?.let {
+                onSaveClick(Tag(it, "#%08X".format(color.toArgb()).replace("#FF", "#")))
+                value = TextFieldValue()
+            }
+        },
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_save),
+            contentDescription = null,
+            tint = Color.Gray
+        )
+    }
+}
+
+
+@Composable
 private fun UserStoryItem(
     story: UserStoryShortInfo,
     onClick: () -> Unit
@@ -1046,7 +1257,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                 )
             },
             description = "Some description about this wonderful task",
-            creationDateTime = Date(),
+            creationDateTime = LocalDateTime.now(),
             creator = User(
                 _id = 0L,
                 fullName = "Full Name",
@@ -1075,7 +1286,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
             tasks = List(1) {
                 CommonTask(
                     id = it.toLong(),
-                    createdDate = Date(),
+                    createdDate = LocalDateTime.now(),
                     title = "Very cool story",
                     ref = 100,
                     status = Status(
@@ -1101,7 +1312,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                         username = "username"
                     ),
                     text = "This is comment text",
-                    postDateTime = Date(),
+                    postDateTime = LocalDateTime.now(),
                     deleteDate = null
                 )
             }
