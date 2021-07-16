@@ -1,12 +1,13 @@
 <resources>
     <string name="app_name">Taiga Mobile</string>
-    <string name="app_name_with_version_template" translatable="false">%s - %s</string>
-    <string name="global_taiga_host" translatable="false">api.taiga.io</string>
 
     <string name="yes">Так</string>
     <string name="no">Ні</string>
 
-    <string name="common_error_message">Виникла помилка. Перевірте з'єднання</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Скасувати</string>
+
+    <string name="common_error_message">Виникла помилка. Перевірте з\'єднання</string>
     <string name="permission_error">Помилка, у вас можливо недостатньо доступів</string>
 
     <string name="nothing_to_see">Нічого цікавого</string>
@@ -15,7 +16,7 @@
     <string name="login_username">Логін</string>
     <string name="login_password">Пароль</string>
     <string name="login_continue">Продовжити</string>
-    <string name="login_error_message">Помилка під час логіну. Перевірте дані чи з'єднання</string>
+    <string name="login_error_message">Помилка під час логіну. Перевірте дані чи з\'єднання</string>
 
     <string name="dashboard">Панель приладів</string>
     <string name="dashboard_short">Панель</string>
@@ -30,7 +31,6 @@
     <string name="choose_project_title">Виберіть проєкт</string>
 
     <string name="search_projects_hint">Пошук проєктів</string>
-    <string name="project_name_template" translatable="false">%s (%s)</string>
     <string name="project_member">Учасник</string>
     <string name="project_admin">Адмін</string>
     <string name="project_owner">Власник</string>
@@ -38,13 +38,11 @@
     <string name="working_on">В роботі</string>
     <string name="watching">Відслідковується</string>
 
-    <string name="title_with_ref_pattern" translatable="false">#%d %s</string>
     <string name="unassigned">Неназначено</string>
     <string name="assignee_pattern">Назначено: %s</string>
     <string name="backlog">Резерв</string>
 
     <string name="sprints_title">Спринти</string>
-    <string name="sprint_dates_template" translatable="false">%s - %s</string>
     <string name="stories_count_template">Історії: %d</string>
     <string name="taskboard">Дошка</string>
     <string name="closed">Закритий</string>
@@ -70,7 +68,8 @@
     <string name="no_sprint">Без спринта</string>
     <string name="belongs_to_epics">Належить епікам</string>
     <string name="belongs_to_story">Належить історіям користувача</string>
-    <string name="link_to_epic">Зв'язати з епіком</string>
+    <string name="link_to_epic">Зв\'язати з епіком</string>
+    <string name="add_tag">Додати тег</string>
     <string name="created_by">Створений</string>
     <string name="assigned_to">Назначено</string>
     <string name="watchers">Відслідковують</string>
@@ -81,8 +80,22 @@
     <string name="delete_comment_title">Видалити коментар</string>
     <string name="delete_comment_text">Ви впевнені, що бажаєте видалити коментар?</string>
     <string name="add_user">Додати користувача</string>
-    <string name="attachments">Прикріплення</string>
-    <string name="add_attachment">Додати прикріплення</string>
+    <string name="attachments_template">%d Вкладення</string>
+    <string name="custom_fields">Спеціальні поля</string>
+
+    <string name="custom_field_text">Текст</string>
+    <string name="custom_field_multiline">Багаторядковий текст</string>
+    <string name="custom_field_rich_text">Розширений текст</string>
+    <string name="custom_field_number">Кількість</string>
+    <string name="custom_field_url">Url</string>
+    <string name="custom_field_date">Дата</string>
+
+    <string name="open">Відкрити</string>
+    <string name="clear">Відчистити</string>
+    <string name="select_date">Виберіть дату</string>
+    <string name="select_color">Виберіть колір</string>
+    <string name="tag">Позначка</string>
+    <string name="empty">Пустий</string>
 
     <string name="choose_status">Виберіть статус</string>
     <string name="choose_type">Виберіть тип</string>
@@ -95,8 +108,8 @@
 
     <string name="power">сила</string>
 
-    <string name="unlink_epic_title">Відв'язати від епіку</string>
-    <string name="unlink_epic_text">Ви впевнені, що бажаєте відв'язати від епіку?</string>
+    <string name="unlink_epic_title">Відв\'язати від епіку</string>
+    <string name="unlink_epic_text">Ви впевнені, що бажаєте відв\'язати від епіку?</string>
 
     <string name="remove_user_title">Видалити користувача</string>
     <string name="remove_user_text">Ви впевнені, що бажаєте видалити користувача?</string>
@@ -126,10 +139,8 @@
 
     <string name="tasks_search_hint">Пошук по номеру чи заголовку?</string>
 
-    <string name="status_with_number_template" translatable="false">%s - %d</string>
 
     <!-- settings -->
-    <string name="username_template" translatable="false">\@%s</string>
     <string name="logout_title">Вийти</string>
     <string name="logout_text">Ви впевнені, що бажаєте вийти?</string>
 
@@ -145,7 +156,6 @@
 
     <string name="credits_message">Зроблено ❤️ by EugeneTheDev. Якщо вам подобається додаток незабудьте оцінити його на Google Play та GitHub</string>
 
-    <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
     <string name="source_code">Джерело коду</string>
 </resources>
 
