@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.konan.properties.Properties
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -7,7 +7,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val composeVersion = "1.0.0-beta09"
+val composeVersion = "1.0.0-rc01"
 
 android {
     compileSdk = 30
@@ -78,9 +78,9 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
-    implementation("androidx.core:core-ktx:1.5.0")
+    implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.0")
-    implementation("com.google.android.material:material:1.3.0")
+    implementation("com.google.android.material:material:1.4.0")
 
     // Main Compose dependencies
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -89,14 +89,14 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.0-beta02")
+    implementation("androidx.activity:activity-compose:1.3.0-rc01")
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
     // compose constraint layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08")
 
     // Accompanist
-    val accompanistVersion = "0.12.0"
+    val accompanistVersion = "0.13.0"
     implementation("com.google.accompanist:accompanist-glide:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
@@ -105,7 +105,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-flowlayout:$accompanistVersion")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha03")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha04")
 
     // ViewModel
     val lifecycleKtxVersion = "2.3.1"
@@ -113,7 +113,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleKtxVersion")
 
     // Coroutines
-    val coroutinesVersion = "1.5.0"
+    val coroutinesVersion = "1.5.1-native-mt"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
@@ -147,6 +147,6 @@ dependencies {
     implementation("io.github.vanpra.compose-material-dialogs:color:$composeMaterialDialogsVersion")
 
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
