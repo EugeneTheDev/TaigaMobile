@@ -285,7 +285,8 @@ fun KanbanBoardPreview() = TaigaMobileTheme {
                 color = null,
                 type = null,
                 priority = null,
-                severity = null
+                severity = null,
+                taskType = CommonTaskType.UserStory
             )
         },
         team = List(10) {

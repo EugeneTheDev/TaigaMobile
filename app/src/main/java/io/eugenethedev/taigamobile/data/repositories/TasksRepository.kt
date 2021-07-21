@@ -103,7 +103,8 @@ class TasksRepository @Inject constructor(
 
     override suspend fun getAllUserStories() = withIO {
         val filters = async { getFiltersData(CommonTaskType.UserStory) }
-        taigaApi.getUserStories(project = session.currentProjectId).map { it.toCommonTaskExtended(filters.await(), loadSprint = false) }
+        taigaApi.getUserStories(project = session.currentProjectId)
+            .map { it.toCommonTaskExtended(filters.await(), CommonTaskType.UserStory, loadSprint = false) }
     }
     
     override suspend fun getBacklogUserStories(page: Int, query: String) = withIO {
@@ -157,7 +158,7 @@ class TasksRepository @Inject constructor(
 
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
         val filters = async { getFiltersData(type) }
-        taigaApi.getCommonTask(CommonTaskPathPlural(type), commonTaskId).toCommonTaskExtended(filters.await())
+        taigaApi.getCommonTask(CommonTaskPathPlural(type), commonTaskId).toCommonTaskExtended(filters.await(), type)
     }
 
     override suspend fun getComments(commonTaskId: Long, type: CommonTaskType) = withIO {
@@ -221,7 +222,11 @@ class TasksRepository @Inject constructor(
         tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
     )
     
-    private suspend fun CommonTaskResponse.toCommonTaskExtended(filters: FiltersDataResponse, loadSprint: Boolean = true): CommonTaskExtended {
+    private suspend fun CommonTaskResponse.toCommonTaskExtended(
+        filters: FiltersDataResponse,
+        commonTaskType: CommonTaskType,
+        loadSprint: Boolean = true
+    ): CommonTaskExtended {
         return CommonTaskExtended(
             id = id,
             status = Status(
@@ -230,6 +235,7 @@ class TasksRepository @Inject constructor(
                 color = status_extra_info.color,
                 type = StatusType.Status
             ),
+            taskType = commonTaskType,
             createdDateTime = created_date,
             sprint =  if (loadSprint) milestone?.let { taigaApi.getSprint(it).toSprint() } else null,
             assignedIds = assigned_users ?: listOf(assigned_to),

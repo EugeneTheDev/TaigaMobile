@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.commontask
+package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,7 @@ import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.text.SimpleDateFormat
 

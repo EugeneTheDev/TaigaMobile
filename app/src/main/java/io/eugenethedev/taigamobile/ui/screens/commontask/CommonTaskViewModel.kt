@@ -340,7 +340,7 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     fun deleteComment(comment: Comment) = viewModelScope.launch {
-        comments.value = Result(ResultStatus.Loading)
+        comments.value = Result(ResultStatus.Loading, comments.value?.data)
 
         comments.value = try {
             tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)

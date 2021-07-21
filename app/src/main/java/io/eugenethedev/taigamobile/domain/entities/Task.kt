@@ -48,6 +48,7 @@ data class CommonTask(
 data class CommonTaskExtended(
     val id: Long,
     val status: Status,
+    val taskType: CommonTaskType,
     val createdDateTime: LocalDateTime,
     val sprint: Sprint?,
     val assignedIds: List<Long>,

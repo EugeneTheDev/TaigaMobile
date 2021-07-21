@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.commontask
+package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
 import android.app.Activity
 import android.content.Intent
@@ -83,8 +83,8 @@ fun CustomField(
             Modifier
                 .weight(1f)
                 .border(
-                    width = if (customField.type == CustomFieldType.Checkbox) 0.dp else 2.dp,
-                    color = borderColor,
+                    width = 1.5.dp,
+                    color = if (customField.type == CustomFieldType.Checkbox) Color.Transparent else borderColor,
                     shape = MaterialTheme.shapes.small
                 )
                 .clip(MaterialTheme.shapes.small)

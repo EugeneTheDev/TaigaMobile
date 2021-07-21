@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.commontask
+package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
