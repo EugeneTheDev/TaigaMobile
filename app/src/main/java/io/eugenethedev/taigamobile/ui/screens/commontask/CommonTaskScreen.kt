@@ -359,11 +359,15 @@ fun CommonTaskScreenContent(
                         editActions = editActions
                     )
 
+                    item {
+                        Spacer(Modifier.height(sectionsPadding))
+                    }
+
                     // user stories
                     if (commonTaskType == CommonTaskType.Epic) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.userstories,
-                            topPadding = sectionsPadding * 2,
+                            bottomPadding = sectionsPadding,
                             commonTasks = userStories,
                             navigateToTask = navigationActions.navigateToTask
                         )
@@ -373,12 +377,15 @@ fun CommonTaskScreenContent(
                     if (commonTaskType == CommonTaskType.UserStory) {
                         SimpleTasksListWithTitle(
                             titleText = R.string.tasks,
-                            topPadding = sectionsPadding * 2,
-                            bottomPadding = sectionsPadding * 3,
+                            bottomPadding = sectionsPadding,
                             commonTasks = tasks,
                             navigateToTask = navigationActions.navigateToTask,
                             navigateToCreateCommonTask = navigationActions.navigateToCreateTask
                         )
+                    }
+
+                    item {
+                        Spacer(Modifier.height(sectionsPadding))
                     }
 
                     CommonTaskComments(
