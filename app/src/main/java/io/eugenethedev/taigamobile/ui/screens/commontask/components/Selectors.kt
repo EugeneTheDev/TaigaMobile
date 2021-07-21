@@ -21,7 +21,8 @@ import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
-import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 /**
  * Bunch of common selectors
@@ -217,7 +218,7 @@ private fun SprintItem(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-    val dateFormatter = remember { SimpleDateFormat.getDateInstance() }
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
     sprint?.also {
         Surface(
@@ -234,8 +235,8 @@ private fun SprintItem(
 
                 Text(
                     text = stringResource(R.string.sprint_dates_template).format(
-                        dateFormatter.format(it.start),
-                        dateFormatter.format(it.finish)
+                        it.start.format(dateFormatter),
+                        it.finish.format(dateFormatter)
                     ),
                     style = MaterialTheme.typography.body2
                 )
