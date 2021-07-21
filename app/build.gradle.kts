@@ -7,7 +7,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val composeVersion = "1.0.0-rc01"
+val composeVersion = "1.0.0-rc02"
 
 android {
     compileSdk = 30
@@ -89,14 +89,14 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.0-rc01")
+    implementation("androidx.activity:activity-compose:1.3.0-rc02")
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
     // compose constraint layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08")
 
     // Accompanist
-    val accompanistVersion = "0.13.0"
+    val accompanistVersion = "0.14.0"
     implementation("com.google.accompanist:accompanist-glide:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
@@ -128,7 +128,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Dagger 2
-    val daggerVersion = "2.37"
+    val daggerVersion = "2.38"
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
