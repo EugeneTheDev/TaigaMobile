@@ -40,6 +40,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.ThemeSetting
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -197,10 +198,6 @@ fun SettingsScreenContent(
                     textId = R.string.theme_title,
                     itemWeight = 0.4f
                 ) {
-                    var isMenuExpanded by remember { mutableStateOf(false) }
-                    val transitionState = remember { MutableTransitionState(isMenuExpanded) }
-                    transitionState.targetState = isMenuExpanded
-
                     @Composable
                     fun titleForThemeSetting(themeSetting: ThemeSetting) = stringResource(
                         when (themeSetting) {
@@ -210,52 +207,24 @@ fun SettingsScreenContent(
                         }
                     )
 
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickableUnindicated {
-                                isMenuExpanded = !isMenuExpanded
-                            }
-                        ) {
-
+                    DropdownSelector(
+                        items = ThemeSetting.values().toList(),
+                        selectedItem = themeSetting,
+                        onItemSelected = { switchTheme(it) },
+                        itemContent = {
                             Text(
-                                text = titleForThemeSetting(themeSetting),
+                                text = titleForThemeSetting(it),
+                                style = MaterialTheme.typography.body1
+                            )
+                        },
+                        selectedItemContent = {
+                            Text(
+                                text = titleForThemeSetting(it),
                                 style = MaterialTheme.typography.subtitle1,
                                 color = MaterialTheme.colors.primary
                             )
-
-                            val arrowRotation by updateTransition(
-                                transitionState,
-                                label = "arrow"
-                            ).animateFloat { if (it) -180f else 0f }
-
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_down),
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.primary,
-                                modifier = Modifier.rotate(arrowRotation)
-                            )
                         }
-
-                        DropdownMenu(
-                            expanded = isMenuExpanded,
-                            onDismissRequest = { isMenuExpanded = false }
-                        ) {
-                            ThemeSetting.values().forEach {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        isMenuExpanded = false
-                                        switchTheme(it)
-                                    }
-                                ) {
-                                    Text(
-                                        text = titleForThemeSetting(it),
-                                        style = MaterialTheme.typography.body1
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    )
                 }
             }
         )

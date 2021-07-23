@@ -35,6 +35,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CustomField
 import io.eugenethedev.taigamobile.domain.entities.CustomFieldType
 import io.eugenethedev.taigamobile.domain.entities.CustomFieldValue
+import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -144,7 +145,6 @@ fun CustomField(
                     borderColor = borderColor,
                     value = value,
                     onValueChange = onValueChange,
-                    fieldState = fieldState,
                     changeFieldState = { fieldState = it }
                 )
 
@@ -456,63 +456,40 @@ private fun CustomFieldDropdown(
     borderColor: Color,
     value: CustomFieldValue?,
     onValueChange: (CustomFieldValue?) -> Unit,
-    fieldState: FieldState,
     changeFieldState: (FieldState) -> Unit
 ) {
     val option = value?.stringValue.orEmpty()
 
-    val transitionState = remember { MutableTransitionState(fieldState == FieldState.Focused) }
-    transitionState.targetState = fieldState == FieldState.Focused
-    val arrowRotation: Float by updateTransition(
-        transitionState,
-        label = "arrow"
-    ).animateFloat { if (it) -180f else 0f }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    DropdownSelector(
+        items = options,
+        selectedItem = option,
+        onItemSelected = {
+            onValueChange(CustomFieldValue(it))
+            changeFieldState(FieldState.Default)
+        },
+        itemContent = {
+            if (it.isNotEmpty()) {
+                Text(it)
+            } else {
+                Text(
+                    text = stringResource(R.string.empty),
+                    color = Color.Gray
+                )
+            }
+        },
+        selectedItemContent = {
+            Text(
+                text = option,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        takeMaxWidth = true,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickableUnindicated {
-                changeFieldState(FieldState.Focused)
-            }
-    ) {
-        Text(
-            text = option,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        Icon(
-            painter = painterResource(R.drawable.ic_arrow_down),
-            contentDescription = null,
-            tint = borderColor,
-            modifier = Modifier.rotate(arrowRotation)
-        )
-    }
-
-    DropdownMenu(
-        expanded = fieldState == FieldState.Focused,
+        tint = borderColor,
+        onExpanded = { changeFieldState(FieldState.Focused) },
         onDismissRequest = { changeFieldState(FieldState.Default) }
-    ) {
-        options.forEach {
-            DropdownMenuItem(
-                onClick = {
-                    onValueChange(CustomFieldValue(it))
-                    changeFieldState(FieldState.Default)
-                }
-            ) {
-                if (it.isNotEmpty()) {
-                    Text(it)
-                } else {
-                    Text(
-                        text = stringResource(R.string.empty),
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
-    }
+    )
 }
 
 @Composable
