@@ -32,7 +32,8 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.veryLightGray
+import io.eugenethedev.taigamobile.ui.theme.taigaDarkGray
+import io.eugenethedev.taigamobile.ui.theme.taigaGray
 import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 import java.time.LocalDateTime
 
@@ -47,7 +48,8 @@ fun KanbanBoard(
     val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
-    val backgroundCellColor = veryLightGray
+    val backgroundCellColor = taigaGray
+    val headerColor = taigaDarkGray
 
     Row(
         Modifier
@@ -67,7 +69,7 @@ fun KanbanBoard(
                     cellWidth = cellWidth,
                     cellOuterPadding = cellOuterPadding,
                     stripeColor = safeParseHexColor(status.color),
-                    backgroundColor = backgroundCellColor,
+                    backgroundColor = headerColor,
                     onAddClick = { navigateToCreateTask(status.id) }
                 )
 
@@ -109,7 +111,7 @@ private fun Header(
         .padding(end = cellOuterPadding, bottom = cellOuterPadding)
         .width(cellWidth)
         .background(
-            color = backgroundColor.copy(alpha = 0.2f),
+            color = backgroundColor,
             shape = MaterialTheme.shapes.medium.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
