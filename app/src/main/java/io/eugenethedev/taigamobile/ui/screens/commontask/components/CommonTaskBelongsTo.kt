@@ -25,13 +25,6 @@ fun LazyListScope.CommonTaskBelongsTo(
 ) {
     // belongs to (epics)
     if (commonTask.taskType == CommonTaskType.UserStory) {
-        item {
-            Text(
-                text = stringResource(R.string.belongs_to_epics),
-                style = MaterialTheme.typography.subtitle1
-            )
-        }
-
         items(commonTask.epicsShortInfo) {
             EpicItemWithAction(
                 epic = it,
@@ -61,11 +54,6 @@ fun LazyListScope.CommonTaskBelongsTo(
     if (commonTask.taskType == CommonTaskType.Task) {
         commonTask.userStoryShortInfo?.let {
             item {
-                Text(
-                    text = stringResource(R.string.belongs_to_story),
-                    style = MaterialTheme.typography.subtitle1
-                )
-
                 UserStoryItem(
                     story = it,
                     onClick = {
