@@ -15,7 +15,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ui.theme.taigaLightGray
+import io.eugenethedev.taigamobile.ui.theme.taigaGray
 
 /**
  * Title with optional add button
@@ -35,7 +35,7 @@ fun SectionTitle(
         .fillMaxWidth()
         .padding(horizontal = horizontalPadding)
         .padding(bottom = bottomPadding)
-        .background(taigaLightGray, MaterialTheme.shapes.medium)
+        .background(taigaGray, MaterialTheme.shapes.medium)
 ) {
     Text(
         text = text,
