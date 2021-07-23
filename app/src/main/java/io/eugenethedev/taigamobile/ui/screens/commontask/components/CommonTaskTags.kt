@@ -1,21 +1,32 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.vanpra.composematerialdialogs.color.ColorPalette
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
+import io.eugenethedev.taigamobile.domain.entities.Tag
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
+import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
+import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
 
 fun LazyListScope.CommonTaskTags(
     commonTask: CommonTaskExtended,
@@ -55,5 +66,116 @@ fun LazyListScope.CommonTaskTags(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TagItem(
+    tag: Tag,
+    onRemoveClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+        .background(color = safeParseHexColor(tag.color), shape = MaterialTheme.shapes.small)
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+) {
+    Text(
+        text = tag.name,
+        color = Color.White
+    )
+
+    Spacer(Modifier.width(2.dp))
+
+    IconButton(
+        onClick = onRemoveClick,
+        modifier = Modifier
+            .size(26.dp)
+            .clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_remove),
+            contentDescription = null,
+            tint = Color.White
+        )
+    }
+}
+
+@Composable
+private fun AddTagField(
+    tags: List<Tag>,
+    onInputChange: (String) -> Unit,
+    onSaveClick: (Tag) -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically
+) {
+    var value by remember { mutableStateOf(TextFieldValue()) }
+    var color by remember { mutableStateOf(ColorPalette.Primary.first()) }
+
+    Column {
+        TextFieldWithHint(
+            hintId = R.string.tag,
+            value = value,
+            onValueChange = {
+                value = it
+                onInputChange(it.text)
+            },
+            width = 180.dp,
+            hasBorder = true,
+            singleLine = true
+        )
+
+        DropdownMenu(
+            expanded = tags.isNotEmpty(),
+            onDismissRequest = {},
+            properties = PopupProperties(clippingEnabled = false),
+            modifier = Modifier.heightIn(max = 200.dp)
+        ) {
+            tags.forEach {
+                DropdownMenuItem(onClick = { onSaveClick(it) }) {
+                    Spacer(
+                        Modifier.size(22.dp)
+                            .background(
+                                color = safeParseHexColor(it.color),
+                                shape = MaterialTheme.shapes.small
+                            )
+                    )
+
+                    Spacer(Modifier.width(4.dp))
+
+                    Text(
+                        text = it.name,
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(Modifier.width(4.dp))
+
+    ColorPicker(
+        size = 32.dp,
+        color = color,
+        onColorPicked = { color = it }
+    )
+
+    Spacer(Modifier.width(2.dp))
+
+    IconButton(
+        onClick = {
+            value.text.takeIf { it.isNotEmpty() }?.let {
+                onSaveClick(Tag(it, "#%08X".format(color.toArgb()).replace("#FF", "#")))
+                value = TextFieldValue()
+            }
+        },
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_save),
+            contentDescription = null,
+            tint = Color.Gray
+        )
     }
 }

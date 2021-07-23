@@ -3,20 +3,24 @@ package io.eugenethedev.taigamobile.ui.components.lists
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.glide.rememberGlidePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -57,6 +61,42 @@ fun UserItem(
                 text = it.format(dateTimeFormatter),
                 color = Color.Gray,
                 style = MaterialTheme.typography.body2
+            )
+        }
+    }
+}
+
+@Composable
+fun UserItemWithAction(
+    user: User,
+    onRemoveClick: () -> Unit
+) {
+    var isAlertVisible by remember { mutableStateOf(false) }
+
+    if (isAlertVisible) {
+        ConfirmActionAlert(
+            title = stringResource(R.string.remove_user_title),
+            text = stringResource(R.string.remove_user_text),
+            onConfirm = {
+                isAlertVisible = false
+                onRemoveClick()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        UserItem(user)
+
+        IconButton(onClick = { isAlertVisible = true }) {
+            Icon(
+                painter = painterResource(R.drawable.ic_remove),
+                contentDescription = null,
+                tint = Color.Gray
             )
         }
     }
