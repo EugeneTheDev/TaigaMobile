@@ -92,266 +92,66 @@ fun CustomField(
         ) {
 
             when (customField.type) {
-                CustomFieldType.Text -> {
-                    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
-
-                    TextValue(
-                        hintId = R.string.custom_field_text,
-                        text = text,
-                        onTextChange = {
-                            text = it
-                            onValueChange(CustomFieldValue(it.text))
-                         },
-                        onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
-                        singleLine = true
-                    )
-                }
+                CustomFieldType.Text -> CustomFieldText(
+                    value = value,
+                    onValueChange = onValueChange,
+                    changeFieldState = { fieldState = it }
+                )
 
                 CustomFieldType.Multiline -> {
                     buttonsAlignment = Alignment.Top
-                    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
-                    TextValue(
-                        hintId = R.string.custom_field_multiline,
-                        text = text,
-                        onTextChange = {
-                            text = it
-                            onValueChange(CustomFieldValue(it.text))
-                        },
-                        onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
+                    CustomFieldMultiline(
+                        value = value,
+                        onValueChange = onValueChange,
+                        changeFieldState = { fieldState = it }
                     )
                 }
 
                 CustomFieldType.RichText -> {
                     buttonsAlignment = Alignment.Top
                     showEditButton = true
-                    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
-                    if (fieldState == FieldState.Focused) {
-                        TextValue(
-                            hintId = R.string.custom_field_rich_text,
-                            text = text,
-                            onTextChange = {
-                                text = it
-                                onValueChange(CustomFieldValue(it.text))
-                            },
-                            onFocusChange = { fieldState = if (it) FieldState.Focused else FieldState.Default },
-                            focusRequester = focusRequester
-                        )
-                        SideEffect {
-                            focusRequester.requestFocus()
-                        }
-                    } else {
-                         MarkdownText(text.text)
-                    }
-                }
-
-                CustomFieldType.Number -> {
-                    // do not display trailing zeros, like 1.0
-                    fun Double?.prettyDisplay() = this?.let { if (floor(it) != it) toString() else "%.0f".format(it) }.orEmpty()
-
-                    var text by remember { mutableStateOf(TextFieldValue(value?.doubleValue.prettyDisplay())) }
-
-                    TextValue(
-                        hintId = R.string.custom_field_number,
-                        text = text,
-                        onTextChange = {
-                            text = it
-                            if (it.text.isEmpty()) {
-                                onValueChange(null)
-                                fieldState = FieldState.Focused
-                            } else {
-                                it.text.toDoubleOrNull()?.let {
-                                    onValueChange(CustomFieldValue(it))
-                                    fieldState = FieldState.Focused
-                                } ?: run {
-                                    fieldState = FieldState.Error
-                                }
-                            }
-                         },
-                        onFocusChange = {
-                            text = TextFieldValue(value?.doubleValue.prettyDisplay())
-                            fieldState = if (it) FieldState.Focused else FieldState.Default
-                        },
-                        keyboardType = KeyboardType.Number,
-                        singleLine = true
+                    CustomFieldRichText(
+                        value = value,
+                        onValueChange = onValueChange,
+                        fieldState = fieldState,
+                        changeFieldState = { fieldState = it },
+                        focusRequester = focusRequester
                     )
                 }
 
-                CustomFieldType.Url -> {
-                    var text by remember { mutableStateOf(TextFieldValue(customField.value?.stringValue.orEmpty())) }
+                CustomFieldType.Number -> CustomFieldNumber(
+                    value = value,
+                    onValueChange = onValueChange,
+                    changeFieldState = { fieldState = it }
+                )
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Box(Modifier.weight(1f)) {
-                            TextValue(
-                                hintId = R.string.custom_field_url,
-                                text = text,
-                                onTextChange = {
-                                    text = it
+                CustomFieldType.Url -> CustomFieldUrl(
+                    value = value,
+                    onValueChange = onValueChange,
+                    changeFieldState = { fieldState = it }
+                )
 
-                                    it.text.takeIf { it.isEmpty() || Patterns.WEB_URL.matcher(it).matches() }
-                                        ?.let {
-                                            fieldState = FieldState.Focused
-                                            onValueChange(CustomFieldValue(it))
-                                        } ?: run {
-                                            fieldState = FieldState.Error
-                                        }
-                                },
-                                onFocusChange = {
-                                    text = TextFieldValue(value?.stringValue.orEmpty())
-                                    fieldState = if (it) FieldState.Focused else FieldState.Default
-                                },
-                                keyboardType = KeyboardType.Uri,
-                                singleLine = true,
-                                textColor = MaterialTheme.colors.primary
-                            )
-                        }
+                CustomFieldType.Date -> CustomFieldDate(
+                    value = value,
+                    onValueChange = onValueChange,
+                    changeFieldState = { fieldState = it }
+                )
 
-                        Spacer(Modifier.width(2.dp))
+                CustomFieldType.Dropdown -> CustomFieldDropdown(
+                    options = customField.options ?: throw IllegalStateException("Dropdown custom field without options"),
+                    borderColor = borderColor,
+                    value = value,
+                    onValueChange = onValueChange,
+                    fieldState = fieldState,
+                    changeFieldState = { fieldState = it }
+                )
 
-                        val activity = LocalContext.current as Activity
-                        IconButton(
-                            onClick = {
-                                customField.value?.stringValue?.takeIf { it.isNotEmpty() }?.let {
-                                    activity.startActivity(
-                                        Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse(it)
-                                        )
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(CircleShape)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_open),
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.primary
-                            )
-                        }
-                    }
-                }
-
-                CustomFieldType.Date -> {
-                    val date = value?.dateValue
-                    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
-
-                    val dialog = remember {
-                        MaterialDialog(
-                            autoDismiss = true,
-                            onCloseRequest = { fieldState = FieldState.Default }
-                        )
-                    }
-                    dialog.build {
-                        datepicker(
-                            title = stringResource(R.string.select_date).uppercase(),
-                            onDateChange = { onValueChange(CustomFieldValue(it)) }
-                        )
-
-                        buttons {
-                            positiveButton(
-                                res = R.string.ok,
-                                onClick = { fieldState = FieldState.Default }
-                            )
-                            negativeButton(
-                                res = R.string.cancel,
-                                onClick = { fieldState = FieldState.Default }
-                            )
-                            button(
-                                res = R.string.clear,
-                                onClick = {
-                                    onValueChange(null)
-                                    dialog.hide()
-                                    fieldState = FieldState.Default
-                                }
-                            )
-                        }
-
-                    }
-
-
-                    Text(
-                        text = date?.format(dateFormatter) ?: stringResource(R.string.custom_field_date),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickableUnindicated {
-                                fieldState = FieldState.Focused
-                                dialog.show()
-                            },
-                        color = date?.let { MaterialTheme.colors.onSurface } ?: Color.Gray
-                    )
-                }
-
-                CustomFieldType.Dropdown -> {
-                    val option = value?.stringValue.orEmpty()
-
-                    val transitionState = remember { MutableTransitionState(fieldState == FieldState.Focused) }
-                    transitionState.targetState = fieldState == FieldState.Focused
-                    val arrowRotation: Float by updateTransition(
-                        transitionState,
-                        label = "arrow"
-                    ).animateFloat { if (it) -180f else 0f }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickableUnindicated {
-                                fieldState = FieldState.Focused
-                            }
-                    ) {
-                        Text(
-                            text = option,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_down),
-                            contentDescription = null,
-                            tint = borderColor,
-                            modifier = Modifier.rotate(arrowRotation)
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = fieldState == FieldState.Focused,
-                        onDismissRequest = { fieldState = FieldState.Default }
-                    ) {
-                        customField.options?.forEach {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onValueChange(CustomFieldValue(it))
-                                    fieldState = FieldState.Default
-                                }
-                            ) {
-                                if (it.isNotEmpty()) {
-                                    Text(it)
-                                } else {
-                                    Text(
-                                        text = stringResource(R.string.empty),
-                                        color = Color.Gray
-                                    )
-                                }
-                            }
-                        } ?: throw IllegalStateException("Dropdown custom field without options")
-                    }
-                }
-
-                CustomFieldType.Checkbox -> {
-                    val state = value?.booleanValue ?: false
-
-                    Checkbox(
-                        checked = state,
-                        onCheckedChange = { onValueChange(CustomFieldValue(it)) }
-                    )
-                }
+                CustomFieldType.Checkbox -> CustomFieldCheckbox(
+                    value = value,
+                    onValueChange = onValueChange
+                )
             }
         }
 
@@ -425,6 +225,309 @@ private fun TextValue(
     keyboardType = keyboardType,
     textColor = textColor
 )
+
+@Composable
+private fun CustomFieldText(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    changeFieldState: (FieldState) -> Unit
+) {
+    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+
+    TextValue(
+        hintId = R.string.custom_field_text,
+        text = text,
+        onTextChange = {
+            text = it
+            onValueChange(CustomFieldValue(it.text))
+        },
+        onFocusChange = { changeFieldState(if (it) FieldState.Focused else FieldState.Default) },
+        singleLine = true
+    )
+}
+
+@Composable
+private fun CustomFieldMultiline(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    changeFieldState: (FieldState) -> Unit
+) {
+    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+
+    TextValue(
+        hintId = R.string.custom_field_multiline,
+        text = text,
+        onTextChange = {
+            text = it
+            onValueChange(CustomFieldValue(it.text))
+        },
+        onFocusChange = { changeFieldState(if (it) FieldState.Focused else FieldState.Default) },
+    )
+}
+
+@Composable
+private fun CustomFieldRichText(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    fieldState: FieldState,
+    changeFieldState: (FieldState) -> Unit,
+    focusRequester: FocusRequester
+) {
+    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+
+    if (fieldState == FieldState.Focused) {
+        TextValue(
+            hintId = R.string.custom_field_rich_text,
+            text = text,
+            onTextChange = {
+                text = it
+                onValueChange(CustomFieldValue(it.text))
+            },
+            onFocusChange = { changeFieldState(if (it) FieldState.Focused else FieldState.Default) },
+            focusRequester = focusRequester
+        )
+        SideEffect {
+            focusRequester.requestFocus()
+        }
+    } else {
+        MarkdownText(text.text)
+    }
+}
+
+@Composable
+private fun CustomFieldNumber(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    changeFieldState: (FieldState) -> Unit
+) {
+    // do not display trailing zeros, like 1.0
+    fun Double?.prettyDisplay() = this?.let { if (floor(it) != it) toString() else "%.0f".format(it) }.orEmpty()
+
+    var text by remember { mutableStateOf(TextFieldValue(value?.doubleValue.prettyDisplay())) }
+
+    TextValue(
+        hintId = R.string.custom_field_number,
+        text = text,
+        onTextChange = {
+            text = it
+
+            if (it.text.isEmpty()) {
+                onValueChange(null)
+                changeFieldState(FieldState.Focused)
+            } else {
+                it.text.toDoubleOrNull()?.let {
+                    onValueChange(CustomFieldValue(it))
+                    changeFieldState(FieldState.Focused)
+                } ?: run {
+                    changeFieldState(FieldState.Error)
+                }
+            }
+        },
+        onFocusChange = {
+            text = TextFieldValue(value?.doubleValue.prettyDisplay())
+            changeFieldState(if (it) FieldState.Focused else FieldState.Default)
+        },
+        keyboardType = KeyboardType.Number,
+        singleLine = true
+    )
+}
+
+@Composable
+private fun CustomFieldUrl(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    changeFieldState: (FieldState) -> Unit
+) {
+    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Box(Modifier.weight(1f)) {
+            TextValue(
+                hintId = R.string.custom_field_url,
+                text = text,
+                onTextChange = {
+                    text = it
+
+                    it.text.takeIf { it.isEmpty() || Patterns.WEB_URL.matcher(it).matches() }
+                        ?.let {
+                            changeFieldState(FieldState.Focused)
+                            onValueChange(CustomFieldValue(it))
+                        } ?: run {
+                            changeFieldState(FieldState.Error)
+                        }
+                },
+                onFocusChange = {
+                    text = TextFieldValue(value?.stringValue.orEmpty())
+                    changeFieldState(if (it) FieldState.Focused else FieldState.Default)
+                },
+                keyboardType = KeyboardType.Uri,
+                singleLine = true,
+                textColor = MaterialTheme.colors.primary
+            )
+        }
+
+        Spacer(Modifier.width(2.dp))
+
+        val activity = LocalContext.current as Activity
+        IconButton(
+            onClick = {
+                value?.stringValue?.takeIf { it.isNotEmpty() }?.let {
+                    activity.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(it)
+                        )
+                    )
+                }
+            },
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_open),
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun CustomFieldDate(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    changeFieldState: (FieldState) -> Unit
+) {
+    val date = value?.dateValue
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
+
+    val dialog = remember {
+        MaterialDialog(
+            autoDismiss = true,
+            onCloseRequest = { changeFieldState(FieldState.Default) }
+        )
+    }
+    dialog.build {
+        datepicker(
+            title = stringResource(R.string.select_date).uppercase(),
+            onDateChange = { onValueChange(CustomFieldValue(it)) }
+        )
+
+        buttons {
+            positiveButton(
+                res = R.string.ok,
+                onClick = { changeFieldState(FieldState.Default) }
+            )
+            negativeButton(
+                res = R.string.cancel,
+                onClick = { changeFieldState(FieldState.Default) }
+            )
+            button(
+                res = R.string.clear,
+                onClick = {
+                    onValueChange(null)
+                    dialog.hide()
+                    changeFieldState(FieldState.Default)
+                }
+            )
+        }
+
+    }
+
+    Text(
+        text = date?.format(dateFormatter) ?: stringResource(R.string.custom_field_date),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickableUnindicated {
+                changeFieldState(FieldState.Focused)
+                dialog.show()
+            },
+        color = date?.let { MaterialTheme.colors.onSurface } ?: Color.Gray
+    )
+}
+
+@Composable
+private fun CustomFieldDropdown(
+    options: List<String>,
+    borderColor: Color,
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit,
+    fieldState: FieldState,
+    changeFieldState: (FieldState) -> Unit
+) {
+    val option = value?.stringValue.orEmpty()
+
+    val transitionState = remember { MutableTransitionState(fieldState == FieldState.Focused) }
+    transitionState.targetState = fieldState == FieldState.Focused
+    val arrowRotation: Float by updateTransition(
+        transitionState,
+        label = "arrow"
+    ).animateFloat { if (it) -180f else 0f }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickableUnindicated {
+                changeFieldState(FieldState.Focused)
+            }
+    ) {
+        Text(
+            text = option,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Icon(
+            painter = painterResource(R.drawable.ic_arrow_down),
+            contentDescription = null,
+            tint = borderColor,
+            modifier = Modifier.rotate(arrowRotation)
+        )
+    }
+
+    DropdownMenu(
+        expanded = fieldState == FieldState.Focused,
+        onDismissRequest = { changeFieldState(FieldState.Default) }
+    ) {
+        options.forEach {
+            DropdownMenuItem(
+                onClick = {
+                    onValueChange(CustomFieldValue(it))
+                    changeFieldState(FieldState.Default)
+                }
+            ) {
+                if (it.isNotEmpty()) {
+                    Text(it)
+                } else {
+                    Text(
+                        text = stringResource(R.string.empty),
+                        color = Color.Gray
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CustomFieldCheckbox(
+    value: CustomFieldValue?,
+    onValueChange: (CustomFieldValue?) -> Unit
+) {
+    val state = value?.booleanValue ?: false
+
+    Checkbox(
+        checked = state,
+        onCheckedChange = { onValueChange(CustomFieldValue(it)) }
+    )
+}
+
 
 @Preview(showBackground = true)
 @Composable
