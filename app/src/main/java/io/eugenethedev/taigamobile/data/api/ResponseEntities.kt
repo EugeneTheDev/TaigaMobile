@@ -55,7 +55,7 @@ data class CommonTaskResponse(
     val milestone: Long?,
     val milestone_name: String,
     val assigned_users: List<Long>?,
-    val assigned_to: Long,
+    val assigned_to: Long?,
     val watchers: List<Long>,
     val owner: Long,
     val description: String?,

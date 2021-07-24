@@ -201,7 +201,7 @@ class TasksRepository @Inject constructor(
         getFiltersData(commonTaskType).tags.orEmpty().map { Tag(it.name, it.color.fixNullColor()) }
     }
 
-    private fun String?.fixNullColor() = this ?: "#A9AABC" /* gray, because api returns null instead of gray -_- */
+    private fun String?.fixNullColor() = this ?: "#A9AABC" // gray, because api returns null instead of gray -_-
 
     private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
         id = id,
@@ -238,7 +238,7 @@ class TasksRepository @Inject constructor(
             taskType = commonTaskType,
             createdDateTime = created_date,
             sprint =  if (loadSprint) milestone?.let { taigaApi.getSprint(it).toSprint() } else null,
-            assignedIds = assigned_users ?: listOf(assigned_to),
+            assignedIds = assigned_users ?: listOfNotNull(assigned_to),
             watcherIds = watchers,
             creatorId = owner,
             ref = ref,
@@ -251,9 +251,9 @@ class TasksRepository @Inject constructor(
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
-            type = type?.let { id -> filters.types?.find { id == id } }?.toStatus(StatusType.Type),
-            severity = severity?.let { id -> filters.severities?.find { id == id } }?.toStatus(StatusType.Severity),
-            priority = priority?.let { id -> filters.priorities?.find { id == id } }?.toStatus(StatusType.Priority)
+            type = type?.let { id -> filters.types?.find { it.id == id } }?.toStatus(StatusType.Type),
+            severity = severity?.let { id -> filters.severities?.find { it.id == id } }?.toStatus(StatusType.Severity),
+            priority = priority?.let { id -> filters.priorities?.find { it.id == id } }?.toStatus(StatusType.Priority)
         )
     }
     
