@@ -469,10 +469,14 @@ private fun CustomFieldDropdown(
         },
         itemContent = {
             if (it.isNotEmpty()) {
-                Text(it)
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.body1
+                )
             } else {
                 Text(
                     text = stringResource(R.string.empty),
+                    style = MaterialTheme.typography.body1,
                     color = Color.Gray
                 )
             }
