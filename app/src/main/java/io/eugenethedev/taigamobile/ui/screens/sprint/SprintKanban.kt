@@ -236,7 +236,7 @@ private fun IssueHeader(
         .width(width)
         .padding(padding)
         .clip(MaterialTheme.shapes.small)
-        .background(backgroundColor.copy(alpha = 0.15f))
+        .background(backgroundColor)
         .padding(horizontal = 6.dp, vertical = 4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically
