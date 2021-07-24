@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
@@ -10,11 +9,11 @@ import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class SprintViewModel : ViewModel() {
@@ -32,7 +31,7 @@ class SprintViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start(sprintId: Long) {
+    fun start(sprintId: Long) = viewModelScope.launch {
         if (screensState.shouldReloadSprintScreen) {
             reset()
         }
@@ -40,60 +39,24 @@ class SprintViewModel : ViewModel() {
         this@SprintViewModel.sprintId = sprintId
 
         if (statuses.value == null) {
-            loadStatuses()
-            loadStoriesWithTasks()
-            loadStorylessTasks()
-            loadIssues()
-        }
-    }
-
-    private fun loadStatuses() = viewModelScope.launch {
-        statuses.value = Result(ResultStatus.Loading)
-
-        statuses.value = try {
-            Result(ResultStatus.Success, tasksRepository.getStatuses(CommonTaskType.Task))
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.common_error_message)
-        }
-    }
-
-    private fun loadStoriesWithTasks() = viewModelScope.launch {
-        storiesWithTasks.value = Result(ResultStatus.Loading)
-
-        storiesWithTasks.value = try {
-            Result(
-                resultStatus = ResultStatus.Success,
-                data = tasksRepository.getSprintUserStories(this@SprintViewModel.sprintId!!)
-                    .map { it to async { tasksRepository.getUserStoryTasks(it.id) } }
-                    .map { (story, tasks) -> story to tasks.await() }
-                    .toMap()
+            joinAll(
+                launch {
+                    statuses.loadOrError(preserveValue = false) { tasksRepository.getStatuses(CommonTaskType.Task) }
+                },
+                launch {
+                    storiesWithTasks.loadOrError(preserveValue = false) {
+                        coroutineScope {
+                            tasksRepository.getSprintUserStories(this@SprintViewModel.sprintId!!)
+                                .map { it to async { tasksRepository.getUserStoryTasks(it.id) } }
+                                .map { (story, tasks) -> story to tasks.await() }
+                                .toMap()
+                        }
+                    }
+                },
+                launch {
+                    issues.loadOrError(preserveValue = false) { tasksRepository.getSprintIssues(this@SprintViewModel.sprintId!!) }
+                }
             )
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.common_error_message)
-        }
-    }
-
-    private fun loadStorylessTasks() = viewModelScope.launch {
-        storylessTasks.value = Result(ResultStatus.Loading)
-
-        storylessTasks.value = try {
-            Result(ResultStatus.Success, tasksRepository.getSprintTasks(this@SprintViewModel.sprintId!!))
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.common_error_message)
-        }
-    }
-
-    private fun loadIssues() = viewModelScope.launch {
-        issues.value = Result(ResultStatus.Loading)
-
-        issues.value = try {
-            Result(ResultStatus.Success, tasksRepository.getSprintIssues(this@SprintViewModel.sprintId!!))
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.common_error_message)
         }
     }
 

@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.screens.issues
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
@@ -11,8 +10,8 @@ import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class IssuesViewModel : ViewModel() {
@@ -51,16 +50,12 @@ class IssuesViewModel : ViewModel() {
 
         if (currentIssuesPage == maxIssuesPage) return@launch
 
-        issues.value = Result(ResultStatus.Loading, issues.value?.data)
-
-        try {
-            tasksRepository.getIssues(++currentIssuesPage, query)
-                .also { issues.value = Result(ResultStatus.Success, issues.value?.data.orEmpty() + it) }
-                .takeIf { it.isEmpty() }
-                ?.run { maxIssuesPage = currentIssuesPage }
-        } catch (e: Exception) {
-            Timber.w(e)
-            issues.value = Result(ResultStatus.Error, issues.value?.data, message = R.string.common_error_message)
+        issues.loadOrError {
+            tasksRepository.getIssues(++currentIssuesPage, query).also {
+                if (it.isEmpty()) maxIssuesPage = currentIssuesPage
+            }.let {
+                issues.value?.data.orEmpty() + it
+            }
         }
     }
     

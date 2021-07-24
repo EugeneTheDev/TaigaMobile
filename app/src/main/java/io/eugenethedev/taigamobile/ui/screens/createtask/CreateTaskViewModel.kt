@@ -2,17 +2,14 @@ package io.eugenethedev.taigamobile.ui.screens.createtask
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class CreateTaskViewModel : ViewModel() {
@@ -33,15 +30,10 @@ class CreateTaskViewModel : ViewModel() {
         sprintId: Long? = null,
         statusId: Long? = null
     ) = viewModelScope.launch {
-        creationResult.value = Result(ResultStatus.Loading)
-
-        creationResult.value = try {
-            Result(ResultStatus.Success, tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId, statusId)).also {
+        creationResult.loadOrError(preserveValue = false) {
+            tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId, statusId).also {
                 screensState.modify()
             }
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.permission_error)
         }
     }
 }

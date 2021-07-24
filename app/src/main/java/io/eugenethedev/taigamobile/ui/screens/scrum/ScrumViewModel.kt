@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
@@ -12,8 +11,8 @@ import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class ScrumViewModel : ViewModel() {
@@ -41,7 +40,7 @@ class ScrumViewModel : ViewModel() {
             reset()
         }
 
-        if (stories.value == null || sprints.value == null) {
+        if (stories.value == null) {
             loadStories()
             loadSprints()
         }
@@ -57,16 +56,12 @@ class ScrumViewModel : ViewModel() {
 
         if (currentStoriesPage == maxStoriesPage) return@launch
 
-        stories.value = Result(ResultStatus.Loading, stories.value?.data)
-
-        try {
-            tasksRepository.getBacklogUserStories(++currentStoriesPage, query)
-                .also { stories.value = Result(ResultStatus.Success, stories.value?.data.orEmpty() + it) }
-                .takeIf { it.isEmpty() }
-                ?.run { maxStoriesPage = currentStoriesPage }
-        } catch (e: Exception) {
-            Timber.w(e)
-            stories.value = Result(ResultStatus.Error, stories.value?.data, message = R.string.common_error_message)
+        stories.loadOrError {
+            tasksRepository.getBacklogUserStories(++currentStoriesPage, query).also {
+                if (it.isEmpty()) maxStoriesPage = currentStoriesPage
+            }.let {
+                stories.value?.data.orEmpty() + it
+            }
         }
     }
 
@@ -75,14 +70,12 @@ class ScrumViewModel : ViewModel() {
 
         sprints.value = Result(ResultStatus.Loading, sprints.value?.data)
 
-        try {
-            tasksRepository.getSprints(++currentSprintPage)
-                .also { sprints.value = Result(ResultStatus.Success, sprints.value?.data.orEmpty() + it) }
-                .takeIf { it.isEmpty() }
-                ?.run { maxSprintPage = currentSprintPage }
-        } catch (e: Exception) {
-            Timber.w(e)
-            sprints.value = Result(ResultStatus.Error, sprints.value?.data, message = R.string.common_error_message)
+        sprints.loadOrError {
+            tasksRepository.getSprints(++currentSprintPage).also {
+                if (it.isEmpty()) maxSprintPage = currentSprintPage
+            }.let {
+                sprints.value?.data.orEmpty() + it
+            }
         }
     }
 

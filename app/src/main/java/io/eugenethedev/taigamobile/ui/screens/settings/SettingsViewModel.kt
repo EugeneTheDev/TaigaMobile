@@ -8,10 +8,8 @@ import io.eugenethedev.taigamobile.*
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class SettingsViewModel : ViewModel() {
@@ -31,14 +29,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun start() = viewModelScope.launch {
-        user.value = Result(ResultStatus.Loading)
-
-        user.value = try {
-            Result(ResultStatus.Success, userRepository.getMe())
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.common_error_message)
-        }
+        user.loadOrError(preserveValue = false) { userRepository.getMe() }
     }
 
     fun logout() {

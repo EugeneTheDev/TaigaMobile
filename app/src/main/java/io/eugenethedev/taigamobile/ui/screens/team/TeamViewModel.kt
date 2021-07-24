@@ -2,16 +2,13 @@ package io.eugenethedev.taigamobile.ui.screens.team
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class TeamViewModel : ViewModel() {
@@ -28,13 +25,7 @@ class TeamViewModel : ViewModel() {
 
     fun start() = viewModelScope.launch {
         if (team.value == null) {
-            team.value = Result(ResultStatus.Loading)
-            team.value = try {
-                Result(ResultStatus.Success, usersRepository.getTeam())
-            } catch (e: Exception) {
-                Timber.w(e)
-                Result(ResultStatus.Error, message = R.string.common_error_message)
-            }
+            team.loadOrError { usersRepository.getTeam() }
         }
     }
 

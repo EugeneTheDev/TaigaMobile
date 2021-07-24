@@ -6,10 +6,8 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class LoginViewModel : ViewModel() {
@@ -23,13 +21,8 @@ class LoginViewModel : ViewModel() {
     }
 
     fun login(taigaServer: String, username: String, password: String) = viewModelScope.launch {
-        loginResult.value = Result(ResultStatus.Loading)
-        loginResult.value = try {
+        loginResult.loadOrError(R.string.login_error_message) {
             authRepository.auth(taigaServer, password, username)
-             Result(ResultStatus.Success)
-        } catch (e: Exception) {
-            Timber.w(e)
-            Result(ResultStatus.Error, message = R.string.login_error_message)
         }
     }
 }

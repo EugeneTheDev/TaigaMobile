@@ -161,7 +161,7 @@ private fun BacklogTabContent(
 
             Row(
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             ) {
                 AddButton(
                     text = stringResource(R.string.add_userstory),

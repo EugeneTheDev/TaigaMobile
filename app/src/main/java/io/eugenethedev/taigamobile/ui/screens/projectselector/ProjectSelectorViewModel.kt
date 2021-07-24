@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.screens.projectselector
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Project
@@ -11,8 +10,8 @@ import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
+import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -55,17 +54,14 @@ class ProjectSelectorViewModel : ViewModel() {
 
         if (currentPage == maxPage) return@launch
 
-        projects.value = Result(ResultStatus.Loading, projects.value?.data)
-        fixAnimation()
+        projects.loadOrError {
+            fixAnimation()
 
-        try {
-            searchRepository.searchProjects(query, ++currentPage)
-                .also { projects.value = Result(ResultStatus.Success, projects.value?.data.orEmpty() + it) }
-                .takeIf { it.isEmpty() }
-                ?.run { maxPage = currentPage /* reached maximum page */ }
-        } catch (e: Exception) {
-            Timber.w(e)
-            projects.value = Result(ResultStatus.Error, projects.value?.data, message = R.string.common_error_message)
+            searchRepository.searchProjects(query, ++currentPage).also {
+                if (it.isEmpty()) maxPage = currentPage
+            }.let {
+                projects.value?.data.orEmpty() + it
+            }
         }
     }
 }
