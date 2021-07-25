@@ -1,12 +1,10 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +28,6 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
 import java.time.LocalDateTime
 
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreen(
     navController: NavController,
@@ -210,8 +206,6 @@ fun CommonTaskScreen(
     )
 }
 
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @Composable
 fun CommonTaskScreenContent(
     commonTaskType: CommonTaskType,
@@ -467,8 +461,6 @@ fun CommonTaskScreenContent(
     }
 }
 
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun CommonTaskScreenPreview() = TaigaMobileTheme {

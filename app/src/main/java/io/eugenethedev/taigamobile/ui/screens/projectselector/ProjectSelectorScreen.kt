@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.projectselector
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -26,7 +25,6 @@ import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@ExperimentalAnimationApi
 @Composable
 fun ProjectSelectorScreen(
     navController: NavController,
@@ -68,7 +66,6 @@ fun ProjectSelectorScreen(
 
 }
 
-@ExperimentalAnimationApi
 @Composable
 fun ProjectSelectorScreenContent(
     projects: List<Project>,
@@ -150,7 +147,6 @@ private fun ItemProject(
     }
 }
 
-@ExperimentalAnimationApi
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {

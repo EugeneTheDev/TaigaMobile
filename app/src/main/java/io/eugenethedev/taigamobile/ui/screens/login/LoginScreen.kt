@@ -27,7 +27,6 @@ import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 
-@ExperimentalMaterialApi
 @Composable
 fun LoginScreen(
     navController: NavController,
@@ -203,7 +202,6 @@ fun LoginTextField(
     )
 }
 
-@ExperimentalMaterialApi
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun LoginScreenPreview() = TaigaMobileTheme {

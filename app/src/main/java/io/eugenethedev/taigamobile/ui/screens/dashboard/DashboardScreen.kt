@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
@@ -31,7 +30,6 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.navigateToTaskScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
-@ExperimentalPagerApi
 @Composable
 fun DashboardScreen(
     navController: NavController,
@@ -60,7 +58,6 @@ fun DashboardScreen(
 
 }
 
-@ExperimentalPagerApi
 @Composable
 fun DashboardScreenContent(
     isLoading: Boolean = false,
@@ -119,7 +116,6 @@ private fun TabContent(
     )
 }
 
-@ExperimentalPagerApi
 @Preview(showBackground = true)
 @Composable
 fun DashboardPreview() = TaigaMobileTheme {

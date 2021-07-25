@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
  * Swipeable tabs
  */
 
-@ExperimentalPagerApi
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HorizontalTabbedPager(
     tabs: Array<out Tab>,

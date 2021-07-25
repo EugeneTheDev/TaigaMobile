@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.sprint
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -12,7 +11,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
@@ -27,8 +25,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
 @Composable
 fun SprintScreen(
     navController: NavController,
@@ -68,8 +64,7 @@ fun SprintScreen(
     )
 }
 
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
+
 @Composable
 fun SprintScreenContent(
     sprintName: String,
@@ -132,9 +127,6 @@ fun SprintScreenContent(
 }
 
 
-
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun SprintScreenPreview() = TaigaMobileTheme {

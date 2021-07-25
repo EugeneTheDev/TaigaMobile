@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -27,7 +26,6 @@ import java.time.format.FormatStyle
 /**
  * Bunch of common selectors
  */
-@ExperimentalAnimationApi
 @Composable
 fun Selectors(
     statusEntry: SelectorEntry<Status> = SelectorEntry(),

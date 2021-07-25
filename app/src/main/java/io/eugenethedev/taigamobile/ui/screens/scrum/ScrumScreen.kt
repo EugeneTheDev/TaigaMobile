@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
@@ -45,8 +43,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
 @Composable
 fun ScrumScreen(
     navController: NavController,
@@ -84,8 +80,6 @@ fun ScrumScreen(
     )
 }
 
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
 @Composable
 fun ScrumScreenContent(
     projectName: String,
@@ -136,7 +130,6 @@ private enum class Tabs(@StringRes override val titleId: Int) : Tab {
     Sprints(R.string.sprints_title)
 }
 
-@ExperimentalAnimationApi
 @Composable
 private fun BacklogTabContent(
     stories: List<CommonTask>,
@@ -287,8 +280,6 @@ fun SprintPreview() = TaigaMobileTheme {
     )
 }
 
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun ScrumScreenPreview() = TaigaMobileTheme {
