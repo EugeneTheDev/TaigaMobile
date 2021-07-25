@@ -1,13 +1,11 @@
 package io.eugenethedev.taigamobile.ui.screens.kanban
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
@@ -25,9 +23,10 @@ class KanbanViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val statuses = MutableLiveResult<List<Status>?>()
-    val team = MutableLiveResult<List<User>?>()
-    val stories = MutableLiveResult<List<CommonTaskExtended>?>()
+    val statuses = MutableLiveResult<List<Status>>()
+    val team = MutableLiveResult<List<User>>()
+    val stories = MutableLiveResult<List<CommonTaskExtended>>()
+    val swimlanes = MutableLiveResult<List<Swimlane>>()
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -48,15 +47,20 @@ class KanbanViewModel : ViewModel() {
                 },
                 launch {
                     stories.loadOrError(preserveValue = false) { tasksRepository.getAllUserStories() }
+                },
+                launch {
+                    swimlanes.loadOrError(preserveValue = false) { tasksRepository.getSwimlanes() }
                 }
             )
         }
     }
 
+    @SuppressLint("NullSafeMutableLiveData")
     fun reset() {
         statuses.value = null
         team.value = null
         stories.value = null
+        swimlanes.value = null
     }
 
 }

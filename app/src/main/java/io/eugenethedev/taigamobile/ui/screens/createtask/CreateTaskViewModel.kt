@@ -28,10 +28,11 @@ class CreateTaskViewModel : ViewModel() {
         description: String,
         parentId: Long? = null,
         sprintId: Long? = null,
-        statusId: Long? = null
+        statusId: Long? = null,
+        swimlaneId: Long? = null
     ) = viewModelScope.launch {
         creationResult.loadOrError(preserveValue = false) {
-            tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId, statusId).also {
+            tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId, statusId, swimlaneId).also {
                 screensState.modify()
             }
         }

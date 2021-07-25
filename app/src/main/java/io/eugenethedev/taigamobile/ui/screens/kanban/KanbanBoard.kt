@@ -11,8 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +28,7 @@ import com.google.accompanist.glide.rememberGlidePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
+import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -39,17 +39,56 @@ import java.time.LocalDateTime
 
 @Composable
 fun KanbanBoard(
+    swimlanes: List<Swimlane>,
     statuses: List<Status>,
     stories: List<CommonTaskExtended> = emptyList(),
     team: List<User> = emptyList(),
     navigateToStory: (id: Long, ref: Int) -> Unit = { _, _ -> },
-    navigateToCreateTask: (statusId: Long) -> Unit = { _ -> }
+    navigateToCreateTask: (statusId: Long, swimlaneId: Long?) -> Unit = { _, _ -> }
 ) {
     val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
     val backgroundCellColor = taigaGray
     val headerColor = taigaDarkGray
+
+    var selectedSwimlane by remember { mutableStateOf(swimlanes.firstOrNull()) }
+
+    swimlanes.takeIf { it.isNotEmpty() }?.let {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(cellOuterPadding)
+        ) {
+            Text(
+                text = stringResource(R.string.swimlane_title),
+                style = MaterialTheme.typography.h6
+            )
+
+            Spacer(Modifier.width(8.dp))
+
+            DropdownSelector(
+                items = listOf(null) + swimlanes,
+                selectedItem = selectedSwimlane,
+                onItemSelected = { selectedSwimlane = it },
+                itemContent = {
+                    Text(
+                        text = it?.name ?: stringResource(R.string.unclassifed),
+                        style = MaterialTheme.typography.body1,
+                        color = it?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
+                    )
+                },
+                selectedItemContent = {
+                    Text(
+                        text = it?.name ?: stringResource(R.string.unclassifed),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                }
+            )
+        }
+    }
+
+    val storiesToDisplay = stories.filter { it.swimlane?.id == selectedSwimlane?.id }
 
     Row(
         Modifier
@@ -60,7 +99,7 @@ fun KanbanBoard(
        Spacer(Modifier.width(cellPadding))
 
         statuses.forEach { status ->
-            val statusStories = stories.filter { it.status == status }
+            val statusStories = storiesToDisplay.filter { it.status == status }
 
             Column {
                 Header(
@@ -70,7 +109,7 @@ fun KanbanBoard(
                     cellOuterPadding = cellOuterPadding,
                     stripeColor = safeParseHexColor(status.color),
                     backgroundColor = headerColor,
-                    onAddClick = { navigateToCreateTask(status.id) }
+                    onAddClick = { navigateToCreateTask(status.id, selectedSwimlane?.id) }
                 )
 
                 LazyColumn(
@@ -236,6 +275,10 @@ private fun StoryItem(
 @Composable
 fun KanbanBoardPreview() = TaigaMobileTheme {
     KanbanBoard(
+        swimlanes = listOf(
+            Swimlane(0, "Name", 0),
+            Swimlane(0, "Another name", 1)
+        ),
         statuses = listOf(
             Status(
                 id = 0,
@@ -288,7 +331,8 @@ fun KanbanBoardPreview() = TaigaMobileTheme {
                 type = null,
                 priority = null,
                 severity = null,
-                taskType = CommonTaskType.UserStory
+                taskType = CommonTaskType.UserStory,
+                swimlane = null
             )
         },
         team = List(10) {

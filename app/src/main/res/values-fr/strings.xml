@@ -83,6 +83,9 @@
     <string name="attachments_template">%d Pièces jointes</string>
     <string name="custom_fields">Champs personnalisés</string>
 
+    <string name="swimlane_title">Swimlanes:</string>
+    <string name="unclassifed">Non classé</string>
+
     <string name="custom_field_text">Texte</string>
     <string name="custom_field_multiline">Texte multiligne</string>
     <string name="custom_field_rich_text">Texte riche</string>

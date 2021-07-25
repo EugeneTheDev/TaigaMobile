@@ -212,6 +212,7 @@ object Routes {
     object Arguments {
         const val sprint = "sprint"
         const val sprintId = "sprintId"
+        const val swimlaneId = "swimlaneId"
         const val commonTaskId = "taskId"
         const val commonTaskType = "taskType"
         const val ref = "ref"
@@ -351,7 +352,7 @@ fun MainScreen(
             }
 
             composable(
-                Routes.Arguments.run {"${Routes.createTask}/{$commonTaskType}?$parentId={$parentId}&$sprintId={$sprintId}&$statusId={$statusId}" },
+                Routes.Arguments.run {"${Routes.createTask}/{$commonTaskType}?$parentId={$parentId}&$sprintId={$sprintId}&$statusId={$statusId}&$swimlaneId={$swimlaneId}" },
                 arguments = listOf(
                     navArgument(Routes.Arguments.commonTaskType) { type = NavType.StringType },
                     navArgument(Routes.Arguments.parentId) {
@@ -365,7 +366,11 @@ fun MainScreen(
                     navArgument(Routes.Arguments.statusId) {
                         type = NavType.LongType
                         defaultValue = -1L
-                    }
+                    },
+                    navArgument(Routes.Arguments.swimlaneId) {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    },
                 )
             ) {
                 CreateTaskScreen(
@@ -374,6 +379,7 @@ fun MainScreen(
                     parentId = it.arguments!!.getLong(Routes.Arguments.parentId).takeIf { it >= 0 },
                     sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId).takeIf { it >= 0 },
                     statusId = it.arguments!!.getLong(Routes.Arguments.statusId).takeIf { it >= 0 },
+                    swimlaneId = it.arguments!!.getLong(Routes.Arguments.swimlaneId).takeIf { it >= 0 },
                     onError = onError
                 )
             }

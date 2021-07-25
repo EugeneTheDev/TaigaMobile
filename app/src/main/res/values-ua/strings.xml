@@ -83,6 +83,9 @@
     <string name="attachments_template">%d Вкладення</string>
     <string name="custom_fields">Спеціальні поля</string>
 
+    <string name="swimlane_title">Доріжки:</string>
+    <string name="unclassifed">Некласифікований</string>
+
     <string name="custom_field_text">Текст</string>
     <string name="custom_field_multiline">Багаторядковий текст</string>
     <string name="custom_field_rich_text">Розширений текст</string>

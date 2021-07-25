@@ -80,6 +80,14 @@ data class CreateIssueRequest(
     val milestone: Long?,
 )
 
+data class CreateUserStoryRequest(
+    val project: Long,
+    val subject: String,
+    val description: String,
+    val status: Long?,
+    val swimlane: Long?
+)
+
 data class LinkToEpicRequest(
     val epic: String,
     val user_story: Long

@@ -87,6 +87,9 @@
     <string name="add_user">Add user</string>
     <string name="attachments_template">%d Attachments</string>
     <string name="custom_fields">Custom fields</string>
+    
+    <string name="swimlane_title">Swimlane:</string>
+    <string name="unclassifed">Unclassified</string>
 
     <string name="custom_field_text">Text</string>
     <string name="custom_field_multiline">Multiline text</string>

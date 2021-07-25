@@ -1,9 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
-import io.eugenethedev.taigamobile.domain.entities.Attachment
-import io.eugenethedev.taigamobile.domain.entities.Comment
-import io.eugenethedev.taigamobile.domain.entities.Project
-import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.domain.entities.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -217,6 +214,9 @@ interface TaigaApi {
     @POST("issues")
     suspend fun createIssue(@Body createIssueRequest: CreateIssueRequest): CommonTaskResponse
 
+    @POST("userstories")
+    suspend fun createUserstory(@Body createUserStoryRequest: CreateUserStoryRequest): CommonTaskResponse
+
     @DELETE("{taskPath}/{id}")
     suspend fun deleteCommonTask(
         @Path("taskPath") taskPath: CommonTaskPathPlural,
@@ -310,4 +310,9 @@ interface TaigaApi {
         @Path("id") taskId: Long,
         @Body editRequest: EditTagsRequest
     )
+
+    // Swimlanes
+
+    @GET("swimlanes")
+    suspend fun getSwimlanes(@Query("project") project: Long): List<Swimlane>
 }

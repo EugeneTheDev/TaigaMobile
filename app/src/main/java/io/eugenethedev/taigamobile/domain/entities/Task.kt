@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.domain.entities
 
 import com.google.gson.annotations.SerializedName
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -62,8 +61,12 @@ data class CommonTaskExtended(
     val version: Int,
     val epicsShortInfo: List<EpicShortInfo> = emptyList(),
     val tags: List<Tag> = emptyList(),
+    val swimlane: Swimlane?,
     val userStoryShortInfo: UserStoryShortInfo? = null,
-    val color: String? = null, // for epic
+
+    // for epic
+    val color: String? = null,
+
     // for issue
     val type: Status? = null,
     val priority: Status? = null,

@@ -12,10 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
-import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
@@ -36,6 +33,9 @@ fun KanbanScreen(
         null
     }
 
+    val swimlanes by viewModel.swimlanes.observeAsState()
+    swimlanes?.subscribeOnError(onError)
+
     val statuses by viewModel.statuses.observeAsState()
     statuses?.subscribeOnError(onError)
 
@@ -47,7 +47,8 @@ fun KanbanScreen(
 
     KanbanScreenContent(
         projectName = viewModel.projectName,
-        isLoading = listOf(team, stories).any { it?.resultStatus == ResultStatus.Loading },
+        isLoading = listOf(swimlanes, team, stories).any { it?.resultStatus == ResultStatus.Loading },
+        swimlanes = swimlanes?.data.orEmpty(),
         statuses = statuses?.data.orEmpty(),
         stories = stories?.data.orEmpty(),
         team = team?.data.orEmpty(),
@@ -57,7 +58,9 @@ fun KanbanScreen(
             viewModel.reset()
         },
         navigateBack = navController::popBackStack,
-        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.UserStory, statusId = it) }
+        navigateToCreateTask = { statusId, swimlaneId ->
+            navController.navigateToCreateTaskScreen(CommonTaskType.UserStory, statusId = statusId, swimlaneId = swimlaneId)
+        }
     )
 }
 
@@ -65,13 +68,14 @@ fun KanbanScreen(
 fun KanbanScreenContent(
     projectName: String,
     isLoading: Boolean = false,
+    swimlanes: List<Swimlane> = emptyList(),
     statuses: List<Status> = emptyList(),
     stories: List<CommonTaskExtended> = emptyList(),
     team: List<User> = emptyList(),
     navigateToStory: (id: Long, ref: Int) -> Unit = { _, _ -> },
     onTitleClick: () -> Unit = {},
     navigateBack: () -> Unit = {},
-    navigateToCreateTask: (statusId: Long) -> Unit = { _ -> }
+    navigateToCreateTask: (statusId: Long, swinlanaeId: Long?) -> Unit = { _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -91,6 +95,7 @@ fun KanbanScreenContent(
         }
     } else {
         KanbanBoard(
+            swimlanes = swimlanes,
             statuses = statuses,
             stories = stories,
             team = team,

@@ -64,7 +64,11 @@ data class CommonTaskResponse(
     val version: Int,
     val is_closed: Boolean,
     val tags: List<List<String?>>?,
-    val color: String?, // for epic
+    val swimlane: Long?,
+
+    // for epic
+    val color: String?,
+
     // for issue
     val type: Long?,
     val severity: Long?,

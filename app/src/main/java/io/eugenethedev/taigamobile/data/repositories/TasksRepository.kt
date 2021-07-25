@@ -82,7 +82,7 @@ class TasksRepository @Inject constructor(
 
     override suspend fun getStatusByType(commonTaskType: CommonTaskType, statusType: StatusType) = withIO {
         if (commonTaskType != CommonTaskType.Issue && statusType != StatusType.Status) {
-            throw UnsupportedOperationException("Cannot change $statusType for $commonTaskType")
+            throw UnsupportedOperationException("Cannot get $statusType for $commonTaskType")
         }
 
         getFiltersData(commonTaskType).let {
@@ -103,8 +103,17 @@ class TasksRepository @Inject constructor(
 
     override suspend fun getAllUserStories() = withIO {
         val filters = async { getFiltersData(CommonTaskType.UserStory) }
+        val swimlanes = async { getSwimlanes() }
+
         taigaApi.getUserStories(project = session.currentProjectId)
-            .map { it.toCommonTaskExtended(filters.await(), CommonTaskType.UserStory, loadSprint = false) }
+            .map {
+                it.toCommonTaskExtended(
+                    commonTaskType = CommonTaskType.UserStory,
+                    filters = filters.await(),
+                    swimlanes = swimlanes.await(),
+                    loadSprint = false
+                )
+            }
     }
     
     override suspend fun getBacklogUserStories(page: Int, query: String) = withIO {
@@ -158,7 +167,13 @@ class TasksRepository @Inject constructor(
 
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
         val filters = async { getFiltersData(type) }
-        taigaApi.getCommonTask(CommonTaskPathPlural(type), commonTaskId).toCommonTaskExtended(filters.await(), type)
+        val swimlanes = async { getSwimlanes() }
+
+        taigaApi.getCommonTask(CommonTaskPathPlural(type), commonTaskId).toCommonTaskExtended(
+            commonTaskType = CommonTaskType.UserStory,
+            filters = filters.await(),
+            swimlanes = swimlanes.await(),
+        )
     }
 
     override suspend fun getComments(commonTaskId: Long, type: CommonTaskType) = withIO {
@@ -201,6 +216,10 @@ class TasksRepository @Inject constructor(
         getFiltersData(commonTaskType).tags.orEmpty().map { Tag(it.name, it.color.fixNullColor()) }
     }
 
+    override suspend fun getSwimlanes() = withIO {
+        taigaApi.getSwimlanes(session.currentProjectId)
+    }
+
     private fun String?.fixNullColor() = this ?: "#A9AABC" // gray, because api returns null instead of gray -_-
 
     private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
@@ -223,8 +242,9 @@ class TasksRepository @Inject constructor(
     )
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(
-        filters: FiltersDataResponse,
         commonTaskType: CommonTaskType,
+        filters: FiltersDataResponse,
+        swimlanes: List<Swimlane>,
         loadSprint: Boolean = true
     ): CommonTaskExtended {
         return CommonTaskExtended(
@@ -248,6 +268,7 @@ class TasksRepository @Inject constructor(
             epicsShortInfo = epics.orEmpty(),
             projectSlug = project_extra_info.slug,
             tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
+            swimlane = swimlanes.find { it.id == swimlane },
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
@@ -418,7 +439,8 @@ class TasksRepository @Inject constructor(
         description: String,
         parentId: Long?,
         sprintId: Long?,
-        statusId: Long?
+        statusId: Long?,
+        swimlaneId: Long?
     ) = withIO {
         when (commonTaskType) {
             CommonTaskType.Task -> taigaApi.createTask(
@@ -426,6 +448,9 @@ class TasksRepository @Inject constructor(
             )
             CommonTaskType.Issue -> taigaApi.createIssue(
                 createIssueRequest = CreateIssueRequest(session.currentProjectId, title, description, sprintId)
+            )
+            CommonTaskType.UserStory -> taigaApi.createUserstory(
+                createUserStoryRequest = CreateUserStoryRequest(session.currentProjectId, title, description, statusId, swimlaneId)
             )
             else -> taigaApi.createCommonTask(
                 taskPath = CommonTaskPathPlural(commonTaskType),

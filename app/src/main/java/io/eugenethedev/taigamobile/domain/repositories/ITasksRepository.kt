@@ -35,6 +35,8 @@ interface ITasksRepository {
 
     suspend fun getAllTags(commonTaskType: CommonTaskType): List<Tag>
 
+    suspend fun getSwimlanes(): List<Swimlane>
+
     // edit related
     suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, statusType: StatusType, version: Int)
     suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
@@ -50,9 +52,10 @@ interface ITasksRepository {
         commonTaskType: CommonTaskType,
         title: String,
         description: String,
-        parentId: Long? = null,
-        sprintId: Long? = null,
-        statusId: Long? = null
+        parentId: Long?,
+        sprintId: Long?,
+        statusId: Long?,
+        swimlaneId: Long?
     ): CommonTask
 
     suspend fun deleteCommonTask(commonTaskType: CommonTaskType, commonTaskId: Long)
