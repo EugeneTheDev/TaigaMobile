@@ -82,7 +82,11 @@ interface TaigaApi {
         @Query("status__is_closed") isClosed: Boolean? = null,
         @Query("watchers") watcherId: Long? = null,
         @Query("dashboard") isDashboard: Boolean? = null,
-        @Query("q") query: String? = null
+        @Query("q") query: String? = null,
+
+        // here and below instead of setting header to "false" remove it,
+        // because api always returns unpaginated result if header persists, regardless of its value
+        @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
 
     @GET("tasks?order_by=us_order")
@@ -93,7 +97,9 @@ interface TaigaApi {
         @Query("page") page: Int? = null,
         @Query("assigned_to") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
-        @Query("watchers") watcherId: Long? = null
+        @Query("watchers") watcherId: Long? = null,
+
+        @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
 
     @GET("epics")
@@ -103,7 +109,9 @@ interface TaigaApi {
         @Query("q") query: String? = null,
         @Query("assigned_to") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
-        @Query("watchers") watcherId: Long? = null
+        @Query("watchers") watcherId: Long? = null,
+
+        @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
 
     @GET("issues")
@@ -114,7 +122,9 @@ interface TaigaApi {
         @Query("milestone") sprint: Long? = null,
         @Query("assigned_to") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
-        @Query("watchers") watcherId: Long? = null
+        @Query("watchers") watcherId: Long? = null,
+
+        @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
 
     @GET("userstories/by_ref")
