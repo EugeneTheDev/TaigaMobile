@@ -68,4 +68,6 @@ interface ITasksRepository {
     suspend fun editCustomFields(commonTaskType: CommonTaskType, commonTaskId: Long, fields: Map<Long, CustomFieldValue?>, version: Int)
 
     suspend fun editTags(commonTaskType: CommonTaskType, commonTaskId: Long, tags: List<Tag>, version: Int)
+
+    suspend fun changeUserStorySwimlane(userStoryId: Long, swimlaneId: Long?, version: Int)
 }

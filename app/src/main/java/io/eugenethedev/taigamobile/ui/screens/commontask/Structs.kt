@@ -42,6 +42,7 @@ class EditActions(
     val editSeverity: EditAction<Status> = EditAction(),
     val editPriority: EditAction<Status> = EditAction(),
     val loadStatuses: (StatusType) -> Unit = { _ -> },
+    val editSwimlane: EditAction<Swimlane?> = EditAction(),
     val editSprint: EditAction<Sprint?> = EditAction(),
     val editEpics: EditAction<CommonTask> = EditAction(),
     val editAttachments: EditAttachmentsAction = EditAttachmentsAction(),

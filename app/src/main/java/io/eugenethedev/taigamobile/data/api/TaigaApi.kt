@@ -188,11 +188,10 @@ interface TaigaApi {
         @Body changeWatchersRequest: ChangeWatchersRequest
     )
 
-    @PATCH("{taskPath}/{id}")
-    suspend fun createCommonTaskComment(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
+    @PATCH("userstories/{id}")
+    suspend fun changeUserStorySwimlane(
         @Path("id") id: Long,
-        @Body createCommentRequest: CreateCommentRequest
+        @Body request: ChangeUserStorySwimlaneRequest
     )
 
     @PATCH("{taskPath}/{id}")
@@ -243,6 +242,13 @@ interface TaigaApi {
     ): List<Int>
 
     // Tasks comments
+
+    @PATCH("{taskPath}/{id}")
+    suspend fun createCommonTaskComment(
+        @Path("taskPath") taskPath: CommonTaskPathPlural,
+        @Path("id") id: Long,
+        @Body createCommentRequest: CreateCommentRequest
+    )
 
     @GET("history/{taskPath}/{id}?type=comment")
     suspend fun getCommonTaskComments(

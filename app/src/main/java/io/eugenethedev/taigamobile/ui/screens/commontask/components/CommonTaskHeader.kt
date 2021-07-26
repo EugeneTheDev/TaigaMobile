@@ -27,7 +27,8 @@ fun LazyListScope.CommonTaskHeader(
     showSprintSelector: () -> Unit,
     showTypeSelector: () -> Unit,
     showSeveritySelector: () -> Unit,
-    showPrioritySelector: () -> Unit
+    showPrioritySelector: () -> Unit,
+    showSwimlaneSelector: () -> Unit
 ) {
     val badgesPadding = 8.dp
 
@@ -64,13 +65,28 @@ fun LazyListScope.CommonTaskHeader(
             if (commonTask.taskType != CommonTaskType.Epic) {
                 ClickableBadge(
                     text = commonTask.sprint?.name ?: stringResource(R.string.no_sprint),
-                    color = commonTask.sprint?.name?.let { MaterialTheme.colors.primary } ?: Color.Gray,
+                    color = commonTask.sprint?.let { MaterialTheme.colors.primary } ?: Color.Gray,
                     onClick = {
                         showSprintSelector()
                         editActions.editSprint.loadItems(null)
                     },
                     isLoading = editActions.editSprint.isResultLoading,
                     isClickable = commonTask.taskType != CommonTaskType.Task
+                )
+            }
+
+            Spacer(Modifier.width(badgesPadding))
+
+            // swimlane
+            if (commonTask.taskType == CommonTaskType.UserStory) {
+                ClickableBadge(
+                    text = commonTask.swimlane?.name ?: stringResource(R.string.unclassifed),
+                    color = commonTask.swimlane?.let { MaterialTheme.colors.primary } ?: Color.Gray,
+                    isLoading = editActions.editSwimlane.isResultLoading,
+                    onClick = {
+                        showSwimlaneSelector()
+                        editActions.editSwimlane.loadItems(null)
+                    }
                 )
             }
         }

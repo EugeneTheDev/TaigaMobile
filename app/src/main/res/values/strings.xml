@@ -113,6 +113,7 @@
     <string name="move_to_backlog">Move to backlog</string>
     <string name="search_members">Search members</string>
     <string name="search_epics">Search epics</string>
+    <string name="choose_swimlane">Choose swimlane</string>
 
     <string name="power">power</string>
 

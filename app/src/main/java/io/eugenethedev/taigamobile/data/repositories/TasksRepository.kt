@@ -170,7 +170,7 @@ class TasksRepository @Inject constructor(
         val swimlanes = async { getSwimlanes() }
 
         taigaApi.getCommonTask(CommonTaskPathPlural(type), commonTaskId).toCommonTaskExtended(
-            commonTaskType = CommonTaskType.UserStory,
+            commonTaskType = type,
             filters = filters.await(),
             swimlanes = swimlanes.await(),
         )
@@ -528,6 +528,13 @@ class TasksRepository @Inject constructor(
             taskPath = CommonTaskPathPlural(commonTaskType),
             taskId = commonTaskId,
             editRequest = EditTagsRequest(tags = tags.map { listOf(it.name, it.color) }, version = version)
+        )
+    }
+
+    override suspend fun changeUserStorySwimlane(userStoryId: Long, swimlaneId: Long?, version: Int) = withIO {
+        taigaApi.changeUserStorySwimlane(
+            id = userStoryId,
+            request = ChangeUserStorySwimlaneRequest(swimlaneId, version)
         )
     }
 }

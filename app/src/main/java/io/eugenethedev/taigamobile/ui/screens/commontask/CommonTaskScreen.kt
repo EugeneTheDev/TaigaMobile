@@ -68,6 +68,9 @@ fun CommonTaskScreen(
     val statusSelectResult by viewModel.statusSelectResult.observeAsState()
     statusSelectResult?.subscribeOnError(onError)
 
+    val swimlanes by viewModel.swimlanes.observeAsState()
+    swimlanes?.subscribeOnError(onError)
+
     val sprints by viewModel.sprints.observeAsState()
     sprints?.subscribeOnError(onError)
 
@@ -135,6 +138,13 @@ fun CommonTaskScreen(
             editSeverity = makeEditStatusAction(StatusType.Severity),
             editPriority = makeEditStatusAction(StatusType.Priority),
             loadStatuses = { viewModel.loadStatuses(it) },
+            editSwimlane = EditAction(
+                items = swimlanes?.data.orEmpty(),
+                loadItems = viewModel::loadSwimlanes,
+                isItemsLoading = swimlanes?.resultStatus == ResultStatus.Loading,
+                selectItem = viewModel::selectSwimlane,
+                isResultLoading = swimlanes?.resultStatus == ResultStatus.Loading
+            ),
             editSprint = EditAction(
                 items = sprints?.data.orEmpty(),
                 loadItems = viewModel::loadSprints,
@@ -233,6 +243,7 @@ fun CommonTaskScreenContent(
     var isAssigneesSelectorVisible by remember { mutableStateOf(false) }
     var isWatchersSelectorVisible by remember { mutableStateOf(false) }
     var isEpicsSelectorVisible by remember { mutableStateOf(false) }
+    var isSwimlaneSelectorVisible by remember { mutableStateOf(false) }
 
 
     var customFieldsValues by remember { mutableStateOf(emptyMap<Long, CustomFieldValue?>()) }
@@ -276,6 +287,7 @@ fun CommonTaskScreenContent(
                         showTypeSelector = { isTypeSelectorVisible = true },
                         showSeveritySelector = { isSeveritySelectorVisible = true },
                         showPrioritySelector = { isPrioritySelectorVisible = true },
+                        showSwimlaneSelector = { isSwimlaneSelectorVisible = true }
                     )
 
                     CommonTaskBelongsTo(
@@ -388,7 +400,10 @@ fun CommonTaskScreenContent(
                     )
 
                     item {
-                        Spacer(Modifier.navigationBarsWithImePadding().height(72.dp))
+                        Spacer(
+                            Modifier
+                                .navigationBarsWithImePadding()
+                                .height(72.dp))
                     }
                 }
 
@@ -439,6 +454,11 @@ fun CommonTaskScreenContent(
             edit = editActions.editWatchers,
             isVisible = isWatchersSelectorVisible,
             hide = { isWatchersSelectorVisible = false }
+        ),
+        swimlaneEntry = SelectorEntry(
+            edit = editActions.editSwimlane,
+            isVisible = isSwimlaneSelectorVisible,
+            hide = { isSwimlaneSelectorVisible = false }
         )
     )
 

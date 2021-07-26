@@ -108,6 +108,7 @@
     <string name="move_to_backlog">Перемітити в резерв</string>
     <string name="search_members">Пошук учасників</string>
     <string name="search_epics">Пошук епіків</string>
+    <string name="choose_swimlane">Виберіть дорожку</string>
 
     <string name="power">сила</string>
 

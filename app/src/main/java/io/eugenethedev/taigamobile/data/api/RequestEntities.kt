@@ -47,6 +47,11 @@ data class ChangeWatchersRequest(
     val version: Int
 )
 
+data class ChangeUserStorySwimlaneRequest(
+    val swimlane: Long?,
+    val version: Int
+)
+
 data class CreateCommentRequest(
     val comment: String,
     val version: Int

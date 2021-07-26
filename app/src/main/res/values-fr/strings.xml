@@ -108,6 +108,7 @@
     <string name="move_to_backlog">Déplacer au backlog</string>
     <string name="search_members">Rechercher des membres</string>
     <string name="search_epics">Rechercher des épopées</string>
+    <string name="choose_swimlane">Choisir swimlane</string>
 
     <string name="power">power</string>
 

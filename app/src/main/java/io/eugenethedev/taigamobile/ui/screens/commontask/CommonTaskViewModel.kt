@@ -352,6 +352,7 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Tags
+
     val tags = MutableLiveResult<List<Tag>>()
     private var _tags = emptyList<Tag>()
     private var currentTagsQuery: String = ""
@@ -392,4 +393,26 @@ class CommonTaskViewModel : ViewModel() {
 
     fun addTag(tag: Tag) = editTag(tag, remove = false)
     fun deleteTag(tag: Tag) = editTag(tag, remove = true)
+
+    // Swimlanes
+
+    val swimlanes = MutableLiveResult<List<Swimlane?>>()
+
+    fun loadSwimlanes(query: String?) = viewModelScope.launch {
+        // only load swimlanes if null
+        query ?: run {
+            swimlanes.loadOrError(preserveValue = false) {
+                listOf(null) + tasksRepository.getSwimlanes() // prepend "unclassified"
+            }
+        }
+    }
+
+    fun selectSwimlane(swimlane: Swimlane?) = viewModelScope.launch {
+        swimlanes.loadOrError(R.string.permission_error) {
+            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane?.id, commonTaskVersion)
+            loadData().join()
+            screensState.modify()
+            swimlanes.value?.data
+        }
+    }
 }

@@ -10,10 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.domain.entities.Sprint
-import io.eugenethedev.taigamobile.domain.entities.Status
-import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
@@ -35,7 +32,8 @@ fun Selectors(
     sprintEntry: SelectorEntry<Sprint?> = SelectorEntry(),
     epicsEntry: SelectorEntry<CommonTask> = SelectorEntry(),
     assigneesEntry: SelectorEntry<User> = SelectorEntry(),
-    watchersEntry: SelectorEntry<User> = SelectorEntry()
+    watchersEntry: SelectorEntry<User> = SelectorEntry(),
+    swimlaneEntry: SelectorEntry<Swimlane?> = SelectorEntry()
 ) {
     // status editor
     SelectorList(
@@ -186,6 +184,25 @@ fun Selectors(
             }
         )
     }
+    
+    // swimlane editor
+    SelectorList(
+        titleHintId = R.string.choose_swimlane,
+        items = swimlaneEntry.edit.items,
+        isVisible = swimlaneEntry.isVisible,
+        isLoading = swimlaneEntry.edit.isItemsLoading,
+        isSearchable = false,
+        loadData = swimlaneEntry.edit.loadItems,
+        navigateBack = swimlaneEntry.hide
+    ) {
+        SwimlaneItem(
+            swimlane = it,
+            onClick = {
+                swimlaneEntry.edit.selectItem(it)
+                swimlaneEntry.hide()
+            }
+        )
+    }
 }
 
 class SelectorEntry<T> (
@@ -273,4 +290,19 @@ private fun EpicItem(
        indicatorColorsHex = epic.colors,
        isInactive = epic.isClosed
    )
+}
+
+@Composable
+private fun SwimlaneItem(
+    swimlane: Swimlane?,
+    onClick: () -> Unit
+) = ContainerBox(
+    verticalPadding = 16.dp,
+    onClick = onClick
+) {
+    Text(
+        text = swimlane?.name ?: stringResource(R.string.unclassifed),
+        style = MaterialTheme.typography.body1,
+        color = swimlane?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
+    )
 }
