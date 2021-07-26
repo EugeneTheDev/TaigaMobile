@@ -45,13 +45,17 @@ fun KanbanScreen(
     val stories by viewModel.stories.observeAsState()
     stories?.subscribeOnError(onError)
 
+    val selectedSwimlane by viewModel.selectedSwimlane.observeAsState()
+
     KanbanScreenContent(
         projectName = viewModel.projectName,
         isLoading = listOf(swimlanes, team, stories).any { it?.resultStatus == ResultStatus.Loading },
-        swimlanes = swimlanes?.data.orEmpty(),
         statuses = statuses?.data.orEmpty(),
         stories = stories?.data.orEmpty(),
         team = team?.data.orEmpty(),
+        swimlanes = swimlanes?.data.orEmpty(),
+        selectSwimlane = viewModel::selectSwimlane,
+        selectedSwimlane = selectedSwimlane,
         navigateToStory = { id, ref -> navController.navigateToTaskScreen(id, CommonTaskType.UserStory, ref) },
         onTitleClick = {
             navController.navigate(Routes.projectsSelector)
@@ -68,10 +72,12 @@ fun KanbanScreen(
 fun KanbanScreenContent(
     projectName: String,
     isLoading: Boolean = false,
-    swimlanes: List<Swimlane> = emptyList(),
     statuses: List<Status> = emptyList(),
     stories: List<CommonTaskExtended> = emptyList(),
     team: List<User> = emptyList(),
+    swimlanes: List<Swimlane?> = emptyList(),
+    selectSwimlane: (Swimlane?) -> Unit = {},
+    selectedSwimlane: Swimlane? = null,
     navigateToStory: (id: Long, ref: Int) -> Unit = { _, _ -> },
     onTitleClick: () -> Unit = {},
     navigateBack: () -> Unit = {},
@@ -95,10 +101,12 @@ fun KanbanScreenContent(
         }
     } else {
         KanbanBoard(
-            swimlanes = swimlanes,
             statuses = statuses,
             stories = stories,
             team = team,
+            swimlanes = swimlanes,
+            selectSwimlane = selectSwimlane,
+            selectedSwimlane = selectedSwimlane,
             navigateToStory = navigateToStory,
             navigateToCreateTask = navigateToCreateTask
         )

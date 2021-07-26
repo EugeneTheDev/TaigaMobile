@@ -39,10 +39,12 @@ import java.time.LocalDateTime
 
 @Composable
 fun KanbanBoard(
-    swimlanes: List<Swimlane>,
     statuses: List<Status>,
     stories: List<CommonTaskExtended> = emptyList(),
     team: List<User> = emptyList(),
+    swimlanes: List<Swimlane?>,
+    selectSwimlane: (Swimlane?) -> Unit = {},
+    selectedSwimlane: Swimlane? = null,
     navigateToStory: (id: Long, ref: Int) -> Unit = { _, _ -> },
     navigateToCreateTask: (statusId: Long, swimlaneId: Long?) -> Unit = { _, _ -> }
 ) {
@@ -51,8 +53,6 @@ fun KanbanBoard(
     val cellWidth = 280.dp
     val backgroundCellColor = taigaGray
     val headerColor = taigaDarkGray
-
-    var selectedSwimlane by remember { mutableStateOf(swimlanes.firstOrNull()) }
 
     swimlanes.takeIf { it.isNotEmpty() }?.let {
         Row(
@@ -67,9 +67,9 @@ fun KanbanBoard(
             Spacer(Modifier.width(8.dp))
 
             DropdownSelector(
-                items = listOf(null) + swimlanes,
+                items = swimlanes,
                 selectedItem = selectedSwimlane,
-                onItemSelected = { selectedSwimlane = it },
+                onItemSelected = selectSwimlane,
                 itemContent = {
                     Text(
                         text = it?.name ?: stringResource(R.string.unclassifed),

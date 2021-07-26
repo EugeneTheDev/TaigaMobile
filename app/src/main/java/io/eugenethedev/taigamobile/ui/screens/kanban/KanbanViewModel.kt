@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.kanban
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.Session
@@ -26,7 +27,9 @@ class KanbanViewModel : ViewModel() {
     val statuses = MutableLiveResult<List<Status>>()
     val team = MutableLiveResult<List<User>>()
     val stories = MutableLiveResult<List<CommonTaskExtended>>()
-    val swimlanes = MutableLiveResult<List<Swimlane>>()
+    val swimlanes = MutableLiveResult<List<Swimlane?>>()
+
+    val selectedSwimlane = MutableLiveData<Swimlane?>()
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -49,10 +52,16 @@ class KanbanViewModel : ViewModel() {
                     stories.loadOrError(preserveValue = false) { tasksRepository.getAllUserStories() }
                 },
                 launch {
-                    swimlanes.loadOrError(preserveValue = false) { tasksRepository.getSwimlanes() }
+                    swimlanes.loadOrError() {
+                        listOf(null) + tasksRepository.getSwimlanes() // prepend null to show "unclassified" swimlane
+                    }
                 }
             )
         }
+    }
+
+    fun selectSwimlane(swimlane: Swimlane?) {
+        selectedSwimlane.value = swimlane
     }
 
     @SuppressLint("NullSafeMutableLiveData")
