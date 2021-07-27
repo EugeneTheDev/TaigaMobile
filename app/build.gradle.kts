@@ -98,12 +98,14 @@ dependencies {
 
     // Accompanist
     val accompanistVersion = "0.14.0"
-    implementation("com.google.accompanist:accompanist-glide:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-insets:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-flowlayout:$accompanistVersion")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:1.3.0")
 
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha04")
@@ -140,7 +142,7 @@ dependencies {
     // Markdown support (Markwon)
     val markwonVersion = "4.6.2"
     implementation("io.noties.markwon:core:$markwonVersion")
-    implementation("io.noties.markwon:image-glide:$markwonVersion")
+    implementation("io.noties.markwon:image-coil:$markwonVersion")
 
     // Compose Material Dialogs
     val composeMaterialDialogsVersion = "0.4.3"

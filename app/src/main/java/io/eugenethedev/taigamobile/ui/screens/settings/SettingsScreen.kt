@@ -5,9 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -16,7 +13,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -33,7 +29,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.accompanist.glide.rememberGlidePainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
@@ -83,6 +80,7 @@ fun SettingsScreen(
     )
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun SettingsScreenContent(
     avatarUrl: String?,
@@ -107,10 +105,12 @@ fun SettingsScreenContent(
     )
 
     Image(
-        painter = rememberGlidePainter(
-            request = avatarUrl ?: R.drawable.default_avatar,
-            fadeIn = true,
-            requestBuilder = { error(R.drawable.default_avatar) },
+        painter = rememberImagePainter(
+            data = avatarUrl ?: R.drawable.default_avatar,
+            builder = {
+                error(R.drawable.default_avatar)
+                crossfade(true)
+            },
         ),
         contentDescription = null,
         contentScale = ContentScale.Crop,

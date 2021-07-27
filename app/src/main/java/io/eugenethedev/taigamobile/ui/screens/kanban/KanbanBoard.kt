@@ -23,8 +23,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.glide.rememberGlidePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
@@ -193,6 +194,7 @@ private fun Header(
     )
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun StoryItem(
     story: CommonTaskExtended,
@@ -252,10 +254,12 @@ private fun StoryItem(
         FlowRow {
             assignees.forEach {
                 Image(
-                    painter = rememberGlidePainter(
-                        request = it.avatarUrl ?: R.drawable.default_avatar,
-                        fadeIn = true,
-                        requestBuilder = { error(R.drawable.default_avatar) }
+                    painter = rememberImagePainter(
+                        data = it.avatarUrl ?: R.drawable.default_avatar,
+                        builder = {
+                            error(R.drawable.default_avatar)
+                            crossfade(true)
+                        }
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,

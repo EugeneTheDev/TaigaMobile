@@ -21,7 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.accompanist.glide.rememberGlidePainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
@@ -106,6 +107,7 @@ fun TeamScreenContent(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun TeamMemberItem(
     teamMember: TeamMember
@@ -118,10 +120,12 @@ private fun TeamMemberItem(
         modifier = Modifier.weight(0.6f)
     ) {
         Image(
-            painter = rememberGlidePainter(
-                request = teamMember.avatarUrl ?: R.drawable.default_avatar,
-                fadeIn = true,
-                requestBuilder = { error(R.drawable.default_avatar) },
+            painter = rememberImagePainter(
+                data = teamMember.avatarUrl ?: R.drawable.default_avatar,
+                builder = {
+                    error(R.drawable.default_avatar)
+                    crossfade(true)
+                },
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,

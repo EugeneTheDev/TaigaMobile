@@ -17,7 +17,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.glide.rememberGlidePainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
@@ -29,6 +30,7 @@ import java.time.format.FormatStyle
 /**
  * User info (name and avatar).
  */
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun UserItem(
     user: User,
@@ -38,10 +40,12 @@ fun UserItem(
     val imageSize = if (dateTime != null) 46.dp else 40.dp
 
     Image(
-        painter = rememberGlidePainter(
-            request = user.avatarUrl ?: R.drawable.default_avatar,
-            fadeIn = true,
-            requestBuilder = { error(R.drawable.default_avatar) }
+        painter = rememberImagePainter(
+            data = user.avatarUrl ?: R.drawable.default_avatar,
+            builder = {
+                error(R.drawable.default_avatar)
+                crossfade(true)
+            }
         ),
         contentDescription = null,
         contentScale = ContentScale.Crop,
