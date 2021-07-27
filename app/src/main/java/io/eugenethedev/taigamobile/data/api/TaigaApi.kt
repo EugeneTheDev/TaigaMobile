@@ -57,6 +57,13 @@ interface TaigaApi {
     @GET("milestones/{id}")
     suspend fun getSprint(@Path("id") sprintId: Long): SprintResponse
 
+    @PATCH("{taskPath}/{id}")
+    suspend fun changeCommonTaskSprint(
+        @Path("taskPath") taskPath: CommonTaskPathPlural,
+        @Path("id") id: Long,
+        @Body changeSprintRequest: ChangeSprintRequest
+    )
+
 
     /**
      * Everything related to common tasks (epics, user stories, etc.)
@@ -161,13 +168,6 @@ interface TaigaApi {
         @Body changePriorityRequest: ChangePriorityRequest
     )
 
-    @PATCH("{taskPath}/{id}")
-    suspend fun changeCommonTaskSprint(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") id: Long,
-        @Body changeSprintRequest: ChangeSprintRequest
-    )
-
     @PATCH("userstories/{id}")
     suspend fun changeUserStoryAssignees(
         @Path("id") id: Long,
@@ -186,12 +186,6 @@ interface TaigaApi {
         @Path("taskPath") taskPath: CommonTaskPathPlural,
         @Path("id") id: Long,
         @Body changeWatchersRequest: ChangeWatchersRequest
-    )
-
-    @PATCH("userstories/{id}")
-    suspend fun changeUserStorySwimlane(
-        @Path("id") id: Long,
-        @Body request: ChangeUserStorySwimlaneRequest
     )
 
     @PATCH("{taskPath}/{id}")
@@ -321,4 +315,10 @@ interface TaigaApi {
 
     @GET("swimlanes")
     suspend fun getSwimlanes(@Query("project") project: Long): List<Swimlane>
+
+    @PATCH("userstories/{id}")
+    suspend fun changeUserStorySwimlane(
+        @Path("id") id: Long,
+        @Body request: ChangeUserStorySwimlaneRequest
+    )
 }
