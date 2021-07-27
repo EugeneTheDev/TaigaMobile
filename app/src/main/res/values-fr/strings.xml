@@ -91,7 +91,9 @@
     <string name="custom_field_rich_text">Texte riche</string>
     <string name="custom_field_number">Nombre</string>
     <string name="custom_field_url">Url</string>
+
     <string name="date_hint">Date</string>
+    <string name="no_due_date">Pas de date d\'échéance</string>
 
     <string name="open">Ouvert</string>
     <string name="clear">Dégager</string>

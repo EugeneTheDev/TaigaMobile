@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.domain.entities
 
 import com.google.gson.annotations.SerializedName
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -44,6 +45,13 @@ data class CommonTask(
 )
 
 
+enum class DueDateStatus {
+    @SerializedName("not_set") NotSet,
+    @SerializedName("set") Set,
+    @SerializedName("due_soon") DueSoon,
+    @SerializedName("past_due") PastDue
+}
+
 data class CommonTaskExtended(
     val id: Long,
     val status: Status,
@@ -62,6 +70,8 @@ data class CommonTaskExtended(
     val epicsShortInfo: List<EpicShortInfo> = emptyList(),
     val tags: List<Tag> = emptyList(),
     val swimlane: Swimlane?,
+    val dueDate: LocalDate?,
+    val dueDateStatus: DueDateStatus,
     val userStoryShortInfo: UserStoryShortInfo? = null,
 
     // for epic

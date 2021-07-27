@@ -399,7 +399,8 @@ private fun CustomFieldDate(
         date = date,
         onDatePicked = { onValueChange(it?.let { CustomFieldValue(it) }) },
         onOpen = { changeFieldState(FieldState.Focused) },
-        onClose = { changeFieldState(FieldState.Default) }
+        onClose = { changeFieldState(FieldState.Default) },
+        modifier = Modifier.fillMaxWidth()
     )
 }
 

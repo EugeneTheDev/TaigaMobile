@@ -10,8 +10,12 @@ import androidx.compose.ui.graphics.Color
 /**
  * Colors
  */
+
 val taigaGreen = Color(0xFF25A28C)
 val taigaGreenDark = Color(0xFF00796D)
+val taigaOrange = Color(0xFFFF9900)
+val taigaGreenPositive = Color(0xFF9DCE0A)
+val taigaRed = Color(0xFFE44057)
 
 var taigaLightGray = Color(0xFFF9F9FB)
     private set

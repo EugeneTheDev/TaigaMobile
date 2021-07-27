@@ -65,6 +65,8 @@ data class CommonTaskResponse(
     val is_closed: Boolean,
     val tags: List<List<String?>>?,
     val swimlane: Long?,
+    val due_date: LocalDate?,
+    val due_date_status: DueDateStatus,
 
     // for epic
     val color: String?,

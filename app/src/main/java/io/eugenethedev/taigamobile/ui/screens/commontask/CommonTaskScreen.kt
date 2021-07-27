@@ -314,7 +314,12 @@ fun CommonTaskScreenContent(
 
                     item {
                         Spacer(Modifier.height(sectionsPadding))
+                    }
 
+                    CommonTaskDueDate(commonTask)
+
+                    item {
+                        Spacer(Modifier.height(sectionsPadding))
                     }
 
                     CommonTaskCreatedBy(

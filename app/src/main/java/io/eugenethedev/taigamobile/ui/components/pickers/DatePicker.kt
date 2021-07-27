@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.components.pickers
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ fun DatePicker(
     date: LocalDate?,
     onDatePicked: (LocalDate?) -> Unit,
     @StringRes hintId: Int = R.string.date_hint,
+    modifier: Modifier = Modifier,
     onClose: () -> Unit = {},
     onOpen: () -> Unit = {}
 ) = Box {
@@ -72,10 +72,8 @@ fun DatePicker(
     }
 
     Text(
-        text = date?.format(dateFormatter) ?: stringResource(R.string.date_hint),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickableUnindicated {
+        text = date?.format(dateFormatter) ?: stringResource(hintId),
+        modifier = modifier.clickableUnindicated {
                 onOpen()
                 dialog.show()
             },

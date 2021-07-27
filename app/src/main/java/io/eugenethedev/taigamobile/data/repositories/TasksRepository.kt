@@ -269,6 +269,8 @@ class TasksRepository @Inject constructor(
             projectSlug = project_extra_info.slug,
             tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
             swimlane = swimlanes.find { it.id == swimlane },
+            dueDate = due_date,
+            dueDateStatus = due_date_status,
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
