@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.domain.repositories
 
 import io.eugenethedev.taigamobile.domain.entities.*
 import java.io.InputStream
+import java.time.LocalDate
 
 interface ITasksRepository {
     suspend fun getWorkingOn(): List<CommonTask>
@@ -44,6 +45,7 @@ interface ITasksRepository {
     suspend fun unlinkFromEpic(epicId: Long, userStoryId: Long)
     suspend fun changeAssignees(commonTaskId: Long, commonTaskType: CommonTaskType, assignees: List<Long>, version: Int)
     suspend fun changeWatchers(commonTaskId: Long, commonTaskType: CommonTaskType, watchers: List<Long>, version: Int)
+    suspend fun changeDueDate(commonTaskId: Long, commonTaskType: CommonTaskType, date: LocalDate?, version: Int)
     suspend fun createComment(commonTaskId: Long, commonTaskType: CommonTaskType, comment: String, version: Int)
     suspend fun deleteComment(commonTaskId: Long, commonTaskType: CommonTaskType, commentId: String)
     suspend fun editCommonTask(commonTaskId: Long, commonTaskType: CommonTaskType, title: String, description: String, version: Int)

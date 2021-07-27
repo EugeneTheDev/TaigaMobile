@@ -7,6 +7,7 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import java.io.InputStream
+import java.time.LocalDate
 
 
 /**
@@ -33,6 +34,10 @@ class EditAttachmentsAction(
     val isResultLoading: Boolean = false
 )
 
+class EditDueDateAction(
+    val selectDueDate: (LocalDate?) -> Unit = {},
+    val isResultLoading: Boolean = false
+)
 
 
 // all edit actions in one place
@@ -45,6 +50,7 @@ class EditActions(
     val editSwimlane: EditAction<Swimlane?> = EditAction(),
     val editSprint: EditAction<Sprint?> = EditAction(),
     val editEpics: EditAction<CommonTask> = EditAction(),
+    val unlinkFromEpic: (EpicShortInfo) -> Unit = {},
     val editAttachments: EditAttachmentsAction = EditAttachmentsAction(),
     val editAssignees: EditAction<User> = EditAction(),
     val editWatchers: EditAction<User> = EditAction(),
@@ -52,9 +58,9 @@ class EditActions(
     val editTask: (title: String, description: String) -> Unit = { _, _ -> },
     val editCustomField: (CustomField, CustomFieldValue?) -> Unit = { _, _ -> },
     val editTags: EditAction<Tag> = EditAction(),
-    val unlinkFromEpic: (EpicShortInfo) -> Unit = {},
+    val editDueDate: EditDueDateAction = EditDueDateAction(),
     val deleteTask: () -> Unit = {},
-    val promoteTask: () -> Unit = {}
+    val promoteTask: () -> Unit = {},
 )
 
 // all loading statuses in one place

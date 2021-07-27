@@ -89,6 +89,9 @@ fun CommonTaskScreen(
     val tags by viewModel.tags.observeAsState()
     tags?.subscribeOnError(onError)
 
+    val dueDateResult by viewModel.dueDateResult.observeAsState()
+    dueDateResult?.subscribeOnError(onError)
+
     val editResult by viewModel.editResult.observeAsState()
     editResult?.subscribeOnError(onError)
 
@@ -199,6 +202,10 @@ fun CommonTaskScreen(
                 selectItem = viewModel::addTag,
                 removeItem = viewModel::deleteTag,
                 isResultLoading = tags?.resultStatus == ResultStatus.Loading
+            ),
+            editDueDate = EditDueDateAction(
+                selectDueDate = viewModel::selectDueDate,
+                isResultLoading = dueDateResult?.resultStatus == ResultStatus.Loading
             )
         ),
         loaders = Loaders(
@@ -316,7 +323,10 @@ fun CommonTaskScreenContent(
                         Spacer(Modifier.height(sectionsPadding))
                     }
 
-                    CommonTaskDueDate(commonTask)
+                    CommonTaskDueDate(
+                        commonTask = commonTask,
+                        editActions = editActions
+                    )
 
                     item {
                         Spacer(Modifier.height(sectionsPadding))

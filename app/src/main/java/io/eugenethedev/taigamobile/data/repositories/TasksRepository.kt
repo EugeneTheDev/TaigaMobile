@@ -11,6 +11,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.InputStream
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TasksRepository @Inject constructor(
@@ -392,6 +393,19 @@ class TasksRepository @Inject constructor(
             taskPath = CommonTaskPathPlural(commonTaskType),
             id = commonTaskId,
             changeWatchersRequest = ChangeWatchersRequest(watchers, version)
+        )
+    }
+
+    override suspend fun changeDueDate(
+        commonTaskId: Long,
+        commonTaskType: CommonTaskType,
+        date: LocalDate?,
+        version: Int
+    ) = withIO {
+        taigaApi.changeCommonTaskDueDate(
+            taskPath = CommonTaskPathPlural(commonTaskType),
+            id = commonTaskId,
+            request = ChangeCommonTaskDueDateRequest(date, version)
         )
     }
 

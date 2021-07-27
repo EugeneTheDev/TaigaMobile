@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.commontask.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.Alignment
@@ -14,10 +15,12 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.DueDateStatus
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
+import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.theme.*
 
 fun LazyListScope.CommonTaskDueDate(
-    commonTask: CommonTaskExtended
+    commonTask: CommonTaskExtended,
+    editActions: EditActions
 ) {
     item {
         Row(
@@ -37,22 +40,29 @@ fun LazyListScope.CommonTaskDueDate(
                             DueDateStatus.Set -> taigaGreenPositive
                             DueDateStatus.DueSoon -> taigaOrange
                             DueDateStatus.PastDue -> taigaRed
-                        },
+                        }.takeUnless { editActions.editDueDate.isResultLoading } ?: taigaDarkGray,
                         shape = MaterialTheme.shapes.small
                     )
                     .padding(4.dp)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_clock),
-                    contentDescription = null,
-                    tint = commonTask.dueDate?.let { Color.White } ?: MaterialTheme.colors.primary,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (editActions.editDueDate.isResultLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize().padding(2.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_clock),
+                        contentDescription = null,
+                        tint = commonTask.dueDate?.let { Color.White } ?: MaterialTheme.colors.primary,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             DatePicker(
                 date = commonTask.dueDate,
-                onDatePicked = {},
+                onDatePicked = { editActions.editDueDate.selectDueDate(it) },
                 hintId = R.string.no_due_date,
                 modifier = Modifier.padding(6.dp)
             )

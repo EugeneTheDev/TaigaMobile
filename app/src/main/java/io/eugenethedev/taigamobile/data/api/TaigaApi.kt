@@ -189,6 +189,13 @@ interface TaigaApi {
     )
 
     @PATCH("{taskPath}/{id}")
+    suspend fun changeCommonTaskDueDate(
+        @Path("taskPath") taskPath: CommonTaskPathPlural,
+        @Path("id") id: Long,
+        @Body request: ChangeCommonTaskDueDateRequest
+    )
+
+    @PATCH("{taskPath}/{id}")
     suspend fun editCommonTask(
         @Path("taskPath") taskPath: CommonTaskPathPlural,
         @Path("id") id: Long,

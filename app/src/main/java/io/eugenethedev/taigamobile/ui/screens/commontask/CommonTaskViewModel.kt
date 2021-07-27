@@ -16,6 +16,7 @@ import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.*
 import java.io.InputStream
+import java.time.LocalDate
 import javax.inject.Inject
 
 class CommonTaskViewModel : ViewModel() {
@@ -413,6 +414,17 @@ class CommonTaskViewModel : ViewModel() {
             loadData().join()
             screensState.modify()
             swimlanes.value?.data
+        }
+    }
+
+    // Due date
+
+    val dueDateResult = MutableLiveResult<Unit>()
+
+    fun selectDueDate(date: LocalDate?) = viewModelScope.launch {
+        dueDateResult.loadOrError(R.string.permission_error) {
+            tasksRepository.changeDueDate(commonTaskId, commonTaskType, date, commonTaskVersion)
+            loadData().join()
         }
     }
 }

@@ -1,5 +1,7 @@
 package io.eugenethedev.taigamobile.data.api
 
+import java.time.LocalDate
+
 data class AuthRequest(
     val password: String,
     val username: String,
@@ -49,6 +51,11 @@ data class ChangeWatchersRequest(
 
 data class ChangeUserStorySwimlaneRequest(
     val swimlane: Long?,
+    val version: Int
+)
+
+data class ChangeCommonTaskDueDateRequest(
+    val due_date: LocalDate?,
     val version: Int
 )
 
