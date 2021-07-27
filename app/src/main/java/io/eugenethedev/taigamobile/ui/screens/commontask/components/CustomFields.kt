@@ -5,9 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -28,21 +24,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.buttons
-import com.vanpra.composematerialdialogs.datetime.datepicker.datepicker
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CustomField
 import io.eugenethedev.taigamobile.domain.entities.CustomFieldType
 import io.eugenethedev.taigamobile.domain.entities.CustomFieldValue
 import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
+import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import kotlin.math.floor
 
 @Composable
@@ -403,50 +394,12 @@ private fun CustomFieldDate(
     changeFieldState: (FieldState) -> Unit
 ) {
     val date = value?.dateValue
-    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
-    val dialog = remember {
-        MaterialDialog(
-            autoDismiss = true,
-            onCloseRequest = { changeFieldState(FieldState.Default) }
-        )
-    }
-    dialog.build {
-        datepicker(
-            title = stringResource(R.string.select_date).uppercase(),
-            onDateChange = { onValueChange(CustomFieldValue(it)) }
-        )
-
-        buttons {
-            positiveButton(
-                res = R.string.ok,
-                onClick = { changeFieldState(FieldState.Default) }
-            )
-            negativeButton(
-                res = R.string.cancel,
-                onClick = { changeFieldState(FieldState.Default) }
-            )
-            button(
-                res = R.string.clear,
-                onClick = {
-                    onValueChange(null)
-                    dialog.hide()
-                    changeFieldState(FieldState.Default)
-                }
-            )
-        }
-
-    }
-
-    Text(
-        text = date?.format(dateFormatter) ?: stringResource(R.string.custom_field_date),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickableUnindicated {
-                changeFieldState(FieldState.Focused)
-                dialog.show()
-            },
-        color = date?.let { MaterialTheme.colors.onSurface } ?: Color.Gray
+    DatePicker(
+        date = date,
+        onDatePicked = { onValueChange(it?.let { CustomFieldValue(it) }) },
+        onOpen = { changeFieldState(FieldState.Focused) },
+        onClose = { changeFieldState(FieldState.Default) }
     )
 }
 

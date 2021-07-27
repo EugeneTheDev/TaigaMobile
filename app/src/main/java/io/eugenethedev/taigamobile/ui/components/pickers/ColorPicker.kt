@@ -19,6 +19,10 @@ import com.vanpra.composematerialdialogs.title
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 
+/**
+ * Color picker with material dialog
+ */
+
 @Composable
 fun ColorPicker(
     size: Dp,
@@ -43,8 +47,7 @@ fun ColorPicker(
     }
 
     Spacer(
-        Modifier
-            .size(size)
+        Modifier.size(size)
             .background(color = color, shape = MaterialTheme.shapes.medium)
             .clickableUnindicated { dialog.show() }
     )

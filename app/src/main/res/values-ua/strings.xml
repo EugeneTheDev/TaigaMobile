@@ -91,7 +91,7 @@
     <string name="custom_field_rich_text">Розширений текст</string>
     <string name="custom_field_number">Кількість</string>
     <string name="custom_field_url">Url</string>
-    <string name="custom_field_date">Дата</string>
+    <string name="date_hint">Дата</string>
 
     <string name="open">Відкрити</string>
     <string name="clear">Відчистити</string>

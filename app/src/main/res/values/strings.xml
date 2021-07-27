@@ -96,7 +96,8 @@
     <string name="custom_field_rich_text">Rich text</string>
     <string name="custom_field_number">Number</string>
     <string name="custom_field_url">Url</string>
-    <string name="custom_field_date">Date</string>
+
+    <string name="date_hint">Date</string>
 
     <string name="open">Open</string>
     <string name="clear">Clear</string>
