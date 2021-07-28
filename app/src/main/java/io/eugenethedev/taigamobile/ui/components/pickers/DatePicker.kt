@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.buttons
 import com.vanpra.composematerialdialogs.datetime.datepicker.datepicker
@@ -28,6 +29,8 @@ fun DatePicker(
     onDatePicked: (LocalDate?) -> Unit,
     modifier: Modifier = Modifier,
     @StringRes hintId: Int = R.string.date_hint,
+    showClearButton: Boolean = true,
+    style: TextStyle = MaterialTheme.typography.body1,
     onClose: () -> Unit = {},
     onOpen: () -> Unit = {}
 ) = Box {
@@ -59,20 +62,24 @@ fun DatePicker(
                 res = R.string.cancel,
                 onClick = onClose
             )
-            button(
-                res = R.string.clear,
-                onClick = {
-                    onDatePicked(null)
-                    dialog.hide()
-                    onClose()
-                }
-            )
+
+            if (showClearButton) {
+                button(
+                    res = R.string.clear,
+                    onClick = {
+                        onDatePicked(null)
+                        dialog.hide()
+                        onClose()
+                    }
+                )
+            }
         }
 
     }
 
     Text(
         text = date?.format(dateFormatter) ?: stringResource(hintId),
+        style = style,
         modifier = modifier.clickableUnindicated {
                 onOpen()
                 dialog.show()

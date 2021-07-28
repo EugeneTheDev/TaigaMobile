@@ -19,7 +19,7 @@ import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
-import io.eugenethedev.taigamobile.ui.components.loaders.LoadingDialog
+import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.*
 import io.eugenethedev.taigamobile.ui.screens.main.FilePicker
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker

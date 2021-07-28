@@ -49,6 +49,9 @@
     <string name="closed_sprint_name_template">%s (Закритий)</string>
     <string name="add_userstory">Додати історію користувача</string>
 
+    <string name="sprint_name_hint">Ім\'я спринту</string>
+    <string name="add_sprint">Додати спринт</string>
+
     <string name="user_story">Історія користувача</string>
     <string name="tasks_without_story">Історії без завданнь</string>
     <string name="sprint_issues">Проблеми із спринта</string>

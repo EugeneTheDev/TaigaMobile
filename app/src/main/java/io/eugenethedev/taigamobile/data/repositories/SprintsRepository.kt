@@ -1,9 +1,11 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.data.api.CreateSprintRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
+import java.time.LocalDate
 import javax.inject.Inject
 
 class SprintsRepository @Inject constructor(
@@ -30,5 +32,9 @@ class SprintsRepository @Inject constructor(
         taigaApi.getIssues(project = session.currentProjectId, sprint = sprintId)
             .map { it.toCommonTask(CommonTaskType.Issue) }
 
+    }
+
+    override suspend fun createSprint(name: String, start: LocalDate, end: LocalDate) = withIO {
+        taigaApi.createSprint(CreateSprintRequest(name, start, end, session.currentProjectId))
     }
 }

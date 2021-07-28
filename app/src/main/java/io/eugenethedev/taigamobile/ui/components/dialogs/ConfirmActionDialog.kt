@@ -19,17 +19,15 @@ import io.eugenethedev.taigamobile.R
 fun ConfirmActionDialog(
     title: String,
     text: String,
-    onConfirm: () -> Unit = {},
-    onDismiss: () -> Unit = {}
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
 ) = AlertDialog(
     onDismissRequest = onDismiss,
     buttons = {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
+            modifier = Modifier.padding(8.dp).fillMaxWidth()
         ) {
             TextButton(onClick = onDismiss) {
                 Text(

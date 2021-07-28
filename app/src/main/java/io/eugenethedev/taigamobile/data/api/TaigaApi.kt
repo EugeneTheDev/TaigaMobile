@@ -64,6 +64,9 @@ interface TaigaApi {
         @Body changeSprintRequest: ChangeSprintRequest
     )
 
+    @POST("milestones")
+    suspend fun createSprint(@Body request: CreateSprintRequest)
+
 
     /**
      * Everything related to common tasks (epics, user stories, etc.)

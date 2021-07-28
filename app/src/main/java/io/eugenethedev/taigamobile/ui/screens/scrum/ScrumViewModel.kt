@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
@@ -14,6 +15,7 @@ import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 class ScrumViewModel : ViewModel() {
@@ -70,8 +72,6 @@ class ScrumViewModel : ViewModel() {
     fun loadSprints() = viewModelScope.launch {
         if (currentSprintPage == maxSprintPage) return@launch
 
-        sprints.value = Result(ResultStatus.Loading, sprints.value?.data)
-
         sprints.loadOrError {
             sprintsRepository.getSprints(++currentSprintPage).also {
                 if (it.isEmpty()) maxSprintPage = currentSprintPage
@@ -81,14 +81,27 @@ class ScrumViewModel : ViewModel() {
         }
     }
 
+    fun createSprint(name: String, start: LocalDate, end: LocalDate) = viewModelScope.launch {
+        sprints.loadOrError(R.string.permission_error) {
+            sprintsRepository.createSprint(name, start, end)
+            resetSprints()
+            loadSprints().join()
+            sprints.value?.data
+        }
+    }
+
+    private fun resetSprints() {
+        sprints.value = null
+        currentSprintPage = 0
+        maxSprintPage = Int.MAX_VALUE
+    }
+
     fun reset() {
         stories.value = null
         currentStoriesQuery = ""
         currentStoriesPage = 0
         maxStoriesPage = Int.MAX_VALUE
 
-        sprints.value = null
-        currentSprintPage = 0
-        maxSprintPage = Int.MAX_VALUE
+        resetSprints()
     }
 }

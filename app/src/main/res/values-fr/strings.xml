@@ -49,6 +49,9 @@
     <string name="closed_sprint_name_template">%s (fermé)</string>
     <string name="add_userstory">Ajouter un récit utilisateur</string>
 
+    <string name="sprint_name_hint">Nom du sprint</string>
+    <string name="add_sprint">Ajouter un sprint</string>
+
     <string name="user_story">Récit utilisateur</string>
     <string name="tasks_without_story">Tâche orpheline</string>
     <string name="sprint_issues">Tickets</string>

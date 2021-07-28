@@ -53,6 +53,8 @@
     <string name="closed">Closed</string>
     <string name="closed_sprint_name_template">%s (Closed)</string>
     <string name="add_userstory">Add user story</string>
+    <string name="sprint_name_hint">Sprint name</string>
+    <string name="add_sprint">Add sprint</string>
 
     <string name="user_story">User story</string>
     <string name="tasks_without_story">Storyless tasks</string>

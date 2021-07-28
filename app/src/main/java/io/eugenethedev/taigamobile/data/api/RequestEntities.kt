@@ -118,3 +118,10 @@ data class EditTagsRequest(
     val tags: List<List<String>>,
     val version: Int
 )
+
+data class CreateSprintRequest(
+    val name: String,
+    val estimated_start: LocalDate,
+    val estimated_finish: LocalDate,
+    val project: Long
+)

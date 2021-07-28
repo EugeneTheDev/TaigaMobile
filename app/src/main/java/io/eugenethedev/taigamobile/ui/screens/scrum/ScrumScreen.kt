@@ -30,6 +30,7 @@ import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
+import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
@@ -76,7 +77,8 @@ fun ScrumScreen(
             navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
         },
         navigateToTask = navController::navigateToTaskScreen,
-        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.UserStory) }
+        navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.UserStory) },
+        createSprint = viewModel::createSprint
     )
 }
 
@@ -92,7 +94,8 @@ fun ScrumScreenContent(
     loadSprints: () -> Unit = {},
     navigateToBoard: (Sprint) -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
-    navigateToCreateTask: () -> Unit = {}
+    navigateToCreateTask: () -> Unit = {},
+    createSprint: (name: String, start: LocalDate, end: LocalDate) -> Unit = { _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -118,7 +121,8 @@ fun ScrumScreenContent(
                 sprints = sprints,
                 isSprintsLoading = isSprintsLoading,
                 navigateToBoard = navigateToBoard,
-                loadSprints = loadSprints
+                loadSprints = loadSprints,
+                createSprint = createSprint
             )
         }
     }
@@ -178,8 +182,33 @@ private fun SprintsTabContent(
     sprints: List<Sprint>,
     isSprintsLoading: Boolean,
     navigateToBoard: (Sprint) -> Unit,
-    loadSprints: () -> Unit
+    loadSprints: () -> Unit,
+    createSprint: (name: String, start: LocalDate, end: LocalDate) -> Unit
 ) = LazyColumn(Modifier.fillMaxSize()) {
+    item {
+        var isCreateSprintDialogVisible by remember { mutableStateOf(false) }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+        ) {
+            AddButton(
+                text = stringResource(R.string.add_sprint),
+                onClick = { isCreateSprintDialogVisible = true }
+            )
+        }
+
+        if (isCreateSprintDialogVisible) {
+            EditSprintDialog(
+                onConfirm = { name, start, end ->
+                    createSprint(name, start, end)
+                    isCreateSprintDialogVisible = false
+                },
+                onDismiss = { isCreateSprintDialogVisible = false }
+            )
+        }
+    }
+
     items(sprints) {
         SprintItem(
             sprint = it,
