@@ -20,7 +20,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Tag
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import io.eugenethedev.taigamobile.ui.utils.toColor
 
 /**
  * Text with colored dots (indicators) at the end
@@ -44,7 +44,7 @@ fun TitleWithIndicators(
             append(" ")
 
             indicatorColorsHex.forEach {
-                pushStyle(SpanStyle(color = safeParseHexColor(it)))
+                pushStyle(SpanStyle(color = it.toColor()))
                 append("⬤") // 2B24
                 pop()
             }
@@ -65,7 +65,7 @@ fun TitleWithIndicators(
                     modifier = Modifier
                         .padding(end = 4.dp, bottom = 4.dp)
                         .background(
-                            color = safeParseHexColor(it.color),
+                            color = it.color.toColor(),
                             shape = MaterialTheme.shapes.small
                         )
                         .padding(2.dp)

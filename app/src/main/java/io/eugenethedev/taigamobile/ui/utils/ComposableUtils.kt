@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
@@ -57,9 +58,13 @@ fun Modifier.clickableUnindicated(
 @Composable
 inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.Error }?.let { onError(it.message!!) }
 
-fun safeParseHexColor(hexColor: String): Color = try {
-    Color(android.graphics.Color.parseColor(hexColor))
+// Color functions
+
+fun String.toColor(): Color = try {
+    Color(android.graphics.Color.parseColor(this))
 } catch (e: Exception) {
-    Timber.w("'$hexColor' $e")
+    Timber.w("'$this' $e")
     Color.Transparent
 }
+
+fun Color.toHex() = "#%08X".format(toArgb()).replace("#FF", "#")

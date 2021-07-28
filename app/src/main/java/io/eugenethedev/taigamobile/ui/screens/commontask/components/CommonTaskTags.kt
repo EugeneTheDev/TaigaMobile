@@ -26,7 +26,8 @@ import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
-import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import io.eugenethedev.taigamobile.ui.utils.toColor
+import io.eugenethedev.taigamobile.ui.utils.toHex
 
 fun LazyListScope.CommonTaskTags(
     commonTask: CommonTaskExtended,
@@ -76,7 +77,7 @@ private fun TagItem(
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
-        .background(color = safeParseHexColor(tag.color), shape = MaterialTheme.shapes.small)
+        .background(color = tag.color.toColor(), shape = MaterialTheme.shapes.small)
         .padding(horizontal = 4.dp, vertical = 2.dp)
 ) {
     Text(
@@ -135,7 +136,7 @@ private fun AddTagField(
                     Spacer(
                         Modifier.size(22.dp)
                             .background(
-                                color = safeParseHexColor(it.color),
+                                color = it.color.toColor(),
                                 shape = MaterialTheme.shapes.small
                             )
                     )
@@ -164,7 +165,7 @@ private fun AddTagField(
     IconButton(
         onClick = {
             value.text.takeIf { it.isNotEmpty() }?.let {
-                onSaveClick(Tag(it, "#%08X".format(color.toArgb()).replace("#FF", "#")))
+                onSaveClick(Tag(it, color.toHex()))
                 value = TextFieldValue()
             }
         },

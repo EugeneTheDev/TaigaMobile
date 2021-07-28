@@ -17,8 +17,10 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.StatusType
 import io.eugenethedev.taigamobile.ui.components.ClickableBadge
+import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
-import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import io.eugenethedev.taigamobile.ui.utils.toColor
+import io.eugenethedev.taigamobile.ui.utils.toHex
 
 fun LazyListScope.CommonTaskHeader(
     commonTask: CommonTaskExtended,
@@ -36,13 +38,10 @@ fun LazyListScope.CommonTaskHeader(
         Row(verticalAlignment = Alignment.CenterVertically) {
             // epic color
             if (commonTask.taskType == CommonTaskType.Epic) {
-                Spacer(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(
-                            color = safeParseHexColor(commonTask.color.orEmpty()),
-                            shape = MaterialTheme.shapes.small
-                        )
+                ColorPicker(
+                    size = 32.dp,
+                    color = commonTask.color.orEmpty().toColor(),
+                    onColorPicked = { editActions.editEpicColor.select(it.toHex()) }
                 )
 
                 Spacer(Modifier.width(badgesPadding))

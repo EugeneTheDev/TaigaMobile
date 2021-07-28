@@ -37,7 +37,7 @@ import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.taigaLightGray
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
-import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
 @Composable
@@ -74,7 +74,7 @@ fun SprintKanban(
                 text = it.name,
                 cellWidth = cellWidth,
                 cellPadding = cellPadding,
-                stripeColor = safeParseHexColor(it.color),
+                stripeColor = it.color.toColor(),
                 backgroundColor = backgroundCellColor
             )
         }
@@ -284,7 +284,7 @@ private fun UserStoryItem(
 
         Text(
             text = userStory.status.name,
-            color = safeParseHexColor(userStory.status.color),
+            color = userStory.status.color.toColor(),
             style = MaterialTheme.typography.body2
         )
     }

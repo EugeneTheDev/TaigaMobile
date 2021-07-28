@@ -66,7 +66,7 @@ data class CommonTaskResponse(
     val tags: List<List<String?>>?,
     val swimlane: Long?,
     val due_date: LocalDate?,
-    val due_date_status: DueDateStatus,
+    val due_date_status: DueDateStatus?,
 
     // for epic
     val color: String?,

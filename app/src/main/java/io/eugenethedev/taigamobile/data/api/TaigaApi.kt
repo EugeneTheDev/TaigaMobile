@@ -206,6 +206,12 @@ interface TaigaApi {
         @Body request: ChangeCommonTaskDueDateRequest
     )
 
+    @PATCH("epics/{id}")
+    suspend fun changeEpicColor(
+        @Path("id") id: Long,
+        @Body request: ChangeEpicColor
+    )
+
     @PATCH("{taskPath}/{id}")
     suspend fun editCommonTask(
         @Path("taskPath") taskPath: CommonTaskPathPlural,

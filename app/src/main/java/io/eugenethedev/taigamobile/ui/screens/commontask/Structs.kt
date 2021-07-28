@@ -34,8 +34,8 @@ class EditAttachmentsAction(
     val isResultLoading: Boolean = false
 )
 
-class EditDueDateAction(
-    val selectDueDate: (LocalDate?) -> Unit = {},
+class EditSimple<T>(
+    val select: (T) -> Unit = {},
     val isResultLoading: Boolean = false
 )
 
@@ -58,7 +58,8 @@ class EditActions(
     val editTask: (title: String, description: String) -> Unit = { _, _ -> },
     val editCustomField: (CustomField, CustomFieldValue?) -> Unit = { _, _ -> },
     val editTags: EditAction<Tag> = EditAction(),
-    val editDueDate: EditDueDateAction = EditDueDateAction(),
+    val editDueDate: EditSimple<LocalDate?> = EditSimple(),
+    val editEpicColor: EditSimple<String> = EditSimple(),
     val deleteTask: () -> Unit = {},
     val promoteTask: () -> Unit = {},
 )

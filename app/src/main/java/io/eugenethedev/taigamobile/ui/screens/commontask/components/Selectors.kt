@@ -16,7 +16,7 @@ import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
-import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -221,7 +221,7 @@ private fun StatusItem(
 ) {
     Text(
         text = status.name,
-        color = safeParseHexColor(status.color)
+        color = status.color.toColor()
     )
 }
 

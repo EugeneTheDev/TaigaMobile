@@ -35,7 +35,7 @@ fun LazyListScope.CommonTaskDueDate(
                     .fillMaxHeight()
                     .aspectRatio(1f)
                     .background(
-                        color = when (commonTask.dueDateStatus) {
+                        color = when (commonTask.dueDateStatus!!) {
                             DueDateStatus.NotSet -> taigaDarkGray
                             DueDateStatus.Set -> taigaGreenPositive
                             DueDateStatus.DueSoon -> taigaOrange
@@ -62,7 +62,7 @@ fun LazyListScope.CommonTaskDueDate(
 
             DatePicker(
                 date = commonTask.dueDate,
-                onDatePicked = { editActions.editDueDate.selectDueDate(it) },
+                onDatePicked = { editActions.editDueDate.select(it) },
                 hintId = R.string.no_due_date,
                 modifier = Modifier.padding(6.dp)
             )

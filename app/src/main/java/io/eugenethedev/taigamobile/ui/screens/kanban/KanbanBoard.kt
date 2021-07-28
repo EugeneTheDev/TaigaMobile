@@ -35,7 +35,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.taigaDarkGray
 import io.eugenethedev.taigamobile.ui.theme.taigaGray
-import io.eugenethedev.taigamobile.ui.utils.safeParseHexColor
+import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
 @Composable
@@ -108,7 +108,7 @@ fun KanbanBoard(
                     storiesCount = statusStories.size,
                     cellWidth = cellWidth,
                     cellOuterPadding = cellOuterPadding,
-                    stripeColor = safeParseHexColor(status.color),
+                    stripeColor = status.color.toColor(),
                     backgroundColor = headerColor,
                     onAddClick = { navigateToCreateTask(status.id, selectedSwimlane?.id) }
                 )
@@ -226,7 +226,7 @@ private fun StoryItem(
                 Spacer(
                     Modifier
                         .size(with(LocalDensity.current) { textStyle.fontSize.toDp() })
-                        .background(safeParseHexColor(it.color), CircleShape)
+                        .background(it.color.toColor(), CircleShape)
                 )
 
                 Spacer(Modifier.width(4.dp))

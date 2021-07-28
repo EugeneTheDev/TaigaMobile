@@ -493,4 +493,11 @@ class TasksRepository @Inject constructor(
             request = ChangeUserStorySwimlaneRequest(swimlaneId, version)
         )
     }
+
+    override suspend fun changeEpicColor(epicId: Long, color: String, version: Int) = withIO {
+        taigaApi.changeEpicColor(
+            id = epicId,
+            request = ChangeEpicColor(color, version)
+        )
+    }
 }

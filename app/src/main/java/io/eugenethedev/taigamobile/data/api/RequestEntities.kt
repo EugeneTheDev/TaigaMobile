@@ -59,6 +59,12 @@ data class ChangeCommonTaskDueDateRequest(
     val version: Int
 )
 
+
+data class ChangeEpicColor(
+    val color: String,
+    val version: Int
+)
+
 data class CreateCommentRequest(
     val comment: String,
     val version: Int

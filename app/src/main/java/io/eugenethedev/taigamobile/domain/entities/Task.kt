@@ -71,7 +71,7 @@ data class CommonTaskExtended(
     val tags: List<Tag> = emptyList(),
     val swimlane: Swimlane?,
     val dueDate: LocalDate?,
-    val dueDateStatus: DueDateStatus,
+    val dueDateStatus: DueDateStatus?,
     val userStoryShortInfo: UserStoryShortInfo? = null,
 
     // for epic

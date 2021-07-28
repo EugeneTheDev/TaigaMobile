@@ -427,4 +427,14 @@ class CommonTaskViewModel : ViewModel() {
             loadData().join()
         }
     }
+
+    val colorResult = MutableLiveResult<Unit>()
+
+    fun selectEpicColor(color: String) = viewModelScope.launch {
+        colorResult.loadOrError(R.string.permission_error) {
+            tasksRepository.changeEpicColor(commonTaskId, color, commonTaskVersion)
+            loadData().join()
+            screensState.modify()
+        }
+    }
 }
