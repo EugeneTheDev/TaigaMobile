@@ -36,7 +36,7 @@ import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.ThemeSetting
-import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
@@ -127,7 +127,7 @@ fun SettingsScreenContent(
     // logout
     var isAlertVisible by remember { mutableStateOf(false) }
     if (isAlertVisible) {
-        ConfirmActionAlert(
+        ConfirmActionDialog(
             title = stringResource(R.string.logout_title),
             text = stringResource(R.string.logout_text),
             onConfirm = {

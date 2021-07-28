@@ -8,7 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.commontask.NavigationActions
@@ -43,7 +43,7 @@ fun CommonTaskAppBar(
                 // delete alert dialog
                 var isDeleteAlertVisible by remember { mutableStateOf(false) }
                 if (isDeleteAlertVisible) {
-                    ConfirmActionAlert(
+                    ConfirmActionDialog(
                         title = stringResource(R.string.delete_task_title),
                         text = stringResource(R.string.delete_task_text),
                         onConfirm = {
@@ -57,7 +57,7 @@ fun CommonTaskAppBar(
                 // promote alert dialog
                 var isPromoteAlertVisible by remember { mutableStateOf(false) }
                 if (isPromoteAlertVisible) {
-                    ConfirmActionAlert(
+                    ConfirmActionDialog(
                         title = stringResource(R.string.promote_title),
                         text = stringResource(R.string.promote_text),
                         onConfirm = {

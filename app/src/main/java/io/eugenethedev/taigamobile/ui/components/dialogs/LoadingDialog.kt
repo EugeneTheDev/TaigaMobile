@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components.loaders
+package io.eugenethedev.taigamobile.ui.components.dialogs
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator

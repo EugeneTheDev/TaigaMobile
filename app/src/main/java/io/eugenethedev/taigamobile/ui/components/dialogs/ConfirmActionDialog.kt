@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.dialogs
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.AlertDialog
@@ -16,7 +16,7 @@ import io.eugenethedev.taigamobile.R
  * Standard confirmation alert with "yes" "no" buttons, title and text
  */
 @Composable
-fun ConfirmActionAlert(
+fun ConfirmActionDialog(
     title: String,
     text: String,
     onConfirm: () -> Unit = {},

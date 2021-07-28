@@ -21,7 +21,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
-import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -78,7 +78,7 @@ fun UserItemWithAction(
     var isAlertVisible by remember { mutableStateOf(false) }
 
     if (isAlertVisible) {
-        ConfirmActionAlert(
+        ConfirmActionDialog(
             title = stringResource(R.string.remove_user_title),
             text = stringResource(R.string.remove_user_text),
             onConfirm = {

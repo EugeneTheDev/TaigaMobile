@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Comment
-import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
@@ -59,7 +59,7 @@ private fun CommentItem(
     var isAlertVisible by remember { mutableStateOf(false) }
 
     if (isAlertVisible) {
-        ConfirmActionAlert(
+        ConfirmActionDialog(
             title = stringResource(R.string.delete_comment_title),
             text = stringResource(R.string.delete_comment_text),
             onConfirm = {

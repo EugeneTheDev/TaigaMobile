@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +20,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.EpicShortInfo
 import io.eugenethedev.taigamobile.domain.entities.UserStoryShortInfo
-import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
@@ -89,7 +88,7 @@ private fun EpicItemWithAction(
     var isAlertVisible by remember { mutableStateOf(false) }
 
     if (isAlertVisible) {
-        ConfirmActionAlert(
+        ConfirmActionDialog(
             title = stringResource(R.string.unlink_epic_title),
             text = stringResource(R.string.unlink_epic_text),
             onConfirm = {

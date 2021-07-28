@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Attachment
-import io.eugenethedev.taigamobile.ui.components.ConfirmActionAlert
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
@@ -69,7 +69,7 @@ private fun AttachmentItem(
     var isAlertVisible by remember { mutableStateOf(false) }
 
     if (isAlertVisible) {
-        ConfirmActionAlert(
+        ConfirmActionDialog(
             title = stringResource(R.string.remove_attachment_title),
             text = stringResource(R.string.remove_attachment_text),
             onConfirm = {

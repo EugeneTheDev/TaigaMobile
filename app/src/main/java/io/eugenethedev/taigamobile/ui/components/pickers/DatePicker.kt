@@ -26,8 +26,8 @@ import java.time.format.FormatStyle
 fun DatePicker(
     date: LocalDate?,
     onDatePicked: (LocalDate?) -> Unit,
-    @StringRes hintId: Int = R.string.date_hint,
     modifier: Modifier = Modifier,
+    @StringRes hintId: Int = R.string.date_hint,
     onClose: () -> Unit = {},
     onOpen: () -> Unit = {}
 ) = Box {
