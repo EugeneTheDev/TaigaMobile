@@ -6,6 +6,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
+import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
@@ -24,6 +25,7 @@ class CommonTaskViewModel : ViewModel() {
     @Inject lateinit var screensState: ScreensState
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var usersRepository: IUsersRepository
+    @Inject lateinit var sprintsRepository: ISprintsRepository
 
     private var commonTaskId: Long = -1
     private lateinit var commonTaskType: CommonTaskType
@@ -142,7 +144,7 @@ class CommonTaskViewModel : ViewModel() {
         sprints.loadOrError {
             fixAnimation()
             
-            tasksRepository.getSprints(++currentSprintPage).also {
+            sprintsRepository.getSprints(++currentSprintPage).also {
                 if (it.isEmpty()) maxSprintPage = currentSprintPage
             }.let {
                 // prepending null here to always show "remove from sprints" sprint first

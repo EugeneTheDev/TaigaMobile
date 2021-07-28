@@ -6,6 +6,7 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.Sprint
+import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
@@ -17,6 +18,7 @@ import javax.inject.Inject
 
 class ScrumViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
+    @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
 
@@ -71,7 +73,7 @@ class ScrumViewModel : ViewModel() {
         sprints.value = Result(ResultStatus.Loading, sprints.value?.data)
 
         sprints.loadOrError {
-            tasksRepository.getSprints(++currentSprintPage).also {
+            sprintsRepository.getSprints(++currentSprintPage).also {
                 if (it.isEmpty()) maxSprintPage = currentSprintPage
             }.let {
                 sprints.value?.data.orEmpty() + it
@@ -89,5 +91,4 @@ class ScrumViewModel : ViewModel() {
         currentSprintPage = 0
         maxSprintPage = Int.MAX_VALUE
     }
-
 }

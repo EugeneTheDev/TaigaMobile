@@ -1,0 +1,34 @@
+package io.eugenethedev.taigamobile.data.repositories
+
+import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.data.api.TaigaApi
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
+import javax.inject.Inject
+
+class SprintsRepository @Inject constructor(
+    private val taigaApi: TaigaApi,
+    private val session: Session
+) : ISprintsRepository {
+    override suspend fun getSprintUserStories(sprintId: Long) = withIO {
+        taigaApi.getUserStories(project = session.currentProjectId, sprint = sprintId)
+            .map { it.toCommonTask(CommonTaskType.UserStory) }
+    }
+
+    override suspend fun getSprints(page: Int) = withIO {
+        handle404 {
+            taigaApi.getSprints(session.currentProjectId, page).map { it.toSprint() }
+        }
+    }
+
+    override suspend fun getSprintTasks(sprintId: Long) = withIO {
+        taigaApi.getTasks(userStory = "null", project = session.currentProjectId, sprint = sprintId)
+            .map { it.toCommonTask(CommonTaskType.Task) }
+    }
+
+    override suspend fun getSprintIssues(sprintId: Long) = withIO {
+        taigaApi.getIssues(project = session.currentProjectId, sprint = sprintId)
+            .map { it.toCommonTask(CommonTaskType.Issue) }
+
+    }
+}

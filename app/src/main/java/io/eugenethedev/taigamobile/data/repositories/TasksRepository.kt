@@ -124,26 +124,10 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getSprintUserStories(sprintId: Long) = withIO {
-        taigaApi.getUserStories(project = session.currentProjectId, sprint = sprintId)
-            .map { it.toCommonTask(CommonTaskType.UserStory) }
-    }
-
     override suspend fun getEpicUserStories(epicId: Long) = withIO {
         taigaApi.getUserStories(epic = epicId)
             .map { it.toCommonTask(CommonTaskType.UserStory) }
 
-    }
-
-    override suspend fun getSprints(page: Int) = withIO {
-        handle404 {
-            taigaApi.getSprints(session.currentProjectId, page).map { it.toSprint() }
-        }
-    }
-
-    override suspend fun getSprintTasks(sprintId: Long) = withIO {
-        taigaApi.getTasks(userStory = "null", project = session.currentProjectId, sprint = sprintId)
-            .map { it.toCommonTask(CommonTaskType.Task) }
     }
 
     override suspend fun getUserStoryTasks(storyId: Long) = withIO {
@@ -158,12 +142,6 @@ class TasksRepository @Inject constructor(
             taigaApi.getIssues(page = page, project = session.currentProjectId, query = query)
                 .map { it.toCommonTask(CommonTaskType.Issue) }
         }
-    }
-
-    override suspend fun getSprintIssues(sprintId: Long) = withIO {
-        taigaApi.getIssues(project = session.currentProjectId, sprint = sprintId)
-            .map { it.toCommonTask(CommonTaskType.Issue) }
-
     }
 
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
@@ -220,27 +198,6 @@ class TasksRepository @Inject constructor(
     override suspend fun getSwimlanes() = withIO {
         taigaApi.getSwimlanes(session.currentProjectId)
     }
-
-    private fun String?.fixNullColor() = this ?: "#A9AABC" // gray, because api returns null instead of gray -_-
-
-    private fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask(
-        id = id,
-        createdDate = created_date,
-        title = subject,
-        ref = ref,
-        status = Status(
-            id = status,
-            name = status_extra_info.name,
-            color = status_extra_info.color,
-            type = StatusType.Status
-        ),
-        assignee = assigned_to_extra_info,
-        projectInfo = project_extra_info,
-        taskType = commonTaskType,
-        colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
-        isClosed = is_closed,
-        tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
-    )
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(
         commonTaskType: CommonTaskType,
@@ -279,23 +236,6 @@ class TasksRepository @Inject constructor(
             severity = severity?.let { id -> filters.severities?.find { it.id == id } }?.toStatus(StatusType.Severity),
             priority = priority?.let { id -> filters.priorities?.find { it.id == id } }?.toStatus(StatusType.Priority)
         )
-    }
-    
-    private fun SprintResponse.toSprint() = Sprint(
-        id = id,
-        name = name,
-        order = order,
-        start = estimated_start,
-        finish = estimated_finish,
-        storiesCount = user_stories.size,
-        isClosed = closed
-    )
-
-    private suspend fun <T> handle404(action: suspend () -> List<T>): List<T> = try {
-        action()
-    } catch (e: HttpException) {
-        // suppress error if page not found (maximum page was reached)
-        e.takeIf { it.code() == 404 }?.let { emptyList() } ?: throw e
     }
 
     // edit related

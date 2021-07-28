@@ -6,6 +6,7 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.Status
+import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 class SprintViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
+    @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var screensState: ScreensState
 
     private var sprintId: Long? = null
@@ -46,7 +48,7 @@ class SprintViewModel : ViewModel() {
                 launch {
                     storiesWithTasks.loadOrError(preserveValue = false) {
                         coroutineScope {
-                            tasksRepository.getSprintUserStories(this@SprintViewModel.sprintId!!)
+                            sprintsRepository.getSprintUserStories(this@SprintViewModel.sprintId!!)
                                 .map { it to async { tasksRepository.getUserStoryTasks(it.id) } }
                                 .map { (story, tasks) -> story to tasks.await() }
                                 .toMap()
@@ -54,7 +56,7 @@ class SprintViewModel : ViewModel() {
                     }
                 },
                 launch {
-                    issues.loadOrError(preserveValue = false) { tasksRepository.getSprintIssues(this@SprintViewModel.sprintId!!) }
+                    issues.loadOrError(preserveValue = false) { sprintsRepository.getSprintIssues(this@SprintViewModel.sprintId!!) }
                 }
             )
         }

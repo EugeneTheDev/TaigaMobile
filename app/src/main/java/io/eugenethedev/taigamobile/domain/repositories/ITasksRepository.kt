@@ -11,20 +11,15 @@ interface ITasksRepository {
     suspend fun getStatuses(commonTaskType: CommonTaskType): List<Status>
     suspend fun getStatusByType(commonTaskType: CommonTaskType, statusType: StatusType): List<Status>
 
-    suspend fun getSprints(page: Int): List<Sprint>
-
     suspend fun getEpics(page: Int, query: String? = null): List<CommonTask>
 
     suspend fun getAllUserStories(): List<CommonTaskExtended> // for stories kanban
     suspend fun getBacklogUserStories(page: Int, query: String): List<CommonTask>
-    suspend fun getSprintUserStories(sprintId: Long): List<CommonTask>
     suspend fun getEpicUserStories(epicId: Long): List<CommonTask>
 
     suspend fun getUserStoryTasks(storyId: Long): List<CommonTask>
-    suspend fun getSprintTasks(sprintId: Long): List<CommonTask>
 
     suspend fun getIssues(page: Int, query: String): List<CommonTask>
-    suspend fun getSprintIssues(sprintId: Long): List<CommonTask>
 
     suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType): CommonTaskExtended
 
