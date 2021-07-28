@@ -10,7 +10,7 @@ data class Sprint(
     val name: String,
     val order: Int,
     val start: LocalDate,
-    val finish: LocalDate,
+    val end: LocalDate,
     val storiesCount: Int,
     val isClosed: Boolean
 ) : Parcelable

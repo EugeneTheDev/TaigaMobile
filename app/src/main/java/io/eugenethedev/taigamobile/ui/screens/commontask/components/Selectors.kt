@@ -251,7 +251,7 @@ private fun SprintItem(
                 Text(
                     text = stringResource(R.string.sprint_dates_template).format(
                         it.start.format(dateFormatter),
-                        it.finish.format(dateFormatter)
+                        it.end.format(dateFormatter)
                     ),
                     style = MaterialTheme.typography.body2
                 )

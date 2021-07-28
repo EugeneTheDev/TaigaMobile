@@ -56,7 +56,7 @@ class CommonTaskViewModel : ViewModel() {
         val showLoading = commonTask.value == null
 
         commonTask.loadOrError(showLoading = showLoading) {
-            tasksRepository.getCommonTask(commonTaskId, commonTaskType).let {
+            tasksRepository.getCommonTask(commonTaskId, commonTaskType).also {
 
                 suspend fun MutableLiveResult<List<User>>.loadUsersFromIds(ids: List<Long>) =
                     loadOrError(showLoading = showLoading) {
@@ -93,8 +93,6 @@ class CommonTaskViewModel : ViewModel() {
                         }
                     }
                 )
-
-                it
             }
         }
     }

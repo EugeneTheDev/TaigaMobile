@@ -67,6 +67,14 @@ interface TaigaApi {
     @POST("milestones")
     suspend fun createSprint(@Body request: CreateSprintRequest)
 
+    @PATCH("milestones/{id}")
+    suspend fun editSprint(
+        @Path("id") id: Long,
+        @Body request: EditSprintRequest
+    )
+
+    @DELETE("milestones/{id}")
+    suspend fun deleteSprint(@Path("id") id: Long)
 
     /**
      * Everything related to common tasks (epics, user stories, etc.)

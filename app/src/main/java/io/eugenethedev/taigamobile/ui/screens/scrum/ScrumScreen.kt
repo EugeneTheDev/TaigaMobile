@@ -74,7 +74,7 @@ fun ScrumScreen(
         isSprintsLoading = sprints?.resultStatus == ResultStatus.Loading,
         loadSprints = viewModel::loadSprints,
         navigateToBoard = {
-            navController.navigate(Routes.sprint, Routes.Arguments.sprint to it)
+            navController.navigateToSprint(it.id)
         },
         navigateToTask = navController::navigateToTaskScreen,
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.UserStory) },
@@ -252,7 +252,7 @@ private fun SprintItem(
             Text(
                 stringResource(R.string.sprint_dates_template).format(
                     sprint.start.format(dateFormatter),
-                    sprint.finish.format(dateFormatter)
+                    sprint.end.format(dateFormatter)
                 )
             )
 
@@ -302,7 +302,7 @@ fun SprintPreview() = TaigaMobileTheme {
             name = "1 sprint",
             order = 0,
             start = LocalDate.now(),
-            finish = LocalDate.now(),
+            end = LocalDate.now(),
             storiesCount = 4,
             isClosed = true
         )

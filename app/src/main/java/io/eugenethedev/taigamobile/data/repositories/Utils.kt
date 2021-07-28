@@ -43,7 +43,7 @@ fun SprintResponse.toSprint() = Sprint(
     name = name,
     order = order,
     start = estimated_start,
-    finish = estimated_finish,
+    end = estimated_finish,
     storiesCount = user_stories.size,
     isClosed = closed
 )

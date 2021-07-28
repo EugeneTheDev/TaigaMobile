@@ -132,6 +132,9 @@
     <string name="remove_attachment_title">Supprimer la pièce jointe</string>
     <string name="remove_attachment_text">Voulez-vous vraiment supprimer la pièce jointe ?</string>
 
+    <string name="delete_sprint_title">Supprimer le sprint</string>
+    <string name="delete_sprint_text">Êtes-vous sûr de vouloir supprimer le sprint ?</string>
+
     <string name="title_hint">Titre</string>
     <string name="description_hint">Description</string>
 

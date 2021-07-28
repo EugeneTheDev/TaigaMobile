@@ -136,6 +136,9 @@
     <string name="remove_attachment_title">Remove attachment</string>
     <string name="remove_attachment_text">Are you sure you want to remove attachment?</string>
 
+    <string name="delete_sprint_title">Delete sprint</string>
+    <string name="delete_sprint_text">Are you sure you want to delete sprint?</string>
+
     <string name="title_hint">Title</string>
     <string name="description_hint">Description</string>
 

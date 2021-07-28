@@ -91,7 +91,7 @@ fun EditSprintDialog(
                     modifier = pickerModifier
                 )
 
-                Spacer(Modifier.width(16.dp).height(1.dp).background(MaterialTheme.colors.onSurface))
+                Spacer(Modifier.width(16.dp).height(1.5.dp).background(MaterialTheme.colors.onSurface))
 
                 DatePicker(
                     date = end,

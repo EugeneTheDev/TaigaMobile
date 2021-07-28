@@ -132,6 +132,9 @@
     <string name="remove_attachment_title">Видалити прикріплення</string>
     <string name="remove_attachment_text">Ви впевнені, що бажаєте видалити прикріплення?</string>
 
+    <string name="delete_sprint_title">Видалити спринт</string>
+    <string name="delete_sprint_text">Ви впевнені, що хочете видалити спринт?</string>
+
     <string name="title_hint">Заголовок</string>
     <string name="description_hint">Опис</string>
 

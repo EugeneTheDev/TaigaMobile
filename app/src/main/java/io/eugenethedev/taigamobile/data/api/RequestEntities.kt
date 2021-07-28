@@ -125,3 +125,9 @@ data class CreateSprintRequest(
     val estimated_finish: LocalDate,
     val project: Long
 )
+
+data class EditSprintRequest(
+    val name: String,
+    val estimated_start: LocalDate,
+    val estimated_finish: LocalDate,
+)

@@ -313,11 +313,15 @@ fun MainScreen(
                 )
             }
 
-            composable(Routes.sprint) {
-                // this is workaround 'cause navigation component for compose cannot pass Parcelable arguments
+            composable(
+                "${Routes.sprint}/{${Routes.Arguments.sprintId}}",
+                arguments = listOf(
+                    navArgument(Routes.Arguments.sprintId) { type = NavType.LongType }
+                )
+            ) {
                 SprintScreen(
                     navController = navController,
-                    sprint = navController.previousBackStackEntry?.arguments?.getParcelable(Routes.Arguments.sprint)!!,
+                    sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId),
                     onError = onError
                 )
             }
