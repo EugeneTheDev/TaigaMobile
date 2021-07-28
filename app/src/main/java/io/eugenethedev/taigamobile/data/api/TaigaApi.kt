@@ -74,7 +74,7 @@ interface TaigaApi {
     )
 
     @DELETE("milestones/{id}")
-    suspend fun deleteSprint(@Path("id") id: Long)
+    suspend fun deleteSprint(@Path("id") id: Long): Response<Void>
 
     /**
      * Everything related to common tasks (epics, user stories, etc.)

@@ -57,5 +57,6 @@ class SprintsRepository @Inject constructor(
 
     override suspend fun deleteSprint(sprintId: Long) = withIO {
         taigaApi.deleteSprint(sprintId)
+        return@withIO
     }
 }
