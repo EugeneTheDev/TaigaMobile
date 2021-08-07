@@ -1,21 +1,30 @@
 package io.eugenethedev.taigamobile.ui.components.pickers
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.buttons
-import com.vanpra.composematerialdialogs.datetime.datepicker.datepicker
+import androidx.compose.ui.unit.dp
+import com.google.android.material.datepicker.MaterialDatePicker
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -34,56 +43,59 @@ fun DatePicker(
     onClose: () -> Unit = {},
     onOpen: () -> Unit = {}
 ) = Box {
-    var pickedDate by remember { mutableStateOf(date) }
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
-    val dialog = remember {
-        MaterialDialog(
-            autoDismiss = true,
-            onCloseRequest = { onClose() }
+    val dialog = MaterialDatePicker.Builder
+        .datePicker()
+        .setTitleText(R.string.select_date)
+        .setSelection(
+            date?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
+                ?.toEpochMilli()
         )
-    }
-    dialog.build {
-        datepicker(
-            title = stringResource(R.string.select_date).uppercase(),
-            onDateChange = { pickedDate = it },
-            initialDate = date ?: LocalDate.now()
-        )
-
-        buttons {
-            positiveButton(
-                res = R.string.ok,
-                onClick = {
-                    onDatePicked(pickedDate)
-                    onClose()
-                }
-            )
-            negativeButton(
-                res = R.string.cancel,
-                onClick = onClose
-            )
-
-            if (showClearButton) {
-                button(
-                    res = R.string.clear,
-                    onClick = {
-                        onDatePicked(null)
-                        dialog.hide()
-                        onClose()
-                    }
+        .build()
+        .apply {
+            addOnDismissListener { onClose() }
+            addOnPositiveButtonClickListener {
+                onDatePicked(
+                    Instant.ofEpochMilli(it)
+                        .atOffset(ZoneOffset.UTC)
+                        .toLocalDate()
                 )
             }
         }
 
-    }
+    val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager
 
-    Text(
-        text = date?.format(dateFormatter) ?: stringResource(hintId),
-        style = style,
-        modifier = modifier.clickableUnindicated {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+    ) {
+
+        Text(
+            text = date?.format(dateFormatter) ?: stringResource(hintId),
+            style = style,
+            modifier = Modifier.clickableUnindicated {
                 onOpen()
-                dialog.show()
+                dialog.show(fragmentManager, dialog.toString())
             },
-        color = date?.let { MaterialTheme.colors.onSurface } ?: Color.Gray
-    )
+            color = date?.let { MaterialTheme.colors.onSurface } ?: Color.Gray
+        )
+
+        if (showClearButton && date != null) { // do not show clear button if there is no date (sounds right to me)
+            Spacer(Modifier.width(4.dp))
+
+            IconButton(
+                onClick = { onDatePicked(null) },
+                modifier = Modifier.size(22.dp).clip(CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_remove),
+                    contentDescription = null,
+                    tint = Color.Gray
+                )
+            }
+        }
+    }
 }
