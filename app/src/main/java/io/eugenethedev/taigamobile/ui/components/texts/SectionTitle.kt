@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
@@ -48,6 +49,7 @@ fun SectionTitle(
             modifier = Modifier.fillMaxHeight()
                 .aspectRatio(1f)
                 .background(MaterialTheme.colors.primary, MaterialTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.medium)
                 .clickable(
                     onClick = it,
                     role = Role.Button,
