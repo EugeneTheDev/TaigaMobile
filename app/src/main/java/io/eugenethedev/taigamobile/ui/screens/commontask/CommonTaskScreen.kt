@@ -514,7 +514,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         CommonTaskScreenContent(
             commonTaskType = CommonTaskType.UserStory,
             toolbarTitle = "Userstory #99",
-            commonTask = null, // TODO left it null for now since I do not really use this preivew
+            commonTask = null, // TODO left it null for now since I do not really use this preview
             creator = User(
                 _id = 0L,
                 fullName = "Full Name",

@@ -7,7 +7,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val composeVersion = "1.0.0"
+val composeVersion = "1.0.1"
 
 android {
     compileSdk = 30
@@ -90,14 +90,14 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.0")
+    implementation("androidx.activity:activity-compose:1.3.1")
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta01")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
 
     // Accompanist
-    val accompanistVersion = "0.14.0"
+    val accompanistVersion = "0.16.0"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
@@ -105,7 +105,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-flowlayout:$accompanistVersion")
 
     // Coil
-    implementation("io.coil-kt:coil-compose:1.3.0")
+    implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
     // FIXME alpha05 causes crash, will be waiting for the next release
@@ -145,11 +145,8 @@ dependencies {
     implementation("io.noties.markwon:core:$markwonVersion")
     implementation("io.noties.markwon:image-coil:$markwonVersion")
 
-    // Compose Material Dialogs
-    // FIXME 0.5.0 broken too, also will be waiting
-    val composeMaterialDialogsVersion = "0.4.3"
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:$composeMaterialDialogsVersion")
-    implementation("io.github.vanpra.compose-material-dialogs:color:$composeMaterialDialogsVersion")
+    // Compose material dialogs (color picker)
+    implementation("io.github.vanpra.compose-material-dialogs:color:0.5.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

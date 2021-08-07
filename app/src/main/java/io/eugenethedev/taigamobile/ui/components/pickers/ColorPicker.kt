@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.buttons
 import com.vanpra.composematerialdialogs.color.ARGBPickerState
 import com.vanpra.composematerialdialogs.color.ColorPalette
 import com.vanpra.composematerialdialogs.color.colorChooser
@@ -31,7 +30,12 @@ fun ColorPicker(
 ) {
     val dialog = remember { MaterialDialog() }
 
-    dialog.build {
+    dialog.build(
+        buttons = {
+            positiveButton(res = R.string.ok)
+            negativeButton(res = R.string.cancel)
+        }
+    ) {
         title(stringResource(R.string.select_color))
 
         colorChooser(
@@ -39,11 +43,6 @@ fun ColorPicker(
             onColorSelected = onColorPicked,
             argbPickerState = ARGBPickerState.WithoutAlphaSelector
         )
-
-        buttons {
-            positiveButton(res = R.string.ok)
-            negativeButton(res = R.string.cancel)
-        }
     }
 
     Spacer(
