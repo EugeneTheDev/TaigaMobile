@@ -376,8 +376,11 @@ fun MainScreen(
                 )
             }
 
-        }
+            composable("fuck jetpack compose navigation") {
+                // FIXME temp fix for https://issuetracker.google.com/issues/195752907
+            }
 
+        }
     }
 }
 

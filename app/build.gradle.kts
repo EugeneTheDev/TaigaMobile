@@ -10,7 +10,7 @@ plugins {
 val composeVersion = "1.0.1"
 
 android {
-    compileSdk = 30
+    compileSdk = 31
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
@@ -97,7 +97,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
 
     // Accompanist
-    val accompanistVersion = "0.16.0"
+    val accompanistVersion = "0.16.1"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
@@ -108,8 +108,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    // FIXME alpha05 causes crash, will be waiting for the next release
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha04")
+    // FIXME alpha07 causes laggy behavior, will be waiting for the next release
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha06")
 
     // ViewModel
     val lifecycleKtxVersion = "2.3.1"
@@ -138,7 +138,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
     // Timber
-    implementation("com.jakewharton.timber:timber:4.7.1")
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     // Markdown support (Markwon)
     val markwonVersion = "4.6.2"
