@@ -46,7 +46,11 @@ class DataModule {
                                     .newBuilder()
                                     .url(it.request().url.toUrl().toExternalForm().replace(baseUrlPlaceholder, "https://${session.server}/${TaigaApi.API_PREFIX}"))
                                     .addHeader("User-Agent", "TaigaMobile/${BuildConfig.VERSION_NAME}")
-                                    .addHeader("Authorization", "Bearer ${session.token}")
+                                    .also { builder ->
+                                        session.token.takeIf { it.isNotEmpty() }?.let {
+                                            builder.addHeader("Authorization", "Bearer $it")
+                                        }
+                                    }
                                     .build()
                             )
                         }
