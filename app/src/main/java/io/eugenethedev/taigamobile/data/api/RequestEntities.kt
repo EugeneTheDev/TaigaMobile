@@ -8,6 +8,10 @@ data class AuthRequest(
     val type: String = "normal"
 )
 
+data class RefreshTokenRequest(
+    val refresh: String
+)
+
 data class ChangeStatusRequest(
     val status: Long,
     val version: Int

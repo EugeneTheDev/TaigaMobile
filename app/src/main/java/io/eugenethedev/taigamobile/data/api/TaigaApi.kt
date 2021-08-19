@@ -11,6 +11,8 @@ import retrofit2.http.*
 interface TaigaApi {
     companion object {
         const val API_PREFIX = "api/v1"
+        const val AUTH_ENDPOINTS = "auth"
+        const val REFRESH_ENDPOINT = "auth/refresh"
     }
 
     @POST("auth")

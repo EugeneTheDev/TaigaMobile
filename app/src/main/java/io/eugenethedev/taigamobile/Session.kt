@@ -15,6 +15,14 @@ class Session(context: Context) {
             }
         }
 
+    var refreshToken: String
+        get() = sharedPreferences.getString(REFRESH_TOKEN_KEY, "").orEmpty()
+        set(value) {
+            sharedPreferences.edit {
+                putString(REFRESH_TOKEN_KEY, value)
+            }
+        }
+
     var server: String
         get() = sharedPreferences.getString(SERVER_KEY, "").orEmpty()
         set(value) {
@@ -47,12 +55,13 @@ class Session(context: Context) {
             }
         }
 
-    val isLogged: Boolean get() = token.isNotEmpty() && server.isNotEmpty()
+    val isLogged: Boolean get() = listOf(token, refreshToken).all { it.isNotEmpty() }
 
     val isProjectSelected get() = currentProjectId >= 0
 
     fun reset() {
         token = ""
+        refreshToken = ""
         server = ""
         currentProjectId = -1
         currentProjectName = ""
@@ -61,6 +70,7 @@ class Session(context: Context) {
     companion object {
         private const val PREFERENCES_NAME = "session"
         private const val TOKEN_KEY = "token"
+        private const val REFRESH_TOKEN_KEY = "refresh_token"
         private const val SERVER_KEY = "server"
         private const val PROJECT_NAME_KEY = "project_name"
         private const val PROJECT_ID_KEY = "project_id"
