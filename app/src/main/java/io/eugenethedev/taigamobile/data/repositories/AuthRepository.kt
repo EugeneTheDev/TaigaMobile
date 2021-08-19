@@ -14,7 +14,7 @@ class AuthRepository @Inject constructor(
         session.server = taigaServer
         taigaApi.auth(AuthRequest(password, username)).let {
             session.token = it.auth_token
-            session.refreshToken = it.refresh
+            session.refreshToken = it.refresh ?: "missing" // compatibility with older Taiga versions without refresh token
             session.currentUserId = it.id
         }
     }

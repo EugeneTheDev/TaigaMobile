@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 data class AuthResponse(
     val auth_token: String,
-    val refresh: String,
+    val refresh: String?,
     val id: Long
 )
 
