@@ -88,6 +88,7 @@ class DataModule {
                                     .addHeader("Authorization", "Bearer ${session.token}")
                                     .build()
                             } catch (e: Exception) {
+                                Timber.w(e)
                                 session.token = ""
                                 session.refreshToken = ""
                                 null
