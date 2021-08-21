@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
@@ -33,6 +32,7 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.utils.activity
 import java.time.LocalDate
 import kotlin.math.floor
 
@@ -362,7 +362,7 @@ private fun CustomFieldUrl(
 
         Spacer(Modifier.width(2.dp))
 
-        val activity = LocalContext.current as Activity
+        val activity = LocalContext.current.activity
         IconButton(
             onClick = {
                 value?.stringValue?.takeIf { it.isNotEmpty() }?.let {

@@ -43,6 +43,7 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.activity
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import timber.log.Timber
@@ -229,7 +230,7 @@ fun SettingsScreenContent(
         )
 
         // help
-        val activity = LocalContext.current as Activity
+        val activity = LocalContext.current.activity
         SettingsBlock(
             titleId = R.string.help,
             items = listOf {
@@ -284,7 +285,7 @@ fun SettingsScreenContent(
             color = Color.Gray,
         )
 
-        val activity = LocalContext.current as Activity
+        val activity = LocalContext.current.activity
         val githubUrl = stringResource(R.string.github_url)
         Text(
             text = stringResource(R.string.source_code),

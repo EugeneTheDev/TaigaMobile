@@ -21,6 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.google.android.material.datepicker.MaterialDatePicker
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.utils.activity
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import java.time.Instant
 import java.time.LocalDate
@@ -65,7 +66,7 @@ fun DatePicker(
             }
         }
 
-    val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager
+    val fragmentManager = LocalContext.current.activity.supportFragmentManager
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

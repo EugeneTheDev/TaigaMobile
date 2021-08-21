@@ -1,8 +1,11 @@
 package io.eugenethedev.taigamobile.ui.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ import timber.log.Timber
 @SuppressLint("ComposableNaming")
 @Composable
 fun onBackPressed(action: () -> Unit) {
+    LocalContext
     (LocalContext.current as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher?.let { dispatcher ->
         val callback = remember {
             object : OnBackPressedCallback(true) {
@@ -57,6 +61,12 @@ fun Modifier.clickableUnindicated(
 
 @Composable
 inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.Error }?.let { onError(it.message!!) }
+
+val Context.activity: AppCompatActivity get() = when (this) {
+    is AppCompatActivity -> this
+    is ContextWrapper -> baseContext.activity
+    else -> throw IllegalStateException("Context is not an Activity")
+}
 
 // Color functions
 

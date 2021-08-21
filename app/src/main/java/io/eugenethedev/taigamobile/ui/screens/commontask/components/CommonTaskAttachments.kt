@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -28,6 +27,7 @@ import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
+import io.eugenethedev.taigamobile.ui.utils.activity
 
 fun LazyListScope.CommonTaskAttachments(
     attachments: List<Attachment>,
@@ -85,7 +85,7 @@ private fun AttachmentItem(
             .weight(1f, fill = false)
             .padding(end = 4.dp)
     ) {
-        val activity = LocalContext.current as Activity
+        val activity = LocalContext.current.activity
         Icon(
             painter = painterResource(R.drawable.ic_attachment),
             contentDescription = null,
