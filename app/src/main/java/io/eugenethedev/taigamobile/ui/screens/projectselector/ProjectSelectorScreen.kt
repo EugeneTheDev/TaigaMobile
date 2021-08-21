@@ -31,9 +31,8 @@ fun ProjectSelectorScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: ProjectSelectorViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start()
-        null
     }
     val coroutineScope = rememberCoroutineScope()
 

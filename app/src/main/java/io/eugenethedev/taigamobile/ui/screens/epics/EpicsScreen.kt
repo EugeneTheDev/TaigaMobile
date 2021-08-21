@@ -32,9 +32,8 @@ fun EpicsScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: EpicsViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start()
-        null
     }
 
     val epics by viewModel.epics.observeAsState()

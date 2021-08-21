@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.main
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.OpenableColumns
 import androidx.activity.compose.setContent
@@ -48,6 +49,7 @@ import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
 
+    @SuppressLint("Range")
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
         it ?: return@registerForActivityResult
         val inputStream = contentResolver.openInputStream(it) ?: return@registerForActivityResult
@@ -128,7 +130,9 @@ class MainActivity : AppCompatActivity() {
                                 ) {
                                     items.forEach { screen ->
                                         BottomNavigationItem(
-                                            modifier = Modifier.offset(y = 4.dp).navigationBarsPadding(),
+                                            modifier = Modifier
+                                                .offset(y = 4.dp)
+                                                .navigationBarsPadding(),
                                             selectedContentColor = MaterialTheme.colors.primary,
                                             unselectedContentColor = Color.Gray,
                                             icon = {
@@ -141,16 +145,14 @@ class MainActivity : AppCompatActivity() {
                                             label = { Text(stringResource(screen.resourceId)) },
                                             selected = currentRoute == screen.route,
                                             onClick = {
-                                                if (currentRoute != screen.route) {
-                                                    navController.navigate(screen.route) {
-                                                        popUpTo(navController.graph.findStartDestination().id) {
-                                                            // if start destination
-                                                            if (screen.route == Routes.dashboard) {
-                                                                inclusive = true
-                                                            }
-                                                        }
+                                                navController.navigate(screen.route) {
+                                                    popUpTo(navController.graph.findStartDestination().id) {
+                                                        saveState = true
                                                     }
+                                                    restoreState = true
+                                                    launchSingleTop = true
                                                 }
+
                                             }
                                         )
                                     }
@@ -222,7 +224,7 @@ fun MainScreen(
 ) {
     val onError: @Composable (Int) -> Unit = { message ->
         val strMessage = stringResource(message)
-        LaunchedEffect(null) {
+        LaunchedEffect(Unit) {
             scaffoldState.snackbarHostState.showSnackbar(strMessage)
         }
     }
@@ -234,7 +236,7 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = if (viewModel.isLogged) Routes.dashboard else Routes.login
+            startDestination = remember { if (viewModel.isLogged) Routes.dashboard else Routes.login }
         ) {
             composable(Routes.login) {
                 LoginScreen(
@@ -249,9 +251,8 @@ fun MainScreen(
                     navController = navController,
                     onError = onError
                 )
-
                 // user must select project first
-                LaunchedEffect(null) {
+                LaunchedEffect(Unit) {
                     if (!viewModel.isProjectSelected) {
                         navController.navigate(Routes.projectsSelector)
                     }

@@ -37,9 +37,8 @@ fun CommonTaskScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start(commonTaskId, commonTaskType)
-        null
     }
 
     val commonTask by viewModel.commonTask.observeAsState()
@@ -101,14 +100,18 @@ fun CommonTaskScreen(
     val deleteResult by viewModel.deleteResult.observeAsState()
     deleteResult?.subscribeOnError(onError)
     deleteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.let {
-        navController.popBackStack()
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
     }
 
     val promoteResult by viewModel.promoteResult.observeAsState()
     promoteResult?.subscribeOnError(onError)
     promoteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
-        navController.popBackStack()
-        navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+            navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
+        }
     }
     
     fun makeEditStatusAction(statusType: StatusType) = EditAction(

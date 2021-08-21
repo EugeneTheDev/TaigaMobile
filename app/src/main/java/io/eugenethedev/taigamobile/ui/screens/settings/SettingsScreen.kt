@@ -53,9 +53,8 @@ fun SettingsScreen(
     onError: @Composable (message: Int) -> Unit = {}
 ) {
     val viewModel: SettingsViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start()
-        null
     }
 
     val user by viewModel.user.observeAsState()

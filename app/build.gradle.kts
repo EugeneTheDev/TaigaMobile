@@ -108,8 +108,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    // FIXME alpha07 causes laggy behavior, will be waiting for the next release
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha06")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha07")
 
     // ViewModel
     val lifecycleKtxVersion = "2.3.1"

@@ -50,9 +50,8 @@ fun ScrumScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: ScrumViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start()
-        null
     }
 
     val stories by viewModel.stories.observeAsState()
@@ -158,7 +157,9 @@ private fun BacklogTabContent(
 
             Row(
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
             ) {
                 AddButton(
                     text = stringResource(R.string.add_userstory),
@@ -190,7 +191,9 @@ private fun SprintsTabContent(
 
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             AddButton(
                 text = stringResource(R.string.add_sprint),

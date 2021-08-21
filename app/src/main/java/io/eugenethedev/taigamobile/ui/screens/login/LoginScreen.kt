@@ -39,8 +39,10 @@ fun LoginScreen(
         when(resultStatus) {
             ResultStatus.Error -> onError(message!!)
             ResultStatus.Success -> {
-                navController.navigate(Routes.dashboard) {
-                    popUpTo(Routes.login) { inclusive = true }
+                LaunchedEffect(Unit) {
+                    navController.navigate(Routes.dashboard) {
+                        popUpTo(Routes.login) { inclusive = true }
+                    }
                 }
             }
             else -> {}
@@ -73,12 +75,15 @@ fun LoginScreenContent(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.constrainAs(logo) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            top.linkTo(parent.top)
-            bottom.linkTo(loginForm.top)
-        }.imePadding().padding(bottom = 24.dp)
+        modifier = Modifier
+            .constrainAs(logo) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(loginForm.top)
+            }
+            .imePadding()
+            .padding(bottom = 24.dp)
     ) {
 
         Image(
@@ -97,12 +102,14 @@ fun LoginScreenContent(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.constrainAs(loginForm) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            top.linkTo(parent.top)
-            bottom.linkTo(parent.bottom)
-        }.imePadding()
+        modifier = Modifier
+            .constrainAs(loginForm) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+            .imePadding()
     ) {
         LoginTextField(
             value = taigaServerInput,

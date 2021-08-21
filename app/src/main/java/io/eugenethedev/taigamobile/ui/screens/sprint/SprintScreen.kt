@@ -36,9 +36,8 @@ fun SprintScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: SprintViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start(sprintId)
-        null
     }
 
     val sprint by viewModel.sprint.observeAsState()
@@ -62,7 +61,9 @@ fun SprintScreen(
     val deleteResult by viewModel.deleteResult.observeAsState()
     deleteResult?.subscribeOnError(onError)
     deleteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.let {
-        navController.popBackStack()
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
     }
 
     SprintScreenContent(

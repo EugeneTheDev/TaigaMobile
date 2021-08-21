@@ -32,9 +32,8 @@ fun IssuesScreen(
     onError: @Composable (message: Int) -> Unit = {}
 ) {
     val viewModel: IssuesViewModel = viewModel()
-    remember {
+    LaunchedEffect(Unit) {
         viewModel.start()
-        null
     }
 
     val issues by viewModel.issues.observeAsState()
