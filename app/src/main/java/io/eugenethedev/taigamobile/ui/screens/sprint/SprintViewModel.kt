@@ -69,6 +69,9 @@ class SprintViewModel : ViewModel() {
                     },
                     launch {
                         issues.loadOrError(preserveValue = false) { sprintsRepository.getSprintIssues(sprintId) }
+                    },
+                    launch {
+                        storylessTasks.loadOrError(preserveValue = false) { sprintsRepository.getSprintTasks(sprintId) }
                     }
                 )
             }
