@@ -4,7 +4,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("kotlin-parcelize")
 }
 
 val composeVersion = "1.0.1"
@@ -74,6 +73,12 @@ android {
     lint { 
         isAbortOnError = false
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -119,6 +124,7 @@ dependencies {
     val coroutinesVersion = "1.5.1-native-mt"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
     // Retrofit 2
     val retrofitVersion = "2.9.0"
@@ -129,6 +135,7 @@ dependencies {
     val okHttpVersion = "4.9.0"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
+    testImplementation("com.squareup.okhttp3:mockwebserver:$okHttpVersion")
 
     // Dagger 2
     val daggerVersion = "2.38.1"
@@ -147,7 +154,20 @@ dependencies {
     // Compose material dialogs (color picker)
     implementation("io.github.vanpra.compose-material-dialogs:color:0.5.1")
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    /**
+     * Test frameworks
+     */
+    allTestsImplementation(kotlin("test-junit"))
+
+    // Robolectric (run android tests on local host)
+    testImplementation("org.robolectric:robolectric:4.6.1")
+
+    allTestsImplementation("androidx.test:core-ktx:1.4.0")
+    allTestsImplementation("androidx.test:runner:1.4.0")
+    allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
+}
+
+fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {
+    testImplementation(dependencyNotation)
+    androidTestImplementation(dependencyNotation)
 }
