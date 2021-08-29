@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.data.api.TaigaApi
+import io.eugenethedev.taigamobile.dispatcher.MockApiDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -32,12 +33,17 @@ abstract class BaseRepositoryTest {
 
         val dataModule = DataModule() // contains methods for API configuration
 
-        mockServer = MockWebServer().also { it.start() }
+        mockServer = MockWebServer().also {
+            it.dispatcher = MockApiDispatcher()
+            it.start()
+        }
         mockSession = Session(ApplicationProvider.getApplicationContext()).also {
             it.server = mockServer.url("/").run { "$host:$port" }
-            it.currentProjectId = 0
-            it.currentProjectName = "Test"
-            it.currentUserId = 0
+            it.currentUserId = MockApiDispatcher.userId
+            it.token = MockApiDispatcher.authToken
+            it.refreshToken = MockApiDispatcher.refreshToken
+            it.currentProjectId = MockApiDispatcher.mainTestProjectId
+            it.currentProjectName = MockApiDispatcher.mainTestProjectName
         }
         mockTaigaApi = dataModule.provideTaigaApi(mockSession, dataModule.provideGson())
     }

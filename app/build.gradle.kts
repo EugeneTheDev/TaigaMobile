@@ -71,6 +71,16 @@ android {
         isIncludeAndroidResources = true
     }
 
+    sourceSets {
+        getByName("test") {
+            kotlin.srcDir("src/sharedTest/kotlin")
+        }
+
+        getByName("androidTest") {
+            kotlin.srcDir("src/sharedTest/kotlin")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -147,7 +157,7 @@ dependencies {
     val okHttpVersion = "4.9.0"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
-    testImplementation("com.squareup.okhttp3:mockwebserver:$okHttpVersion")
+    allTestsImplementation("com.squareup.okhttp3:mockwebserver:$okHttpVersion")
 
     // Dagger 2
     val daggerVersion = "2.38.1"
