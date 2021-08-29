@@ -58,14 +58,14 @@ android {
             buildConfigField("String", "SCHEMA", "\"https://\"")
         }
 
-        create("buildTest") {
+        create("staging") {
             initWith(getByName("debug"))
 
             buildConfigField("String", "SCHEMA", "\"http://\"")
         }
     }
 
-    testBuildType = "buildTest"
+    testBuildType = "staging"
 
     testOptions.unitTests {
         isIncludeAndroidResources = true
