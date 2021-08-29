@@ -38,10 +38,11 @@ class DataModule {
                 it.run {
                     val url = it.request().url.toUrl().toExternalForm()
 
+                    BuildConfig.BUILD_TYPE
                     proceed(
                         request()
                             .newBuilder()
-                            .url(url.replace(baseUrlPlaceholder, "https://${session.server}/${TaigaApi.API_PREFIX}"))
+                            .url(url.replace(baseUrlPlaceholder, "${BuildConfig.SCHEMA}${session.server}/${TaigaApi.API_PREFIX}"))
                             .header("User-Agent", "TaigaMobile/${BuildConfig.VERSION_NAME}")
                             .also {
                                 if ("/${TaigaApi.AUTH_ENDPOINTS}" !in url) { // do not add Authorization header to authorization requests

@@ -46,14 +46,31 @@ android {
     buildTypes {
         getByName("debug") {
             signingConfig = signingConfigs.getByName("debug")
+
+            buildConfigField("String", "SCHEMA", "\"https://\"")
         }
 
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
+
+            buildConfigField("String", "SCHEMA", "\"https://\"")
+        }
+
+        create("buildTest") {
+            initWith(getByName("debug"))
+
+            buildConfigField("String", "SCHEMA", "\"http://\"")
         }
     }
+
+    testBuildType = "buildTest"
+
+    testOptions.unitTests {
+        isIncludeAndroidResources = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -74,11 +91,6 @@ android {
         isAbortOnError = false
     }
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
 }
 
 dependencies {
