@@ -21,7 +21,7 @@ class MockApiDispatcher(private val gson: Gson) : Dispatcher() {
 
     private val badRequestResponse get() = MockResponse().setResponseCode(400).setBody("""{"message": "Malformed request"}""")
     private val unauthorizedResponse get() = MockResponse().setResponseCode(401).setBody("""{"message": "Missing or illegal authorization"}""")
-    private val noSuchEndpointResponse get() = MockResponse().setResponseCode(404).setBody("""{"message": "No such endpoint"}""")
+    private val notFoundResponse get() = MockResponse().setResponseCode(404).setBody("""{"message": "Resource was not found"}""")
     private val noSuchMethodResponse get() = MockResponse().setResponseCode(404).setBody("""{"message": "No such method"}""")
 
     private val successResponse get() = MockResponse().setResponseCode(200)
@@ -35,7 +35,7 @@ class MockApiDispatcher(private val gson: Gson) : Dispatcher() {
 
     override fun dispatch(request: RecordedRequest): MockResponse {
 
-        val requestPath = request.path?.replace("/${TaigaApi.API_PREFIX}/", "").orEmpty()
+        val requestPath = request.requestUrl?.encodedPath?.replace("/${TaigaApi.API_PREFIX}/", "").orEmpty()
         if ("auth" !in requestPath && request.getHeader("Authorization") != "Bearer $authToken") {
             return unauthorizedResponse
         }
@@ -83,7 +83,7 @@ class MockApiDispatcher(private val gson: Gson) : Dispatcher() {
                     return badRequestResponse
                 }
             ) as? MockResponse
-            ?: noSuchEndpointResponse
+            ?: notFoundResponse
     }
 
     /**
@@ -117,7 +117,17 @@ class MockApiDispatcher(private val gson: Gson) : Dispatcher() {
         return if (pathParams["id"]?.toLongOrNull() == mainTestProjectId) {
             successResponse.setFileBody("project.json")
         } else {
-            noSuchEndpointResponse
+            notFoundResponse
         }
+    }
+
+    @GET("projects")
+    fun handleSearchProjects(request: RecordedRequest, pathParams: Map<String, String>, body: JsonObject): MockResponse {
+        val url = request.requestUrl?.takeIf {
+            // because only these parameters would give us correct results
+            it.queryParameter("order_by") == "user_order" && it.queryParameter("slight") == "true"
+        } ?: return badRequestResponse
+        if (url.queryParameter("page")?.toInt() ?: 1 > 1) return notFoundResponse // only one page of results
+        return successResponse.setFileBody("search_projects.json")
     }
 }
