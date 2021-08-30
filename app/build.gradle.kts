@@ -1,4 +1,5 @@
 import java.util.Properties
+import com.android.build.api.dsl.AndroidSourceSet
 
 plugins {
     id("com.android.application")
@@ -72,13 +73,13 @@ android {
     }
 
     sourceSets {
-        getByName("test") {
+        fun AndroidSourceSet.setupTestSrcDirs() {
             kotlin.srcDir("src/sharedTest/kotlin")
+            resources.srcDir("src/sharedTest/resources")
         }
 
-        getByName("androidTest") {
-            kotlin.srcDir("src/sharedTest/kotlin")
-        }
+        getByName("test").setupTestSrcDirs()
+        getByName("androidTest").setupTestSrcDirs()
     }
 
     compileOptions {

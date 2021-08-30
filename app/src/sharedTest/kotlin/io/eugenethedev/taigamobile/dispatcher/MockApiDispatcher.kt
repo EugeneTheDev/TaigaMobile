@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.dispatcher
 
+import com.google.gson.*
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -7,7 +8,7 @@ import okhttp3.mockwebserver.RecordedRequest
 import retrofit2.http.*
 
 
-class MockApiDispatcher : Dispatcher() {
+class MockApiDispatcher(private val gson: Gson) : Dispatcher() {
     companion object {
         const val authToken = "this7is7auth"
         const val refreshToken = "this7is7refresh"
@@ -18,11 +19,27 @@ class MockApiDispatcher : Dispatcher() {
         const val testUsername = "test"
     }
 
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val noSuchEndpointResponse = MockResponse().setResponseCode(404).setBody("""{"message": "No such endpoint: ${request.path}"}""")
-        val noSuchMethodResponse = MockResponse().setResponseCode(404).setBody("""{"message": "No such method: ${request.method}"}""")
+    private val badRequestResponse get() = MockResponse().setResponseCode(400).setBody("""{"message": "Malformed request"}""")
+    private val unauthorizedResponse get() = MockResponse().setResponseCode(401).setBody("""{"message": "Missing or illegal authorization"}""")
+    private val noSuchEndpointResponse get() = MockResponse().setResponseCode(404).setBody("""{"message": "No such endpoint"}""")
+    private val noSuchMethodResponse get() = MockResponse().setResponseCode(404).setBody("""{"message": "No such method"}""")
 
-        val requestPath = request.path?.replace("/${TaigaApi.API_PREFIX}/", "")
+    private val successResponse get() = MockResponse().setResponseCode(200)
+
+    private fun MockResponse.setFileBody(fileName: String) = setBody(
+        javaClass.getResourceAsStream("/responses/$fileName")
+            ?.bufferedReader()
+            ?.use { it.readText() }
+            .orEmpty()
+    )
+
+    override fun dispatch(request: RecordedRequest): MockResponse {
+
+        val requestPath = request.path?.replace("/${TaigaApi.API_PREFIX}/", "").orEmpty()
+        if ("auth" !in requestPath && request.getHeader("Authorization") != "Bearer $authToken") {
+            return unauthorizedResponse
+        }
+
         val requiredAnnotation = when(request.method) {
             "GET" -> GET::class.java
             "POST" -> POST::class.java
@@ -42,28 +59,64 @@ class MockApiDispatcher : Dispatcher() {
                     .orEmpty()
 
                 // check if request path matches path from annotation
-                requestPath.orEmpty() matches annotationPath.replace("""\{.+}""".toRegex(), ".+").toRegex()
+                requestPath matches annotationPath.replace("""\{.+}""".toRegex(), ".+").toRegex()
             }
             ?.invoke(
                 this,
                 request, // pass request to handling method
                 // create map for path params
                 // for template path from annotation like "foo/{path_param}" and request path like "foo/123" it will produce Map("path_param" -> 123)
-                (requestPath?.split("/").orEmpty() zip annotationPath.split("/")).mapNotNull { (requestPart, annotationPart) ->
+                (requestPath.split("/") zip annotationPath.split("/")).mapNotNull { (requestPart, annotationPart) ->
                     if (annotationPart matches """\{.+}""".toRegex()) {
                         annotationPart.trim('{').trim('}') to requestPart
                     } else {
                         null
                     }
-                }.toMap()
+                }.toMap(),
+                // parse json object from string body
+                try {
+                    val body = request.body.readString(Charsets.UTF_8)
+                    gson.fromJson(body, JsonElement::class.java)
+                        ?.asJsonObject
+                        ?: JsonObject()
+                } catch (e: JsonParseException) {
+                    return badRequestResponse
+                }
             ) as? MockResponse
             ?: noSuchEndpointResponse
     }
 
+    /**
+     * Auth
+     */
     @POST("auth")
-    fun handleAuth(request: RecordedRequest, pathParams: Map<String, String>): MockResponse {
-        return MockResponse().setResponseCode(200).setBody("""
-            {"id": $userId, "username": "Test", "full_name": "Test", "full_name_display": "Test Test", "color": "#19db70", "bio": "", "lang": "", "theme": "", "timezone": "", "is_active": true, "photo": null, "big_photo": null, "gravatar_id": "1234567faf45", "roles": ["Product Owner"], "total_private_projects": 1, "total_public_projects": 1, "email": "test@test.com", "uuid": "000000000000000000", "date_joined": "2019-03-05T11:23:18.539Z", "read_new_terms": true, "accepted_terms": true, "max_private_projects": 1, "max_public_projects": null, "max_memberships_private_projects": 3, "max_memberships_public_projects": null, "verified_email": true, "refresh": "$refreshToken", "auth_token": "$authToken"}
-        """.trimIndent())
+    fun handleAuth(request: RecordedRequest, pathParams: Map<String, String>, body: JsonObject): MockResponse {
+        return if (body["password"].asString == testPassword && body["username"].asString == testUsername) {
+            successResponse.setFileBody("auth.json")
+        } else {
+            badRequestResponse
+        }
+    }
+
+    @POST("auth/refresh")
+    fun handleAuthRefresh(request: RecordedRequest, pathParams: Map<String, String>, body: JsonObject): MockResponse {
+        return if (body["refresh"].asString == refreshToken) {
+            successResponse.setFileBody("refresh_token.json")
+        } else {
+            unauthorizedResponse
+        }
+    }
+
+    /**
+     * Projects
+     */
+
+    @GET("projects/{id}")
+    fun handleGetProject(request: RecordedRequest, pathParams: Map<String, String>, body: JsonObject): MockResponse {
+        return if (pathParams["id"]?.toLongOrNull() == mainTestProjectId) {
+            successResponse.setFileBody("project.json")
+        } else {
+            noSuchEndpointResponse
+        }
     }
 }

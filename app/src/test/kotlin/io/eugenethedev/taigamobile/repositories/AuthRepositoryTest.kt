@@ -31,4 +31,11 @@ class AuthRepositoryTest : BaseRepositoryTest() {
         assertEquals(MockApiDispatcher.authToken, mockSession.token)
         assertEquals(MockApiDispatcher.refreshToken, mockSession.refreshToken)
     }
+
+    @Test
+    fun `test refresh auth token`() = runBlocking {
+        mockSession.token = "wrong token" // simulate token expiration (token is not valid anymore)
+        mockTaigaApi.getProject(MockApiDispatcher.mainTestProjectId) // successful response (because refresh happens)
+        return@runBlocking
+    }
 }

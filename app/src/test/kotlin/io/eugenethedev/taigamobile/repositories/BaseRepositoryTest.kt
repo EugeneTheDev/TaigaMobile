@@ -34,7 +34,7 @@ abstract class BaseRepositoryTest {
         val dataModule = DataModule() // contains methods for API configuration
 
         mockServer = MockWebServer().also {
-            it.dispatcher = MockApiDispatcher()
+            it.dispatcher = MockApiDispatcher(dataModule.provideGson())
             it.start()
         }
         mockSession = Session(ApplicationProvider.getApplicationContext()).also {
