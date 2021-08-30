@@ -89,6 +89,7 @@ class MockApiDispatcher(private val gson: Gson) : Dispatcher() {
     /**
      * Auth
      */
+
     @POST("auth")
     fun handleAuth(request: RecordedRequest, pathParams: Map<String, String>, body: JsonObject): MockResponse {
         return if (body["password"].asString == testPassword && body["username"].asString == testUsername) {
