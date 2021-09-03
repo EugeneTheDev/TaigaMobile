@@ -19,6 +19,10 @@ class SearchRepositoryTest : BaseRepositoryTest() {
     fun `test simple search projects size`() = runBlocking {
         val projects = searchRepository.searchProjects("", 1)
         assertEquals(9, projects.size)
+        assertEquals(
+            expected = listOf("test-test", "test-chaka-test", "Test-Scrum", "TransforMap", "Thunderbit", "Penpot", "PyConES 2016", "Pymiento", "Taiga"),
+            actual = projects.map { it.name }
+        )
     }
 
     @Test
