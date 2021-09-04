@@ -158,7 +158,6 @@ dependencies {
     val okHttpVersion = "4.9.0"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
-    allTestsImplementation("com.squareup.okhttp3:mockwebserver:$okHttpVersion")
 
     // Dagger 2
     val daggerVersion = "2.38.1"

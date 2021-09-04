@@ -1,8 +1,8 @@
 package io.eugenethedev.taigamobile.repositories
 
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
-import io.eugenethedev.taigamobile.dispatcher.MockApiDispatcher
 import io.eugenethedev.taigamobile.domain.repositories.IAuthRepository
+import io.eugenethedev.taigamobile.manager.TestData
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,18 +24,16 @@ class AuthRepositoryTest : BaseRepositoryTest() {
 
         assertFalse(mockSession.isLogged)
 
-        authRepository.auth(serverUrl, MockApiDispatcher.testPassword, MockApiDispatcher.testUsername)
+        authRepository.auth(serverUrl, TestData.password, TestData.username)
 
         assertEquals(serverUrl, mockSession.server)
-        assertEquals(MockApiDispatcher.userId, mockSession.currentUserId)
-        assertEquals(MockApiDispatcher.authToken, mockSession.token)
-        assertEquals(MockApiDispatcher.refreshToken, mockSession.refreshToken)
+        assertEquals(taigaManager.userId, mockSession.currentUserId)
     }
 
     @Test
     fun `test refresh auth token`() = runBlocking {
         mockSession.token = "wrong token" // simulate token expiration (token is not valid anymore)
-        mockTaigaApi.getProject(MockApiDispatcher.mainTestProjectId) // successful response (because refresh happens)
+        mockTaigaApi.getProject(taigaManager.projectId) // successful response (because refresh happens)
         return@runBlocking
     }
 }

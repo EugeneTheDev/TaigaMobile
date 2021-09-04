@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.repositories
 
 import io.eugenethedev.taigamobile.data.repositories.SearchRepository
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
+import io.eugenethedev.taigamobile.manager.TestData
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -18,16 +19,16 @@ class SearchRepositoryTest : BaseRepositoryTest() {
     @Test
     fun `test simple search projects size`() = runBlocking {
         val projects = searchRepository.searchProjects("", 1)
-        assertEquals(9, projects.size)
+        assertEquals(1, projects.size)
         assertEquals(
-            expected = listOf("test-test", "test-chaka-test", "Test-Scrum", "TransforMap", "Thunderbit", "Penpot", "PyConES 2016", "Pymiento", "Taiga"),
+            expected = listOf(TestData.projectName),
             actual = projects.map { it.name }
         )
     }
 
     @Test
-    fun `test empty response on wrong page`() = runBlocking {
-        val projects = searchRepository.searchProjects("", 100)
-        assertEquals(0, projects.size)
+    fun `test empty response on wrong query or page`() = runBlocking {
+        assertEquals(0, searchRepository.searchProjects("", 100).size)
+        assertEquals(0, searchRepository.searchProjects("dumb string", 1).size)
     }
 }
