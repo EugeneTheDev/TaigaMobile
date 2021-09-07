@@ -2,7 +2,7 @@ package io.eugenethedev.taigamobile.repositories
 
 import io.eugenethedev.taigamobile.data.repositories.SearchRepository
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
-import io.eugenethedev.taigamobile.manager.TestData
+import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -21,7 +21,7 @@ class SearchRepositoryTest : BaseRepositoryTest() {
         val projects = searchRepository.searchProjects("", 1)
         assertEquals(1, projects.size)
         assertEquals(
-            expected = listOf(TestData.projectName),
+            expected = listOf(TestData.Project.name),
             actual = projects.map { it.name }
         )
     }

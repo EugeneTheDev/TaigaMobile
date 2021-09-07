@@ -6,7 +6,7 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.manager.TaigaTestInstanceManager
-import io.eugenethedev.taigamobile.manager.TestData
+import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -42,7 +42,7 @@ abstract class BaseRepositoryTest {
             it.token = taigaManager.accessToken
             it.refreshToken = taigaManager.refreshToken
             it.currentProjectId = taigaManager.projectId
-            it.currentProjectName = TestData.projectName
+            it.currentProjectName = TestData.Project.name
         }
         mockTaigaApi = dataModule.provideTaigaApi(mockSession, dataModule.provideGson())
     }
