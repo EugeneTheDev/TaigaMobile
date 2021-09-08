@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import io.eugenethedev.taigamobile.data.api.CommonTaskPathSingular
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.testdata.Epic
+import io.eugenethedev.taigamobile.testdata.Sprint
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -38,6 +39,7 @@ class TaigaTestInstanceManager(
     var projectId: Long = -1
 
     lateinit var epicToId: Map<Epic, Long>
+    lateinit var sprintToId: Map<Sprint, Long>
 
     fun Request.Builder.apiEndpoint(endpoint: String): Request.Builder {
         if (endpoint.startsWith("/") || endpoint.endsWith("/")) throw IllegalArgumentException("Endpoint must not have leading or trailing slashes")
@@ -62,6 +64,9 @@ class TaigaTestInstanceManager(
             createTestUser()
             createTestProject()
             createEpics()
+            createSprints()
+            createUserStories()
+            createIssues()
         } catch (e: Exception) {
             throw IllegalStateException("Some of the init steps were not finished successfully", e)
         }
@@ -81,6 +86,7 @@ class TaigaTestInstanceManager(
             userId = -1
             projectId = -1
             epicToId = emptyMap()
+            sprintToId = emptyMap()
         } catch (e: Exception) {
             throw IllegalStateException("Some of the clear steps were not finished successfully", e)
         }
@@ -88,13 +94,13 @@ class TaigaTestInstanceManager(
         isInitialized = false
     }
 
-    private fun checkInstanceRunning(): Boolean {
+    private fun checkInstanceRunning() {
         val checkRequest = Request.Builder()
             .apiEndpoint("")
             .build()
 
         try {
-            return checkRequest.execute().isSuccessful
+            return checkRequest.execute().successOrThrow()
         } catch (e: ConnectException) {
             throw IllegalArgumentException("No Taiga instance is running on $baseUrl")
         }

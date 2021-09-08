@@ -48,7 +48,16 @@ object TestData {
                 start = LocalDate.of(2021, 9, 16),
                 end = LocalDate.of(2021, 9, 30),
                 tasks = listOf(
-                    Task("Storyless task 1", "Desc"),
+                    Task(
+                        name = "Storyless task 1",
+                        description = "Desc",
+                        comments = listOf(
+                            "Some",
+                            "Comment"
+                        ),
+                        isAssigned = true,
+                        isClosed = true
+                    ),
                     Task("Storyless task 2")
                 )
             )
