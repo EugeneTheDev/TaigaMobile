@@ -2,9 +2,10 @@ package io.eugenethedev.taigamobile.testdata
 
 import java.time.LocalDate
 
-data class Sprint(
+class Sprint(
     val name: String,
     val start: LocalDate,
     val end: LocalDate,
+    val creator: User,
     val tasks: List<Task> = emptyList()
 )

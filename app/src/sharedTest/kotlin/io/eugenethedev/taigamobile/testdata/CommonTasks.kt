@@ -2,33 +2,41 @@ package io.eugenethedev.taigamobile.testdata
 
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 
+class Comment(
+    val text: String,
+    val author: User
+)
+
 sealed interface GenericTask {
     val name: String
+    val creator: User
     val description: String
-    val comments: List<String>
-    val isAssigned: Boolean
-    val isWatching: Boolean
+    val comments: List<Comment>
+    val assignedTo: User?
+    val watchers: List<User>
     val isClosed: Boolean
     val commonTaskType: CommonTaskType
 }
 
-data class Epic(
+class Epic(
     override val name: String,
+    override val creator: User,
     override val description: String = "",
-    override val comments: List<String> = emptyList(),
-    override val isAssigned: Boolean = false,
-    override val isWatching: Boolean = false,
+    override val comments: List<Comment> = emptyList(),
+    override val assignedTo: User? = null,
+    override val watchers: List<User> = emptyList(),
     override val isClosed: Boolean = false
 ) : GenericTask {
     override val commonTaskType = CommonTaskType.Epic
 }
 
-data class UserStory(
+class UserStory(
     override val name: String,
+    override val creator: User,
     override val description: String = "",
-    override val comments: List<String> = emptyList(),
-    override val isAssigned: Boolean = false,
-    override val isWatching: Boolean = false,
+    override val comments: List<Comment> = emptyList(),
+    override val assignedTo: User? = null,
+    override val watchers: List<User> = emptyList(),
     override val isClosed: Boolean = false,
     val epics: List<Epic> = emptyList(),
     val tasks: List<Task> = emptyList(),
@@ -37,23 +45,25 @@ data class UserStory(
     override val commonTaskType = CommonTaskType.UserStory
 }
 
-data class Task(
+class Task(
     override val name: String,
+    override val creator: User,
     override val description: String = "",
-    override val comments: List<String> = emptyList(),
-    override val isAssigned: Boolean = false,
-    override val isWatching: Boolean = false,
+    override val comments: List<Comment> = emptyList(),
+    override val assignedTo: User? = null,
+    override val watchers: List<User> = emptyList(),
     override val isClosed: Boolean = false
 ) : GenericTask {
     override val commonTaskType = CommonTaskType.Task
 }
 
-data class Issue(
+class Issue(
     override val name: String,
+    override val creator: User,
     override val description: String = "",
-    override val comments: List<String> = emptyList(),
-    override val isAssigned: Boolean = false,
-    override val isWatching: Boolean = false,
+    override val comments: List<Comment> = emptyList(),
+    override val assignedTo: User? = null,
+    override val watchers: List<User> = emptyList(),
     override val isClosed: Boolean = false,
     val sprint: Sprint? = null
 ) : GenericTask {

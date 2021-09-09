@@ -6,6 +6,7 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.manager.TaigaTestInstanceManager
+import io.eugenethedev.taigamobile.manager.UserInfo
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,8 +22,9 @@ import kotlin.test.AfterTest
 abstract class BaseRepositoryTest {
     lateinit var mockSession: Session
     lateinit var mockTaigaApi: TaigaApi
+    lateinit var activeUser: UserInfo
 
-    val taigaManager = TaigaTestInstanceManager()
+    private val taigaManager = TaigaTestInstanceManager()
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("Test thread")
@@ -33,16 +35,23 @@ abstract class BaseRepositoryTest {
         Dispatchers.setMain(mainThreadSurrogate)
 
         taigaManager.setup()
+        activeUser = taigaManager.activeUser
 
         val dataModule = DataModule() // contains methods for API configuration
 
         mockSession = Session(ApplicationProvider.getApplicationContext()).also {
             it.server = taigaManager.baseUrl.replace("http://", "")
-            it.currentUserId = taigaManager.userId
-            it.token = taigaManager.accessToken
-            it.refreshToken = taigaManager.refreshToken
-            it.currentProjectId = taigaManager.projectId
-            it.currentProjectName = TestData.Project.name
+
+            activeUser.data.apply {
+                it.currentUserId = id
+                it.token = accessToken
+                it.refreshToken = refreshToken
+            }
+
+            activeUser.projects.entries.first().let { (id, project) ->
+                it.currentProjectId = id
+                it.currentProjectName = project.name
+            }
         }
         mockTaigaApi = dataModule.provideTaigaApi(mockSession, dataModule.provideGson())
     }

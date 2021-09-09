@@ -17,11 +17,11 @@ class SearchRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test simple search projects size`() = runBlocking {
+    fun `test simple search projects`() = runBlocking {
         val projects = searchRepository.searchProjects("", 1)
-        assertEquals(1, projects.size)
+        assertEquals(TestData.projects.size, projects.size)
         assertEquals(
-            expected = listOf(TestData.Project.name),
+            expected = TestData.projects.map { it.name },
             actual = projects.map { it.name }
         )
     }

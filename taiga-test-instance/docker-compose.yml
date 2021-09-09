@@ -37,10 +37,9 @@ x-volumes:
 services:
   taiga-db:
     image: postgres:12.3
-    environment:
-      POSTGRES_DB: taiga
-      POSTGRES_USER: taiga
-      POSTGRES_PASSWORD: taiga
+    ports:
+      - "5432:5432" # expose port for jdbc connection
+    environment: *default-back-environment
     volumes:
       - taiga-db-data:/var/lib/postgresql/data
     networks:
@@ -88,6 +87,7 @@ services:
     environment:
       TAIGA_URL: "http://localhost:9000"
       TAIGA_WEBSOCKETS_URL: "ws://localhost:9000"
+      PUBLIC_REGISTER_ENABLED: "true"
     networks:
       - taiga
     # volumes:

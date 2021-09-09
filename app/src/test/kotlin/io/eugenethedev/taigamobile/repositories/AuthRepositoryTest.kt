@@ -24,18 +24,17 @@ class AuthRepositoryTest : BaseRepositoryTest() {
 
         assertFalse(mockSession.isLogged)
 
-        with(TestData.User) {
-            authRepository.auth(serverUrl, password, username)
+        with(activeUser) {
+            authRepository.auth(serverUrl, user.password, user.username)
+            assertEquals(serverUrl, mockSession.server)
+            assertEquals(data.id, mockSession.currentUserId)
         }
-
-        assertEquals(serverUrl, mockSession.server)
-        assertEquals(taigaManager.userId, mockSession.currentUserId)
     }
 
     @Test
     fun `test refresh auth token`() = runBlocking {
         mockSession.token = "wrong token" // simulate token expiration (token is not valid anymore)
-        mockTaigaApi.getProject(taigaManager.projectId) // successful response (because refresh happens)
+        mockTaigaApi.getProject(activeUser.projects.keys.first()) // successful response (because refresh happens)
         return@runBlocking
     }
 }

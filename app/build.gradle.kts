@@ -187,6 +187,10 @@ dependencies {
     allTestsImplementation("androidx.test:core-ktx:1.4.0")
     allTestsImplementation("androidx.test:runner:1.4.0")
     allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
+
+    // since we need to connect to test db instance
+    testRuntimeOnly("org.postgresql:postgresql:42.2.23")
+    androidTestRuntimeOnly("org.postgresql:postgresql:42.2.23")
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {

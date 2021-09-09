@@ -1,25 +1,11 @@
 package io.eugenethedev.taigamobile.manager
 
-import okhttp3.Request
-
 interface Deletions {
-    fun TaigaTestInstanceManager.deleteTestUser() {
-        Request.Builder()
-            .delete()
-            .apiEndpoint("users/$userId")
-            .withAuth()
-            .build()
-            .execute()
-            .successOrThrow()
-    }
-
-    fun TaigaTestInstanceManager.deleteTestProject() {
-        Request.Builder()
-            .delete()
-            .apiEndpoint("projects/$projectId")
-            .withAuth()
-            .build()
-            .execute()
-            .successOrThrow()
+    fun TaigaTestInstanceManager.clearTables() = tx {
+        getAllProdTables().forEach {
+            createStatement().execute("alter table $it disable trigger all")
+            createStatement().execute("delete from $it where true")
+            createStatement().execute("alter table $it enable trigger all")
+        }
     }
 }
