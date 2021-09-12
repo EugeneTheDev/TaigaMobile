@@ -8,6 +8,7 @@ import io.eugenethedev.taigamobile.*
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,6 +17,7 @@ class SettingsViewModel : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var settings: Settings
     @Inject lateinit var userRepository: IUsersRepository
+    @Inject lateinit var screensState: ScreensState
 
     val user = MutableLiveResult<User>()
     val serverUrl get() = session.server
@@ -33,6 +35,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun logout() {
+        screensState.modify()
         session.reset()
     }
 
