@@ -7,7 +7,7 @@ plugins {
     kotlin("kapt")
 }
 
-val composeVersion = "1.0.1"
+val composeVersion = "1.0.2"
 
 android {
     compileSdk = 31
@@ -125,7 +125,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
 
     // Accompanist
-    val accompanistVersion = "0.16.1"
+    val accompanistVersion = "0.18.0"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
@@ -136,7 +136,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha07")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha08")
 
     // ViewModel
     val lifecycleKtxVersion = "2.3.1"
@@ -144,7 +144,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleKtxVersion")
 
     // Coroutines
-    val coroutinesVersion = "1.5.1-native-mt"
+    val coroutinesVersion = "1.5.2-native-mt"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
