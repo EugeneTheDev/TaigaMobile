@@ -13,6 +13,7 @@ import io.eugenethedev.taigamobile.ui.commons.*
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.io.InputStream
 import java.time.LocalDate
 import javax.inject.Inject
@@ -28,7 +29,11 @@ class CommonTaskViewModel : ViewModel() {
     private lateinit var commonTaskType: CommonTaskType
 
     val commonTask = MutableResultFlow<CommonTaskExtended>()
-    private val commonTaskVersion get() = commonTask.value.data?.version ?: -1
+    private val commonTaskVersion = commonTask.map { commonTask.value.data?.version ?: -1 }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = -1
+    )
     
     val creator = MutableResultFlow<User>()
     val customFields = MutableResultFlow<CustomFields>()
@@ -112,7 +117,7 @@ class CommonTaskViewModel : ViewModel() {
         statusSelectResult.value = Result(ResultStatus.Loading, status.type)
 
         statusSelectResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion)
+            tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
             status.type
@@ -148,7 +153,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun selectSprint(sprint: Sprint?) = viewModelScope.launch {
         sprints.loadOrError(R.string.permission_error) {
-            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
+            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
             sprints.value.data
@@ -234,7 +239,7 @@ class CommonTaskViewModel : ViewModel() {
                     if (remove) it - user.id
                     else it + user.id
                 },
-                commonTaskVersion
+                commonTaskVersion.value
             )
             loadData().join()
             screensState.modify()
@@ -255,7 +260,7 @@ class CommonTaskViewModel : ViewModel() {
                     if (remove) it - user.id
                     else it + user.id
                 },
-                commonTaskVersion
+                commonTaskVersion.value
             )
             loadData().join()
             watchers.value.data
@@ -269,7 +274,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun createComment(comment: String) = viewModelScope.launch {
         comments.loadOrError(R.string.permission_error) {
-            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
+            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion.value)
             loadData().join()
             comments.value.data
         }
@@ -305,7 +310,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun editTask(title: String, description: String) = viewModelScope.launch {
         editResult.loadOrError(R.string.permission_error) {
-            tasksRepository.editCommonTask(commonTaskId, commonTaskType, title, description, commonTaskVersion)
+            tasksRepository.editCommonTask(commonTaskId, commonTaskType, title, description, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
         }
@@ -379,7 +384,7 @@ class CommonTaskViewModel : ViewModel() {
                 commonTaskId = commonTaskId,
                 tags = commonTask.value.data?.tags.orEmpty()
                     .let { if (remove) it - tag else it + tag },
-                version = commonTaskVersion
+                version = commonTaskVersion.value
             )
             loadData().join()
             screensState.modify()
@@ -405,7 +410,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun selectSwimlane(swimlane: Swimlane?) = viewModelScope.launch {
         swimlanes.loadOrError(R.string.permission_error) {
-            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane?.id, commonTaskVersion)
+            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane?.id, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
             swimlanes.value.data
@@ -418,7 +423,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun selectDueDate(date: LocalDate?) = viewModelScope.launch {
         dueDateResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeDueDate(commonTaskId, commonTaskType, date, commonTaskVersion)
+            tasksRepository.changeDueDate(commonTaskId, commonTaskType, date, commonTaskVersion.value)
             loadData().join()
         }
     }
@@ -427,7 +432,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun selectEpicColor(color: String) = viewModelScope.launch {
         colorResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeEpicColor(commonTaskId, color, commonTaskVersion)
+            tasksRepository.changeEpicColor(commonTaskId, color, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
         }

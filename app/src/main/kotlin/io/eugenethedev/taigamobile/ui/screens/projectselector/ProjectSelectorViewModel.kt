@@ -20,8 +20,9 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var searchRepository: ISearchRepository
     @Inject lateinit var session: Session
 
-    val projects = MutableResultFlow<List<Project>>()
     val currentProjectId get() = session.currentProjectId
+
+    val projects = MutableResultFlow<List<Project>>()
 
     init {
         TaigaApp.appComponent.inject(this)

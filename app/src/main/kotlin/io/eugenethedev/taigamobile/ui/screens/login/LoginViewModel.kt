@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoginViewModel : ViewModel() {
-
     @Inject lateinit var authRepository: AuthRepository
 
     val loginResult = MutableResultFlow<Unit>()
