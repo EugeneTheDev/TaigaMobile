@@ -1,8 +1,8 @@
 package io.eugenethedev.taigamobile.ui.commons
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Convenient way to dispatch events
@@ -16,8 +16,10 @@ class Result<T>(
 enum class ResultStatus {
     Success,
     Error,
-    Loading
+    Loading,
+    Nothing
 }
 
-typealias LiveResult<T> = LiveData<Result<T>?>
-typealias MutableLiveResult<T> = MutableLiveData<Result<T>?>
+typealias MutableResultFlow<T> = MutableStateFlow<Result<T>>
+fun <T> MutableResultFlow(value: Result<T> = Result(ResultStatus.Nothing)) = MutableStateFlow(value)
+typealias ResultFlow<T> = StateFlow<Result<T>>

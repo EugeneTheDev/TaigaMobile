@@ -7,7 +7,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -34,8 +33,8 @@ fun LoginScreen(
 ) {
     val viewModel: LoginViewModel = viewModel()
 
-    val loginResult by viewModel.loginResult.observeAsState()
-    loginResult?.apply {
+    val loginResult by viewModel.loginResult.collectAsState()
+    loginResult.apply {
         when(resultStatus) {
             ResultStatus.Error -> onError(message!!)
             ResultStatus.Success -> {
@@ -51,7 +50,7 @@ fun LoginScreen(
 
     LoginScreenContent(
         onContinueClick = viewModel::login,
-        isLoadingValue = loginResult?.resultStatus in listOf(ResultStatus.Loading, ResultStatus.Success)
+        isLoadingValue = loginResult.resultStatus in listOf(ResultStatus.Loading, ResultStatus.Success)
     )
 }
 

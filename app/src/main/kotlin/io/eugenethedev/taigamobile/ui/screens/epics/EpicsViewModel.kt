@@ -7,7 +7,9 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +20,7 @@ class EpicsViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
 
     val projectName get() = session.currentProjectName
-    val epics = MutableLiveResult<List<CommonTask>?>()
+    val epics = MutableResultFlow<List<CommonTask>>()
     
     private var currentEpicPage = 0
     private var maxEpicPage = Int.MAX_VALUE
@@ -32,7 +34,7 @@ class EpicsViewModel : ViewModel() {
             reset()
         }
 
-        if (epics.value == null) {
+        if (epics.value.resultStatus == ResultStatus.Nothing) {
             loadEpics()
         }
     }
@@ -44,13 +46,13 @@ class EpicsViewModel : ViewModel() {
             tasksRepository.getEpics(++currentEpicPage).also {
                 if (it.isEmpty()) maxEpicPage = currentEpicPage
             }.let {
-                epics.value?.data.orEmpty() + it
+                epics.value.data.orEmpty() + it
             }
         }
     }
     
     fun reset() {
-        epics.value = null
+        epics.value = Result(ResultStatus.Nothing)
         currentEpicPage = 0
         maxEpicPage = Int.MAX_VALUE
     }

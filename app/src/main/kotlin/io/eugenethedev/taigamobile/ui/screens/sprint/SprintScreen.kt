@@ -3,7 +3,6 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -40,41 +39,41 @@ fun SprintScreen(
         viewModel.start(sprintId)
     }
 
-    val sprint by viewModel.sprint.observeAsState()
-    sprint?.subscribeOnError(onError)
+    val sprint by viewModel.sprint.collectAsState()
+    sprint.subscribeOnError(onError)
 
-    val statuses by viewModel.statuses.observeAsState()
-    statuses?.subscribeOnError(onError)
+    val statuses by viewModel.statuses.collectAsState()
+    statuses.subscribeOnError(onError)
 
-    val storiesWithTasks by viewModel.storiesWithTasks.observeAsState()
-    storiesWithTasks?.subscribeOnError(onError)
+    val storiesWithTasks by viewModel.storiesWithTasks.collectAsState()
+    storiesWithTasks.subscribeOnError(onError)
 
-    val storylessTasks by viewModel.storylessTasks.observeAsState()
-    storylessTasks?.subscribeOnError(onError)
+    val storylessTasks by viewModel.storylessTasks.collectAsState()
+    storylessTasks.subscribeOnError(onError)
 
-    val issues by viewModel.issues.observeAsState()
-    issues?.subscribeOnError(onError)
+    val issues by viewModel.issues.collectAsState()
+    issues.subscribeOnError(onError)
 
-    val editResult by viewModel.editResult.observeAsState()
-    editResult?.subscribeOnError(onError)
+    val editResult by viewModel.editResult.collectAsState()
+    editResult.subscribeOnError(onError)
 
-    val deleteResult by viewModel.deleteResult.observeAsState()
-    deleteResult?.subscribeOnError(onError)
-    deleteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.let {
+    val deleteResult by viewModel.deleteResult.collectAsState()
+    deleteResult.subscribeOnError(onError)
+    deleteResult.takeIf { it.resultStatus == ResultStatus.Success }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
     }
 
     SprintScreenContent(
-        sprint = sprint?.data,
-        isLoading = listOf(statuses, storiesWithTasks, storylessTasks, issues).any { it?.resultStatus == ResultStatus.Loading },
-        isEditLoading = editResult?.resultStatus == ResultStatus.Loading,
-        isDeleteLoading = deleteResult?.resultStatus == ResultStatus.Loading,
-        statuses = statuses?.data.orEmpty(),
-        storiesWithTasks = storiesWithTasks?.data.orEmpty(),
-        storylessTasks = storylessTasks?.data.orEmpty(),
-        issues = issues?.data.orEmpty(),
+        sprint = sprint.data,
+        isLoading = listOf(statuses, storiesWithTasks, storylessTasks, issues).any { it.resultStatus == ResultStatus.Loading },
+        isEditLoading = editResult.resultStatus == ResultStatus.Loading,
+        isDeleteLoading = deleteResult.resultStatus == ResultStatus.Loading,
+        statuses = statuses.data.orEmpty(),
+        storiesWithTasks = storiesWithTasks.data.orEmpty(),
+        storylessTasks = storylessTasks.data.orEmpty(),
+        issues = issues.data.orEmpty(),
         editSprint = viewModel::editSprint,
         deleteSprint = viewModel::deleteSprint,
         navigateBack = navController::popBackStack,

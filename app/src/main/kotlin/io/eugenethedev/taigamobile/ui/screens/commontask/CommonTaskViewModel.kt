@@ -9,10 +9,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.*
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.*
@@ -30,17 +27,17 @@ class CommonTaskViewModel : ViewModel() {
     private var commonTaskId: Long = -1
     private lateinit var commonTaskType: CommonTaskType
 
-    val commonTask = MutableLiveResult<CommonTaskExtended>()
-    private val commonTaskVersion get() = commonTask.value?.data?.version ?: -1
+    val commonTask = MutableResultFlow<CommonTaskExtended>()
+    private val commonTaskVersion get() = commonTask.value.data?.version ?: -1
     
-    val creator = MutableLiveResult<User>()
-    val customFields = MutableLiveResult<CustomFields>()
-    val attachments = MutableLiveResult<List<Attachment>>()
-    val assignees = MutableLiveResult<List<User>>()
-    val watchers = MutableLiveResult<List<User>>()
-    val userStories = MutableLiveResult<List<CommonTask>>()
-    val tasks = MutableLiveResult<List<CommonTask>>()
-    val comments = MutableLiveResult<List<Comment>>()
+    val creator = MutableResultFlow<User>()
+    val customFields = MutableResultFlow<CustomFields>()
+    val attachments = MutableResultFlow<List<Attachment>>()
+    val assignees = MutableResultFlow<List<User>>()
+    val watchers = MutableResultFlow<List<User>>()
+    val userStories = MutableResultFlow<List<CommonTask>>()
+    val tasks = MutableResultFlow<List<CommonTask>>()
+    val comments = MutableResultFlow<List<Comment>>()
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -53,13 +50,11 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     private fun loadData() = viewModelScope.launch {
-        val showLoading = commonTask.value == null
-
-        commonTask.loadOrError(showLoading = showLoading) {
+        commonTask.loadOrError(showLoading = commonTask.value.data == null) {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).also {
 
-                suspend fun MutableLiveResult<List<User>>.loadUsersFromIds(ids: List<Long>) =
-                    loadOrError(showLoading = showLoading) {
+                suspend fun MutableResultFlow<List<User>>.loadUsersFromIds(ids: List<Long>) =
+                    loadOrError(showLoading = false) {
                         ids.map {
                             coroutineScope {
                                 async { usersRepository.getUser(it) }
@@ -69,24 +64,24 @@ class CommonTaskViewModel : ViewModel() {
 
                 joinAll(
                     launch {
-                        creator.loadOrError(showLoading = showLoading) { usersRepository.getUser(it.creatorId) }
+                        creator.loadOrError(showLoading = false) { usersRepository.getUser(it.creatorId) }
                     },
                     launch {
-                        customFields.loadOrError(showLoading = showLoading) { tasksRepository.getCustomFields(commonTaskId, commonTaskType) }
+                        customFields.loadOrError(showLoading = false) { tasksRepository.getCustomFields(commonTaskId, commonTaskType) }
                     },
                     launch {
-                        attachments.loadOrError(showLoading = showLoading) { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
+                        attachments.loadOrError(showLoading = false) { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
                     },
                     launch { assignees.loadUsersFromIds(it.assignedIds) },
                     launch { watchers.loadUsersFromIds(it.watcherIds) },
                     launch {
-                        userStories.loadOrError(showLoading = showLoading) { tasksRepository.getEpicUserStories(commonTaskId) }
+                        userStories.loadOrError(showLoading = false) { tasksRepository.getEpicUserStories(commonTaskId) }
                     },
                     launch {
-                        tasks.loadOrError(showLoading = showLoading) { tasksRepository.getUserStoryTasks(commonTaskId) }
+                        tasks.loadOrError(showLoading = false) { tasksRepository.getUserStoryTasks(commonTaskId) }
                     },
                     launch {
-                        comments.loadOrError {
+                        comments.loadOrError(showLoading = false) {
                             tasksRepository.getComments(commonTaskId, commonTaskType)
                                 .filter { it.deleteDate == null }
                                 .map { it.also { it.canDelete = it.author.id == session.currentUserId } }
@@ -103,8 +98,8 @@ class CommonTaskViewModel : ViewModel() {
 
     // Edit status (and also type, severity, priority)
 
-    val statuses = MutableLiveResult<List<Status>>()
-    val statusSelectResult = MutableLiveResult<StatusType>()
+    val statuses = MutableResultFlow<List<Status>>()
+    val statusSelectResult = MutableResultFlow<StatusType>()
 
     fun loadStatuses(statusType: StatusType) = viewModelScope.launch {
         statuses.loadOrError(preserveValue = false) {
@@ -126,7 +121,7 @@ class CommonTaskViewModel : ViewModel() {
 
     // Edit sprint
 
-    val sprints = MutableLiveResult<List<Sprint?>>()
+    val sprints = MutableResultFlow<List<Sprint?>>()
     private var currentSprintPage = 0
     private var maxSprintPage = Int.MAX_VALUE
 
@@ -146,7 +141,7 @@ class CommonTaskViewModel : ViewModel() {
                 if (it.isEmpty()) maxSprintPage = currentSprintPage
             }.let {
                 // prepending null here to always show "remove from sprints" sprint first
-                listOf(null) + (sprints.value?.data.orEmpty().filterNotNull() + it)
+                listOf(null) + (sprints.value.data.orEmpty().filterNotNull() + it)
             }
         }
     }
@@ -156,12 +151,12 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion)
             loadData().join()
             screensState.modify()
-            sprints.value?.data
+            sprints.value.data
         }
     }
 
     // Edit linked epic
-    val epics = MutableLiveResult<List<CommonTask>>()
+    val epics = MutableResultFlow<List<CommonTask>>()
     private var currentEpicQuery = ""
     private var currentEpicPage = 0
     private var maxEpicPage = Int.MAX_VALUE
@@ -182,7 +177,7 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.getEpics(++currentEpicPage, query).also {
                 if (it.isEmpty()) maxEpicPage = currentEpicPage
             }.let {
-                epics.value?.data.orEmpty() + it
+                epics.value.data.orEmpty() + it
             }
         }
     }
@@ -192,7 +187,7 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            epics.value?.data
+            epics.value.data
         }
     }
 
@@ -201,13 +196,13 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            epics.value?.data
+            epics.value.data
         }
     }
 
 
     // use team for both assignees and watchers
-    val team = MutableLiveResult<List<User>>()
+    val team = MutableResultFlow<List<User>>()
     private var _team = emptyList<User>()
     private var currentTeamQuery: String = ""
 
@@ -235,7 +230,7 @@ class CommonTaskViewModel : ViewModel() {
         assignees.loadOrError(R.string.permission_error) {
             tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
-                commonTask.value?.data?.assignedIds.orEmpty().let {
+                commonTask.value.data?.assignedIds.orEmpty().let {
                     if (remove) it - user.id
                     else it + user.id
                 },
@@ -243,7 +238,7 @@ class CommonTaskViewModel : ViewModel() {
             )
             loadData().join()
             screensState.modify()
-            assignees.value?.data
+            assignees.value.data
         }
     }
 
@@ -256,14 +251,14 @@ class CommonTaskViewModel : ViewModel() {
         watchers.loadOrError(R.string.permission_error) {
             tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
-                commonTask.value?.data?.watcherIds.orEmpty().let {
+                commonTask.value.data?.watcherIds.orEmpty().let {
                     if (remove) it - user.id
                     else it + user.id
                 },
                 commonTaskVersion
             )
             loadData().join()
-            watchers.value?.data
+            watchers.value.data
         }
     }
 
@@ -276,7 +271,7 @@ class CommonTaskViewModel : ViewModel() {
         comments.loadOrError(R.string.permission_error) {
             tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion)
             loadData().join()
-            comments.value?.data
+            comments.value.data
         }
     }
 
@@ -284,7 +279,7 @@ class CommonTaskViewModel : ViewModel() {
         comments.loadOrError(R.string.permission_error) {
             tasksRepository.deleteComment(commonTaskId, commonTaskType, comment.id)
             loadData().join()
-            comments.value?.data
+            comments.value.data
         }
     }
 
@@ -293,7 +288,7 @@ class CommonTaskViewModel : ViewModel() {
         attachments.loadOrError(R.string.permission_error) {
             tasksRepository.deleteAttachment(commonTaskType, attachment.id)
             loadData().join()
-            attachments.value?.data
+            attachments.value.data
         }
     }
 
@@ -301,12 +296,12 @@ class CommonTaskViewModel : ViewModel() {
         attachments.loadOrError(R.string.permission_error) {
             tasksRepository.addAttachment(commonTaskId, commonTaskType, fileName, inputStream)
             loadData().join()
-            attachments.value?.data
+            attachments.value.data
         }
     }
 
     // Edit task itself (title & description)
-    val editResult = MutableLiveResult<Unit>()
+    val editResult = MutableResultFlow<Unit>()
 
     fun editTask(title: String, description: String) = viewModelScope.launch {
         editResult.loadOrError(R.string.permission_error) {
@@ -317,7 +312,7 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Delete task
-    val deleteResult = MutableLiveResult<Unit>()
+    val deleteResult = MutableResultFlow<Unit>()
 
     fun deleteTask() = viewModelScope.launch {
         deleteResult.loadOrError(R.string.permission_error) {
@@ -326,7 +321,7 @@ class CommonTaskViewModel : ViewModel() {
         }
     }
 
-    val promoteResult = MutableLiveResult<CommonTask>()
+    val promoteResult = MutableResultFlow<CommonTask>()
 
     fun promoteToUserStory() = viewModelScope.launch {
         promoteResult.loadOrError(R.string.permission_error, preserveValue = false) {
@@ -341,20 +336,20 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.editCustomFields(
                 commonTaskType = commonTaskType,
                 commonTaskId = commonTaskId,
-                fields = customFields.value?.data?.fields.orEmpty().map {
+                fields = customFields.value.data?.fields.orEmpty().map {
                     it.id to (if (it.id == customField.id) value else it.value)
                 }.toMap(),
-                version = customFields.value?.data?.version ?: 0
+                version = customFields.value.data?.version ?: 0
             )
             loadData().join()
-            customFields.value?.data
+            customFields.value.data
         }
 
     }
 
     // Tags
 
-    val tags = MutableLiveResult<List<Tag>>()
+    val tags = MutableResultFlow<List<Tag>>()
     private var _tags = emptyList<Tag>()
     private var currentTagsQuery: String = ""
 
@@ -382,13 +377,13 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.editTags(
                 commonTaskType = commonTaskType,
                 commonTaskId = commonTaskId,
-                tags = commonTask.value?.data?.tags.orEmpty()
+                tags = commonTask.value.data?.tags.orEmpty()
                     .let { if (remove) it - tag else it + tag },
                 version = commonTaskVersion
             )
             loadData().join()
             screensState.modify()
-            tags.value?.data
+            tags.value.data
         }
     }
 
@@ -397,7 +392,7 @@ class CommonTaskViewModel : ViewModel() {
 
     // Swimlanes
 
-    val swimlanes = MutableLiveResult<List<Swimlane?>>()
+    val swimlanes = MutableResultFlow<List<Swimlane?>>()
 
     fun loadSwimlanes(query: String?) = viewModelScope.launch {
         // only load swimlanes if null
@@ -413,13 +408,13 @@ class CommonTaskViewModel : ViewModel() {
             tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane?.id, commonTaskVersion)
             loadData().join()
             screensState.modify()
-            swimlanes.value?.data
+            swimlanes.value.data
         }
     }
 
     // Due date
 
-    val dueDateResult = MutableLiveResult<Unit>()
+    val dueDateResult = MutableResultFlow<Unit>()
 
     fun selectDueDate(date: LocalDate?) = viewModelScope.launch {
         dueDateResult.loadOrError(R.string.permission_error) {
@@ -428,7 +423,7 @@ class CommonTaskViewModel : ViewModel() {
         }
     }
 
-    val colorResult = MutableLiveResult<Unit>()
+    val colorResult = MutableResultFlow<Unit>()
 
     fun selectEpicColor(color: String) = viewModelScope.launch {
         colorResult.loadOrError(R.string.permission_error) {

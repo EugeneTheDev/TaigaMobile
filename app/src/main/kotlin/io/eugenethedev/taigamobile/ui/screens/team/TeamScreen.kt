@@ -9,8 +9,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,13 +45,13 @@ fun TeamScreen(
         viewModel.start()
     }
 
-    val team by viewModel.team.observeAsState()
-    team?.subscribeOnError(onError)
+    val team by viewModel.team.collectAsState()
+    team.subscribeOnError(onError)
 
     TeamScreenContent(
         projectName = viewModel.projectName,
-        team = team?.data.orEmpty(),
-        isLoading = team?.resultStatus == ResultStatus.Loading,
+        team = team.data.orEmpty(),
+        isLoading = team.resultStatus == ResultStatus.Loading,
         onTitleClick = {
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()

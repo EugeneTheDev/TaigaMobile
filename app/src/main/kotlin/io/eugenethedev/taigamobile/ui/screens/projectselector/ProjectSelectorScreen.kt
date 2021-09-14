@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -36,8 +35,8 @@ fun ProjectSelectorScreen(
     }
     val coroutineScope = rememberCoroutineScope()
 
-    val projects by viewModel.projects.observeAsState()
-    projects?.subscribeOnError(onError)
+    val projects by viewModel.projects.collectAsState()
+    projects.subscribeOnError(onError)
     val currentProjectId = viewModel.currentProjectId
 
     var isSelectorVisible by remember { mutableStateOf(true) }
@@ -50,9 +49,9 @@ fun ProjectSelectorScreen(
     }
 
     ProjectSelectorScreenContent(
-        projects = projects?.data.orEmpty(),
+        projects = projects.data.orEmpty(),
         isVisible = isSelectorVisible,
-        isLoading = projects?.resultStatus == ResultStatus.Loading,
+        isLoading = projects.resultStatus == ResultStatus.Loading,
         currentProjectId = currentProjectId,
         selectorAnimationDuration = selectorAnimationDuration,
         navigateBack = ::navigateBack,

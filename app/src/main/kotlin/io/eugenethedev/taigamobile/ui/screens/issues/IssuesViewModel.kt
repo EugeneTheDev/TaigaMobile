@@ -6,10 +6,7 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.*
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +17,7 @@ class IssuesViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
 
     val projectName get() = session.currentProjectName
-    val issues = MutableLiveResult<List<CommonTask>?>()
+    val issues = MutableResultFlow<List<CommonTask>>()
 
     private var currentIssuesQuery = ""
     private var currentIssuesPage = 0
@@ -35,7 +32,7 @@ class IssuesViewModel : ViewModel() {
             reset()
         }
 
-        if (issues.value == null) {
+        if (issues.value.resultStatus == ResultStatus.Nothing) {
             loadIssues()
         }
     }
@@ -54,13 +51,13 @@ class IssuesViewModel : ViewModel() {
             tasksRepository.getIssues(++currentIssuesPage, query).also {
                 if (it.isEmpty()) maxIssuesPage = currentIssuesPage
             }.let {
-                issues.value?.data.orEmpty() + it
+                issues.value.data.orEmpty() + it
             }
         }
     }
     
     fun reset() {
-        issues.value = null
+        issues.value = Result(ResultStatus.Nothing)
         currentIssuesQuery = ""
         currentIssuesPage = 0
         maxIssuesPage = Int.MAX_VALUE

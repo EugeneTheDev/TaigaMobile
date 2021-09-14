@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,11 +53,11 @@ fun ScrumScreen(
         viewModel.start()
     }
 
-    val stories by viewModel.stories.observeAsState()
-    stories?.subscribeOnError(onError)
+    val stories by viewModel.stories.collectAsState()
+    stories.subscribeOnError(onError)
 
-    val sprints by viewModel.sprints.observeAsState()
-    sprints?.subscribeOnError(onError)
+    val sprints by viewModel.sprints.collectAsState()
+    sprints.subscribeOnError(onError)
 
     ScrumScreenContent(
         projectName = viewModel.projectName,
@@ -66,11 +65,11 @@ fun ScrumScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
-        stories = stories?.data.orEmpty(),
-        isStoriesLoading = stories?.resultStatus == ResultStatus.Loading,
+        stories = stories.data.orEmpty(),
+        isStoriesLoading = stories.resultStatus == ResultStatus.Loading,
         loadStories = viewModel::loadStories,
-        sprints = sprints?.data.orEmpty(),
-        isSprintsLoading = sprints?.resultStatus == ResultStatus.Loading,
+        sprints = sprints.data.orEmpty(),
+        isSprintsLoading = sprints.resultStatus == ResultStatus.Loading,
         loadSprints = viewModel::loadSprints,
         navigateToBoard = {
             navController.navigateToSprint(it.id)

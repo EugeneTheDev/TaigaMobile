@@ -3,8 +3,8 @@ package io.eugenethedev.taigamobile.ui.screens.createtask
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,10 +31,10 @@ fun CreateTaskScreen(
 ) {
     val viewModel: CreateTaskViewModel = viewModel()
 
-    val creationResult by viewModel.creationResult.observeAsState()
-    creationResult?.subscribeOnError(onError)
+    val creationResult by viewModel.creationResult.collectAsState()
+    creationResult.subscribeOnError(onError)
 
-    creationResult?.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
+    creationResult.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
             navController.navigateToTaskScreen(it.id, it.taskType, it.ref)
@@ -50,7 +50,7 @@ fun CreateTaskScreen(
                 CommonTaskType.Issue -> R.string.create_issue
             }
         ),
-        isLoading = creationResult?.resultStatus == ResultStatus.Loading,
+        isLoading = creationResult.resultStatus == ResultStatus.Loading,
         createTask = { title, description -> viewModel.createTask(commonTaskType, title, description, parentId, sprintId, statusId, swimlaneId) },
         navigateBack = navController::popBackStack
     )

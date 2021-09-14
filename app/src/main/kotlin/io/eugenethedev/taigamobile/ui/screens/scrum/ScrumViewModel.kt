@@ -9,10 +9,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.*
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -26,12 +23,12 @@ class ScrumViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val stories = MutableLiveResult<List<CommonTask>?>()
+    val stories = MutableResultFlow<List<CommonTask>?>()
     private var currentStoriesQuery = ""
     private var currentStoriesPage = 0
     private var maxStoriesPage = Int.MAX_VALUE
 
-    val sprints = MutableLiveResult<List<Sprint>?>()
+    val sprints = MutableResultFlow<List<Sprint>>()
     private var currentSprintPage = 0
     private var maxSprintPage = Int.MAX_VALUE
 
@@ -44,7 +41,7 @@ class ScrumViewModel : ViewModel() {
             reset()
         }
 
-        if (stories.value == null) {
+        if (stories.value.resultStatus == ResultStatus.Nothing) {
             loadStories()
             loadSprints()
         }
@@ -64,7 +61,7 @@ class ScrumViewModel : ViewModel() {
             tasksRepository.getBacklogUserStories(++currentStoriesPage, query).also {
                 if (it.isEmpty()) maxStoriesPage = currentStoriesPage
             }.let {
-                stories.value?.data.orEmpty() + it
+                stories.value.data.orEmpty() + it
             }
         }
     }
@@ -76,7 +73,7 @@ class ScrumViewModel : ViewModel() {
             sprintsRepository.getSprints(++currentSprintPage).also {
                 if (it.isEmpty()) maxSprintPage = currentSprintPage
             }.let {
-                sprints.value?.data.orEmpty() + it
+                sprints.value.data.orEmpty() + it
             }
         }
     }
@@ -86,18 +83,18 @@ class ScrumViewModel : ViewModel() {
             sprintsRepository.createSprint(name, start, end)
             resetSprints()
             loadSprints().join()
-            sprints.value?.data
+            sprints.value.data
         }
     }
 
     private fun resetSprints() {
-        sprints.value = null
+        sprints.value = Result(ResultStatus.Nothing)
         currentSprintPage = 0
         maxSprintPage = Int.MAX_VALUE
     }
 
     fun reset() {
-        stories.value = null
+        stories.value = Result(ResultStatus.Nothing)
         currentStoriesQuery = ""
         currentStoriesPage = 0
         maxStoriesPage = Int.MAX_VALUE

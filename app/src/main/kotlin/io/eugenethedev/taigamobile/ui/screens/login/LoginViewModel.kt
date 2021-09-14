@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,7 +14,7 @@ class LoginViewModel : ViewModel() {
 
     @Inject lateinit var authRepository: AuthRepository
 
-    val loginResult = MutableLiveResult<Unit>()
+    val loginResult = MutableResultFlow<Unit>()
 
     init {
         TaigaApp.appComponent.inject(this)

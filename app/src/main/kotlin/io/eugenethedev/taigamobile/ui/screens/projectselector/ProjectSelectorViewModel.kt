@@ -6,7 +6,7 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.commons.Result
 import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
@@ -20,7 +20,7 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var searchRepository: ISearchRepository
     @Inject lateinit var session: Session
 
-    val projects = MutableLiveResult<List<Project>>()
+    val projects = MutableResultFlow<List<Project>>()
     val currentProjectId get() = session.currentProjectId
 
     init {
@@ -60,7 +60,7 @@ class ProjectSelectorViewModel : ViewModel() {
             searchRepository.searchProjects(query, ++currentPage).also {
                 if (it.isEmpty()) maxPage = currentPage
             }.let {
-                projects.value?.data.orEmpty() + it
+                projects.value.data.orEmpty() + it
             }
         }
     }

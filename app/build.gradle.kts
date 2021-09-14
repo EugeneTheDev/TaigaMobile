@@ -138,11 +138,6 @@ dependencies {
     // Navigation Component (with Compose)
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha08")
 
-    // ViewModel
-    val lifecycleKtxVersion = "2.3.1"
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleKtxVersion")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleKtxVersion")
-
     // Coroutines
     val coroutinesVersion = "1.5.2-native-mt"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")

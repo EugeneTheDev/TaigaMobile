@@ -1,7 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.kanban
 
-import android.annotation.SuppressLint
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.Session
@@ -9,9 +7,12 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,12 +25,12 @@ class KanbanViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val statuses = MutableLiveResult<List<Status>>()
-    val team = MutableLiveResult<List<User>>()
-    val stories = MutableLiveResult<List<CommonTaskExtended>>()
-    val swimlanes = MutableLiveResult<List<Swimlane?>>()
+    val statuses = MutableResultFlow<List<Status>>()
+    val team = MutableResultFlow<List<User>>()
+    val stories = MutableResultFlow<List<CommonTaskExtended>>()
+    val swimlanes = MutableResultFlow<List<Swimlane?>>()
 
-    val selectedSwimlane = MutableLiveData<Swimlane?>()
+    val selectedSwimlane = MutableStateFlow<Swimlane?>(null)
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -40,7 +41,7 @@ class KanbanViewModel : ViewModel() {
             reset()
         }
 
-        if (statuses.value == null) {
+        if (statuses.value.resultStatus == ResultStatus.Nothing) {
             joinAll(
                 launch {
                     statuses.loadOrError(preserveValue = false) { tasksRepository.getStatuses(CommonTaskType.UserStory) }
@@ -52,7 +53,7 @@ class KanbanViewModel : ViewModel() {
                     stories.loadOrError(preserveValue = false) { tasksRepository.getAllUserStories() }
                 },
                 launch {
-                    swimlanes.loadOrError() {
+                    swimlanes.loadOrError {
                         listOf(null) + tasksRepository.getSwimlanes() // prepend null to show "unclassified" swimlane
                     }
                 }
@@ -64,12 +65,10 @@ class KanbanViewModel : ViewModel() {
         selectedSwimlane.value = swimlane
     }
 
-    @SuppressLint("NullSafeMutableLiveData")
     fun reset() {
-        statuses.value = null
-        team.value = null
-        stories.value = null
-        swimlanes.value = null
+        statuses.value = Result(ResultStatus.Nothing)
+        team.value = Result(ResultStatus.Nothing)
+        stories.value = Result(ResultStatus.Nothing)
+        swimlanes.value = Result(ResultStatus.Nothing)
     }
-
 }

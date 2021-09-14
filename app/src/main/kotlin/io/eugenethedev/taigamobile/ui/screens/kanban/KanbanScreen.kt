@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,27 +32,27 @@ fun KanbanScreen(
         viewModel.start()
     }
 
-    val swimlanes by viewModel.swimlanes.observeAsState()
-    swimlanes?.subscribeOnError(onError)
+    val swimlanes by viewModel.swimlanes.collectAsState()
+    swimlanes.subscribeOnError(onError)
 
-    val statuses by viewModel.statuses.observeAsState()
-    statuses?.subscribeOnError(onError)
+    val statuses by viewModel.statuses.collectAsState()
+    statuses.subscribeOnError(onError)
 
-    val team by viewModel.team.observeAsState()
-    team?.subscribeOnError(onError)
+    val team by viewModel.team.collectAsState()
+    team.subscribeOnError(onError)
 
-    val stories by viewModel.stories.observeAsState()
-    stories?.subscribeOnError(onError)
+    val stories by viewModel.stories.collectAsState()
+    stories.subscribeOnError(onError)
 
-    val selectedSwimlane by viewModel.selectedSwimlane.observeAsState()
+    val selectedSwimlane by viewModel.selectedSwimlane.collectAsState()
 
     KanbanScreenContent(
         projectName = viewModel.projectName,
-        isLoading = listOf(swimlanes, team, stories).any { it?.resultStatus == ResultStatus.Loading },
-        statuses = statuses?.data.orEmpty(),
-        stories = stories?.data.orEmpty(),
-        team = team?.data.orEmpty(),
-        swimlanes = swimlanes?.data.orEmpty(),
+        isLoading = listOf(swimlanes, team, stories).any { it.resultStatus == ResultStatus.Loading },
+        statuses = statuses.data.orEmpty(),
+        stories = stories.data.orEmpty(),
+        team = team.data.orEmpty(),
+        swimlanes = swimlanes.data.orEmpty(),
         selectSwimlane = viewModel::selectSwimlane,
         selectedSwimlane = selectedSwimlane,
         navigateToStory = { id, ref -> navController.navigateToTaskScreen(id, CommonTaskType.UserStory, ref) },

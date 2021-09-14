@@ -12,7 +12,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -78,13 +77,13 @@ class MainActivity : AppCompatActivity() {
             val systemUiController = rememberSystemUiController()
 
             val viewModel: MainViewModel = viewModel()
-            val theme by viewModel.theme.observeAsState()
+            val theme by viewModel.theme.collectAsState()
 
             TaigaMobileTheme(
                 darkTheme = when (theme) {
                     ThemeSetting.Light -> false
                     ThemeSetting.Dark -> true
-                    ThemeSetting.System, null -> isSystemInDarkTheme()
+                    ThemeSetting.System -> isSystemInDarkTheme()
                 }
             ) {
                 ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {

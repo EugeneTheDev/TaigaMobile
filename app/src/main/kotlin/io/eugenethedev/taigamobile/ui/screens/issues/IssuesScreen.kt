@@ -3,7 +3,6 @@ package io.eugenethedev.taigamobile.ui.screens.issues
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
@@ -36,8 +35,8 @@ fun IssuesScreen(
         viewModel.start()
     }
 
-    val issues by viewModel.issues.observeAsState()
-    issues?.subscribeOnError(onError)
+    val issues by viewModel.issues.collectAsState()
+    issues.subscribeOnError(onError)
 
     IssuesScreenContent(
         projectName = viewModel.projectName,
@@ -46,8 +45,8 @@ fun IssuesScreen(
             viewModel.reset()
         },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
-        isLoading = issues?.resultStatus == ResultStatus.Loading,
-        issues = issues?.data.orEmpty(),
+        isLoading = issues.resultStatus == ResultStatus.Loading,
+        issues = issues.data.orEmpty(),
         navigateToTask = navController::navigateToTaskScreen,
         loadIssues = viewModel::loadIssues
     )

@@ -1,13 +1,11 @@
 package io.eugenethedev.taigamobile.ui.screens.settings
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.*
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
@@ -19,15 +17,13 @@ class SettingsViewModel : ViewModel() {
     @Inject lateinit var userRepository: IUsersRepository
     @Inject lateinit var screensState: ScreensState
 
-    val user = MutableLiveResult<User>()
+    val user = MutableResultFlow<User>()
     val serverUrl get() = session.server
 
-    val themeSetting: LiveData<ThemeSetting>
+    val themeSetting by lazy { settings.themeSetting }
 
     init {
         TaigaApp.appComponent.inject(this)
-
-        themeSetting = settings.themeSetting.asLiveData(viewModelScope.coroutineContext)
     }
 
     fun start() = viewModelScope.launch {
@@ -42,5 +38,4 @@ class SettingsViewModel : ViewModel() {
     fun switchTheme(theme: ThemeSetting) {
         settings.changeThemeSetting(theme)
     }
-
 }

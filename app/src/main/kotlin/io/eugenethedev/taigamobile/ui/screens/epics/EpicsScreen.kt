@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,8 +35,8 @@ fun EpicsScreen(
         viewModel.start()
     }
 
-    val epics by viewModel.epics.observeAsState()
-    epics?.subscribeOnError(onError)
+    val epics by viewModel.epics.collectAsState()
+    epics.subscribeOnError(onError)
 
     EpicsScreenContent(
         projectName = viewModel.projectName,
@@ -46,9 +45,9 @@ fun EpicsScreen(
             viewModel.reset()
         },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Epic) },
-        isLoading = epics?.resultStatus == ResultStatus.Loading && epics?.data.isNullOrEmpty(),
-        epics = epics?.data.orEmpty(),
-        isEpicsLoading = epics?.resultStatus == ResultStatus.Loading,
+        isLoading = epics.resultStatus == ResultStatus.Loading && epics.data.isNullOrEmpty(),
+        epics = epics.data.orEmpty(),
+        isEpicsLoading = epics.resultStatus == ResultStatus.Loading,
         navigateToTask = navController::navigateToTaskScreen,
         loadEpics = viewModel::loadEpics
     )

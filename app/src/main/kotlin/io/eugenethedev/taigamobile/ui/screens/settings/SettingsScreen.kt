@@ -8,7 +8,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,15 +56,15 @@ fun SettingsScreen(
         viewModel.start()
     }
 
-    val user by viewModel.user.observeAsState()
-    user?.subscribeOnError(onError)
+    val user by viewModel.user.collectAsState()
+    user.subscribeOnError(onError)
 
-    val themeSetting by viewModel.themeSetting.observeAsState()
+    val themeSetting by viewModel.themeSetting.collectAsState()
 
     SettingsScreenContent(
-        avatarUrl = user?.data?.avatarUrl,
-        displayName = user?.data?.displayName.orEmpty(),
-        username = user?.data?.username.orEmpty(),
+        avatarUrl = user.data?.avatarUrl,
+        displayName = user.data?.displayName.orEmpty(),
+        username = user.data?.username.orEmpty(),
         serverUrl = viewModel.serverUrl,
         navigateBack = navController::popBackStack,
         logout = {

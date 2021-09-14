@@ -3,7 +3,6 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -41,73 +40,73 @@ fun CommonTaskScreen(
         viewModel.start(commonTaskId, commonTaskType)
     }
 
-    val commonTask by viewModel.commonTask.observeAsState()
-    commonTask?.subscribeOnError(onError)
+    val commonTask by viewModel.commonTask.collectAsState()
+    commonTask.subscribeOnError(onError)
 
-    val creator by viewModel.creator.observeAsState()
-    creator?.subscribeOnError(onError)
+    val creator by viewModel.creator.collectAsState()
+    creator.subscribeOnError(onError)
 
-    val assignees by viewModel.assignees.observeAsState()
-    assignees?.subscribeOnError(onError)
+    val assignees by viewModel.assignees.collectAsState()
+    assignees.subscribeOnError(onError)
 
-    val watchers by viewModel.watchers.observeAsState()
-    watchers?.subscribeOnError(onError)
+    val watchers by viewModel.watchers.collectAsState()
+    watchers.subscribeOnError(onError)
 
-    val userStories by viewModel.userStories.observeAsState()
-    userStories?.subscribeOnError(onError)
+    val userStories by viewModel.userStories.collectAsState()
+    userStories.subscribeOnError(onError)
 
-    val tasks by viewModel.tasks.observeAsState()
-    tasks?.subscribeOnError(onError)
+    val tasks by viewModel.tasks.collectAsState()
+    tasks.subscribeOnError(onError)
 
-    val comments by viewModel.comments.observeAsState()
-    comments?.subscribeOnError(onError)
+    val comments by viewModel.comments.collectAsState()
+    comments.subscribeOnError(onError)
 
-    val statuses by viewModel.statuses.observeAsState()
-    statuses?.subscribeOnError(onError)
-    val statusSelectResult by viewModel.statusSelectResult.observeAsState()
-    statusSelectResult?.subscribeOnError(onError)
+    val statuses by viewModel.statuses.collectAsState()
+    statuses.subscribeOnError(onError)
+    val statusSelectResult by viewModel.statusSelectResult.collectAsState()
+    statusSelectResult.subscribeOnError(onError)
 
-    val swimlanes by viewModel.swimlanes.observeAsState()
-    swimlanes?.subscribeOnError(onError)
+    val swimlanes by viewModel.swimlanes.collectAsState()
+    swimlanes.subscribeOnError(onError)
 
-    val sprints by viewModel.sprints.observeAsState()
-    sprints?.subscribeOnError(onError)
+    val sprints by viewModel.sprints.collectAsState()
+    sprints.subscribeOnError(onError)
 
-    val epics by viewModel.epics.observeAsState()
-    epics?.subscribeOnError(onError)
+    val epics by viewModel.epics.collectAsState()
+    epics.subscribeOnError(onError)
 
-    val team by viewModel.team.observeAsState()
-    team?.subscribeOnError(onError)
+    val team by viewModel.team.collectAsState()
+    team.subscribeOnError(onError)
 
-    val customFields by viewModel.customFields.observeAsState()
-    customFields?.subscribeOnError(onError)
+    val customFields by viewModel.customFields.collectAsState()
+    customFields.subscribeOnError(onError)
 
-    val attachments by viewModel.attachments.observeAsState()
-    attachments?.subscribeOnError(onError)
+    val attachments by viewModel.attachments.collectAsState()
+    attachments.subscribeOnError(onError)
 
-    val tags by viewModel.tags.observeAsState()
-    tags?.subscribeOnError(onError)
+    val tags by viewModel.tags.collectAsState()
+    tags.subscribeOnError(onError)
 
-    val colorResult by viewModel.colorResult.observeAsState()
-    colorResult?.subscribeOnError(onError)
+    val colorResult by viewModel.colorResult.collectAsState()
+    colorResult.subscribeOnError(onError)
 
-    val dueDateResult by viewModel.dueDateResult.observeAsState()
-    dueDateResult?.subscribeOnError(onError)
+    val dueDateResult by viewModel.dueDateResult.collectAsState()
+    dueDateResult.subscribeOnError(onError)
 
-    val editResult by viewModel.editResult.observeAsState()
-    editResult?.subscribeOnError(onError)
+    val editResult by viewModel.editResult.collectAsState()
+    editResult.subscribeOnError(onError)
 
-    val deleteResult by viewModel.deleteResult.observeAsState()
-    deleteResult?.subscribeOnError(onError)
-    deleteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.let {
+    val deleteResult by viewModel.deleteResult.collectAsState()
+    deleteResult.subscribeOnError(onError)
+    deleteResult.takeIf { it.resultStatus == ResultStatus.Success }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
     }
 
-    val promoteResult by viewModel.promoteResult.observeAsState()
-    promoteResult?.subscribeOnError(onError)
-    promoteResult?.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
+    val promoteResult by viewModel.promoteResult.collectAsState()
+    promoteResult.subscribeOnError(onError)
+    promoteResult.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
             navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
@@ -115,10 +114,10 @@ fun CommonTaskScreen(
     }
     
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
-        items = statuses?.data.orEmpty(),
-        isItemsLoading = statuses?.resultStatus == ResultStatus.Loading,
+        items = statuses.data.orEmpty(),
+        isItemsLoading = statuses.resultStatus == ResultStatus.Loading,
         selectItem = viewModel::selectStatus,
-        isResultLoading = statusSelectResult?.let { it.data == statusType && it.resultStatus == ResultStatus.Loading } ?: false
+        isResultLoading = statusSelectResult.let { it.data == statusType && it.resultStatus == ResultStatus.Loading }
     )
 
 
@@ -132,15 +131,15 @@ fun CommonTaskScreen(
                 CommonTaskType.Issue -> R.string.issue_slug
             }
         ).format(ref),
-        commonTask = commonTask?.data,
-        creator = creator?.data,
-        customFields = customFields?.data?.fields.orEmpty(),
-        attachments = attachments?.data.orEmpty(),
-        assignees = assignees?.data.orEmpty(),
-        watchers = watchers?.data.orEmpty(),
-        userStories = userStories?.data.orEmpty(),
-        tasks = tasks?.data.orEmpty(),
-        comments = comments?.data.orEmpty(),
+        commonTask = commonTask.data,
+        creator = creator.data,
+        customFields = customFields.data?.fields.orEmpty(),
+        attachments = attachments.data.orEmpty(),
+        assignees = assignees.data.orEmpty(),
+        watchers = watchers.data.orEmpty(),
+        userStories = userStories.data.orEmpty(),
+        tasks = tasks.data.orEmpty(),
+        comments = comments.data.orEmpty(),
         editActions = EditActions(
             editStatus = makeEditStatusAction(StatusType.Status),
             editType = makeEditStatusAction(StatusType.Type),
@@ -148,25 +147,25 @@ fun CommonTaskScreen(
             editPriority = makeEditStatusAction(StatusType.Priority),
             loadStatuses = { viewModel.loadStatuses(it) },
             editSwimlane = EditAction(
-                items = swimlanes?.data.orEmpty(),
+                items = swimlanes.data.orEmpty(),
                 loadItems = viewModel::loadSwimlanes,
-                isItemsLoading = swimlanes?.resultStatus == ResultStatus.Loading,
+                isItemsLoading = swimlanes.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::selectSwimlane,
-                isResultLoading = swimlanes?.resultStatus == ResultStatus.Loading
+                isResultLoading = swimlanes.resultStatus == ResultStatus.Loading
             ),
             editSprint = EditAction(
-                items = sprints?.data.orEmpty(),
+                items = sprints.data.orEmpty(),
                 loadItems = viewModel::loadSprints,
-                isItemsLoading = sprints?.resultStatus == ResultStatus.Loading,
+                isItemsLoading = sprints.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::selectSprint,
-                isResultLoading = sprints?.resultStatus == ResultStatus.Loading
+                isResultLoading = sprints.resultStatus == ResultStatus.Loading
             ),
             editEpics = EditAction(
-                items = epics?.data.orEmpty(),
+                items = epics.data.orEmpty(),
                 loadItems = viewModel::loadEpics,
-                isItemsLoading = epics?.resultStatus == ResultStatus.Loading,
+                isItemsLoading = epics.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::linkToEpic,
-                isResultLoading = epics?.resultStatus == ResultStatus.Loading,
+                isResultLoading = epics.resultStatus == ResultStatus.Loading,
                 removeItem = {
                     // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
                 }
@@ -175,55 +174,55 @@ fun CommonTaskScreen(
             editAttachments = EditAttachmentsAction(
                 deleteAttachment = viewModel::deleteAttachment,
                 addAttachment = viewModel::addAttachment,
-                isResultLoading = attachments?.resultStatus == ResultStatus.Loading
+                isResultLoading = attachments.resultStatus == ResultStatus.Loading
             ),
             editAssignees = EditAction(
-                items = team?.data.orEmpty(),
+                items = team.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team?.resultStatus == ResultStatus.Loading,
+                isItemsLoading = team.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addAssignee,
-                isResultLoading = assignees?.resultStatus == ResultStatus.Loading,
+                isResultLoading = assignees.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
-                items = team?.data.orEmpty(),
+                items = team.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team?.resultStatus == ResultStatus.Loading,
+                isItemsLoading = team.resultStatus == ResultStatus.Loading,
                 selectItem = viewModel::addWatcher,
-                isResultLoading = watchers?.resultStatus == ResultStatus.Loading,
+                isResultLoading = watchers.resultStatus == ResultStatus.Loading,
                 removeItem = viewModel::removeWatcher
             ),
             editComments = EditCommentsAction(
                 createComment = viewModel::createComment,
                 deleteComment = viewModel::deleteComment,
-                isResultLoading = comments?.resultStatus == ResultStatus.Loading
+                isResultLoading = comments.resultStatus == ResultStatus.Loading
             ),
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,
             promoteTask = viewModel::promoteToUserStory,
             editCustomField = viewModel::editCustomField,
             editTags = EditAction(
-                items = tags?.data.orEmpty(),
+                items = tags.data.orEmpty(),
                 loadItems = viewModel::loadTags,
                 selectItem = viewModel::addTag,
                 removeItem = viewModel::deleteTag,
-                isResultLoading = tags?.resultStatus == ResultStatus.Loading
+                isResultLoading = tags.resultStatus == ResultStatus.Loading
             ),
             editDueDate = EditSimple(
                 select = viewModel::selectDueDate,
-                isResultLoading = dueDateResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = dueDateResult.resultStatus == ResultStatus.Loading
             ),
             editEpicColor = EditSimple(
                 select = viewModel::selectEpicColor,
-                isResultLoading = colorResult?.resultStatus == ResultStatus.Loading
+                isResultLoading = colorResult.resultStatus == ResultStatus.Loading
             )
         ),
         loaders = Loaders(
-            isLoading = commonTask?.resultStatus == ResultStatus.Loading,
-            isEditLoading = editResult?.resultStatus == ResultStatus.Loading,
-            isDeleteLoading = deleteResult?.resultStatus == ResultStatus.Loading,
-            isPromoteLoading = promoteResult?.resultStatus == ResultStatus.Loading,
-            isCustomFieldsLoading = customFields?.resultStatus == ResultStatus.Loading
+            isLoading = commonTask.resultStatus == ResultStatus.Loading,
+            isEditLoading = editResult.resultStatus == ResultStatus.Loading,
+            isDeleteLoading = deleteResult.resultStatus == ResultStatus.Loading,
+            isPromoteLoading = promoteResult.resultStatus == ResultStatus.Loading,
+            isCustomFieldsLoading = customFields.resultStatus == ResultStatus.Loading
         ),
         navigationActions = NavigationActions(
             navigateBack = navController::popBackStack,

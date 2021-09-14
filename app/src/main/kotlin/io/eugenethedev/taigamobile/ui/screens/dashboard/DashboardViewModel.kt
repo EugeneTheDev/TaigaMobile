@@ -6,7 +6,9 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.joinAll
@@ -18,8 +20,8 @@ class DashboardViewModel : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
 
-    val workingOn = MutableLiveResult<List<CommonTask>?>()
-    val watching = MutableLiveResult<List<CommonTask>?>()
+    val workingOn = MutableResultFlow<List<CommonTask>?>()
+    val watching = MutableResultFlow<List<CommonTask>?>()
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -30,7 +32,7 @@ class DashboardViewModel : ViewModel() {
             reset()
         }
 
-        if (workingOn.value == null || watching.value == null) {
+        if (listOf(workingOn, watching).any { it.value.resultStatus == ResultStatus.Nothing }) {
             joinAll(
                 launch { workingOn.loadOrError(preserveValue = false) { tasksRepository.getWorkingOn() } },
                 launch { watching.loadOrError(preserveValue = false) { tasksRepository.getWatching() } }
@@ -46,7 +48,7 @@ class DashboardViewModel : ViewModel() {
     }
 
     fun reset() {
-        workingOn.value = null
-        watching.value = null
+        workingOn.value = Result(ResultStatus.Nothing)
+        watching.value = Result(ResultStatus.Nothing)
     }
 }

@@ -7,7 +7,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +20,7 @@ class CreateTaskViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    val creationResult = MutableLiveResult<CommonTask>()
+    val creationResult = MutableResultFlow<CommonTask>()
 
     fun createTask(
         commonTaskType: CommonTaskType,

@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.sprint
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
@@ -12,7 +11,9 @@ import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableLiveResult
+import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.commons.Result
+import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -28,11 +29,11 @@ class SprintViewModel : ViewModel() {
 
     private var sprintId: Long = -1
 
-    val sprint = MutableLiveResult<Sprint>()
-    val statuses = MutableLiveResult<List<Status>?>()
-    val storiesWithTasks = MutableLiveResult<Map<CommonTask, List<CommonTask>>?>()
-    val storylessTasks = MutableLiveResult<List<CommonTask>?>()
-    val issues = MutableLiveResult<List<CommonTask>?>()
+    val sprint = MutableResultFlow<Sprint>()
+    val statuses = MutableResultFlow<List<Status>>()
+    val storiesWithTasks = MutableResultFlow<Map<CommonTask, List<CommonTask>>>()
+    val storylessTasks = MutableResultFlow<List<CommonTask>>()
+    val issues = MutableResultFlow<List<CommonTask>>()
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -45,7 +46,7 @@ class SprintViewModel : ViewModel() {
 
         this.sprintId = sprintId
 
-        if (sprint.value == null) {
+        if (sprint.value.resultStatus == ResultStatus.Nothing) {
             loadData()
         }
     }
@@ -78,7 +79,7 @@ class SprintViewModel : ViewModel() {
         }
     }
 
-    val editResult = MutableLiveResult<Unit>()
+    val editResult = MutableResultFlow<Unit>()
     fun editSprint(name: String, start: LocalDate, end: LocalDate) = viewModelScope.launch {
         editResult.loadOrError(R.string.permission_error) {
             sprintsRepository.editSprint(sprintId, name, start, end)
@@ -87,7 +88,7 @@ class SprintViewModel : ViewModel() {
         }
     }
 
-    val deleteResult = MutableLiveResult<Unit>()
+    val deleteResult = MutableResultFlow<Unit>()
     fun deleteSprint() = viewModelScope.launch {
         deleteResult.loadOrError(R.string.permission_error) {
             sprintsRepository.deleteSprint(sprintId)
@@ -96,13 +97,12 @@ class SprintViewModel : ViewModel() {
         }
     }
 
-    @SuppressLint("NullSafeMutableLiveData")
     fun reset() {
         sprintId = -1
-        sprint.value = null
-        statuses.value = null
-        storiesWithTasks.value = null
-        storylessTasks.value = null
-        issues.value = null
+        sprint.value = Result(ResultStatus.Nothing)
+        statuses.value = Result(ResultStatus.Nothing)
+        storiesWithTasks.value = Result(ResultStatus.Nothing)
+        storylessTasks.value = Result(ResultStatus.Nothing)
+        issues.value = Result(ResultStatus.Nothing)
     }
 }

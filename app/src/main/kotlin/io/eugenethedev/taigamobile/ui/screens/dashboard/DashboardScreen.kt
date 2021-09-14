@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,16 +40,16 @@ fun DashboardScreen(
         viewModel.start()
     }
 
-    val workingOn by viewModel.workingOn.observeAsState()
-    workingOn?.subscribeOnError(onError)
+    val workingOn by viewModel.workingOn.collectAsState()
+    workingOn.subscribeOnError(onError)
 
-    val watching by viewModel.watching.observeAsState()
-    watching?.subscribeOnError(onError)
+    val watching by viewModel.watching.collectAsState()
+    watching.subscribeOnError(onError)
 
     DashboardScreenContent(
-        isLoading = workingOn?.resultStatus == ResultStatus.Loading || watching?.resultStatus == ResultStatus.Loading,
-        workingOn = workingOn?.data.orEmpty(),
-        watching = watching?.data.orEmpty(),
+        isLoading = listOf(workingOn, watching).any { it.resultStatus == ResultStatus.Loading },
+        workingOn = workingOn.data.orEmpty(),
+        watching = watching.data.orEmpty(),
         navigateToTask = {
             viewModel.changeCurrentProject(it)
             navController.navigateToTaskScreen(it.id, it.taskType, it.ref)
