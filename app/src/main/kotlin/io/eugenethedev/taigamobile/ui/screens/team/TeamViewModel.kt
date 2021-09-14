@@ -7,8 +7,7 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.NothingResult
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,12 +25,12 @@ class TeamViewModel : ViewModel() {
     }
 
     fun start() = viewModelScope.launch {
-        if (team.value.resultStatus == ResultStatus.Nothing) {
+        if (team.value is NothingResult) {
             team.loadOrError { usersRepository.getTeam() }
         }
     }
 
     fun reset() {
-        team.value = Result(ResultStatus.Nothing)
+        team.value = NothingResult()
     }
 }

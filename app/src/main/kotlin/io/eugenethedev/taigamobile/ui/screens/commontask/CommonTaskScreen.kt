@@ -14,7 +14,8 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.entities.CustomField
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.commons.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
@@ -98,7 +99,7 @@ fun CommonTaskScreen(
 
     val deleteResult by viewModel.deleteResult.collectAsState()
     deleteResult.subscribeOnError(onError)
-    deleteResult.takeIf { it.resultStatus == ResultStatus.Success }?.let {
+    deleteResult.takeIf { it is SuccessResult }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
@@ -106,7 +107,7 @@ fun CommonTaskScreen(
 
     val promoteResult by viewModel.promoteResult.collectAsState()
     promoteResult.subscribeOnError(onError)
-    promoteResult.takeIf { it.resultStatus == ResultStatus.Success }?.data?.let {
+    promoteResult.takeIf { it is SuccessResult }?.data?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
             navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
@@ -115,9 +116,9 @@ fun CommonTaskScreen(
     
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data.orEmpty(),
-        isItemsLoading = statuses.resultStatus == ResultStatus.Loading,
+        isItemsLoading = statuses is LoadingResult,
         selectItem = viewModel::selectStatus,
-        isResultLoading = statusSelectResult.let { it.data == statusType && it.resultStatus == ResultStatus.Loading }
+        isResultLoading = statusSelectResult.let { (it as? LoadingResult)?.data == statusType }
     )
 
 
@@ -149,23 +150,23 @@ fun CommonTaskScreen(
             editSwimlane = EditAction(
                 items = swimlanes.data.orEmpty(),
                 loadItems = viewModel::loadSwimlanes,
-                isItemsLoading = swimlanes.resultStatus == ResultStatus.Loading,
+                isItemsLoading = swimlanes is LoadingResult,
                 selectItem = viewModel::selectSwimlane,
-                isResultLoading = swimlanes.resultStatus == ResultStatus.Loading
+                isResultLoading = swimlanes is LoadingResult
             ),
             editSprint = EditAction(
                 items = sprints.data.orEmpty(),
                 loadItems = viewModel::loadSprints,
-                isItemsLoading = sprints.resultStatus == ResultStatus.Loading,
+                isItemsLoading = sprints is LoadingResult,
                 selectItem = viewModel::selectSprint,
-                isResultLoading = sprints.resultStatus == ResultStatus.Loading
+                isResultLoading = sprints is LoadingResult
             ),
             editEpics = EditAction(
                 items = epics.data.orEmpty(),
                 loadItems = viewModel::loadEpics,
-                isItemsLoading = epics.resultStatus == ResultStatus.Loading,
+                isItemsLoading = epics is LoadingResult,
                 selectItem = viewModel::linkToEpic,
-                isResultLoading = epics.resultStatus == ResultStatus.Loading,
+                isResultLoading = epics is LoadingResult,
                 removeItem = {
                     // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
                 }
@@ -174,28 +175,28 @@ fun CommonTaskScreen(
             editAttachments = EditAttachmentsAction(
                 deleteAttachment = viewModel::deleteAttachment,
                 addAttachment = viewModel::addAttachment,
-                isResultLoading = attachments.resultStatus == ResultStatus.Loading
+                isResultLoading = attachments is LoadingResult
             ),
             editAssignees = EditAction(
                 items = team.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team.resultStatus == ResultStatus.Loading,
+                isItemsLoading = team is LoadingResult,
                 selectItem = viewModel::addAssignee,
-                isResultLoading = assignees.resultStatus == ResultStatus.Loading,
+                isResultLoading = assignees is LoadingResult,
                 removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
                 items = team.data.orEmpty(),
                 loadItems = viewModel::loadTeam,
-                isItemsLoading = team.resultStatus == ResultStatus.Loading,
+                isItemsLoading = team is LoadingResult,
                 selectItem = viewModel::addWatcher,
-                isResultLoading = watchers.resultStatus == ResultStatus.Loading,
+                isResultLoading = watchers is LoadingResult,
                 removeItem = viewModel::removeWatcher
             ),
             editComments = EditCommentsAction(
                 createComment = viewModel::createComment,
                 deleteComment = viewModel::deleteComment,
-                isResultLoading = comments.resultStatus == ResultStatus.Loading
+                isResultLoading = comments is LoadingResult
             ),
             editTask = viewModel::editTask,
             deleteTask = viewModel::deleteTask,
@@ -206,23 +207,23 @@ fun CommonTaskScreen(
                 loadItems = viewModel::loadTags,
                 selectItem = viewModel::addTag,
                 removeItem = viewModel::deleteTag,
-                isResultLoading = tags.resultStatus == ResultStatus.Loading
+                isResultLoading = tags is LoadingResult
             ),
             editDueDate = EditSimple(
                 select = viewModel::selectDueDate,
-                isResultLoading = dueDateResult.resultStatus == ResultStatus.Loading
+                isResultLoading = dueDateResult is LoadingResult
             ),
             editEpicColor = EditSimple(
                 select = viewModel::selectEpicColor,
-                isResultLoading = colorResult.resultStatus == ResultStatus.Loading
+                isResultLoading = colorResult is LoadingResult
             )
         ),
         loaders = Loaders(
-            isLoading = commonTask.resultStatus == ResultStatus.Loading,
-            isEditLoading = editResult.resultStatus == ResultStatus.Loading,
-            isDeleteLoading = deleteResult.resultStatus == ResultStatus.Loading,
-            isPromoteLoading = promoteResult.resultStatus == ResultStatus.Loading,
-            isCustomFieldsLoading = customFields.resultStatus == ResultStatus.Loading
+            isLoading = commonTask is LoadingResult,
+            isEditLoading = editResult is LoadingResult,
+            isDeleteLoading = deleteResult is LoadingResult,
+            isPromoteLoading = promoteResult is LoadingResult,
+            isCustomFieldsLoading = customFields is LoadingResult
         ),
         navigationActions = NavigationActions(
             navigateBack = navController::popBackStack,

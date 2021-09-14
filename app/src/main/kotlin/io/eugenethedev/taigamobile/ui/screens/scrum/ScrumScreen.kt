@@ -23,7 +23,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
@@ -66,10 +66,10 @@ fun ScrumScreen(
             viewModel.reset()
         },
         stories = stories.data.orEmpty(),
-        isStoriesLoading = stories.resultStatus == ResultStatus.Loading,
+        isStoriesLoading = stories is LoadingResult,
         loadStories = viewModel::loadStories,
         sprints = sprints.data.orEmpty(),
-        isSprintsLoading = sprints.resultStatus == ResultStatus.Loading,
+        isSprintsLoading = sprints is LoadingResult,
         loadSprints = viewModel::loadSprints,
         navigateToBoard = {
             navController.navigateToSprint(it.id)

@@ -7,8 +7,8 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.commons.NothingResult
 import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.fixAnimation
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
@@ -50,7 +50,7 @@ class ProjectSelectorViewModel : ViewModel() {
             currentQuery = it
             currentPage = 0
             maxPage = Int.MAX_VALUE
-            projects.value = Result(ResultStatus.Success, emptyList())
+            projects.value = NothingResult()
         }
 
         if (currentPage == maxPage) return@launch

@@ -41,7 +41,7 @@ class ScrumViewModel : ViewModel() {
             reset()
         }
 
-        if (stories.value.resultStatus == ResultStatus.Nothing) {
+        if (stories.value is NothingResult) {
             loadStories()
             loadSprints()
         }
@@ -52,7 +52,7 @@ class ScrumViewModel : ViewModel() {
             currentStoriesQuery = it
             currentStoriesPage = 0
             maxStoriesPage = Int.MAX_VALUE
-            stories.value = Result(ResultStatus.Success, emptyList())
+            stories.value = NothingResult()
         }
 
         if (currentStoriesPage == maxStoriesPage) return@launch
@@ -88,13 +88,13 @@ class ScrumViewModel : ViewModel() {
     }
 
     private fun resetSprints() {
-        sprints.value = Result(ResultStatus.Nothing)
+        sprints.value = NothingResult()
         currentSprintPage = 0
         maxSprintPage = Int.MAX_VALUE
     }
 
     fun reset() {
-        stories.value = Result(ResultStatus.Nothing)
+        stories.value = NothingResult()
         currentStoriesQuery = ""
         currentStoriesPage = 0
         maxStoriesPage = Int.MAX_VALUE

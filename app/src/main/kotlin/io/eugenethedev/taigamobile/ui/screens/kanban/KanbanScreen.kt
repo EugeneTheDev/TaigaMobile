@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.domain.entities.*
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -48,7 +48,7 @@ fun KanbanScreen(
 
     KanbanScreenContent(
         projectName = viewModel.projectName,
-        isLoading = listOf(swimlanes, team, stories).any { it.resultStatus == ResultStatus.Loading },
+        isLoading = listOf(swimlanes, team, stories).any { it is LoadingResult },
         statuses = statuses.data.orEmpty(),
         stories = stories.data.orEmpty(),
         team = team.data.orEmpty(),

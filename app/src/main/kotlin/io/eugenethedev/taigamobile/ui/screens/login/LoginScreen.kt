@@ -22,9 +22,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.insets.imePadding
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.commons.ErrorResult
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.commons.SuccessResult
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 
 @Composable
 fun LoginScreen(
@@ -34,10 +36,10 @@ fun LoginScreen(
     val viewModel: LoginViewModel = viewModel()
 
     val loginResult by viewModel.loginResult.collectAsState()
-    loginResult.apply {
-        when(resultStatus) {
-            ResultStatus.Error -> onError(message!!)
-            ResultStatus.Success -> {
+    loginResult.also {
+        when(it) {
+            is ErrorResult -> onError(it.message!!)
+            is SuccessResult -> {
                 LaunchedEffect(Unit) {
                     navController.navigate(Routes.dashboard) {
                         popUpTo(Routes.login) { inclusive = true }
@@ -50,7 +52,7 @@ fun LoginScreen(
 
     LoginScreenContent(
         onContinueClick = viewModel::login,
-        isLoadingValue = loginResult.resultStatus in listOf(ResultStatus.Loading, ResultStatus.Success)
+        isLoadingValue = loginResult is LoadingResult || loginResult is SuccessResult
     )
 }
 

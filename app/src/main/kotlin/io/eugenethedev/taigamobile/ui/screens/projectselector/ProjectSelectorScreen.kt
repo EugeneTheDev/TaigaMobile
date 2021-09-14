@@ -15,10 +15,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Project
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorListConstants
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import kotlinx.coroutines.delay
@@ -51,7 +51,7 @@ fun ProjectSelectorScreen(
     ProjectSelectorScreenContent(
         projects = projects.data.orEmpty(),
         isVisible = isSelectorVisible,
-        isLoading = projects.resultStatus == ResultStatus.Loading,
+        isLoading = projects is LoadingResult,
         currentProjectId = currentProjectId,
         selectorAnimationDuration = selectorAnimationDuration,
         navigateBack = ::navigateBack,

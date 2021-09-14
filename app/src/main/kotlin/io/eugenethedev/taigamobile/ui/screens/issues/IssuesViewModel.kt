@@ -32,7 +32,7 @@ class IssuesViewModel : ViewModel() {
             reset()
         }
 
-        if (issues.value.resultStatus == ResultStatus.Nothing) {
+        if (issues.value is NothingResult) {
             loadIssues()
         }
     }
@@ -42,7 +42,7 @@ class IssuesViewModel : ViewModel() {
             currentIssuesQuery = it
             currentIssuesPage = 0
             maxIssuesPage = Int.MAX_VALUE
-            issues.value = Result(ResultStatus.Success, emptyList())
+            issues.value = NothingResult()
         }
 
         if (currentIssuesPage == maxIssuesPage) return@launch
@@ -57,7 +57,7 @@ class IssuesViewModel : ViewModel() {
     }
     
     fun reset() {
-        issues.value = Result(ResultStatus.Nothing)
+        issues.value = NothingResult()
         currentIssuesQuery = ""
         currentIssuesPage = 0
         maxIssuesPage = Int.MAX_VALUE

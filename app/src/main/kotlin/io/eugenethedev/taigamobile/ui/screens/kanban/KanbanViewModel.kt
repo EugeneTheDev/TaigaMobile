@@ -8,8 +8,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.NothingResult
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +40,7 @@ class KanbanViewModel : ViewModel() {
             reset()
         }
 
-        if (statuses.value.resultStatus == ResultStatus.Nothing) {
+        if (statuses.value is NothingResult) {
             joinAll(
                 launch {
                     statuses.loadOrError(preserveValue = false) { tasksRepository.getStatuses(CommonTaskType.UserStory) }
@@ -66,9 +65,9 @@ class KanbanViewModel : ViewModel() {
     }
 
     fun reset() {
-        statuses.value = Result(ResultStatus.Nothing)
-        team.value = Result(ResultStatus.Nothing)
-        stories.value = Result(ResultStatus.Nothing)
-        swimlanes.value = Result(ResultStatus.Nothing)
+        statuses.value = NothingResult()
+        team.value = NothingResult()
+        stories.value = NothingResult()
+        swimlanes.value = NothingResult()
     }
 }

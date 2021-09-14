@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
@@ -47,7 +47,7 @@ fun DashboardScreen(
     watching.subscribeOnError(onError)
 
     DashboardScreenContent(
-        isLoading = listOf(workingOn, watching).any { it.resultStatus == ResultStatus.Loading },
+        isLoading = listOf(workingOn, watching).any { it is LoadingResult<*> },
         workingOn = workingOn.data.orEmpty(),
         watching = watching.data.orEmpty(),
         navigateToTask = {

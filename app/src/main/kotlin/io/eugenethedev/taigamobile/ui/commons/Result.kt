@@ -7,19 +7,16 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Convenient way to dispatch events
  */
-class Result<T>(
-    val resultStatus: ResultStatus,
+sealed class Result<T>(
     val data: T? = null,
     @StringRes val message: Int? = null
 )
 
-enum class ResultStatus {
-    Success,
-    Error,
-    Loading,
-    Nothing
-}
+class SuccessResult<T>(data: T?) : Result<T>(data = data)
+class ErrorResult<T>(@StringRes message: Int? = null) : Result<T>(message = message)
+class LoadingResult<T>(data: T?) : Result<T>(data = data)
+class NothingResult<T> : Result<T>()
 
 typealias MutableResultFlow<T> = MutableStateFlow<Result<T>>
-fun <T> MutableResultFlow(value: Result<T> = Result(ResultStatus.Nothing)) = MutableStateFlow(value)
+fun <T> MutableResultFlow(value: Result<T> = NothingResult()) = MutableStateFlow(value)
 typealias ResultFlow<T> = StateFlow<Result<T>>

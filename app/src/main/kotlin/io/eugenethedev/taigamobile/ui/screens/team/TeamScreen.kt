@@ -26,13 +26,13 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -51,7 +51,7 @@ fun TeamScreen(
     TeamScreenContent(
         projectName = viewModel.projectName,
         team = team.data.orEmpty(),
-        isLoading = team.resultStatus == ResultStatus.Loading,
+        isLoading = team is LoadingResult,
         onTitleClick = {
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()

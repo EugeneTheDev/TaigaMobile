@@ -16,7 +16,7 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
@@ -59,7 +59,7 @@ fun SprintScreen(
 
     val deleteResult by viewModel.deleteResult.collectAsState()
     deleteResult.subscribeOnError(onError)
-    deleteResult.takeIf { it.resultStatus == ResultStatus.Success }?.let {
+    deleteResult.takeIf { it is LoadingResult }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
@@ -67,9 +67,9 @@ fun SprintScreen(
 
     SprintScreenContent(
         sprint = sprint.data,
-        isLoading = listOf(statuses, storiesWithTasks, storylessTasks, issues).any { it.resultStatus == ResultStatus.Loading },
-        isEditLoading = editResult.resultStatus == ResultStatus.Loading,
-        isDeleteLoading = deleteResult.resultStatus == ResultStatus.Loading,
+        isLoading = listOf(statuses, storiesWithTasks, storylessTasks, issues).any { it is LoadingResult },
+        isEditLoading = editResult is LoadingResult,
+        isDeleteLoading = deleteResult is LoadingResult,
         statuses = statuses.data.orEmpty(),
         storiesWithTasks = storiesWithTasks.data.orEmpty(),
         storylessTasks = storylessTasks.data.orEmpty(),

@@ -14,7 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
@@ -45,9 +45,9 @@ fun EpicsScreen(
             viewModel.reset()
         },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Epic) },
-        isLoading = epics.resultStatus == ResultStatus.Loading && epics.data.isNullOrEmpty(),
+        isLoading = epics is LoadingResult && epics.data.isNullOrEmpty(),
         epics = epics.data.orEmpty(),
-        isEpicsLoading = epics.resultStatus == ResultStatus.Loading,
+        isEpicsLoading = epics is LoadingResult,
         navigateToTask = navController::navigateToTaskScreen,
         loadEpics = viewModel::loadEpics
     )

@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
@@ -45,7 +45,7 @@ fun IssuesScreen(
             viewModel.reset()
         },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
-        isLoading = issues.resultStatus == ResultStatus.Loading,
+        isLoading = issues is LoadingResult,
         issues = issues.data.orEmpty(),
         navigateToTask = navController::navigateToTaskScreen,
         loadIssues = viewModel::loadIssues

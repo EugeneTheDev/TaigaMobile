@@ -156,7 +156,10 @@ class TasksRepository @Inject constructor(
     }
 
     override suspend fun getComments(commonTaskId: Long, type: CommonTaskType) = withIO {
-        taigaApi.getCommonTaskComments(CommonTaskPathSingular(type), commonTaskId).sortedBy { it.postDateTime }
+        taigaApi.getCommonTaskComments(CommonTaskPathSingular(type), commonTaskId)
+            .sortedBy { it.postDateTime }
+            .filter { it.deleteDate == null }
+            .map { it.also { it.canDelete = it.author.id == session.currentUserId } }
     }
 
     override suspend fun getAttachments(commonTaskId: Long, type: CommonTaskType) = withIO {

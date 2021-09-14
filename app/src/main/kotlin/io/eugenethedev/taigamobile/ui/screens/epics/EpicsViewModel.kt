@@ -6,10 +6,7 @@ import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.*
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +31,7 @@ class EpicsViewModel : ViewModel() {
             reset()
         }
 
-        if (epics.value.resultStatus == ResultStatus.Nothing) {
+        if (epics.value is NothingResult) {
             loadEpics()
         }
     }
@@ -52,7 +49,7 @@ class EpicsViewModel : ViewModel() {
     }
     
     fun reset() {
-        epics.value = Result(ResultStatus.Nothing)
+        epics.value = NothingResult()
         currentEpicPage = 0
         maxEpicPage = Int.MAX_VALUE
     }

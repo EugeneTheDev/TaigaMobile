@@ -55,7 +55,7 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     private fun loadData() = viewModelScope.launch {
-        commonTask.loadOrError(showLoading = commonTask.value.data == null) {
+        commonTask.loadOrError(showLoading = commonTask.value is NothingResult) {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).also {
 
                 suspend fun MutableResultFlow<List<User>>.loadUsersFromIds(ids: List<Long>) =
@@ -86,11 +86,7 @@ class CommonTaskViewModel : ViewModel() {
                         tasks.loadOrError(showLoading = false) { tasksRepository.getUserStoryTasks(commonTaskId) }
                     },
                     launch {
-                        comments.loadOrError(showLoading = false) {
-                            tasksRepository.getComments(commonTaskId, commonTaskType)
-                                .filter { it.deleteDate == null }
-                                .map { it.also { it.canDelete = it.author.id == session.currentUserId } }
-                        }
+                        comments.loadOrError(showLoading = false) { tasksRepository.getComments(commonTaskId, commonTaskType) }
                     }
                 )
             }
@@ -114,7 +110,7 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     fun selectStatus(status: Status) = viewModelScope.launch {
-        statusSelectResult.value = Result(ResultStatus.Loading, status.type)
+        statusSelectResult.value = LoadingResult(status.type)
 
         statusSelectResult.loadOrError(R.string.permission_error) {
             tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion.value)
@@ -134,7 +130,7 @@ class CommonTaskViewModel : ViewModel() {
         if (query == null) { // only handling null. search not supported
             currentSprintPage = 0
             maxSprintPage = Int.MAX_VALUE
-            sprints.value = Result(ResultStatus.Success, emptyList())
+            sprints.value = NothingResult()
         }
 
         if (currentSprintPage == maxSprintPage) return@launch
@@ -171,7 +167,7 @@ class CommonTaskViewModel : ViewModel() {
             currentEpicQuery = it
             currentEpicPage = 0
             maxEpicPage = Int.MAX_VALUE
-            epics.value = Result(ResultStatus.Success, emptyList())
+            epics.value = NothingResult()
         }
 
         if (currentEpicPage == maxEpicPage) return@launch
@@ -360,7 +356,7 @@ class CommonTaskViewModel : ViewModel() {
 
     fun loadTags(query: String?) = viewModelScope.launch {
         if (query == null) {
-            tags.value = Result(ResultStatus.Success)
+            tags.value = NothingResult()
             return@launch
         }
 

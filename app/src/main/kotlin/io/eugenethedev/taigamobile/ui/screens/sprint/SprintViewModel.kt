@@ -12,8 +12,7 @@ import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
-import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
+import io.eugenethedev.taigamobile.ui.commons.NothingResult
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -46,7 +45,7 @@ class SprintViewModel : ViewModel() {
 
         this.sprintId = sprintId
 
-        if (sprint.value.resultStatus == ResultStatus.Nothing) {
+        if (sprint.value is NothingResult) {
             loadData()
         }
     }
@@ -99,10 +98,10 @@ class SprintViewModel : ViewModel() {
 
     fun reset() {
         sprintId = -1
-        sprint.value = Result(ResultStatus.Nothing)
-        statuses.value = Result(ResultStatus.Nothing)
-        storiesWithTasks.value = Result(ResultStatus.Nothing)
-        storylessTasks.value = Result(ResultStatus.Nothing)
-        issues.value = Result(ResultStatus.Nothing)
+        sprint.value = NothingResult()
+        statuses.value = NothingResult()
+        storiesWithTasks.value = NothingResult()
+        storylessTasks.value = NothingResult()
+        issues.value = NothingResult()
     }
 }

@@ -16,8 +16,8 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import io.eugenethedev.taigamobile.ui.commons.ErrorResult
 import io.eugenethedev.taigamobile.ui.commons.Result
-import io.eugenethedev.taigamobile.ui.commons.ResultStatus
 import timber.log.Timber
 
 /**
@@ -60,7 +60,7 @@ fun Modifier.clickableUnindicated(
 }
 
 @Composable
-inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = takeIf { it.resultStatus == ResultStatus.Error }?.let { onError(it.message!!) }
+inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let { onError(it) }
 
 val Context.activity: AppCompatActivity get() = when (this) {
     is AppCompatActivity -> this
