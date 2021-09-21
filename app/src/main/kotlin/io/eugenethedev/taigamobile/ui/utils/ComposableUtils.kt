@@ -16,6 +16,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.commons.ErrorResult
 import io.eugenethedev.taigamobile.ui.commons.Result
 import timber.log.Timber
@@ -45,6 +48,8 @@ fun onBackPressed(action: () -> Unit) {
     }
 }
 
+
+@SuppressLint("UnnecessaryComposedModifier")
 fun Modifier.clickableUnindicated(
     enabled: Boolean = true,
     onClick: () -> Unit
@@ -59,8 +64,19 @@ fun Modifier.clickableUnindicated(
     )
 }
 
+
+// Error functions
 @Composable
 inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let { onError(it) }
+
+@SuppressLint("ComposableNaming")
+@Composable
+inline fun <T : Any> LazyPagingItems<T>.subscribeOnError(onError: @Composable (message: Int) -> Unit) {
+    if (loadState.run { listOf(refresh, prepend, append) }.any { it is LoadState.Error }) {
+        onError(R.string.common_error_message)
+    }
+}
+
 
 val Context.activity: AppCompatActivity get() = when (this) {
     is AppCompatActivity -> this

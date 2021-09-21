@@ -3,7 +3,6 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
@@ -17,7 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.items
 import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.rememberPagerState
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
@@ -25,11 +29,12 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
+import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
 import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
+import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
@@ -43,6 +48,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+
 @Composable
 fun ScrumScreen(
     navController: NavController,
@@ -53,11 +59,15 @@ fun ScrumScreen(
         viewModel.start()
     }
 
-    val stories by viewModel.stories.collectAsState()
-    stories.subscribeOnError(onError)
+    val stories = viewModel.stories
+    stories.subscribeOnError {
+        onError(R.string.common_error_message)
+    }
 
-    val sprints by viewModel.sprints.collectAsState()
+    val sprints = viewModel.sprints
     sprints.subscribeOnError(onError)
+    val createSprintResult by viewModel.createSprintResult.collectAsState()
+    createSprintResult.subscribeOnError(onError)
 
     ScrumScreenContent(
         projectName = viewModel.projectName,
@@ -65,12 +75,10 @@ fun ScrumScreen(
             navController.navigate(Routes.projectsSelector)
             viewModel.reset()
         },
-        stories = stories.data.orEmpty(),
-        isStoriesLoading = stories is LoadingResult,
-        loadStories = viewModel::loadStories,
-        sprints = sprints.data.orEmpty(),
-        isSprintsLoading = sprints is LoadingResult,
-        loadSprints = viewModel::loadSprints,
+        stories = stories,
+        searchStories = viewModel::searchStories,
+        sprints = sprints,
+        isCreateSprintLoading = createSprintResult is LoadingResult,
         navigateToBoard = {
             navController.navigateToSprint(it.id)
         },
@@ -80,16 +88,15 @@ fun ScrumScreen(
     )
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
-    stories: List<CommonTask> = emptyList(),
-    isStoriesLoading: Boolean = false,
-    loadStories: (query: String) -> Unit = {},
-    sprints: List<Sprint> = emptyList(),
-    isSprintsLoading: Boolean = false,
-    loadSprints: () -> Unit = {},
+    stories: LazyPagingItems<CommonTask>? = null,
+    searchStories: (query: String) -> Unit = {},
+    sprints: LazyPagingItems<Sprint>? = null,
+    isCreateSprintLoading: Boolean = false,
     navigateToBoard: (Sprint) -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
     navigateToCreateTask: () -> Unit = {},
@@ -98,29 +105,50 @@ fun ScrumScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
+    val pagerState = rememberPagerState(pageCount = Tabs.values().size)
+    var isCreateSprintDialogVisible by remember { mutableStateOf(false) }
+
     ProjectAppBar(
         projectName = projectName,
+        actions = {
+            PlusButton(
+                onClick = when (Tabs.values()[pagerState.currentPage]) {
+                    Tabs.Backlog -> navigateToCreateTask
+                    Tabs.Sprints -> { { isCreateSprintDialogVisible = true } }
+                }
+            )
+        },
         onTitleClick = onTitleClick
     )
 
+    if (isCreateSprintDialogVisible) {
+        EditSprintDialog(
+            onConfirm = { name, start, end ->
+                createSprint(name, start, end)
+                isCreateSprintDialogVisible = false
+            },
+            onDismiss = { isCreateSprintDialogVisible = false }
+        )
+    }
+
+    if (isCreateSprintLoading) {
+        LoadingDialog()
+    }
+
     HorizontalTabbedPager(
         tabs = Tabs.values(),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        pagerState = pagerState
     ) { page ->
         when (Tabs.values()[page]) {
             Tabs.Backlog -> BacklogTabContent(
                 stories = stories,
-                isStoriesLoading = isStoriesLoading,
-                loadStories = loadStories,
-                navigateToTask = navigateToTask,
-                navigateToCreateTask = navigateToCreateTask
+                searchStories = searchStories,
+                navigateToTask = navigateToTask
             )
             Tabs.Sprints -> SprintsTabContent(
                 sprints = sprints,
-                isSprintsLoading = isSprintsLoading,
-                navigateToBoard = navigateToBoard,
-                loadSprints = loadSprints,
-                createSprint = createSprint
+                navigateToBoard = navigateToBoard
             )
         }
     }
@@ -134,44 +162,29 @@ private enum class Tabs(@StringRes override val titleId: Int) : Tab {
 
 @Composable
 private fun BacklogTabContent(
-    stories: List<CommonTask>,
-    isStoriesLoading: Boolean,
-    loadStories: (String) -> Unit,
-    navigateToTask: NavigateToTask,
-    navigateToCreateTask: () -> Unit
+    stories: LazyPagingItems<CommonTask>?,
+    searchStories: (String) -> Unit,
+    navigateToTask: NavigateToTask
+) = Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.fillMaxWidth()
 ) {
     var query by remember { mutableStateOf(TextFieldValue()) }
 
+    TextFieldWithHint(
+        hintId = R.string.tasks_search_hint,
+        value = query,
+        onValueChange = { query = it },
+        onSearchClick = { searchStories(query.text) },
+        horizontalPadding = searchFieldHorizontalPadding,
+        verticalPadding = searchFieldVerticalPadding,
+        hasBorder = true
+    )
+
     LazyColumn(Modifier.fillMaxSize()) {
-        item {
-            TextFieldWithHint(
-                hintId = R.string.tasks_search_hint,
-                value = query,
-                onValueChange = { query = it },
-                onSearchClick = { loadStories(query.text) },
-                horizontalPadding = searchFieldHorizontalPadding,
-                verticalPadding = searchFieldVerticalPadding,
-                hasBorder = true
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            ) {
-                AddButton(
-                    text = stringResource(R.string.add_userstory),
-                    onClick = navigateToCreateTask
-                )
-            }
-        }
-
         SimpleTasksListWithTitle(
-            commonTasks = stories,
+            commonTasksLazy = stories,
             navigateToTask = navigateToTask,
-            isTasksLoading = isStoriesLoading,
-            loadData = { loadStories(query.text) },
             horizontalPadding = mainHorizontalScreenPadding,
         )
     }
@@ -179,39 +192,13 @@ private fun BacklogTabContent(
 
 @Composable
 private fun SprintsTabContent(
-    sprints: List<Sprint>,
-    isSprintsLoading: Boolean,
+    sprints: LazyPagingItems<Sprint>?,
     navigateToBoard: (Sprint) -> Unit,
-    loadSprints: () -> Unit,
-    createSprint: (name: String, start: LocalDate, end: LocalDate) -> Unit
 ) = LazyColumn(Modifier.fillMaxSize()) {
-    item {
-        var isCreateSprintDialogVisible by remember { mutableStateOf(false) }
+    if (sprints == null) return@LazyColumn
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            AddButton(
-                text = stringResource(R.string.add_sprint),
-                onClick = { isCreateSprintDialogVisible = true }
-            )
-        }
-
-        if (isCreateSprintDialogVisible) {
-            EditSprintDialog(
-                onConfirm = { name, start, end ->
-                    createSprint(name, start, end)
-                    isCreateSprintDialogVisible = false
-                },
-                onDismiss = { isCreateSprintDialogVisible = false }
-            )
-        }
-    }
-
-    items(sprints) {
+    items(sprints, key = { it.id }) {
+        if (it == null) return@items
         SprintItem(
             sprint = it,
             navigateToBoard = navigateToBoard
@@ -219,17 +206,13 @@ private fun SprintsTabContent(
     }
 
     item {
-        if (isSprintsLoading) {
+        if (sprints.loadState.refresh is LoadState.Loading || sprints.loadState.append is LoadState.Loading) {
             DotsLoader()
-        } else if (sprints.isEmpty()) {
+        } else if (sprints.itemCount == 0) {
             NothingToSeeHereText()
         }
 
         Spacer(Modifier.navigationBarsHeight(8.dp))
-
-        LaunchedEffect(sprints.size) {
-            loadSprints()
-        }
     }
 }
 

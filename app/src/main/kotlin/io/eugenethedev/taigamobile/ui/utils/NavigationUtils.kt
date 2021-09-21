@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.utils
 
-import android.os.Parcelable
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.screens.main.Routes

@@ -17,6 +17,7 @@ import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.commons.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
@@ -59,7 +60,7 @@ fun SprintScreen(
 
     val deleteResult by viewModel.deleteResult.collectAsState()
     deleteResult.subscribeOnError(onError)
-    deleteResult.takeIf { it is LoadingResult }?.let {
+    deleteResult.takeIf { it is SuccessResult }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }

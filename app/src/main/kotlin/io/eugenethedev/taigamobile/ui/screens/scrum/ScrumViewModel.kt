@@ -2,15 +2,19 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.domain.entities.Sprint
+import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.*
+import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -23,15 +27,6 @@ class ScrumViewModel : ViewModel() {
 
     val projectName: String get() = session.currentProjectName
 
-    val stories = MutableResultFlow<List<CommonTask>?>()
-    private var currentStoriesQuery = ""
-    private var currentStoriesPage = 0
-    private var maxStoriesPage = Int.MAX_VALUE
-
-    val sprints = MutableResultFlow<List<Sprint>>()
-    private var currentSprintPage = 0
-    private var maxSprintPage = Int.MAX_VALUE
-
     init {
         TaigaApp.appComponent.inject(this)
     }
@@ -40,65 +35,44 @@ class ScrumViewModel : ViewModel() {
         if (screensState.shouldReloadScrumScreen) {
             reset()
         }
+    }
 
-        if (stories.value is NothingResult) {
-            loadStories()
-            loadSprints()
-        }
+    // stories
+
+    private val storiesQuery = MutableStateFlow("")
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val stories by lazy {
+        storiesQuery.flatMapLatest { query ->
+            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
+                CommonPagingSource { tasksRepository.getBacklogUserStories(it, query) }
+            }.flow
+        }.asLazyPagingItems(viewModelScope)
     }
     
-    fun loadStories(query: String = "") = viewModelScope.launch {
-        query.takeIf { it != currentStoriesQuery }?.let {
-            currentStoriesQuery = it
-            currentStoriesPage = 0
-            maxStoriesPage = Int.MAX_VALUE
-            stories.value = NothingResult()
-        }
-
-        if (currentStoriesPage == maxStoriesPage) return@launch
-
-        stories.loadOrError {
-            tasksRepository.getBacklogUserStories(++currentStoriesPage, query).also {
-                if (it.isEmpty()) maxStoriesPage = currentStoriesPage
-            }.let {
-                stories.value.data.orEmpty() + it
-            }
-        }
+    fun searchStories(query: String) {
+        storiesQuery.value = query
     }
 
-    fun loadSprints() = viewModelScope.launch {
-        if (currentSprintPage == maxSprintPage) return@launch
+    // sprints
 
-        sprints.loadOrError {
-            sprintsRepository.getSprints(++currentSprintPage).also {
-                if (it.isEmpty()) maxSprintPage = currentSprintPage
-            }.let {
-                sprints.value.data.orEmpty() + it
-            }
-        }
+    val sprints by lazy {
+        Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
+            CommonPagingSource { sprintsRepository.getSprints(it) }
+        }.flow.asLazyPagingItems(viewModelScope)
     }
+
+    val createSprintResult = MutableResultFlow<Unit>(NothingResult())
 
     fun createSprint(name: String, start: LocalDate, end: LocalDate) = viewModelScope.launch {
-        sprints.loadOrError(R.string.permission_error) {
+        createSprintResult.loadOrError(R.string.permission_error) {
             sprintsRepository.createSprint(name, start, end)
-            resetSprints()
-            loadSprints().join()
-            sprints.value.data
+            sprints.refresh()
         }
-    }
-
-    private fun resetSprints() {
-        sprints.value = NothingResult()
-        currentSprintPage = 0
-        maxSprintPage = Int.MAX_VALUE
     }
 
     fun reset() {
-        stories.value = NothingResult()
-        currentStoriesQuery = ""
-        currentStoriesPage = 0
-        maxStoriesPage = Int.MAX_VALUE
-
-        resetSprints()
+        createSprintResult.value = NothingResult()
+        stories.refresh()
+        sprints.refresh()
     }
 }

@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.data.api
 
 import io.eugenethedev.taigamobile.domain.entities.*
+import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -100,6 +101,7 @@ interface TaigaApi {
         @Query("watchers") watcherId: Long? = null,
         @Query("dashboard") isDashboard: Boolean? = null,
         @Query("q") query: String? = null,
+        @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
 
         // here and below instead of setting header to "false" remove it,
         // because api always returns unpaginated result if header persists, regardless of its value

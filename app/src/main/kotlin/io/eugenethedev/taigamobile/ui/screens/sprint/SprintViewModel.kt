@@ -92,7 +92,6 @@ class SprintViewModel : ViewModel() {
         deleteResult.loadOrError(R.string.permission_error) {
             sprintsRepository.deleteSprint(sprintId)
             screensState.modify()
-            loadData().join()
         }
     }
 

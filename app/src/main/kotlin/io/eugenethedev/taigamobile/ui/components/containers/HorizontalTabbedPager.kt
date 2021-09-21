@@ -25,11 +25,11 @@ import kotlinx.coroutines.launch
 fun HorizontalTabbedPager(
     tabs: Array<out Tab>,
     modifier: Modifier = Modifier,
+    pagerState: PagerState = rememberPagerState(pageCount = tabs.size),
     scrollable: Boolean = true,
     edgePadding: Dp = mainHorizontalScreenPadding,
     content: @Composable PagerScope.(page: Int) -> Unit
 ) = Column(modifier = modifier) {
-    val pagerState = rememberPagerState(pageCount = tabs.size)
     val coroutineScope = rememberCoroutineScope()
 
     val indicator: @Composable (tabPositions: List<TabPosition>) -> Unit = { tabPositions ->
@@ -41,7 +41,7 @@ fun HorizontalTabbedPager(
     val tabsRow: @Composable () -> Unit = {
         tabs.forEachIndexed { index, tab ->
             Tab(
-                selected = pagerState.run { targetPage?.takeIf { it != currentPage } ?: currentPage == index },
+                selected = pagerState.run { targetPage.takeIf { it != currentPage } ?: currentPage == index },
                 onClick = {
                     coroutineScope.launch { pagerState.animateScrollToPage(index) }
                 },
