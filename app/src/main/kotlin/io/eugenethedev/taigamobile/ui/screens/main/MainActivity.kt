@@ -145,10 +145,7 @@ class MainActivity : AppCompatActivity() {
                                             selected = currentRoute == screen.route,
                                             onClick = {
                                                 navController.navigate(screen.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    restoreState = true
+                                                    popUpTo(navController.graph.findStartDestination().id) { }
                                                     launchSingleTop = true
                                                 }
 
