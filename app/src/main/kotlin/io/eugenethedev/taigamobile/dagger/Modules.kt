@@ -32,6 +32,12 @@ class DataModule {
     @Provides
     fun provideTaigaApi(session: Session, gson: Gson): TaigaApi {
         val baseUrlPlaceholder = "https://nothing.nothing"
+        fun getApiUrl() = // for compatibility with older app versions
+            if (!session.server.run { startsWith("https://") || startsWith("http://") }) {
+                "https://"
+            } else {
+                ""
+            } + "${session.server}/${TaigaApi.API_PREFIX}"
 
         val okHttpBuilder = OkHttpClient.Builder()
             .addInterceptor {
@@ -42,7 +48,7 @@ class DataModule {
                     proceed(
                         request()
                             .newBuilder()
-                            .url(url.replace(baseUrlPlaceholder, "${BuildConfig.SCHEMA}${session.server}/${TaigaApi.API_PREFIX}"))
+                            .url(url.replace(baseUrlPlaceholder, getApiUrl()))
                             .header("User-Agent", "TaigaMobile/${BuildConfig.VERSION_NAME}")
                             .also {
                                 if ("/${TaigaApi.AUTH_ENDPOINTS}" !in url) { // do not add Authorization header to authorization requests

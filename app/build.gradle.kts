@@ -47,26 +47,14 @@ android {
     buildTypes {
         getByName("debug") {
             signingConfig = signingConfigs.getByName("debug")
-
-            buildConfigField("String", "SCHEMA", "\"https://\"")
         }
 
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
-
-            buildConfigField("String", "SCHEMA", "\"https://\"")
-        }
-
-        create("staging") {
-            initWith(getByName("debug"))
-
-            buildConfigField("String", "SCHEMA", "\"http://\"")
         }
     }
-
-    testBuildType = "staging"
 
     testOptions.unitTests {
         isIncludeAndroidResources = true

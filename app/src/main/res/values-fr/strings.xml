@@ -18,6 +18,9 @@
     <string name="login_continue">Continuer</string>
     <string name="login_error_message">Erreur lors de la connexion. Vérifiez vos identifiants et votre connexion</string>
 
+    <string name="login_alert_title">Connexion non cryptée</string>
+    <string name="login_alert_text">Vous allez utiliser une connexion non cryptée. Es-tu sûr?</string>
+
     <string name="dashboard">Tableau de bord</string>
     <string name="dashboard_short">Board</string>
     <string name="scrum">Scrum</string>

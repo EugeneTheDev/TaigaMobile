@@ -18,6 +18,9 @@
     <string name="login_continue">Продовжити</string>
     <string name="login_error_message">Помилка під час логіну. Перевірте дані чи з\'єднання</string>
 
+    <string name="login_alert_title">Нешифроване з\'єднання</string>
+    <string name="login_alert_text">Ви збираєтесь використовувати незашифроване з\'єднання. Ви впевнені?</string>
+
     <string name="dashboard">Панель приладів</string>
     <string name="dashboard_short">Панель</string>
     <string name="scrum">Скрам</string>

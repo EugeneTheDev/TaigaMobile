@@ -25,6 +25,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.commons.ErrorResult
 import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.commons.SuccessResult
+import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 
@@ -51,14 +52,14 @@ fun LoginScreen(
     }
 
     LoginScreenContent(
-        onContinueClick = viewModel::login,
+        login = viewModel::login,
         isLoadingValue = loginResult is LoadingResult || loginResult is SuccessResult
     )
 }
 
 @Composable
 fun LoginScreenContent(
-    onContinueClick: (server: String, login: String, password: String) -> Unit = { _, _, _ -> },
+    login: (server: String, login: String, password: String) -> Unit = { _, _, _ -> },
     isLoadingValue: Boolean = false,
 ) = ConstraintLayout(
     modifier = Modifier.fillMaxSize(),
@@ -153,21 +154,43 @@ fun LoginScreenContent(
             top.linkTo(loginForm.bottom, 24.dp)
         }
     ) {
+        val loginAction = {
+            login(
+                taigaServerInput.text.trim(),
+                loginInput.text.trim(),
+                passwordInput.text.trim()
+            )
+        }
+
+        var isAlertVisible by remember { mutableStateOf(false) }
+
+        if (isAlertVisible) {
+            ConfirmActionDialog(
+                title = stringResource(R.string.login_alert_title),
+                text = stringResource(R.string.login_alert_text),
+                onConfirm = {
+                    isAlertVisible = false
+                    loginAction()
+                },
+                onDismiss = { isAlertVisible = false }
+            )
+        }
+
         if (isLoadingValue) {
             CircularProgressIndicator(modifier = Modifier.size(48.dp))
         } else {
             Button(
                 onClick = {
-                    isServerInputError = !taigaServerInput.text.matches(Regex("""([\w\d-]+\.)+[\w\d-]+(:\d+)?"""))
+                    isServerInputError = !taigaServerInput.text.matches(Regex("""(http|https)://([\w\d-]+\.)+[\w\d-]+(:\d+)?"""))
                     isLoginInputError = loginInput.text.isBlank()
                     isPasswordInputError = passwordInput.text.isBlank()
 
                     if (!(isServerInputError || isLoginInputError || isPasswordInputError)) {
-                        onContinueClick(
-                            taigaServerInput.text.trim(),
-                            loginInput.text.trim(),
-                            passwordInput.text.trim()
-                        )
+                        if (taigaServerInput.text.startsWith("http://")) {
+                            isAlertVisible = true
+                        } else {
+                            loginAction()
+                        }
                     }
                 },
                 contentPadding = PaddingValues(start = 40.dp, end = 40.dp)
