@@ -51,6 +51,7 @@ interface Creations {
         getAllProdTables().forEach {
             println("Getting snapshot for '$it'")
             createStatement().execute("alter table $it disable trigger all")
+            createStatement().execute("delete from $it where true")
             createStatement().execute("insert into $it select * from ${it}_$_snapshotPostfix")
             createStatement().execute("alter table $it enable trigger all")
         }

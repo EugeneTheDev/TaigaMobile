@@ -71,7 +71,7 @@ class TaigaTestInstanceManager(
 
     fun Connection.getAllProdTables() = sequence<String> {
         createStatement()
-            .executeQuery("select * from information_schema.tables where table_schema = 'public' and table_name not like '%$_snapshotPostfix'").let {
+            .executeQuery("select * from information_schema.tables where table_schema = 'public' and table_name not like '%$_snapshotPostfix' and table_name not like '%django%'").let {
                 while (it.next()) {
                     yield(it.getString("table_name"))
                 }
