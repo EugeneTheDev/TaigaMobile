@@ -2,13 +2,14 @@ package io.eugenethedev.taigamobile.ui.screens.epics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.*
-import io.eugenethedev.taigamobile.ui.utils.loadOrError
-import kotlinx.coroutines.launch
+import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import javax.inject.Inject
 
 class EpicsViewModel : ViewModel() {
@@ -17,10 +18,6 @@ class EpicsViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
 
     val projectName get() = session.currentProjectName
-    val epics = MutableResultFlow<List<CommonTask>>()
-    
-    private var currentEpicPage = 0
-    private var maxEpicPage = Int.MAX_VALUE
     
     init {
         TaigaApp.appComponent.inject(this)
@@ -30,27 +27,15 @@ class EpicsViewModel : ViewModel() {
         if (screensState.shouldReloadEpicsScreen) {
             reset()
         }
-
-        if (epics.value is NothingResult) {
-            loadEpics()
-        }
     }
 
-    fun loadEpics() = viewModelScope.launch {
-        if (currentEpicPage == maxEpicPage) return@launch
-
-        epics.loadOrError {
-            tasksRepository.getEpics(++currentEpicPage).also {
-                if (it.isEmpty()) maxEpicPage = currentEpicPage
-            }.let {
-                epics.value.data.orEmpty() + it
-            }
-        }
+    val epics by lazy {
+        Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
+            CommonPagingSource { tasksRepository.getEpics(it) }
+        }.flow.asLazyPagingItems(viewModelScope)
     }
     
     fun reset() {
-        epics.value = NothingResult()
-        currentEpicPage = 0
-        maxEpicPage = Int.MAX_VALUE
+        epics.refresh()
     }
 }

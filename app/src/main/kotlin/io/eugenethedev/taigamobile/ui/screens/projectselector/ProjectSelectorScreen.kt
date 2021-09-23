@@ -13,9 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Project
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorListConstants
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -35,7 +35,7 @@ fun ProjectSelectorScreen(
     }
     val coroutineScope = rememberCoroutineScope()
 
-    val projects by viewModel.projects.collectAsState()
+    val projects = viewModel.projects
     projects.subscribeOnError(onError)
     val currentProjectId = viewModel.currentProjectId
 
@@ -49,13 +49,12 @@ fun ProjectSelectorScreen(
     }
 
     ProjectSelectorScreenContent(
-        projects = projects.data.orEmpty(),
+        projects = projects,
         isVisible = isSelectorVisible,
-        isLoading = projects is LoadingResult,
         currentProjectId = currentProjectId,
         selectorAnimationDuration = selectorAnimationDuration,
         navigateBack = ::navigateBack,
-        loadData = { viewModel.loadData(it) },
+        searchProjects = { viewModel.searchProjects(it) },
         selectProject = {
             viewModel.selectProject(it)
             navigateBack()
@@ -66,24 +65,24 @@ fun ProjectSelectorScreen(
 
 @Composable
 fun ProjectSelectorScreenContent(
-    projects: List<Project>,
+    projects: LazyPagingItems<Project>? = null,
     isVisible: Boolean = false,
-    isLoading: Boolean = false,
     currentProjectId: Long = -1,
     selectorAnimationDuration: Int = SelectorListConstants.defaultAnimDurationMillis,
     navigateBack: () -> Unit = {},
-    loadData: (String) -> Unit = {},
+    searchProjects: (String) -> Unit = {},
     selectProject: (Project) -> Unit  = {}
 ) = Box(
     Modifier.fillMaxSize(),
     contentAlignment = Alignment.TopStart
 ) {
+    if (projects == null) return@Box
+
     SelectorList(
         titleHintId = R.string.search_projects_hint,
-        items = projects,
+        itemsLazy = projects,
         isVisible = isVisible,
-        isLoading = isLoading,
-        loadData = loadData,
+        searchData = searchProjects,
         navigateBack = navigateBack,
         animationDurationMillis = selectorAnimationDuration
     ) {
@@ -148,12 +147,6 @@ private fun ItemProject(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun ProjectSelectorScreenPreview() = TaigaMobileTheme {
-    ProjectSelectorScreenContent(
-        listOf(
-            Project(0, "Cool", "slug",false, false, false),
-            Project(1, "Cooler", "slug", true, false, false)
-        ),
-        isVisible = true
-    )
+    ProjectSelectorScreenContent(isVisible = true)
 }
 

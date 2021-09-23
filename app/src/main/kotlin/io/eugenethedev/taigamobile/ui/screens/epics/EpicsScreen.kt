@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.screens.epics
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,13 +11,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
-import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -35,21 +35,15 @@ fun EpicsScreen(
         viewModel.start()
     }
 
-    val epics by viewModel.epics.collectAsState()
+    val epics = viewModel.epics
     epics.subscribeOnError(onError)
 
     EpicsScreenContent(
         projectName = viewModel.projectName,
-        onTitleClick = {
-            navController.navigate(Routes.projectsSelector)
-            viewModel.reset()
-        },
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Epic) },
-        isLoading = epics is LoadingResult && epics.data.isNullOrEmpty(),
-        epics = epics.data.orEmpty(),
-        isEpicsLoading = epics is LoadingResult,
+        epics = epics,
         navigateToTask = navController::navigateToTaskScreen,
-        loadEpics = viewModel::loadEpics
     )
 }
 
@@ -58,11 +52,8 @@ fun EpicsScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     navigateToCreateTask: () -> Unit = {},
-    isLoading: Boolean = false,
-    epics: List<CommonTask> = emptyList(),
-    isEpicsLoading: Boolean = false,
-    navigateToTask: NavigateToTask = { _, _, _ -> },
-    loadEpics: () -> Unit = {}
+    epics: LazyPagingItems<CommonTask>? = null,
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -73,49 +64,48 @@ fun EpicsScreenContent(
         onTitleClick = onTitleClick
     )
 
-    when {
-        isLoading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularLoader()
-            }
+    if (epics == null) return@Column
+
+    val isLoading = epics.run { loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading }
+
+    if (epics.itemCount == 0 && !(isLoading || epics.loadState.prepend is LoadState.Loading)) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            NothingToSeeHereText()
         }
-        epics.isEmpty() -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                NothingToSeeHereText()
+    }
+    else {
+        LazyColumn(Modifier.fillMaxWidth()) {
+            item {
+                if (epics.loadState.prepend is LoadState.Loading) {
+                    DotsLoader()
+                }
             }
-        }
-        else -> {
-            LazyColumn(Modifier.fillMaxWidth()) {
-                itemsIndexed(epics) { index, item ->
-                    CommonTaskItem(
-                        commonTask = item,
-                        navigateToTask = navigateToTask
+
+            itemsIndexed(epics) { index, item ->
+                if (item == null) return@itemsIndexed
+
+                CommonTaskItem(
+                    commonTask = item,
+                    navigateToTask = navigateToTask
+                )
+
+                if (index < epics.itemCount - 1) {
+                    Divider(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.LightGray
                     )
+                }
+            }
 
-                    if (index < epics.lastIndex) {
-                        Divider(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = Color.LightGray
-                        )
-                    }
+            item {
+                if (isLoading) {
+                    DotsLoader()
                 }
 
-                item {
-                    if (isEpicsLoading) {
-                        DotsLoader()
-                    }
-
-                    LaunchedEffect(epics.size) {
-                        loadEpics()
-                    }
-                    Spacer(Modifier.height(16.dp))
-                }
+                Spacer(Modifier.height(16.dp))
             }
         }
     }

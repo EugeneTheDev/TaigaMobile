@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -55,11 +54,8 @@ fun LazyListScope.CommonTaskTags(
                 )
                 isAddTagFieldVisible -> AddTagField(
                     tags = editActions.editTags.items,
-                    onInputChange = editActions.editTags.loadItems,
-                    onSaveClick = {
-                        editActions.editTags.loadItems(null)
-                        editActions.editTags.selectItem(it)
-                    }
+                    onInputChange = editActions.editTags.searchItems,
+                    onSaveClick = { editActions.editTags.selectItem(it) }
                 )
                 else -> AddButton(
                     text = stringResource(R.string.add_tag),

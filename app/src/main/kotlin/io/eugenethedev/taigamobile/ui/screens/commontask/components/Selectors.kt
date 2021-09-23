@@ -15,6 +15,7 @@ import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.format.DateTimeFormatter
@@ -29,20 +30,19 @@ fun Selectors(
     typeEntry: SelectorEntry<Status> = SelectorEntry(),
     severityEntry: SelectorEntry<Status> = SelectorEntry(),
     priorityEntry: SelectorEntry<Status> = SelectorEntry(),
-    sprintEntry: SelectorEntry<Sprint?> = SelectorEntry(),
+    sprintEntry: SelectorEntry<Sprint> = SelectorEntry(),
     epicsEntry: SelectorEntry<CommonTask> = SelectorEntry(),
     assigneesEntry: SelectorEntry<User> = SelectorEntry(),
     watchersEntry: SelectorEntry<User> = SelectorEntry(),
-    swimlaneEntry: SelectorEntry<Swimlane?> = SelectorEntry()
+    swimlaneEntry: SelectorEntry<Swimlane> = SelectorEntry()
 ) {
     // status editor
     SelectorList(
         titleHintId = R.string.choose_status,
         items = statusEntry.edit.items,
         isVisible = statusEntry.isVisible,
-        isLoading = statusEntry.edit.isItemsLoading,
         isSearchable = false,
-        loadData = statusEntry.edit.loadItems,
+        searchData = statusEntry.edit.searchItems,
         navigateBack = statusEntry.hide
     ) {
         StatusItem(
@@ -59,9 +59,8 @@ fun Selectors(
         titleHintId = R.string.choose_type,
         items = typeEntry.edit.items,
         isVisible = typeEntry.isVisible,
-        isLoading = typeEntry.edit.isItemsLoading,
         isSearchable = false,
-        loadData = typeEntry.edit.loadItems,
+        searchData = typeEntry.edit.searchItems,
         navigateBack = typeEntry.hide
     ) {
         StatusItem(
@@ -78,9 +77,8 @@ fun Selectors(
         titleHintId = R.string.choose_severity,
         items = severityEntry.edit.items,
         isVisible = severityEntry.isVisible,
-        isLoading = severityEntry.edit.isItemsLoading,
         isSearchable = false,
-        loadData = severityEntry.edit.loadItems,
+        searchData = severityEntry.edit.searchItems,
         navigateBack = severityEntry.hide
     ) {
         StatusItem(
@@ -97,9 +95,8 @@ fun Selectors(
         titleHintId = R.string.choose_priority,
         items = priorityEntry.edit.items,
         isVisible = priorityEntry.isVisible,
-        isLoading = priorityEntry.edit.isItemsLoading,
         isSearchable = false,
-        loadData = priorityEntry.edit.loadItems,
+        searchData = priorityEntry.edit.searchItems,
         navigateBack = priorityEntry.hide
     ) {
         StatusItem(
@@ -114,11 +111,9 @@ fun Selectors(
     // sprint editor
     SelectorList(
         titleHintId = R.string.choose_sprint,
-        items = sprintEntry.edit.items,
+        itemsLazy = sprintEntry.edit.itemsLazy,
         isVisible = sprintEntry.isVisible,
-        isLoading = sprintEntry.edit.isItemsLoading,
         isSearchable = false,
-        loadData = sprintEntry.edit.loadItems,
         navigateBack = sprintEntry.hide
     ) {
         SprintItem(
@@ -133,10 +128,9 @@ fun Selectors(
     // epics editor
     SelectorList(
         titleHintId = R.string.search_epics,
-        items = epicsEntry.edit.items,
+        itemsLazy = epicsEntry.edit.itemsLazy,
         isVisible = epicsEntry.isVisible,
-        isLoading = epicsEntry.edit.isItemsLoading,
-        loadData = epicsEntry.edit.loadItems,
+        searchData = epicsEntry.edit.searchItems,
         navigateBack = epicsEntry.hide
     ) {
         EpicItem(
@@ -154,8 +148,7 @@ fun Selectors(
         titleHintId = R.string.search_members,
         items = assigneesEntry.edit.items,
         isVisible = assigneesEntry.isVisible,
-        isLoading = assigneesEntry.edit.isItemsLoading,
-        loadData = assigneesEntry.edit.loadItems,
+        searchData = assigneesEntry.edit.searchItems,
         navigateBack = assigneesEntry.hide
     ) {
         MemberItem(
@@ -172,8 +165,7 @@ fun Selectors(
         titleHintId = R.string.search_members,
         items = watchersEntry.edit.items,
         isVisible = watchersEntry.isVisible,
-        isLoading = watchersEntry.edit.isItemsLoading,
-        loadData = watchersEntry.edit.loadItems,
+        searchData = watchersEntry.edit.searchItems,
         navigateBack = watchersEntry.hide
     ) {
         MemberItem(
@@ -190,9 +182,7 @@ fun Selectors(
         titleHintId = R.string.choose_swimlane,
         items = swimlaneEntry.edit.items,
         isVisible = swimlaneEntry.isVisible,
-        isLoading = swimlaneEntry.edit.isItemsLoading,
         isSearchable = false,
-        loadData = swimlaneEntry.edit.loadItems,
         navigateBack = swimlaneEntry.hide
     ) {
         SwimlaneItem(
@@ -205,7 +195,7 @@ fun Selectors(
     }
 }
 
-class SelectorEntry<T> (
+class SelectorEntry<T : Any> (
     val edit: EditAction<T> = EditAction(),
     val isVisible: Boolean = false,
     val hide: () -> Unit = {}
@@ -235,7 +225,7 @@ private fun SprintItem(
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
-    sprint?.also {
+    sprint.takeIf { it != CommonTaskViewModel.SPRINT_HEADER }?.also {
         Surface(
             contentColor = if (it.isClosed) Color.Gray else MaterialTheme.colors.onSurface
         ) {
@@ -300,9 +290,11 @@ private fun SwimlaneItem(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
+    fun getOrNull() = swimlane.takeIf { it != CommonTaskViewModel.SWIMLANE_HEADER }
+
     Text(
-        text = swimlane?.name ?: stringResource(R.string.unclassifed),
+        text = getOrNull()?.name ?: stringResource(R.string.unclassifed),
         style = MaterialTheme.typography.body1,
-        color = swimlane?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
+        color = getOrNull()?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
     )
 }

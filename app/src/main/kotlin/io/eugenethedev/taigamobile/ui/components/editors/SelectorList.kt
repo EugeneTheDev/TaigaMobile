@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -18,6 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemsIndexed as itemsIndexedLazy
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
@@ -29,13 +33,15 @@ import io.eugenethedev.taigamobile.ui.utils.onBackPressed
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun <T> SelectorList(
+fun <T : Any> SelectorList(
     @StringRes titleHintId: Int,
-    items: List<T>,
+    items: List<T> = emptyList(),
+    itemsLazy: LazyPagingItems<T>? = null,
+    key: ((index: Int, item: T) -> Any)? = null, // used to preserve position with lazy items
     isVisible: Boolean = false,
-    isLoading: Boolean = false,
+    isItemsLoading: Boolean = false,
     isSearchable: Boolean = true,
-    loadData: (String) -> Unit = {},
+    searchData: (String) -> Unit = {},
     navigateBack: () -> Unit = {},
     animationDurationMillis: Int = SelectorListConstants.defaultAnimDurationMillis,
     itemContent: @Composable (T) -> Unit
@@ -48,6 +54,25 @@ fun <T> SelectorList(
     var query by remember { mutableStateOf(TextFieldValue()) }
 
     onBackPressed(navigateBack)
+
+    val isLoading = itemsLazy
+        ?.run { loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading }
+        ?: isItemsLoading
+
+    val lastIndex = itemsLazy?.itemCount?.minus(1) ?: items.lastIndex
+
+    val listItemContent: @Composable LazyItemScope.(Int, T?) -> Unit = lambda@ { index, item ->
+        if (item == null) return@lambda
+
+        itemContent(item)
+
+        if (index < lastIndex) {
+            Divider(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.LightGray
+            )
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface),
@@ -66,7 +91,7 @@ fun <T> SelectorList(
                             value = query,
                             onValueChange = { query = it },
                             singleLine = true,
-                            onSearchClick = { loadData(query.text) }
+                            onSearchClick = { searchData(query.text) }
                         )
                     } else {
                         Text(stringResource(titleHintId))
@@ -77,22 +102,13 @@ fun <T> SelectorList(
         )
 
         LazyColumn {
-            itemsIndexed(items) { index, item ->
-                itemContent(item)
-
-                if (index < items.size - 1) {
-                    Divider(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = Color.LightGray
-                    )
-                }
-
-                if (index == items.lastIndex) {
-                    LaunchedEffect(items.size) {
-                        loadData(query.text)
-                    }
-                }
-            }
+            itemsLazy?.let {
+                itemsIndexedLazy(
+                    items = it,
+                    key = key,
+                    itemContent = listItemContent
+                )
+            } ?: itemsIndexed(items, itemContent = listItemContent)
 
             item {
                 if (isLoading) {

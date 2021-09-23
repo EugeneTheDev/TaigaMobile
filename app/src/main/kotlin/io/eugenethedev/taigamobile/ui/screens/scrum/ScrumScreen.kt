@@ -42,6 +42,7 @@ import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
+import io.eugenethedev.taigamobile.ui.theme.commonVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
 import java.time.LocalDate
@@ -71,10 +72,7 @@ fun ScrumScreen(
 
     ScrumScreenContent(
         projectName = viewModel.projectName,
-        onTitleClick = {
-            navController.navigate(Routes.projectsSelector)
-            viewModel.reset()
-        },
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
         stories = stories,
         searchStories = viewModel::searchStories,
         sprints = sprints,
@@ -186,6 +184,7 @@ private fun BacklogTabContent(
             commonTasksLazy = stories,
             navigateToTask = navigateToTask,
             horizontalPadding = mainHorizontalScreenPadding,
+            bottomPadding = commonVerticalPadding
         )
     }
 }

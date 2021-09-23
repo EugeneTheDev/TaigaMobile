@@ -53,10 +53,7 @@ fun LazyListScope.CommonTaskBelongsTo(
 
             AddButton(
                 text = stringResource(R.string.link_to_epic),
-                onClick = {
-                    showEpicsSelector()
-                    editActions.editEpics.loadItems(null)
-                }
+                onClick = { showEpicsSelector() }
             )
         }
     }

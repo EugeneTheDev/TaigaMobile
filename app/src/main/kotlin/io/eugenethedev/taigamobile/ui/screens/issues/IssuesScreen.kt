@@ -9,10 +9,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
@@ -35,20 +35,16 @@ fun IssuesScreen(
         viewModel.start()
     }
 
-    val issues by viewModel.issues.collectAsState()
+    val issues = viewModel.issues
     issues.subscribeOnError(onError)
 
     IssuesScreenContent(
         projectName = viewModel.projectName,
-        onTitleClick = {
-            navController.navigate(Routes.projectsSelector)
-            viewModel.reset()
-        },
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
-        isLoading = issues is LoadingResult,
-        issues = issues.data.orEmpty(),
+        issues = issues,
         navigateToTask = navController::navigateToTaskScreen,
-        loadIssues = viewModel::loadIssues
+        searchIssues = viewModel::searchIssues
     )
 }
 
@@ -57,10 +53,9 @@ fun IssuesScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     navigateToCreateTask: () -> Unit = {},
-    isLoading: Boolean = false,
-    issues: List<CommonTask> = emptyList(),
+    issues: LazyPagingItems<CommonTask>? = null,
     navigateToTask: NavigateToTask = { _, _, _ -> },
-    loadIssues: (query: String) -> Unit = {}
+    searchIssues: (query: String) -> Unit = {}
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -73,24 +68,20 @@ fun IssuesScreenContent(
 
     var query by remember { mutableStateOf(TextFieldValue()) }
 
-    LazyColumn(Modifier.fillMaxSize()) {
-        item {
-            TextFieldWithHint(
-                hintId = R.string.tasks_search_hint,
-                value = query,
-                onValueChange = { query = it },
-                onSearchClick = { loadIssues(query.text) },
-                horizontalPadding = searchFieldHorizontalPadding,
-                verticalPadding = searchFieldVerticalPadding,
-                hasBorder = true
-            )
-        }
+    TextFieldWithHint(
+        hintId = R.string.tasks_search_hint,
+        value = query,
+        onValueChange = { query = it },
+        onSearchClick = { searchIssues(query.text) },
+        horizontalPadding = searchFieldHorizontalPadding,
+        verticalPadding = searchFieldVerticalPadding,
+        hasBorder = true
+    )
 
+    LazyColumn(Modifier.fillMaxSize()) {
         SimpleTasksListWithTitle(
-            commonTasks = issues,
+            commonTasksLazy = issues,
             navigateToTask = navigateToTask,
-            isTasksLoading = isLoading,
-            loadData = { loadIssues(query.text) },
             horizontalPadding = mainHorizontalScreenPadding,
             bottomPadding = commonVerticalPadding
         )

@@ -4,6 +4,7 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
  * Helper structs for CommonTaskScreen
  */
 
+import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import java.io.InputStream
@@ -13,10 +14,10 @@ import java.time.LocalDate
 /**
  * Common fields when performing editing (choosing something from list)
  */
-class EditAction<T>(
+class EditAction<T : Any>(
     val items: List<T> = emptyList(),
-    val loadItems: (query: String?) -> Unit = {},
-    val isItemsLoading: Boolean = false,
+    val itemsLazy: LazyPagingItems<T>? = null,
+    val searchItems: (query: String) -> Unit = {},
     val selectItem: (item: T) -> Unit = {},
     val isResultLoading: Boolean = false,
     val removeItem: (item: T) -> Unit = {}
@@ -46,9 +47,8 @@ class EditActions(
     val editType: EditAction<Status> = EditAction(),
     val editSeverity: EditAction<Status> = EditAction(),
     val editPriority: EditAction<Status> = EditAction(),
-    val loadStatuses: (StatusType) -> Unit = { _ -> },
-    val editSwimlane: EditAction<Swimlane?> = EditAction(),
-    val editSprint: EditAction<Sprint?> = EditAction(),
+    val editSwimlane: EditAction<Swimlane> = EditAction(),
+    val editSprint: EditAction<Sprint> = EditAction(),
     val editEpics: EditAction<CommonTask> = EditAction(),
     val unlinkFromEpic: (EpicShortInfo) -> Unit = {},
     val editAttachments: EditAttachmentsAction = EditAttachmentsAction(),

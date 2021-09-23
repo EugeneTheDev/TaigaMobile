@@ -70,14 +70,19 @@ fun CommonTaskScreen(
     val swimlanes by viewModel.swimlanes.collectAsState()
     swimlanes.subscribeOnError(onError)
 
-    val sprints by viewModel.sprints.collectAsState()
+    val sprints = viewModel.sprints
     sprints.subscribeOnError(onError)
+    val selectSprintResult by viewModel.selectSprintResult.collectAsState()
+    selectSprintResult.subscribeOnError(onError)
 
-    val epics by viewModel.epics.collectAsState()
+    val epics = viewModel.epics
     epics.subscribeOnError(onError)
+    val linkToEpicResult by viewModel.linkToEpicResult.collectAsState()
+    linkToEpicResult.subscribeOnError(onError)
 
     val team by viewModel.team.collectAsState()
     team.subscribeOnError(onError)
+    val teamSearched by viewModel.teamSearched.collectAsState()
 
     val customFields by viewModel.customFields.collectAsState()
     customFields.subscribeOnError(onError)
@@ -87,6 +92,7 @@ fun CommonTaskScreen(
 
     val tags by viewModel.tags.collectAsState()
     tags.subscribeOnError(onError)
+    val tagsSearched by viewModel.tagsSearched.collectAsState()
 
     val colorResult by viewModel.colorResult.collectAsState()
     colorResult.subscribeOnError(onError)
@@ -115,12 +121,10 @@ fun CommonTaskScreen(
     }
     
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
-        items = statuses.data.orEmpty(),
-        isItemsLoading = statuses is LoadingResult,
+        items = statuses.data?.get(statusType).orEmpty(),
         selectItem = viewModel::selectStatus,
         isResultLoading = statusSelectResult.let { (it as? LoadingResult)?.data == statusType }
     )
-
 
     CommonTaskScreenContent(
         commonTaskType = commonTaskType,
@@ -146,27 +150,21 @@ fun CommonTaskScreen(
             editType = makeEditStatusAction(StatusType.Type),
             editSeverity = makeEditStatusAction(StatusType.Severity),
             editPriority = makeEditStatusAction(StatusType.Priority),
-            loadStatuses = { viewModel.loadStatuses(it) },
             editSwimlane = EditAction(
                 items = swimlanes.data.orEmpty(),
-                loadItems = viewModel::loadSwimlanes,
-                isItemsLoading = swimlanes is LoadingResult,
                 selectItem = viewModel::selectSwimlane,
                 isResultLoading = swimlanes is LoadingResult
             ),
             editSprint = EditAction(
-                items = sprints.data.orEmpty(),
-                loadItems = viewModel::loadSprints,
-                isItemsLoading = sprints is LoadingResult,
+                itemsLazy = sprints,
                 selectItem = viewModel::selectSprint,
-                isResultLoading = sprints is LoadingResult
+                isResultLoading = selectSprintResult is LoadingResult
             ),
             editEpics = EditAction(
-                items = epics.data.orEmpty(),
-                loadItems = viewModel::loadEpics,
-                isItemsLoading = epics is LoadingResult,
+                itemsLazy = epics,
+                searchItems = viewModel::searchEpics,
                 selectItem = viewModel::linkToEpic,
-                isResultLoading = epics is LoadingResult,
+                isResultLoading = linkToEpicResult is LoadingResult,
                 removeItem = {
                     // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
                 }
@@ -178,17 +176,15 @@ fun CommonTaskScreen(
                 isResultLoading = attachments is LoadingResult
             ),
             editAssignees = EditAction(
-                items = team.data.orEmpty(),
-                loadItems = viewModel::loadTeam,
-                isItemsLoading = team is LoadingResult,
+                items = teamSearched,
+                searchItems = viewModel::searchTeam,
                 selectItem = viewModel::addAssignee,
                 isResultLoading = assignees is LoadingResult,
                 removeItem = viewModel::removeAssignee
             ),
             editWatchers = EditAction(
-                items = team.data.orEmpty(),
-                loadItems = viewModel::loadTeam,
-                isItemsLoading = team is LoadingResult,
+                items = teamSearched,
+                searchItems = viewModel::searchTeam,
                 selectItem = viewModel::addWatcher,
                 isResultLoading = watchers is LoadingResult,
                 removeItem = viewModel::removeWatcher
@@ -203,8 +199,8 @@ fun CommonTaskScreen(
             promoteTask = viewModel::promoteToUserStory,
             editCustomField = viewModel::editCustomField,
             editTags = EditAction(
-                items = tags.data.orEmpty(),
-                loadItems = viewModel::loadTags,
+                items = tagsSearched,
+                searchItems = viewModel::searchTags,
                 selectItem = viewModel::addTag,
                 removeItem = viewModel::deleteTag,
                 isResultLoading = tags is LoadingResult

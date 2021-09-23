@@ -23,7 +23,8 @@ import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 
 /**
- * List of tasks with optional title
+ * List of tasks with optional title.
+ * Since Paging 3 is used, we cannot place item before paging items. So there are some workarounds
  */
 fun LazyListScope.SimpleTasksListWithTitle(
     navigateToTask: NavigateToTask,
@@ -35,8 +36,7 @@ fun LazyListScope.SimpleTasksListWithTitle(
     bottomPadding: Dp = 0.dp,
     isTasksLoading: Boolean = false,
     showExtendedTaskInfo: Boolean = false,
-    navigateToCreateCommonTask: (() -> Unit)? = null,
-    loadData: () -> Unit = {}
+    navigateToCreateCommonTask: (() -> Unit)? = null
 ) {
     val isLoading = commonTasksLazy
         ?.run { loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading }
@@ -45,6 +45,10 @@ fun LazyListScope.SimpleTasksListWithTitle(
     val lastIndex = commonTasksLazy?.itemCount?.minus(1) ?: commonTasks.lastIndex
 
     val itemContent: @Composable LazyItemScope.(Int, CommonTask?) -> Unit = lambda@ { index, item ->
+        if (index == 0 && titleText == null) {
+            Spacer(Modifier.height(topPadding))
+        }
+
         if (item == null) return@lambda
 
         CommonTaskItem(
@@ -62,25 +66,19 @@ fun LazyListScope.SimpleTasksListWithTitle(
         }
     }
 
-    item {
-        Spacer(Modifier.height(topPadding))
+    titleText?.let {
+        item {
+            Spacer(Modifier.height(topPadding))
 
-        titleText?.let {
             SectionTitle(
                 text = stringResource(it),
                 horizontalPadding = horizontalPadding,
                 onAddClick = navigateToCreateCommonTask
             )
         }
-
-        if (commonTasksLazy?.loadState?.prepend is LoadState.Loading) {
-            DotsLoader()
-        }
     }
 
-
-
-    commonTasksLazy?.also {
+    commonTasksLazy?.let {
             itemsIndexedLazy(
                 items = it,
                 key = { _, item -> item.id },
@@ -92,7 +90,6 @@ fun LazyListScope.SimpleTasksListWithTitle(
         if (isLoading) {
             DotsLoader()
         }
-
         Spacer(Modifier.height(bottomPadding))
     }
 }

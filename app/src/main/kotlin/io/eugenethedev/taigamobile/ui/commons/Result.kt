@@ -14,7 +14,7 @@ sealed class Result<T>(
 
 class SuccessResult<T>(data: T?) : Result<T>(data = data)
 class ErrorResult<T>(@StringRes message: Int? = null) : Result<T>(message = message)
-class LoadingResult<T>(data: T?) : Result<T>(data = data)
+class LoadingResult<T>(data: T? = null) : Result<T>(data = data)
 class NothingResult<T> : Result<T>()
 
 typealias MutableResultFlow<T> = MutableStateFlow<Result<T>>

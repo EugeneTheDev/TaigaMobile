@@ -2,13 +2,17 @@ package io.eugenethedev.taigamobile.ui.screens.issues
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.domain.entities.CommonTask
+import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.ui.commons.*
-import io.eugenethedev.taigamobile.ui.utils.loadOrError
-import kotlinx.coroutines.launch
+import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 class IssuesViewModel : ViewModel() {
@@ -17,12 +21,7 @@ class IssuesViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
 
     val projectName get() = session.currentProjectName
-    val issues = MutableResultFlow<List<CommonTask>>()
 
-    private var currentIssuesQuery = ""
-    private var currentIssuesPage = 0
-    private var maxIssuesPage = Int.MAX_VALUE
-    
     init {
         TaigaApp.appComponent.inject(this)
     }
@@ -31,35 +30,23 @@ class IssuesViewModel : ViewModel() {
         if (screensState.shouldReloadIssuesScreen) {
             reset()
         }
-
-        if (issues.value is NothingResult) {
-            loadIssues()
-        }
     }
 
-    fun loadIssues(query: String = "") = viewModelScope.launch {
-        query.takeIf { it != currentIssuesQuery }?.let {
-            currentIssuesQuery = it
-            currentIssuesPage = 0
-            maxIssuesPage = Int.MAX_VALUE
-            issues.value = NothingResult()
-        }
+    private val issuesQuery = MutableStateFlow("")
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val issues by lazy {
+        issuesQuery.flatMapLatest { query ->
+            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE, enablePlaceholders = false)) {
+                CommonPagingSource { tasksRepository.getIssues(it, query) }
+            }.flow
+        }.asLazyPagingItems(viewModelScope)
+    }
 
-        if (currentIssuesPage == maxIssuesPage) return@launch
-
-        issues.loadOrError {
-            tasksRepository.getIssues(++currentIssuesPage, query).also {
-                if (it.isEmpty()) maxIssuesPage = currentIssuesPage
-            }.let {
-                issues.value.data.orEmpty() + it
-            }
-        }
+    fun searchIssues(query: String) {
+        issuesQuery.value = query
     }
     
     fun reset() {
-        issues.value = NothingResult()
-        currentIssuesQuery = ""
-        currentIssuesPage = 0
-        maxIssuesPage = Int.MAX_VALUE
+        issues.refresh()
     }
 }

@@ -48,10 +48,7 @@ fun LazyListScope.CommonTaskWatchers(
 
         AddButton(
             text = stringResource(R.string.add_user),
-            onClick = {
-                showWatchersSelector()
-                editActions.editWatchers.loadItems(null)
-            }
+            onClick = { showWatchersSelector() }
         )
     }
 }

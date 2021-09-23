@@ -27,7 +27,8 @@ interface TaigaApi {
     @GET("projects?order_by=user_order&slight=true")
     suspend fun getProjects(
         @Query("q") query: String,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE
     ): List<Project>
 
     @GET("projects/{id}")
@@ -129,6 +130,7 @@ interface TaigaApi {
         @Query("assigned_to") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
         @Query("watchers") watcherId: Long? = null,
+        @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
 
         @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
@@ -142,6 +144,7 @@ interface TaigaApi {
         @Query("assigned_to") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
         @Query("watchers") watcherId: Long? = null,
+        @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
 
         @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>

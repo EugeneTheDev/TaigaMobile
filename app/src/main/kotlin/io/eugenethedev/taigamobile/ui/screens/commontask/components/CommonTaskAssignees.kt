@@ -47,10 +47,7 @@ fun LazyListScope.CommonTaskAssignees(
         }
         AddButton(
             text = stringResource(R.string.add_user),
-            onClick = {
-                showAssigneesSelector()
-                editActions.editAssignees.loadItems(null)
-            }
+            onClick = { showAssigneesSelector() }
         )
     }
 }

@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.MaterialTheme
@@ -51,10 +50,7 @@ fun LazyListScope.CommonTaskHeader(
             ClickableBadge(
                 text = commonTask.status.name,
                 colorHex = commonTask.status.color,
-                onClick = {
-                    showStatusSelector()
-                    editActions.loadStatuses(StatusType.Status)
-                },
+                onClick = { showStatusSelector() },
                 isLoading = editActions.editStatus.isResultLoading
             )
 
@@ -65,10 +61,7 @@ fun LazyListScope.CommonTaskHeader(
                 ClickableBadge(
                     text = commonTask.sprint?.name ?: stringResource(R.string.no_sprint),
                     color = commonTask.sprint?.let { MaterialTheme.colors.primary } ?: Color.Gray,
-                    onClick = {
-                        showSprintSelector()
-                        editActions.editSprint.loadItems(null)
-                    },
+                    onClick = { showSprintSelector() },
                     isLoading = editActions.editSprint.isResultLoading,
                     isClickable = commonTask.taskType != CommonTaskType.Task
                 )
@@ -82,10 +75,7 @@ fun LazyListScope.CommonTaskHeader(
                     text = commonTask.swimlane?.name ?: stringResource(R.string.unclassifed),
                     color = commonTask.swimlane?.let { MaterialTheme.colors.primary } ?: Color.Gray,
                     isLoading = editActions.editSwimlane.isResultLoading,
-                    onClick = {
-                        showSwimlaneSelector()
-                        editActions.editSwimlane.loadItems(null)
-                    }
+                    onClick = { showSwimlaneSelector() }
                 )
             }
         }
@@ -98,10 +88,7 @@ fun LazyListScope.CommonTaskHeader(
                 ClickableBadge(
                     text = commonTask.type!!.name,
                     colorHex = commonTask.type.color,
-                    onClick = {
-                        showTypeSelector()
-                        editActions.loadStatuses(StatusType.Type)
-                    },
+                    onClick = { showTypeSelector() },
                     isLoading = editActions.editType.isResultLoading
                 )
 
@@ -111,10 +98,7 @@ fun LazyListScope.CommonTaskHeader(
                 ClickableBadge(
                     text = commonTask.severity!!.name,
                     colorHex = commonTask.severity.color,
-                    onClick = {
-                        showSeveritySelector()
-                        editActions.loadStatuses(StatusType.Severity)
-                    },
+                    onClick = { showSeveritySelector() },
                     isLoading = editActions.editSeverity.isResultLoading
                 )
 
@@ -124,10 +108,7 @@ fun LazyListScope.CommonTaskHeader(
                 ClickableBadge(
                     text = commonTask.priority!!.name,
                     colorHex = commonTask.priority.color,
-                    onClick = {
-                        showPrioritySelector()
-                        editActions.loadStatuses(StatusType.Priority)
-                    },
+                    onClick = { showPrioritySelector() },
                     isLoading = editActions.editPriority.isResultLoading
                 )
             }

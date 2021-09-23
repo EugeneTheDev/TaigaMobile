@@ -2,15 +2,19 @@ package io.eugenethedev.taigamobile.ui.screens.commontask
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.insertHeaderItem
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
+import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.commons.*
-import io.eugenethedev.taigamobile.ui.utils.fixAnimation
+import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -24,6 +28,11 @@ class CommonTaskViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var usersRepository: IUsersRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
+
+    companion object {
+        val SPRINT_HEADER = Sprint(-1, "HEADER", -1, LocalDate.MIN, LocalDate.MIN, 0, false)
+        val SWIMLANE_HEADER = Swimlane(-1, "HEADER", -1)
+    }
 
     private var commonTaskId: Long = -1
     private lateinit var commonTaskType: CommonTaskType
@@ -44,6 +53,11 @@ class CommonTaskViewModel : ViewModel() {
     val tasks = MutableResultFlow<List<CommonTask>>()
     val comments = MutableResultFlow<List<Comment>>()
 
+    val team = MutableResultFlow<List<User>>()
+    val tags = MutableResultFlow<List<Tag>>()
+    val swimlanes = MutableResultFlow<List<Swimlane>>()
+    val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
+
     init {
         TaigaApp.appComponent.inject(this)
     }
@@ -51,10 +65,10 @@ class CommonTaskViewModel : ViewModel() {
     fun start(commonTaskId: Long, commonTaskType: CommonTaskType) {
         this.commonTaskId = commonTaskId
         this.commonTaskType = commonTaskType
-        loadData()
+        loadData(isReloading = false)
     }
 
-    private fun loadData() = viewModelScope.launch {
+    private fun loadData(isReloading: Boolean = true) = viewModelScope.launch {
         commonTask.loadOrError(showLoading = commonTask.value is NothingResult) {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).also {
 
@@ -67,7 +81,7 @@ class CommonTaskViewModel : ViewModel() {
                         }.awaitAll()
                     }
 
-                joinAll(
+                val jobsToLoad = arrayOf(
                     launch {
                         creator.loadOrError(showLoading = false) { usersRepository.getUser(it.creatorId) }
                     },
@@ -87,8 +101,39 @@ class CommonTaskViewModel : ViewModel() {
                     },
                     launch {
                         comments.loadOrError(showLoading = false) { tasksRepository.getComments(commonTaskId, commonTaskType) }
+                    },
+                    launch {
+                        tags.loadOrError(showLoading = false) {
+                            tasksRepository.getAllTags(commonTaskType).also { tagsSearched.value = it }
+                        }
                     }
-                )
+                ) + if (!isReloading) {
+                    arrayOf(
+                        launch {
+                            team.loadOrError(showLoading = false) {
+                                usersRepository.getTeam()
+                                    .map { it.toUser() }
+                                    .also { teamSearched.value = it }
+                            }
+                        },
+                        launch {
+                            swimlanes.loadOrError(showLoading = false) {
+                                listOf(SWIMLANE_HEADER) + tasksRepository.getSwimlanes() // prepend "unclassified"
+                            }
+                        },
+                        launch {
+                            statuses.loadOrError(showLoading = false) {
+                                StatusType.values().filter {
+                                    if (commonTaskType != CommonTaskType.Issue) it == StatusType.Status else true
+                                }.associateWith { tasksRepository.getStatusByType(commonTaskType, it) }
+                            }
+                        }
+                    )
+                } else {
+                    emptyArray()
+                }
+
+                joinAll(*jobsToLoad)
             }
         }
     }
@@ -98,16 +143,7 @@ class CommonTaskViewModel : ViewModel() {
      */
 
     // Edit status (and also type, severity, priority)
-
-    val statuses = MutableResultFlow<List<Status>>()
     val statusSelectResult = MutableResultFlow<StatusType>()
-
-    fun loadStatuses(statusType: StatusType) = viewModelScope.launch {
-        statuses.loadOrError(preserveValue = false) {
-            fixAnimation()
-            tasksRepository.getStatusByType(commonTaskType, statusType)
-        }
-    }
 
     fun selectStatus(status: Status) = viewModelScope.launch {
         statusSelectResult.value = LoadingResult(status.type)
@@ -121,114 +157,73 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Edit sprint
-
-    val sprints = MutableResultFlow<List<Sprint?>>()
-    private var currentSprintPage = 0
-    private var maxSprintPage = Int.MAX_VALUE
-
-    fun loadSprints(query: String?) = viewModelScope.launch {
-        if (query == null) { // only handling null. search not supported
-            currentSprintPage = 0
-            maxSprintPage = Int.MAX_VALUE
-            sprints.value = NothingResult()
-        }
-
-        if (currentSprintPage == maxSprintPage) return@launch
-        
-        sprints.loadOrError {
-            fixAnimation()
-            
-            sprintsRepository.getSprints(++currentSprintPage).also {
-                if (it.isEmpty()) maxSprintPage = currentSprintPage
-            }.let {
-                // prepending null here to always show "remove from sprints" sprint first
-                listOf(null) + (sprints.value.data.orEmpty().filterNotNull() + it)
-            }
-        }
+    val sprints by lazy {
+        Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
+            CommonPagingSource { sprintsRepository.getSprints(it) }
+        }.flow.map { it.insertHeaderItem(item = SPRINT_HEADER) } // prepend "Move to backlog"
+            .asLazyPagingItems(viewModelScope)
     }
 
+    val selectSprintResult = MutableResultFlow<Unit>(NothingResult())
+
     fun selectSprint(sprint: Sprint?) = viewModelScope.launch {
-        sprints.loadOrError(R.string.permission_error) {
+        selectSprintResult.loadOrError(R.string.permission_error) {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
-            sprints.value.data
         }
     }
 
     // Edit linked epic
-    val epics = MutableResultFlow<List<CommonTask>>()
-    private var currentEpicQuery = ""
-    private var currentEpicPage = 0
-    private var maxEpicPage = Int.MAX_VALUE
-
-    fun loadEpics(query: String?) = viewModelScope.launch {
-        query.takeIf { it != currentEpicQuery }?.let {
-            currentEpicQuery = it
-            currentEpicPage = 0
-            maxEpicPage = Int.MAX_VALUE
-            epics.value = NothingResult()
-        }
-
-        if (currentEpicPage == maxEpicPage) return@launch
-        
-        epics.loadOrError {
-            fixAnimation()
-            
-            tasksRepository.getEpics(++currentEpicPage, query).also {
-                if (it.isEmpty()) maxEpicPage = currentEpicPage
-            }.let {
-                epics.value.data.orEmpty() + it
-            }
-        }
+    private val epicsQuery = MutableStateFlow("")
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val epics by lazy {
+        epicsQuery.flatMapLatest { query ->
+            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
+                CommonPagingSource { tasksRepository.getEpics(it, query) }
+            }.flow
+        }.asLazyPagingItems(viewModelScope)
     }
 
+    fun searchEpics(query: String) {
+        epicsQuery.value = query
+    }
+
+    val linkToEpicResult = MutableResultFlow<Unit>(NothingResult())
+
     fun linkToEpic(epic: CommonTask) = viewModelScope.launch {
-        epics.loadOrError(R.string.permission_error) {
+        linkToEpicResult.loadOrError(R.string.permission_error) {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            epics.value.data
         }
     }
 
     fun unlinkFromEpic(epic: EpicShortInfo) = viewModelScope.launch {
-        epics.loadOrError(R.string.permission_error) {
+        linkToEpicResult.loadOrError(R.string.permission_error) {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
             loadData().join()
             screensState.modify()
-            epics.value.data
         }
     }
 
 
     // use team for both assignees and watchers
-    val team = MutableResultFlow<List<User>>()
-    private var _team = emptyList<User>()
-    private var currentTeamQuery: String = ""
+    val teamSearched = MutableStateFlow(emptyList<User>())
 
-    fun loadTeam(query: String?) = viewModelScope.launch {
-        if (query == currentTeamQuery) return@launch
-        currentTeamQuery = query.orEmpty()
-
-        team.loadOrError(preserveValue = false) {
-            query?.let { q ->
-                _team.filter {
-                    val regex = Regex("^.*$q.*$", RegexOption.IGNORE_CASE)
-                    it.displayName.matches(regex) || it.username.matches(regex)
-                }
-            } ?: run {
-                fixAnimation()
-                _team = usersRepository.getTeam().map { it.toUser() }
-                _team
-            }
-        }
+    fun searchTeam(query: String) = viewModelScope.launch {
+        val q = query.lowercase()
+        teamSearched.value = team.value.data
+            .orEmpty()
+            .filter { q in it.username.lowercase() || q in it.displayName.lowercase() }
     }
 
     // Edit assignees
 
     private fun changeAssignees(user: User, remove: Boolean) = viewModelScope.launch {
         assignees.loadOrError(R.string.permission_error) {
+            teamSearched.value = team.value.data.orEmpty()
+
             tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
                 commonTask.value.data?.assignedIds.orEmpty().let {
@@ -237,6 +232,7 @@ class CommonTaskViewModel : ViewModel() {
                 },
                 commonTaskVersion.value
             )
+
             loadData().join()
             screensState.modify()
             assignees.value.data
@@ -250,6 +246,8 @@ class CommonTaskViewModel : ViewModel() {
 
     private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
         watchers.loadOrError(R.string.permission_error) {
+            teamSearched.value = team.value.data.orEmpty()
+
             tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
                 commonTask.value.data?.watcherIds.orEmpty().let {
@@ -258,6 +256,7 @@ class CommonTaskViewModel : ViewModel() {
                 },
                 commonTaskVersion.value
             )
+
             loadData().join()
             watchers.value.data
         }
@@ -349,32 +348,16 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Tags
+    val tagsSearched = MutableStateFlow(emptyList<Tag>())
 
-    val tags = MutableResultFlow<List<Tag>>()
-    private var _tags = emptyList<Tag>()
-    private var currentTagsQuery: String = ""
-
-    fun loadTags(query: String?) = viewModelScope.launch {
-        if (query == null) {
-            tags.value = NothingResult()
-            return@launch
-        }
-
-        if (query == currentTagsQuery) return@launch
-        currentTagsQuery = query.orEmpty()
-
-        tags.loadOrError(showLoading = false) {
-            _tags.also {
-                if (it.isEmpty()) _tags = tasksRepository.getAllTags(commonTaskType)
-            }.let {
-                it.filter { query.isNotEmpty() && query.lowercase() in it.name.lowercase() }
-            }
-        }
-
+    fun searchTags(query: String) = viewModelScope.launch {
+        tagsSearched.value = tags.value.data.orEmpty().filter { query.isNotEmpty() && query.lowercase() in it.name }
     }
 
     private fun editTag(tag: Tag, remove: Boolean) = viewModelScope.launch {
         tags.loadOrError(R.string.permission_error) {
+            tagsSearched.value = tags.value.data.orEmpty()
+
             tasksRepository.editTags(
                 commonTaskType = commonTaskType,
                 commonTaskId = commonTaskId,
@@ -382,6 +365,7 @@ class CommonTaskViewModel : ViewModel() {
                     .let { if (remove) it - tag else it + tag },
                 version = commonTaskVersion.value
             )
+
             loadData().join()
             screensState.modify()
             tags.value.data
@@ -391,22 +375,9 @@ class CommonTaskViewModel : ViewModel() {
     fun addTag(tag: Tag) = editTag(tag, remove = false)
     fun deleteTag(tag: Tag) = editTag(tag, remove = true)
 
-    // Swimlanes
-
-    val swimlanes = MutableResultFlow<List<Swimlane?>>()
-
-    fun loadSwimlanes(query: String?) = viewModelScope.launch {
-        // only load swimlanes if null
-        query ?: run {
-            swimlanes.loadOrError(preserveValue = false) {
-                listOf(null) + tasksRepository.getSwimlanes() // prepend "unclassified"
-            }
-        }
-    }
-
-    fun selectSwimlane(swimlane: Swimlane?) = viewModelScope.launch {
+    fun selectSwimlane(swimlane: Swimlane) = viewModelScope.launch {
         swimlanes.loadOrError(R.string.permission_error) {
-            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane?.id, commonTaskVersion.value)
+            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane.takeIf { it != SWIMLANE_HEADER }?.id, commonTaskVersion.value)
             loadData().join()
             screensState.modify()
             swimlanes.value.data
@@ -414,7 +385,6 @@ class CommonTaskViewModel : ViewModel() {
     }
 
     // Due date
-
     val dueDateResult = MutableResultFlow<Unit>()
 
     fun selectDueDate(date: LocalDate?) = viewModelScope.launch {
@@ -424,6 +394,7 @@ class CommonTaskViewModel : ViewModel() {
         }
     }
 
+    // Epic color
     val colorResult = MutableResultFlow<Unit>()
 
     fun selectEpicColor(color: String) = viewModelScope.launch {
