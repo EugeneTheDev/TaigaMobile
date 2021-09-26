@@ -71,7 +71,7 @@ class DataModule {
             .baseUrl(baseUrlPlaceholder) // base url is set dynamically in interceptor
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(
-                okHttpBuilder.authenticator { route, response ->
+                okHttpBuilder.authenticator { _, response ->
                         response.request.header("Authorization")?.let {
                             try {
                                 // prevent multiple refresh requests from different threads

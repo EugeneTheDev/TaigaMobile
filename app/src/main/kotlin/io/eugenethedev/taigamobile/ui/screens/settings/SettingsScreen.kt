@@ -73,7 +73,7 @@ fun SettingsScreen(
                 popUpTo(Routes.settings) { inclusive = true }
             }
         },
-        themeSetting = themeSetting ?: ThemeSetting.System,
+        themeSetting = themeSetting,
         switchTheme = viewModel::switchTheme
     )
 }

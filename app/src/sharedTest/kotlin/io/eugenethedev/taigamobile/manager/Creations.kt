@@ -210,15 +210,8 @@ interface Creations {
         // some dirty tricks, because email has to be verified
         println("Manually verifying emails")
 
-        DriverManager.getConnection(
-            "jdbc:postgresql://$host:5432/taiga",
-            Properties().apply {
-                put("user", "taiga")
-                put("password", "taiga")
-                put("driver", "org.postgresql.Driver")
-            }
-        ).use {
-            it.createStatement().execute("update users_user set verified_email = true where true")
+        tx {
+            createStatement().execute("update users_user set verified_email = true where true")
         }
     }
 

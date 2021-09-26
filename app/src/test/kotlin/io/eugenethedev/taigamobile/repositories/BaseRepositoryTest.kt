@@ -26,7 +26,7 @@ abstract class BaseRepositoryTest {
 
     private val taigaManager = TaigaTestInstanceManager()
 
-    @OptIn(ObsoleteCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("Test thread")
 
     @OptIn(ExperimentalCoroutinesApi::class)
