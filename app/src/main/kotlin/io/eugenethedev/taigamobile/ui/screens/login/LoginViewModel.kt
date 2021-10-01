@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.data.repositories.AuthRepository
+import io.eugenethedev.taigamobile.domain.entities.AuthType
 import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
@@ -19,9 +20,9 @@ class LoginViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun login(taigaServer: String, username: String, password: String) = viewModelScope.launch {
+    fun login(taigaServer: String, authType: AuthType, username: String, password: String) = viewModelScope.launch {
         loginResult.loadOrError(R.string.login_error_message) {
-            authRepository.auth(taigaServer, password, username)
+            authRepository.auth(taigaServer, authType, password, username)
         }
     }
 }

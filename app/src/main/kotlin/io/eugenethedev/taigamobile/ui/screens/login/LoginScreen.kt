@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.insets.imePadding
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.domain.entities.AuthType
 import io.eugenethedev.taigamobile.ui.commons.ErrorResult
 import io.eugenethedev.taigamobile.ui.commons.LoadingResult
 import io.eugenethedev.taigamobile.ui.commons.SuccessResult
@@ -59,7 +60,7 @@ fun LoginScreen(
 
 @Composable
 fun LoginScreenContent(
-    login: (server: String, login: String, password: String) -> Unit = { _, _, _ -> },
+    login: (server: String, authType: AuthType, login: String, password: String) -> Unit = { _, _, _, _ -> },
     isLoadingValue: Boolean = false,
 ) = ConstraintLayout(
     modifier = Modifier.fillMaxSize(),
@@ -154,9 +155,12 @@ fun LoginScreenContent(
             top.linkTo(loginForm.bottom, 24.dp)
         }
     ) {
+        var authType = AuthType.Normal
+
         val loginAction = {
             login(
                 taigaServerInput.text.trim(),
+                authType,
                 loginInput.text.trim(),
                 passwordInput.text.trim()
             )
@@ -179,25 +183,39 @@ fun LoginScreenContent(
         if (isLoadingValue) {
             CircularProgressIndicator(modifier = Modifier.size(48.dp))
         } else {
+            val onClick = {
+                isServerInputError = !taigaServerInput.text.matches(Regex("""(http|https)://([\w\d-]+\.)+[\w\d-]+(:\d+)?"""))
+                isLoginInputError = loginInput.text.isBlank()
+                isPasswordInputError = passwordInput.text.isBlank()
+
+                if (!(isServerInputError || isLoginInputError || isPasswordInputError)) {
+                    if (taigaServerInput.text.startsWith("http://")) {
+                        isAlertVisible = true
+                    } else {
+                        loginAction()
+                    }
+                }
+            }
+
             Button(
                 onClick = {
-                    isServerInputError = !taigaServerInput.text.matches(Regex("""(http|https)://([\w\d-]+\.)+[\w\d-]+(:\d+)?"""))
-                    isLoginInputError = loginInput.text.isBlank()
-                    isPasswordInputError = passwordInput.text.isBlank()
-
-                    if (!(isServerInputError || isLoginInputError || isPasswordInputError)) {
-                        if (taigaServerInput.text.startsWith("http://")) {
-                            isAlertVisible = true
-                        } else {
-                            loginAction()
-                        }
-                    }
+                    authType = AuthType.Normal
+                    onClick()
                 },
-                contentPadding = PaddingValues(start = 40.dp, end = 40.dp)
+                contentPadding = PaddingValues(horizontal = 40.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.login_continue)
-                )
+                Text(stringResource(R.string.login_continue))
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = {
+                    authType = AuthType.LDAP
+                    onClick()
+                }
+            ) {
+                Text(stringResource(R.string.login_ldap))
             }
         }
 

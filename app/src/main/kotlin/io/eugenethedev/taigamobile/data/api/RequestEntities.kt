@@ -5,7 +5,7 @@ import java.time.LocalDate
 data class AuthRequest(
     val password: String,
     val username: String,
-    val type: String = "normal"
+    val type: String
 )
 
 data class RefreshTokenRequest(

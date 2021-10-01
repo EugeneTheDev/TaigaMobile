@@ -16,6 +16,7 @@
     <string name="login_username">Login</string>
     <string name="login_password">Mot de passe</string>
     <string name="login_continue">Continuer</string>
+    <string name="login_ldap">Continuer avec LDAP</string>
     <string name="login_error_message">Erreur lors de la connexion. Vérifiez vos identifiants et votre connexion</string>
 
     <string name="login_alert_title">Connexion non cryptée</string>

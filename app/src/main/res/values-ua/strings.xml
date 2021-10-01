@@ -16,6 +16,7 @@
     <string name="login_username">Логін</string>
     <string name="login_password">Пароль</string>
     <string name="login_continue">Продовжити</string>
+    <string name="login_ldap">Продовжити з LDAP</string>
     <string name="login_error_message">Помилка під час логіну. Перевірте дані чи з\'єднання</string>
 
     <string name="login_alert_title">Нешифроване з\'єднання</string>

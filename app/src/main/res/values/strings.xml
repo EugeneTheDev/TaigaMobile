@@ -18,6 +18,7 @@
     <string name="login_username">Login</string>
     <string name="login_password">Password</string>
     <string name="login_continue">Continue</string>
+    <string name="login_ldap">Continue with LDAP</string>
     <string name="login_error_message">Error during login. Check credentials or connection</string>
 
     <string name="login_alert_title">Unencrypted connection</string>
