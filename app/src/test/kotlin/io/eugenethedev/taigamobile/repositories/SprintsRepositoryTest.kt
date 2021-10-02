@@ -32,7 +32,43 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
     @Test
     fun `test get sprints`() = runBlocking {
+        val sprints = sprintsRepository.getSprints(1)
 
+        assertEquals(TestData.projects[0].sprints.size, sprints.size)
+        assertEquals(
+            expected = TestData.projects[0].sprints.map { it.name },
+            actual = sprints
+                .sortedBy {it.name} //Upload in vice versa order, therefore need this
+                .map { it.name }
+        )
     }
 
+    @Test
+    fun `test get sprint`() = runBlocking {
+        val sprint1 = sprintsRepository.getSprint(1)
+        val sprint2 = sprintsRepository.getSprint(2)
+
+        assertEquals(
+            expected = TestData.projects[0].sprints[0].name,
+            actual = sprint1.name
+        )
+        assertEquals(
+            expected = TestData.projects[0].sprints[1].name,
+            actual = sprint2.name
+        )
+    }
+
+    @Test
+    fun `test get sprint tasks`() = runBlocking {
+        val sprintTasks = sprintsRepository.getSprintTasks(1)
+
+        assertEquals(
+            expected = TestData.projects[0].sprints[0].tasks.size,
+            actual = sprintTasks.size
+        )
+        assertEquals(
+            expected = TestData.projects[0].sprints[0].tasks.map { it.name },
+            actual = sprintTasks.map { it.title }
+        )
+    }
 }
