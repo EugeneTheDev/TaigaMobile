@@ -18,12 +18,21 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
     @Test
     fun `test get user stories`() = runBlocking {
-        val userStories = sprintsRepository.getSprintUserStories(0)
-        assertEquals(TestData.projects[0].userstories.size, userStories.size)
-        assertEquals(
-            expected = TestData.projects[0].userstories.map { it.name},
-            actual = userStories.map { it.title }
-        )
+        val userStories1 = sprintsRepository.getSprintUserStories(1)
+        val userStories2 = sprintsRepository.getSprintUserStories(2)
+
+        val testUserStories = TestData.projects[0].userstories.filter { it.sprint != null }
+
+        assertEquals(1, userStories1.size)
+        assertEquals(expected = testUserStories[0].name, actual = userStories1[0].title)
+
+        assertEquals(1, userStories2.size)
+        assertEquals(expected = testUserStories[1].name, actual = userStories2[0].title)
+    }
+
+    @Test
+    fun `test get sprints`() = runBlocking {
+
     }
 
 }
