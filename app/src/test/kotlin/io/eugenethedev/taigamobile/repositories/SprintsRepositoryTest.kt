@@ -5,6 +5,7 @@ import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
@@ -23,18 +24,33 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
         val testUserStories = TestData.projects[0].userstories.filter { it.sprint != null }
 
-        assertEquals(1, userStories1.size)
-        assertEquals(expected = testUserStories[0].name, actual = userStories1[0].title)
+        assertEquals(
+            expected = 1,
+            userStories1.size
+        )
+        assertEquals(
+            expected = testUserStories[0].name,
+            actual = userStories1[0].title
+        )
 
-        assertEquals(1, userStories2.size)
-        assertEquals(expected = testUserStories[1].name, actual = userStories2[0].title)
+        assertEquals(
+            expected = 1,
+            actual = userStories2.size
+        )
+        assertEquals(
+            expected = testUserStories[1].name,
+            actual = userStories2[0].title
+        )
     }
 
     @Test
     fun `test get sprints`() = runBlocking {
         val sprints = sprintsRepository.getSprints(1)
 
-        assertEquals(TestData.projects[0].sprints.size, sprints.size)
+        assertEquals(
+            expected = TestData.projects[0].sprints.size,
+            actual = sprints.size
+        )
         assertEquals(
             expected = TestData.projects[0].sprints.map { it.name },
             actual = sprints
@@ -114,5 +130,26 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
         )
     }
 
+    @Test
+    fun `test create sprint`() = runBlocking{
+        sprintsRepository.createSprint(
+            "testSprint",
+            LocalDate.of(2000, 1, 1),
+            LocalDate.of(3000, 1, 1)
+        )
 
+        val sprint = sprintsRepository.getSprints(1)
+        assertEquals(
+            expected = "testSprint",
+            actual = sprint.last().name
+        )
+        assertEquals(
+            expected = LocalDate.of(2000, 1, 1),
+            actual = sprint.last().start
+        )
+        assertEquals(
+            expected = LocalDate.of(3000, 1, 1),
+            actual = sprint.last().end
+        )
+    }
 }
