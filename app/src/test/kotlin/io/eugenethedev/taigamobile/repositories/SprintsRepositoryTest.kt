@@ -60,15 +60,59 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
     @Test
     fun `test get sprint tasks`() = runBlocking {
-        val sprintTasks = sprintsRepository.getSprintTasks(1)
+        val sprintTasks1 = sprintsRepository.getSprintTasks(1)
+        val sprintTasks2 = sprintsRepository.getSprintTasks(2)
 
         assertEquals(
             expected = TestData.projects[0].sprints[0].tasks.size,
-            actual = sprintTasks.size
+            actual = sprintTasks1.size
         )
         assertEquals(
             expected = TestData.projects[0].sprints[0].tasks.map { it.name },
-            actual = sprintTasks.map { it.title }
+            actual = sprintTasks1.map { it.title }
+        )
+
+        assertEquals(
+            expected = TestData.projects[0].sprints[1].tasks.size,
+            actual = sprintTasks2.size
+        )
+        assertEquals(
+            expected = TestData.projects[0].sprints[1].tasks.map { it.name },
+            actual = sprintTasks2.map { it.title }
         )
     }
+
+    @Test
+    fun `test get sprint issues`() = runBlocking {
+        val sprintIssues1 = sprintsRepository.getSprintIssues(1)
+        val sprintIssues2 = sprintsRepository.getSprintIssues(2) //And were is Issue 3?...
+
+        assertEquals(
+            expected = TestData.projects[0].issues
+                .filter { it.sprint == TestData.projects[0].sprints[0]}
+                .size,
+            actual = sprintIssues1.size
+        )
+        assertEquals(
+            expected = TestData.projects[0].issues
+                .filter { it.sprint == TestData.projects[0].sprints[0]}
+                .map { it.name },
+            actual = sprintIssues1.map { it.title }
+        )
+
+        assertEquals(
+            expected = TestData.projects[0].issues
+                .filter { it.sprint == TestData.projects[0].sprints[1]}
+                .size,
+            actual = sprintIssues2.size
+        )
+        assertEquals(
+            expected = TestData.projects[0].issues
+                .filter { it.sprint == TestData.projects[0].sprints[1]}
+                .map { it.name },
+            actual = sprintIssues2.map { it.title }
+        )
+    }
+
+
 }
