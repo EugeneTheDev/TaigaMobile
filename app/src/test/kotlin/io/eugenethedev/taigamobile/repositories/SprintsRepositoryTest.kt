@@ -138,18 +138,55 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
             LocalDate.of(3000, 1, 1)
         )
 
-        val sprint = sprintsRepository.getSprints(1)
+        val sprints = sprintsRepository.getSprints(1)
         assertEquals(
             expected = "testSprint",
-            actual = sprint.last().name
+            actual = sprints.last().name
         )
         assertEquals(
             expected = LocalDate.of(2000, 1, 1),
-            actual = sprint.last().start
+            actual = sprints.last().start
         )
         assertEquals(
             expected = LocalDate.of(3000, 1, 1),
-            actual = sprint.last().end
+            actual = sprints.last().end
         )
+    }
+
+    @Test
+    fun `test edit sprint`() = runBlocking {
+        sprintsRepository.editSprint(
+            1,
+            "editSprint",
+            LocalDate.of(2000, 1, 1),
+            LocalDate.of(3000, 1, 1)
+        )
+
+        val sprint = sprintsRepository.getSprint(1)
+        assertEquals(
+            expected = "editSprint",
+            actual = sprint.name
+        )
+        assertEquals(
+            expected = LocalDate.of(2000, 1, 1),
+            actual = sprint.start
+        )
+        assertEquals(
+            expected = LocalDate.of(3000, 1, 1),
+            actual = sprint.end
+        )
+    }
+
+    @Test
+    fun `test delete sprint`() = runBlocking{
+        val nameSprint = sprintsRepository.getSprint(1).name
+        sprintsRepository.deleteSprint(1)
+        val sprints = sprintsRepository.getSprints(1)
+
+        assertEquals(
+            expected = TestData.projects[0].sprints.size - 1,
+            actual = sprints.size
+        )
+        assert(nameSprint !in sprints.map { it.name })
     }
 }
