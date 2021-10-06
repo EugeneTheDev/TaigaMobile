@@ -167,7 +167,6 @@ dependencies {
     /**
      * Test frameworks
      */
-
     allTestsImplementation(kotlin("test-junit"))
 
     // Robolectric (run android tests on local host)
@@ -180,7 +179,6 @@ dependencies {
     // since we need to connect to test db instance
     testRuntimeOnly("org.postgresql:postgresql:42.2.23")
     androidTestRuntimeOnly("org.postgresql:postgresql:42.2.23")
-
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {

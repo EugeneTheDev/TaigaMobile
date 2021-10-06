@@ -9,6 +9,7 @@ import org.junit.Test
 import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class SprintsRepositoryTest: BaseRepositoryTest() {
     lateinit var sprintsRepository : ISprintsRepository
@@ -63,6 +64,14 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
                     expected = TestData.projects[0].sprints[i - 1].name,
                     actual = sprint.name
                 )
+                assertEquals(
+                    expected = TestData.projects[0].sprints[i - 1].start,
+                    actual = sprint.start
+                )
+                assertEquals(
+                    expected = TestData.projects[0].sprints[i - 1].end,
+                    actual = sprint.end
+                )
             }
         }
     }
@@ -74,12 +83,12 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
             for (i in 1..sprints.size) {
                 val sprintTasks = sprintsRepository.getSprintTasks(i.toLong())
                 assertEquals(
-                    expected = TestData.projects[0].sprints[i - 1].tasks.size,
-                    actual = sprintTasks.size
-                )
-                assertEquals(
                     expected = TestData.projects[0].sprints[i - 1].tasks.map { it.name },
                     actual = sprintTasks.map { it.title }
+                )
+                assertEquals(
+                    expected = TestData.projects[0].sprints[i - 1].tasks.map { it.isClosed },
+                    actual = sprintTasks.map { it.isClosed }
                 )
             }
         }
@@ -87,34 +96,16 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
     @Test
     fun `test get sprint issues`() = runBlocking {
-        val sprintIssues1 = sprintsRepository.getSprintIssues(1)
-        val sprintIssues2 = sprintsRepository.getSprintIssues(2) //And were is Issue 3?...
-
-        assertEquals(
-            expected = TestData.projects[0].issues
-                .filter { it.sprint == TestData.projects[0].sprints[0]}
-                .size,
-            actual = sprintIssues1.size
-        )
-        assertEquals(
-            expected = TestData.projects[0].issues
-                .filter { it.sprint == TestData.projects[0].sprints[0]}
-                .map { it.name },
-            actual = sprintIssues1.map { it.title }
-        )
-
-        assertEquals(
-            expected = TestData.projects[0].issues
-                .filter { it.sprint == TestData.projects[0].sprints[1]}
-                .size,
-            actual = sprintIssues2.size
-        )
-        assertEquals(
-            expected = TestData.projects[0].issues
-                .filter { it.sprint == TestData.projects[0].sprints[1]}
-                .map { it.name },
-            actual = sprintIssues2.map { it.title }
-        )
+        val sprints = sprintsRepository.getSprints(1)
+        if (sprints.isNotEmpty()) {
+            for (i in 1..sprints.size) {
+                val sprintIssues = sprintsRepository.getSprintIssues(i.toLong())
+                assertEquals(
+                    expected = TestData.projects[0].issues[i - 1].name,
+                    actual = sprintIssues[0].title
+                )
+            }
+        }
     }
 
     @Test
@@ -142,38 +133,47 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
     @Test
     fun `test edit sprint`() = runBlocking {
-        sprintsRepository.editSprint(
-            1,
-            "editSprint",
-            LocalDate.of(2000, 1, 1),
-            LocalDate.of(3000, 1, 1)
-        )
+        val sprints = sprintsRepository.getSprints(1)
+        if (sprints.isNotEmpty()) {
+            for (i in 1..sprints.size) {
+                sprintsRepository.editSprint(
+                    i.toLong(),
+                    "editSprint${i}",
+                    LocalDate.of(2000 + i, 1, 1),
+                    LocalDate.of(3000 + i, 1, 1)
+                )
 
-        val sprint = sprintsRepository.getSprint(1)
-        assertEquals(
-            expected = "editSprint",
-            actual = sprint.name
-        )
-        assertEquals(
-            expected = LocalDate.of(2000, 1, 1),
-            actual = sprint.start
-        )
-        assertEquals(
-            expected = LocalDate.of(3000, 1, 1),
-            actual = sprint.end
-        )
+                val sprint = sprintsRepository.getSprint(i.toLong())
+                assertEquals(
+                    expected = "editSprint${i}",
+                    actual = sprint.name
+                )
+                assertEquals(
+                    expected = LocalDate.of(2000 + i, 1, 1),
+                    actual = sprint.start
+                )
+                assertEquals(
+                    expected = LocalDate.of(3000 + i, 1, 1),
+                    actual = sprint.end
+                )
+            }
+        }
     }
 
     @Test
     fun `test delete sprint`() = runBlocking{
-        val nameSprint = sprintsRepository.getSprint(1).name
-        sprintsRepository.deleteSprint(1)
         val sprints = sprintsRepository.getSprints(1)
-
-        assertEquals(
-            expected = TestData.projects[0].sprints.size - 1,
-            actual = sprints.size
-        )
-        assert(nameSprint !in sprints.map { it.name })
+        if (sprints.isNotEmpty()) {
+            for (i in 1..sprints.size) {
+                val nameSprint = sprintsRepository.getSprint(i.toLong()).name
+                sprintsRepository.deleteSprint(i.toLong())
+                val sprints = sprintsRepository.getSprints(1)
+                assertEquals(
+                    expected = TestData.projects[0].sprints.size - i,
+                    actual = sprints.size
+                )
+                assertTrue(nameSprint !in sprints.map { it.name })
+            }
+        }
     }
 }
