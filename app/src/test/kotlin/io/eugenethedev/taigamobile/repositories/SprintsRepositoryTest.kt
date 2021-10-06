@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.repositories
 
+import android.util.Log
 import io.eugenethedev.taigamobile.data.repositories.SprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.testdata.TestData
@@ -19,28 +20,21 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
 
     @Test
     fun `test get user stories`() = runBlocking {
-        val userStories1 = sprintsRepository.getSprintUserStories(1)
-        val userStories2 = sprintsRepository.getSprintUserStories(2)
-
+        val sprints = sprintsRepository.getSprints(1)
         val testUserStories = TestData.projects[0].userstories.filter { it.sprint != null }
-
-        assertEquals(
-            expected = 1,
-            userStories1.size
-        )
-        assertEquals(
-            expected = testUserStories[0].name,
-            actual = userStories1[0].title
-        )
-
-        assertEquals(
-            expected = 1,
-            actual = userStories2.size
-        )
-        assertEquals(
-            expected = testUserStories[1].name,
-            actual = userStories2[0].title
-        )
+        if (sprints.isNotEmpty()) {
+            for (i in 1..sprints.size) {
+                val userStories = sprintsRepository.getSprintUserStories(i.toLong())
+                assertEquals(
+                    expected = testUserStories[i - 1].name,
+                    actual = userStories[0].title
+                )
+                assertEquals(
+                    expected = testUserStories[i - 1].isClosed,
+                    actual = userStories[0].isClosed
+                )
+            }
+        }
     }
 
     @Test
@@ -48,54 +42,47 @@ class SprintsRepositoryTest: BaseRepositoryTest() {
         val sprints = sprintsRepository.getSprints(1)
 
         assertEquals(
-            expected = TestData.projects[0].sprints.size,
-            actual = sprints.size
-        )
-        assertEquals(
-            expected = TestData.projects[0].sprints.map { it.name },
+            expected = TestData
+                .projects[0]
+                .sprints
+                .sortedBy {it.name}
+                .map { it.name },
             actual = sprints
-                .sortedBy {it.name} //Upload in vice versa order, therefore need this
+                .sortedBy {it.name}
                 .map { it.name }
         )
     }
 
     @Test
     fun `test get sprint`() = runBlocking {
-        val sprint1 = sprintsRepository.getSprint(1)
-        val sprint2 = sprintsRepository.getSprint(2)
-
-        assertEquals(
-            expected = TestData.projects[0].sprints[0].name,
-            actual = sprint1.name
-        )
-        assertEquals(
-            expected = TestData.projects[0].sprints[1].name,
-            actual = sprint2.name
-        )
+        val sprints = sprintsRepository.getSprints(1)
+        if (sprints.isNotEmpty()) {
+            for (i in 1..sprints.size) {
+                val sprint = sprintsRepository.getSprint(i.toLong())
+                assertEquals(
+                    expected = TestData.projects[0].sprints[i - 1].name,
+                    actual = sprint.name
+                )
+            }
+        }
     }
 
     @Test
     fun `test get sprint tasks`() = runBlocking {
-        val sprintTasks1 = sprintsRepository.getSprintTasks(1)
-        val sprintTasks2 = sprintsRepository.getSprintTasks(2)
-
-        assertEquals(
-            expected = TestData.projects[0].sprints[0].tasks.size,
-            actual = sprintTasks1.size
-        )
-        assertEquals(
-            expected = TestData.projects[0].sprints[0].tasks.map { it.name },
-            actual = sprintTasks1.map { it.title }
-        )
-
-        assertEquals(
-            expected = TestData.projects[0].sprints[1].tasks.size,
-            actual = sprintTasks2.size
-        )
-        assertEquals(
-            expected = TestData.projects[0].sprints[1].tasks.map { it.name },
-            actual = sprintTasks2.map { it.title }
-        )
+        val sprints = sprintsRepository.getSprints(1)
+        if (sprints.isNotEmpty()) {
+            for (i in 1..sprints.size) {
+                val sprintTasks = sprintsRepository.getSprintTasks(i.toLong())
+                assertEquals(
+                    expected = TestData.projects[0].sprints[i - 1].tasks.size,
+                    actual = sprintTasks.size
+                )
+                assertEquals(
+                    expected = TestData.projects[0].sprints[i - 1].tasks.map { it.name },
+                    actual = sprintTasks.map { it.title }
+                )
+            }
+        }
     }
 
     @Test

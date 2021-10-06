@@ -32,15 +32,15 @@ android {
             keyPassword = "android"
         }
 
-//        create("release") {
-//            val properties = Properties().also {
-//                it.load(file("./signing.properties").inputStream())
-//            }
-//            storeFile = file("./keystores/release.keystore")
-//            storePassword = properties.getProperty("password")
-//            keyAlias = properties.getProperty("alias")
-//            keyPassword = properties.getProperty("password")
-//        }
+        create("release") {
+            val properties = Properties().also {
+                it.load(file("./signing.properties").inputStream())
+            }
+            storeFile = file("./keystores/release.keystore")
+            storePassword = properties.getProperty("password")
+            keyAlias = properties.getProperty("alias")
+            keyPassword = properties.getProperty("password")
+        }
     }
 
 
@@ -49,11 +49,11 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
 
-//        getByName("release") {
-//            isMinifyEnabled = false
-//            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-//            signingConfig = signingConfigs.getByName("release")
-//        }
+        getByName("release") {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 
     testOptions.unitTests {

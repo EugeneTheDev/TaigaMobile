@@ -21,7 +21,7 @@ class SearchRepositoryTest : BaseRepositoryTest() {
         val projects = searchRepository.searchProjects("", 1)
         assertEquals(TestData.projects.size, projects.size)
         assertEquals(
-            expected = TestData.projects.map { it.name},
+            expected = TestData.projects.map { it.name },
             actual = projects.map { it.name }
         )
     }
