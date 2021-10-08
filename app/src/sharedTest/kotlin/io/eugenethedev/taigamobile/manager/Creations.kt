@@ -490,7 +490,7 @@ interface Creations {
                                 "milestone": ${data.sprintToId[it.sprint]}
                                 ${
                                     if (it.isClosed)
-                                        """, "status": ${getClosedStatusId(CommonTaskType.UserStory, data.id, it.creator)}"""
+                                        """, "status": ${getClosedStatusId(CommonTaskType.Issue, data.id, it.creator)}"""
                                     else
                                         ""
                                 }
