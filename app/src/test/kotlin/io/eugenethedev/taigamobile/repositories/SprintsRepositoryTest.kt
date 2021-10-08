@@ -26,7 +26,7 @@ class SprintsRepositoryTest : BaseRepositoryTest() {
         sprints.forEach {
             sprintsRepository.getSprintUserStories(it.id).forEach { story ->
                 assertEquals(
-                    expected = testUserStories.find { it.name == story.title }!!.isClosed,
+                    expected = testUserStories.find { it.title == story.title }!!.isClosed,
                     actual = story.isClosed
                 )
             }
@@ -69,7 +69,7 @@ class SprintsRepositoryTest : BaseRepositoryTest() {
         sprints.forEach { sprint ->
             sprintsRepository.getSprintTasks(sprint.id).forEach { task ->
                 assertEquals(
-                    expected = testTasks[sprint.name]!!.find { it.name == task.title }!!.isClosed,
+                    expected = testTasks[sprint.name]!!.find { it.title == task.title }!!.isClosed,
                     actual = task.isClosed
                 )
             }
@@ -86,7 +86,7 @@ class SprintsRepositoryTest : BaseRepositoryTest() {
         sprints.forEach { sprint ->
             sprintsRepository.getSprintIssues(sprint.id).forEach { issue ->
                 assertEquals(
-                    expected = testIssues[sprint.name]!!.find { it.name == issue.title }!!.isClosed,
+                    expected = testIssues[sprint.name]!!.find { it.title == issue.title }!!.isClosed,
                     actual = issue.isClosed
                 )
             }

@@ -30,7 +30,7 @@ object TestData {
         ) {
             override val epics = listOf(
                 Epic(
-                    name = "Epic #1",
+                    title = "Epic #1",
                     creator = team[0],
                     description = "Epic 1",
                     comments = listOf(
@@ -41,7 +41,7 @@ object TestData {
                     isClosed = true
                 ),
                 Epic(
-                    name = "Epic #2",
+                    title = "Epic #2",
                     creator = team[0],
                     watchers = team
                 )
@@ -62,7 +62,7 @@ object TestData {
                     creator = team[1],
                     tasks = listOf(
                         Task(
-                            name = "Storyless task 1",
+                            title = "Storyless task 1",
                             creator = team[1],
                             description = "Desc",
                             comments = listOf(
@@ -79,7 +79,7 @@ object TestData {
 
             override val userstories = listOf(
                 UserStory(
-                    name = "Cool user story",
+                    title = "Cool user story",
                     creator = team[0],
                     description = "Very interesting description",
                     epics = epics,
@@ -88,7 +88,7 @@ object TestData {
                     )
                 ),
                 UserStory(
-                    name = "Another user story",
+                    title = "Another user story",
                     creator = team[1],
                     description = "Description",
                     assignedTo = team[0],
@@ -96,20 +96,20 @@ object TestData {
                     sprint = sprints[0],
                     tasks = listOf(
                         Task(
-                            name = "Subtask 1",
+                            title = "Subtask 1",
                             creator = team[1],
                             assignedTo = team[0],
                             isClosed = true
                         ),
                         Task(
-                            name = "Subtask 2",
+                            title = "Subtask 2",
                             creator = team[0],
                             isClosed = true
                         )
                     )
                 ),
                 UserStory(
-                    name = "Great story",
+                    title = "Great story",
                     creator = team[0],
                     description = "",
                     watchers = listOf(team[0]),
@@ -123,7 +123,7 @@ object TestData {
 
             override val issues = listOf(
                 Issue(
-                    name = "Issue #1",
+                    title = "Issue #1",
                     creator = team[1],
                     description = "Problem #1",
                     assignedTo = team[0],
@@ -131,13 +131,13 @@ object TestData {
                     sprint = sprints[0]
                 ),
                 Issue(
-                    name = "Issue #2",
+                    title = "Issue #2",
                     creator = team[1],
                     description = "Problem #2",
                     sprint = sprints[1]
                 ),
                 Issue(
-                    name = "Issue #3",
+                    title = "Issue #3",
                     creator = team[0],
                     description = "Problem #3"
                 )
@@ -152,7 +152,7 @@ object TestData {
         ) {
             override val epics = listOf(
                 Epic(
-                    name = "Epic #1",
+                    title = "Epic #1",
                     creator = team[1],
                     description = "Epic 1",
                     comments = listOf(
@@ -163,7 +163,7 @@ object TestData {
                     isClosed = true
                 ),
                 Epic(
-                    name = "Epic #2",
+                    title = "Epic #2",
                     creator = team[0],
                     watchers = team
                 )
@@ -184,7 +184,7 @@ object TestData {
                     creator = team[0],
                     tasks = listOf(
                         Task(
-                            name = "Storyless task 1",
+                            title = "Storyless task 1",
                             creator = team[0],
                             description = "Desc",
                             comments = listOf(
@@ -201,7 +201,7 @@ object TestData {
 
             override val userstories = listOf(
                 UserStory(
-                    name = "Cool user story",
+                    title = "Cool user story",
                     creator = team[1],
                     description = "Very interesting description",
                     epics = epics,
@@ -210,7 +210,7 @@ object TestData {
                     )
                 ),
                 UserStory(
-                    name = "Another user story",
+                    title = "Another user story",
                     creator = team[0],
                     description = "Description",
                     assignedTo = team[1],
@@ -218,20 +218,20 @@ object TestData {
                     sprint = sprints[0],
                     tasks = listOf(
                         Task(
-                            name = "Subtask 1",
+                            title = "Subtask 1",
                             creator = team[1],
                             assignedTo = team[1],
                             isClosed = true
                         ),
                         Task(
-                            name = "Subtask 2",
+                            title = "Subtask 2",
                             creator = team[0],
                             isClosed = true
                         )
                     )
                 ),
                 UserStory(
-                    name = "Great story",
+                    title = "Great story",
                     creator = team[1],
                     description = "",
                     watchers = listOf(team[1]),
@@ -245,7 +245,7 @@ object TestData {
 
             override val issues = listOf(
                 Issue(
-                    name = "Issue #1",
+                    title = "Issue #1",
                     creator = team[1],
                     description = "Problem #1",
                     assignedTo = team[1],
@@ -253,13 +253,13 @@ object TestData {
                     sprint = sprints[0]
                 ),
                 Issue(
-                    name = "Issue #2",
+                    title = "Issue #2",
                     creator = team[0],
                     description = "Problem #2",
                     sprint = sprints[1]
                 ),
                 Issue(
-                    name = "Issue #3",
+                    title = "Issue #3",
                     creator = team[0],
                     description = "Problem #3"
                 )

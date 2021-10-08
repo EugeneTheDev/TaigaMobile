@@ -7,8 +7,6 @@ import io.eugenethedev.taigamobile.testdata.Task
 import io.eugenethedev.taigamobile.testdata.TestData
 import io.eugenethedev.taigamobile.testdata.User
 import okhttp3.Request
-import java.sql.DriverManager
-import java.util.*
 
 interface Creations {
     fun TaigaTestInstanceManager.initData() = tx {
@@ -142,7 +140,7 @@ interface Creations {
                     """
                         {
                             "project": $projectId,
-                            "subject": "${it.name}",
+                            "subject": "${it.title}",
                             "description": "${it.description}",
                             "milestone": $sprintId,
                             "user_story": $userStoryId,
@@ -369,7 +367,7 @@ interface Creations {
                         """
                             {
                                 "project": ${data.id},
-                                "subject": "${it.name}",
+                                "subject": "${it.title}",
                                 "description": "${it.description}",
                                 "assigned_to": ${_userToUserData[it.assignedTo]?.id}
                                 ${
@@ -417,7 +415,7 @@ interface Creations {
                         """
                             {
                                 "project": ${data.id},
-                                "subject": "${it.name}",
+                                "subject": "${it.title}",
                                 "description": "${it.description}",
                                 "assigned_to": ${_userToUserData[it.assignedTo]?.id},
                                 "milestone": ${data.sprintToId[it.sprint]}
@@ -484,7 +482,7 @@ interface Creations {
                         """
                             {
                                 "project": ${data.id},
-                                "subject": "${it.name}",
+                                "subject": "${it.title}",
                                 "description": "${it.description}",
                                 "assigned_to": ${_userToUserData[it.assignedTo]?.id},
                                 "milestone": ${data.sprintToId[it.sprint]}

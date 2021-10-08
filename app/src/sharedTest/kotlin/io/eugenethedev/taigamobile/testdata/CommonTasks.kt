@@ -8,7 +8,7 @@ class Comment(
 )
 
 sealed interface GenericTask {
-    val name: String
+    val title: String
     val creator: User
     val description: String
     val comments: List<Comment>
@@ -19,7 +19,7 @@ sealed interface GenericTask {
 }
 
 class Epic(
-    override val name: String,
+    override val title: String,
     override val creator: User,
     override val description: String = "",
     override val comments: List<Comment> = emptyList(),
@@ -31,7 +31,7 @@ class Epic(
 }
 
 class UserStory(
-    override val name: String,
+    override val title: String,
     override val creator: User,
     override val description: String = "",
     override val comments: List<Comment> = emptyList(),
@@ -46,7 +46,7 @@ class UserStory(
 }
 
 class Task(
-    override val name: String,
+    override val title: String,
     override val creator: User,
     override val description: String = "",
     override val comments: List<Comment> = emptyList(),
@@ -58,7 +58,7 @@ class Task(
 }
 
 class Issue(
-    override val name: String,
+    override val title: String,
     override val creator: User,
     override val description: String = "",
     override val comments: List<Comment> = emptyList(),
