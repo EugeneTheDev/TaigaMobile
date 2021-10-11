@@ -71,6 +71,7 @@ class ScrumViewModel : ViewModel() {
     }
 
     fun reset() {
+        storiesQuery.value = ""
         createSprintResult.value = NothingResult()
         stories.refresh()
         sprints.refresh()

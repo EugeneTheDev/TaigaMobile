@@ -19,15 +19,29 @@ class TasksRepository @Inject constructor(
     private val session: Session
 ) : ITasksRepository {
 
-    private suspend fun getFiltersData(commonTaskType: CommonTaskType) =
-        taigaApi.getCommonTaskFiltersData(CommonTaskPathPlural(commonTaskType), session.currentProjectId)
-
-    private fun FiltersDataResponse.Filter.toStatus(statusType: StatusType) = Status(
+    private fun StatusesFilter.toStatus(statusType: StatusType) = Status(
         id = id,
         name = name,
-        color = color.fixNullColor(),
+        color = color,
         type = statusType
     )
+
+    override suspend fun getFiltersData(commonTaskType: CommonTaskType) = withIO {
+        taigaApi.getCommonTaskFiltersData(
+            CommonTaskPathPlural(commonTaskType),
+            session.currentProjectId
+        ).let {
+            FiltersData(
+                assignees = it.assigned_to.map { AssigneesFilter(it.id, it.full_name, it.count) },
+                roles = it.roles.orEmpty().map { RolesFilter(it.id!!, it.name!!, it.count) },
+                tags = it.tags.orEmpty().map { TagsFilter(it.color.fixNullColor(), it.name!!, it.count) },
+                statuses = it.statuses.map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
+                priorities = it.priorities.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
+                severities = it.severities.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
+                types = it.types.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) }
+            )
+        }
+    }
 
     override suspend fun getWorkingOn() = withIO {
         val epics = async {
@@ -89,9 +103,9 @@ class TasksRepository @Inject constructor(
         getFiltersData(commonTaskType).let {
             when (statusType) {
                 StatusType.Status -> it.statuses.map { it.toStatus(statusType) }
-                StatusType.Type -> it.types.orEmpty().map { it.toStatus(statusType) }
-                StatusType.Severity -> it.severities.orEmpty().map { it.toStatus(statusType) }
-                StatusType.Priority -> it.priorities.orEmpty().map { it.toStatus(statusType) }
+                StatusType.Type -> it.types.map { it.toStatus(statusType) }
+                StatusType.Severity -> it.severities.map { it.toStatus(statusType) }
+                StatusType.Priority -> it.priorities.map { it.toStatus(statusType) }
             }
         }
     }
@@ -195,7 +209,7 @@ class TasksRepository @Inject constructor(
     }
 
     override suspend fun getAllTags(commonTaskType: CommonTaskType) = withIO {
-        getFiltersData(commonTaskType).tags.orEmpty().map { Tag(it.name, it.color.fixNullColor()) }
+        getFiltersData(commonTaskType).tags.map { Tag(it.name, it.color) }
     }
 
     override suspend fun getSwimlanes() = withIO {
@@ -204,7 +218,7 @@ class TasksRepository @Inject constructor(
     
     private suspend fun CommonTaskResponse.toCommonTaskExtended(
         commonTaskType: CommonTaskType,
-        filters: FiltersDataResponse,
+        filters: FiltersData,
         swimlanes: List<Swimlane>,
         loadSprint: Boolean = true
     ): CommonTaskExtended {
@@ -235,9 +249,9 @@ class TasksRepository @Inject constructor(
             userStoryShortInfo = user_story_extra_info,
             version = version,
             color = color,
-            type = type?.let { id -> filters.types?.find { it.id == id } }?.toStatus(StatusType.Type),
-            severity = severity?.let { id -> filters.severities?.find { it.id == id } }?.toStatus(StatusType.Severity),
-            priority = priority?.let { id -> filters.priorities?.find { it.id == id } }?.toStatus(StatusType.Priority)
+            type = type?.let { id -> filters.types.find { it.id == id } }?.toStatus(StatusType.Type),
+            severity = severity?.let { id -> filters.severities.find { it.id == id } }?.toStatus(StatusType.Severity),
+            priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority)
         )
     }
 
@@ -448,12 +462,14 @@ class TasksRepository @Inject constructor(
         val project = MultipartBody.Part.createFormData("project", session.currentProjectId.toString())
         val objectId = MultipartBody.Part.createFormData("object_id", commonTaskId.toString())
 
-        taigaApi.uploadCommonTaskAttachment(
-            taskPath = CommonTaskPathPlural(commonTaskType),
-            file = file,
-            project = project,
-            objectId = objectId
-        ).also { inputStream.close() }
+        inputStream.use {
+            taigaApi.uploadCommonTaskAttachment(
+                taskPath = CommonTaskPathPlural(commonTaskType),
+                file = file,
+                project = project,
+                objectId = objectId
+            )
+        }
     }
 
     override suspend fun deleteAttachment(commonTaskType: CommonTaskType, attachmentId: Long) = withIO {
