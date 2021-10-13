@@ -8,12 +8,14 @@ import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.paging.LoadState
@@ -94,3 +96,5 @@ fun String.toColor(): Color = try {
 }
 
 fun Color.toHex() = "#%08X".format(toArgb()).replace("#FF", "#")
+// calculate optimal text color for background
+fun Color.textColor() = if (luminance() < 0.5) Color.White else Color.Black

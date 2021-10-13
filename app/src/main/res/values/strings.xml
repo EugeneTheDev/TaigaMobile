@@ -158,6 +158,12 @@
     <string name="loading">Loading…</string>
 
     <string name="tasks_search_hint">Search by ref or subject</string>
+    <string name="filters">Filters</string>
+    <string name="show_filters">Show filters</string>
+    <string name="hide_filters">Hide filters</string>
+    <string name="type_title">Type</string>
+    <string name="severity_title">Severity</string>
+    <string name="priority_title">Priority</string>
 
     <string name="status_with_number_template" translatable="false">%s - %d</string>
 

@@ -21,18 +21,21 @@ data class FiltersData(
         severities = severities - other.severities,
         types = types - other.types
     )
+
+    val filtersNumber = listOf(assignees, roles, tags, statuses, priorities, severities, types).sumOf { it.size }
 }
 
-fun List<Filter>.noData() = all { it.count == 0 }
+fun List<Filter>.hasData() = any { it.count > 0 }
 
 sealed interface Filter {
     val name: String
     val count: Int
+    val color: String?
 }
 
 data class StatusesFilter(
     val id: Long,
-    val color: String,
+    override val color: String,
     override val name: String,
     override val count: Int
 ) : Filter
@@ -41,16 +44,20 @@ data class AssigneesFilter(
     val id: Long?,
     override val name: String,
     override val count: Int
-) : Filter
+) : Filter {
+    override val color: String? = null
+}
 
 data class RolesFilter(
     val id: Long,
     override val name: String,
     override val count: Int
-) : Filter
+) : Filter {
+    override val color: String? = null
+}
 
 data class TagsFilter(
-    val color: String,
+    override val color: String,
     override val name: String,
     override val count: Int
 ) : Filter
