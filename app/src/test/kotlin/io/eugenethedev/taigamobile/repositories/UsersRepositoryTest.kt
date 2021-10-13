@@ -29,4 +29,38 @@ class UsersRepositoryTest : BaseRepositoryTest() {
             actual = TestData.activeUser.fullName
         )
     }
+
+    @Test
+    fun `test getTeam`() = runBlocking {
+        val team = usersRepository.getTeam().sortedBy { it.username }
+        val testTeam = TestData.users.sortedBy { it.username }
+
+        team.forEachIndexed { index, member ->
+            assertEquals(
+                expected = testTeam[index].username,
+                actual = member.username
+            )
+            assertEquals(
+                expected = testTeam[index].fullName,
+                actual = member.name
+            )
+        }
+    }
+
+    @Test
+    fun `test getUser`() = runBlocking {
+        val testUsers = TestData.users.sortedBy { it.username }
+
+        usersRepository.getTeam().sortedBy { it.username }.forEachIndexed { index, member ->
+            val user = usersRepository.getUser(member.id)
+            assertEquals(
+                expected = testUsers[index].username,
+                actual = user.username
+            )
+            assertEquals(
+                expected = testUsers[index].fullName,
+                actual = user.fullName
+            )
+        }
+    }
 }
