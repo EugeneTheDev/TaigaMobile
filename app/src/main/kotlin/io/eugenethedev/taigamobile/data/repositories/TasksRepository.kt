@@ -9,7 +9,6 @@ import kotlinx.coroutines.async
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.HttpException
 import java.io.InputStream
 import java.time.LocalDate
 import javax.inject.Inject
@@ -60,7 +59,7 @@ class TasksRepository @Inject constructor(
         }
 
         val issues = async {
-            taigaApi.getIssues(assignedId = session.currentUserId, isClosed = false)
+            taigaApi.getIssues(assignedIds = session.currentUserId.toString(), isClosed = false)
                 .map { it.toCommonTask(CommonTaskType.Issue) }
         }
 
@@ -151,9 +150,20 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getIssues(page: Int, query: String) = withIO {
+    override suspend fun getIssues(page: Int, filters: FiltersData) = withIO {
         handle404 {
-            taigaApi.getIssues(page = page, project = session.currentProjectId, query = query)
+            taigaApi.getIssues(
+                    page = page,
+                    project = session.currentProjectId,
+                    query = filters.query,
+                    assignedIds = filters.assignees.map { it.id }.joinToString(separator = ","),
+                    priorities = filters.priorities.commaString(),
+                    severities = filters.severities.commaString(),
+                    types = filters.types.commaString(),
+                    statuses = filters.statuses.commaString(),
+                    roles = filters.roles.map { it.id }.joinToString(separator = ","),
+                    tags = filters.tags.joinToString(separator = ",") { it.name.replace(" ", "+") }
+                )
                 .map { it.toCommonTask(CommonTaskType.Issue) }
         }
     }
@@ -254,6 +264,8 @@ class TasksRepository @Inject constructor(
             priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority)
         )
     }
+
+    private fun List<StatusesFilter>.commaString() = map { it.id }.joinToString(separator = ",")
 
     // edit related
 

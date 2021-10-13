@@ -9,7 +9,6 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -55,7 +54,7 @@ fun Filters(
     val coroutineScope = rememberCoroutineScope()
 
     // compose version of BottomSheetDialog (from Dialog and ModalBottomSheetLayout)
-    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Expanded)
+    val bottomSheetState =  remember { ModalBottomSheetState( ModalBottomSheetValue.Expanded) } // fix to handle dialog closed state properly
     var isVisible by remember { mutableStateOf(false) }
 
     TextButton(
@@ -102,7 +101,7 @@ fun Filters(
             ModalBottomSheetLayout(
                 modifier = Modifier.fillMaxSize(),
                 sheetState = bottomSheetState,
-                sheetShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                sheetShape = MaterialTheme.shapes.medium,
                 scrimColor = Color.Transparent,
                 content = {},
                 sheetContent = {
@@ -141,6 +140,38 @@ fun Filters(
                                         onRemoveClick = { onSelect(selected.copy(priorities = selected.priorities - it)) }
                                     )
                                 }
+
+                                selected.statuses.forEach {
+                                    FilterChip(
+                                        filter = it,
+                                        onRemoveClick = { onSelect(selected.copy(statuses = selected.statuses - it)) }
+                                    )
+                                }
+
+                                selected.tags.forEach {
+                                    FilterChip(
+                                        filter = it,
+                                        onRemoveClick = { onSelect(selected.copy(tags = selected.tags - it)) }
+                                    )
+                                }
+
+                                selected.assignees.forEach {
+                                    FilterChip(
+                                        filter = it,
+                                        onRemoveClick = { onSelect(selected.copy(assignees = selected.assignees - it)) }
+                                    )
+                                }
+
+                                selected.roles.forEach {
+                                    FilterChip(
+                                        filter = it,
+                                        onRemoveClick = { onSelect(selected.copy(roles = selected.roles - it)) }
+                                    )
+                                }
+                            }
+
+                            if (selected.filtersNumber > 0) {
+                                Spacer(Modifier.height(space))
                             }
 
                             val sectionsSpace = 4.dp
@@ -169,8 +200,43 @@ fun Filters(
                                     filters = it,
                                     onSelect = { onSelect(selected.copy(priorities = selected.priorities + it)) }
                                 )
+                                Spacer(Modifier.height(sectionsSpace))
                             }
 
+                            unselectedFilters.statuses.ifHasData {
+                                Section(
+                                    titleId = R.string.status_title,
+                                    filters = it,
+                                    onSelect = { onSelect(selected.copy(statuses = selected.statuses + it)) }
+                                )
+                                Spacer(Modifier.height(sectionsSpace))
+                            }
+
+                            unselectedFilters.tags.ifHasData {
+                                Section(
+                                    titleId = R.string.tags_title,
+                                    filters = it,
+                                    onSelect = { onSelect(selected.copy(tags = selected.tags + it)) }
+                                )
+                                Spacer(Modifier.height(sectionsSpace))
+                            }
+
+                            unselectedFilters.assignees.ifHasData {
+                                Section(
+                                    titleId = R.string.assignees_title,
+                                    filters = it,
+                                    onSelect = { onSelect(selected.copy(assignees = selected.assignees + it)) }
+                                )
+                                Spacer(Modifier.height(sectionsSpace))
+                            }
+
+                            unselectedFilters.roles.ifHasData {
+                                Section(
+                                    titleId = R.string.role_title,
+                                    filters = it,
+                                    onSelect = { onSelect(selected.copy(roles = selected.roles + it)) }
+                                )
+                            }
                         }
 
                         Spacer(Modifier.height(space))
@@ -242,7 +308,7 @@ private fun FilterChip(
 ) = Chip(
     onClick = onClick,
     color = filter.color?.toColor() ?: taigaGray,
-    modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
+    modifier = Modifier.padding(end = 4.dp, bottom = 6.dp)
 ) {
     val space = 6.dp
 
@@ -289,9 +355,7 @@ fun FiltersPreview() = TaigaMobileTheme {
             data = FiltersData(
                 assignees = listOf(
                     AssigneesFilter(null, "", 2),
-                    AssigneesFilter(0, "Bob Bob", 2),
-                    AssigneesFilter(1, "John John", 0),
-                    AssigneesFilter(2, "James James", 4)
+                    *List(10) { AssigneesFilter(it.toLong(), "Human $it", it % 3) }.toTypedArray()
                 ),
                 roles = listOf(
                     RolesFilter(0, "UX", 1),
@@ -299,9 +363,13 @@ fun FiltersPreview() = TaigaMobileTheme {
                     RolesFilter(2, "Stakeholder", 0),
                 ),
                 tags = listOf(
-                    TagsFilter("#7E57C2", "tag 1", 3),
-                    TagsFilter("#F57C00", "tag 2", 4),
-                    TagsFilter("#C62828", "tag 3", 0),
+                    *List(10) {
+                        listOf(
+                            TagsFilter("#7E57C2", "tag ${it * 3}", 3),
+                            TagsFilter("#F57C00", "tag ${it * 3 + 1}", 4),
+                            TagsFilter("#C62828", "tag ${it * 3 + 2}", 0),
+                        )
+                    }.flatten().toTypedArray()
                 ),
                 statuses = listOf(
                     StatusesFilter(0, "#B0BEC5", "Backlog", 2),

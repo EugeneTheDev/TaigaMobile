@@ -35,28 +35,31 @@ class IssuesViewModel : ViewModel() {
             reset()
         }
 
-        if (filtersData.value is NothingResult) {
-            launch { filtersData.loadOrError { tasksRepository.getFiltersData(CommonTaskType.Issue) } }
+        if (filters.value is NothingResult) {
+            launch { filters.loadOrError { tasksRepository.getFiltersData(CommonTaskType.Issue) } }
         }
     }
 
-    val filtersData = MutableResultFlow<FiltersData>()
-    private val issuesQuery = MutableStateFlow("")
+    val filters = MutableResultFlow<FiltersData>()
+    val activeFilters = MutableStateFlow(FiltersData())
     @OptIn(ExperimentalCoroutinesApi::class)
     val issues by lazy {
-        issuesQuery.flatMapLatest { query ->
+        activeFilters.flatMapLatest { filters ->
             Pager(PagingConfig(CommonPagingSource.PAGE_SIZE, enablePlaceholders = false)) {
-                CommonPagingSource { tasksRepository.getIssues(it, query) }
+                CommonPagingSource { tasksRepository.getIssues(it, filters) }
             }.flow
         }.asLazyPagingItems(viewModelScope)
     }
 
     fun searchIssues(query: String) {
-        issuesQuery.value = query
+        activeFilters.value = activeFilters.value.copy(query = query)
+    }
+
+    fun selectFilters(filters: FiltersData) {
+        activeFilters.value = filters
     }
     
     fun reset() {
-        issuesQuery.value = ""
         issues.refresh()
     }
 }

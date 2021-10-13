@@ -31,7 +31,7 @@ fun Chip(
     shape = RoundedCornerShape(50),
     color = color,
     contentColor = color.textColor(),
-    elevation = 4.dp,
+    elevation = 2.dp,
     modifier = modifier
 ) {
     Box(modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp)) {

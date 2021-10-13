@@ -13,6 +13,8 @@ import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
+import io.eugenethedev.taigamobile.ui.components.Filters
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
@@ -38,11 +40,19 @@ fun IssuesScreen(
     val issues = viewModel.issues
     issues.subscribeOnError(onError)
 
+    val filters by viewModel.filters.collectAsState()
+    filters.subscribeOnError(onError)
+
+    val activeFilters by viewModel.activeFilters.collectAsState()
+
     IssuesScreenContent(
         projectName = viewModel.projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
         issues = issues,
+        filters = filters.data ?: FiltersData(),
+        activeFilters = activeFilters,
+        selectFilters = viewModel::selectFilters,
         navigateToTask = navController::navigateToTaskScreen,
         searchIssues = viewModel::searchIssues
     )
@@ -54,6 +64,9 @@ fun IssuesScreenContent(
     onTitleClick: () -> Unit = {},
     navigateToCreateTask: () -> Unit = {},
     issues: LazyPagingItems<CommonTask>? = null,
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
     searchIssues: (query: String) -> Unit = {}
 ) = Column(
@@ -76,6 +89,12 @@ fun IssuesScreenContent(
         horizontalPadding = searchFieldHorizontalPadding,
         verticalPadding = searchFieldVerticalPadding,
         hasBorder = true
+    )
+
+    Filters(
+        selected = activeFilters,
+        onSelect = selectFilters,
+        data = filters
     )
 
     LazyColumn(Modifier.fillMaxSize()) {

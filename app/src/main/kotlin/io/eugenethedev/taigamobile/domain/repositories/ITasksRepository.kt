@@ -21,7 +21,7 @@ interface ITasksRepository {
 
     suspend fun getUserStoryTasks(storyId: Long): List<CommonTask>
 
-    suspend fun getIssues(page: Int, query: String): List<CommonTask>
+    suspend fun getIssues(page: Int, filters: FiltersData): List<CommonTask>
 
     suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType): CommonTaskExtended
 
