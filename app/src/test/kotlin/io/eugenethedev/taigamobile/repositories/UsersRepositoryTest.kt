@@ -12,7 +12,7 @@ class UsersRepositoryTest : BaseRepositoryTest() {
     lateinit var usersRepository: IUsersRepository
 
     @BeforeTest
-    fun setupSprintsRepositoryTest() {
+    fun setupUsersRepositoryTest() {
         usersRepository = UsersRepository(mockTaigaApi, mockSession)
     }
 
