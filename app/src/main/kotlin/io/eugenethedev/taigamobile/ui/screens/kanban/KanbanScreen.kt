@@ -32,6 +32,8 @@ fun KanbanScreen(
         viewModel.start()
     }
 
+    val projectName by viewModel.projectName.collectAsState()
+
     val swimlanes by viewModel.swimlanes.collectAsState()
     swimlanes.subscribeOnError(onError)
 
@@ -47,7 +49,7 @@ fun KanbanScreen(
     val selectedSwimlane by viewModel.selectedSwimlane.collectAsState()
 
     KanbanScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         isLoading = listOf(swimlanes, team, stories).any { it is LoadingResult },
         statuses = statuses.data.orEmpty(),
         stories = stories.data.orEmpty(),

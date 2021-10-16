@@ -60,6 +60,8 @@ fun ScrumScreen(
         viewModel.start()
     }
 
+    val projectName by viewModel.projectName.collectAsState()
+
     val stories = viewModel.stories
     stories.subscribeOnError {
         onError(R.string.common_error_message)
@@ -71,7 +73,7 @@ fun ScrumScreen(
     createSprintResult.subscribeOnError(onError)
 
     ScrumScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         stories = stories,
         searchStories = viewModel::searchStories,

@@ -17,7 +17,7 @@ class TeamViewModel : ViewModel() {
     @Inject lateinit var usersRepository: IUsersRepository
     @Inject lateinit var session: Session
 
-    val projectName: String get() = session.currentProjectName
+    val projectName by lazy { session.currentProjectName }
     val team = MutableResultFlow<List<TeamMember>?>()
 
     init {

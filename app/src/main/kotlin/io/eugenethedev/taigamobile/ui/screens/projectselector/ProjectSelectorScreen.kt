@@ -37,7 +37,8 @@ fun ProjectSelectorScreen(
 
     val projects = viewModel.projects
     projects.subscribeOnError(onError)
-    val currentProjectId = viewModel.currentProjectId
+
+    val currentProjectId by viewModel.currentProjectId.collectAsState()
 
     var isSelectorVisible by remember { mutableStateOf(true) }
     val selectorAnimationDuration = SelectorListConstants.defaultAnimDurationMillis

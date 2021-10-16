@@ -22,7 +22,7 @@ class KanbanViewModel : ViewModel() {
     @Inject lateinit var screensState: ScreensState
     @Inject lateinit var session: Session
 
-    val projectName: String get() = session.currentProjectName
+    val projectName by lazy { session.currentProjectName }
 
     val statuses = MutableResultFlow<List<Status>>()
     val team = MutableResultFlow<List<User>>()

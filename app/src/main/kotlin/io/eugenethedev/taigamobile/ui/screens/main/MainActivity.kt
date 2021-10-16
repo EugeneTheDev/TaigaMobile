@@ -225,6 +225,9 @@ fun MainScreen(
         }
     }
 
+    val isLogged by viewModel.isLogged.collectAsState()
+    val isProjectSelected by viewModel.isProjectSelected.collectAsState()
+
     Box(
         Modifier
             .fillMaxSize()
@@ -232,7 +235,7 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = remember { if (viewModel.isLogged) Routes.dashboard else Routes.login }
+            startDestination = remember { if (isLogged) Routes.dashboard else Routes.login }
         ) {
             composable(Routes.login) {
                 LoginScreen(
@@ -249,7 +252,7 @@ fun MainScreen(
                 )
                 // user must select project first
                 LaunchedEffect(Unit) {
-                    if (!viewModel.isProjectSelected) {
+                    if (!isProjectSelected) {
                         navController.navigate(Routes.projectsSelector)
                     }
                 }
@@ -409,12 +412,11 @@ fun MoreScreen(
         }
     }
 
-    @Composable
-    fun Margin() = Spacer(Modifier.height(8.dp))
+    val space = 8.dp
 
     Item(R.drawable.ic_team, R.string.team, Routes.team)
-    Margin()
+    Spacer(Modifier.height(space))
     Item(R.drawable.ic_kanban, R.string.kanban, Routes.kanban)
-    Margin()
+    Spacer(Modifier.height(space))
     Item(R.drawable.ic_settings, R.string.settings, Routes.settings)
 }

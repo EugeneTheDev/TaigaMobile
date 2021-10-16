@@ -18,7 +18,7 @@ class SettingsViewModel : ViewModel() {
     @Inject lateinit var screensState: ScreensState
 
     val user = MutableResultFlow<User>()
-    val serverUrl get() = session.server
+    val serverUrl by lazy { session.server }
 
     val themeSetting by lazy { settings.themeSetting }
 

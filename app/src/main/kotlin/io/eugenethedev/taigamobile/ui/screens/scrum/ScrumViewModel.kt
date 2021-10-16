@@ -25,7 +25,7 @@ class ScrumViewModel : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
 
-    val projectName: String get() = session.currentProjectName
+    val projectName by lazy { session.currentProjectName }
 
     init {
         TaigaApp.appComponent.inject(this)

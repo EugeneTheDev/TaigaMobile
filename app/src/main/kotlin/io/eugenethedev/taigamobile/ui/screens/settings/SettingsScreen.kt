@@ -56,6 +56,8 @@ fun SettingsScreen(
         viewModel.start()
     }
 
+    val serverUrl by viewModel.serverUrl.collectAsState()
+
     val user by viewModel.user.collectAsState()
     user.subscribeOnError(onError)
 
@@ -65,7 +67,7 @@ fun SettingsScreen(
         avatarUrl = user.data?.avatarUrl,
         displayName = user.data?.displayName.orEmpty(),
         username = user.data?.username.orEmpty(),
-        serverUrl = viewModel.serverUrl,
+        serverUrl = serverUrl,
         navigateBack = navController::popBackStack,
         logout = {
             viewModel.logout()

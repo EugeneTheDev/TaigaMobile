@@ -7,10 +7,8 @@ import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.manager.TaigaTestInstanceManager
 import io.eugenethedev.taigamobile.manager.UserInfo
-import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -40,17 +38,15 @@ abstract class BaseRepositoryTest {
         val dataModule = DataModule() // contains methods for API configuration
 
         mockSession = Session(ApplicationProvider.getApplicationContext()).also {
-            it.server = taigaManager.baseUrl
+            it.changeServer(taigaManager.baseUrl)
 
             activeUser.data.apply {
-                it.currentUserId = id
-                it.token = accessToken
-                it.refreshToken = refreshToken
+                it.changeCurrentUserId(id)
+                it.changeAuthCredentials(accessToken, refreshToken)
             }
 
             activeUser.projects.entries.first().let { (id, project) ->
-                it.currentProjectId = id
-                it.currentProjectName = project.name
+                it.changeCurrentProject(id, project.name)
             }
         }
         mockTaigaApi = dataModule.provideTaigaApi(mockSession, dataModule.provideGson())

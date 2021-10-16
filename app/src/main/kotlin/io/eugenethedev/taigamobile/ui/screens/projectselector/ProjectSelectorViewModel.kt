@@ -22,7 +22,7 @@ class ProjectSelectorViewModel : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var screensState: ScreensState
 
-    val currentProjectId get() = session.currentProjectId
+    val currentProjectId by lazy { session.currentProjectId }
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -47,10 +47,7 @@ class ProjectSelectorViewModel : ViewModel() {
     }
 
     fun selectProject(project: Project) {
-        session.apply {
-            currentProjectId = project.id
-            currentProjectName = project.name
-        }
+        session.changeCurrentProject(project.id, project.name)
         screensState.modify()
     }
 }

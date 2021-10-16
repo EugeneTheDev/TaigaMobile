@@ -45,11 +45,13 @@ fun TeamScreen(
         viewModel.start()
     }
 
+    val projectName by viewModel.projectName.collectAsState()
+
     val team by viewModel.team.collectAsState()
     team.subscribeOnError(onError)
 
     TeamScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         team = team.data.orEmpty(),
         isLoading = team is LoadingResult,
         onTitleClick = {
@@ -128,7 +130,9 @@ private fun TeamMemberItem(
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(50.dp).clip(CircleShape)
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
         )
 
         Spacer(Modifier.width(6.dp))

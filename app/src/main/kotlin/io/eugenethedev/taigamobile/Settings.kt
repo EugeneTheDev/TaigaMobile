@@ -3,16 +3,16 @@ package io.eugenethedev.taigamobile
 import android.content.Context
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class Settings(context: Context) {
     private val sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
-    val themeSetting =  MutableStateFlow(ThemeSetting.values()[sharedPreferences.getInt(THEME, 0)])
+    private val _themeSetting =  MutableStateFlow(ThemeSetting.values()[sharedPreferences.getInt(THEME, 0)])
+    val themeSetting: StateFlow<ThemeSetting> = _themeSetting
     fun changeThemeSetting(value: ThemeSetting) {
-        sharedPreferences.edit {
-            putInt(THEME, value.ordinal)
-        }
-        themeSetting.value = value
+        sharedPreferences.edit { putInt(THEME, value.ordinal) }
+        _themeSetting.value = value
     }
 
     companion object {

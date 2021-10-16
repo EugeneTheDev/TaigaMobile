@@ -19,21 +19,21 @@ class AuthRepositoryTest : BaseRepositoryTest() {
 
     @Test
     fun `test basic auth`() = runBlocking {
-        val serverUrl = mockSession.server
+        val serverUrl = mockSession.server.value
         mockSession.reset()
 
-        assertFalse(mockSession.isLogged)
+        assertFalse(mockSession.isLogged.value)
 
         with(activeUser) {
             authRepository.auth(serverUrl, AuthType.Normal, user.password, user.username)
-            assertEquals(serverUrl, mockSession.server)
-            assertEquals(data.id, mockSession.currentUserId)
+            assertEquals(serverUrl, mockSession.server.value)
+            assertEquals(data.id, mockSession.currentUserId.value)
         }
     }
 
     @Test
     fun `test refresh auth token`() = runBlocking {
-        mockSession.token = "wrong token" // simulate token expiration (token is not valid anymore)
+        mockSession.changeAuthCredentials("wrong token", mockSession.refreshToken.value) // simulate token expiration (token is not valid anymore)
         mockTaigaApi.getProject(activeUser.projects.keys.first()) // successful response (because refresh happens)
         return@runBlocking
     }

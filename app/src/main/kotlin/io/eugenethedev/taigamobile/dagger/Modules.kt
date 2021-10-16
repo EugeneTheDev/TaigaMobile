@@ -33,18 +33,17 @@ class DataModule {
     fun provideTaigaApi(session: Session, gson: Gson): TaigaApi {
         val baseUrlPlaceholder = "https://nothing.nothing"
         fun getApiUrl() = // for compatibility with older app versions
-            if (!session.server.run { startsWith("https://") || startsWith("http://") }) {
+            if (!session.server.value.run { startsWith("https://") || startsWith("http://") }) {
                 "https://"
             } else {
                 ""
-            } + "${session.server}/${TaigaApi.API_PREFIX}"
+            } + "${session.server.value}/${TaigaApi.API_PREFIX}"
 
         val okHttpBuilder = OkHttpClient.Builder()
             .addInterceptor {
                 it.run {
                     val url = it.request().url.toUrl().toExternalForm()
 
-                    BuildConfig.BUILD_TYPE
                     proceed(
                         request()
                             .newBuilder()
@@ -52,7 +51,7 @@ class DataModule {
                             .header("User-Agent", "TaigaMobile/${BuildConfig.VERSION_NAME}")
                             .also {
                                 if ("/${TaigaApi.AUTH_ENDPOINTS}" !in url) { // do not add Authorization header to authorization requests
-                                    it.header("Authorization", "Bearer ${session.token}")
+                                    it.header("Authorization", "Bearer ${session.token.value}")
                                 }
                             }
                             .build()
@@ -77,8 +76,8 @@ class DataModule {
                                 // prevent multiple refresh requests from different threads
                                 synchronized(session) {
                                     // refresh token only if it was not refreshed in another thread
-                                    if (it.replace("Bearer ", "") == session.token) {
-                                        val body = gson.toJson(RefreshTokenRequest(session.refreshToken))
+                                    if (it.replace("Bearer ", "") == session.token.value) {
+                                        val body = gson.toJson(RefreshTokenRequest(session.refreshToken.value))
 
                                         val request = Request.Builder()
                                             .url("$baseUrlPlaceholder/${TaigaApi.REFRESH_ENDPOINT}")
@@ -90,18 +89,16 @@ class DataModule {
                                             RefreshTokenResponse::class.java
                                         )
 
-                                        session.token = refreshResponse.auth_token
-                                        session.refreshToken = refreshResponse.refresh
+                                        session.changeAuthCredentials(refreshResponse.auth_token, refreshResponse.refresh)
                                     }
                                 }
 
                                 response.request.newBuilder()
-                                    .header("Authorization", "Bearer ${session.token}")
+                                    .header("Authorization", "Bearer ${session.token.value}")
                                     .build()
                             } catch (e: Exception) {
                                 Timber.w(e)
-                                session.token = ""
-                                session.refreshToken = ""
+                                session.changeAuthCredentials("", "")
                                 null
                             }
                         }

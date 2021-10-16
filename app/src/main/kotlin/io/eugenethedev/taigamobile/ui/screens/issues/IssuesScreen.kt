@@ -37,6 +37,8 @@ fun IssuesScreen(
         viewModel.start()
     }
 
+    val projectName by viewModel.projectName.collectAsState()
+
     val issues = viewModel.issues
     issues.subscribeOnError(onError)
 
@@ -46,7 +48,7 @@ fun IssuesScreen(
     val activeFilters by viewModel.activeFilters.collectAsState()
 
     IssuesScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
         issues = issues,

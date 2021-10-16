@@ -35,11 +35,13 @@ fun EpicsScreen(
         viewModel.start()
     }
 
+    val projectName by viewModel.projectName.collectAsState()
+
     val epics = viewModel.epics
     epics.subscribeOnError(onError)
 
     EpicsScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Epic) },
         epics = epics,

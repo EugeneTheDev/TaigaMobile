@@ -41,8 +41,7 @@ class DashboardViewModel : ViewModel() {
 
     fun changeCurrentProject(commonTask: CommonTask) {
         commonTask.projectInfo.apply {
-            session.currentProjectName = name
-            session.currentProjectId = id
+            session.changeCurrentProject(id, name)
         }
     }
 
