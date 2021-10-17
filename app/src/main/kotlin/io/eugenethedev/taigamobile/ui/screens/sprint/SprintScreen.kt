@@ -16,8 +16,8 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
-import io.eugenethedev.taigamobile.ui.commons.SuccessResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
@@ -37,7 +37,7 @@ fun SprintScreen(
 ) {
     val viewModel: SprintViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start(sprintId)
+        viewModel.onOpen(sprintId)
     }
 
     val sprint by viewModel.sprint.collectAsState()
@@ -68,7 +68,7 @@ fun SprintScreen(
 
     SprintScreenContent(
         sprint = sprint.data,
-        isLoading = listOf(statuses, storiesWithTasks, storylessTasks, issues).any { it is LoadingResult },
+        isLoading = sprint is LoadingResult,
         isEditLoading = editResult is LoadingResult,
         isDeleteLoading = deleteResult is LoadingResult,
         statuses = statuses.data.orEmpty(),

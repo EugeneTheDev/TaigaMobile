@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.data.api.CreateSprintRequest
 import io.eugenethedev.taigamobile.data.api.EditSprintRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi

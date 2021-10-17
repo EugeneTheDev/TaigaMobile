@@ -10,12 +10,15 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.Status
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
-import io.eugenethedev.taigamobile.ui.commons.NothingResult
+import io.eugenethedev.taigamobile.state.Session
+import io.eugenethedev.taigamobile.state.postUpdate
+import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.utils.NothingResult
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -24,7 +27,7 @@ import javax.inject.Inject
 class SprintViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
-    @Inject lateinit var screensState: ScreensState
+    @Inject lateinit var session: Session
 
     private var sprintId: Long = -1
 
@@ -34,31 +37,28 @@ class SprintViewModel : ViewModel() {
     val storylessTasks = MutableResultFlow<List<CommonTask>>()
     val issues = MutableResultFlow<List<CommonTask>>()
 
+    private var shouldReload = true
+
     init {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start(sprintId: Long) {
-        if (screensState.shouldReloadSprintScreen) {
-            reset()
-        }
-
+    fun onOpen(sprintId: Long) {
+        if (!shouldReload) return
         this.sprintId = sprintId
-
-        if (sprint.value is NothingResult) {
-            loadData()
-        }
+        loadData(isReloading = false)
+        shouldReload = false
     }
 
-    private fun loadData() = viewModelScope.launch {
-        sprint.loadOrError {
+    private fun loadData(isReloading: Boolean = true) = viewModelScope.launch {
+        sprint.loadOrError(showLoading = !isReloading) {
             sprintsRepository.getSprint(sprintId).also {
                 joinAll(
                     launch {
-                        statuses.loadOrError(preserveValue = false) { tasksRepository.getStatuses(CommonTaskType.Task) }
+                        statuses.loadOrError(showLoading = false) { tasksRepository.getStatuses(CommonTaskType.Task) }
                     },
                     launch {
-                        storiesWithTasks.loadOrError(preserveValue = false) {
+                        storiesWithTasks.loadOrError(showLoading = false) {
                             coroutineScope {
                                 sprintsRepository.getSprintUserStories(sprintId)
                                     .map { it to async { tasksRepository.getUserStoryTasks(it.id) } }
@@ -68,10 +68,10 @@ class SprintViewModel : ViewModel() {
                         }
                     },
                     launch {
-                        issues.loadOrError(preserveValue = false) { sprintsRepository.getSprintIssues(sprintId) }
+                        issues.loadOrError(showLoading = false) { sprintsRepository.getSprintIssues(sprintId) }
                     },
                     launch {
-                        storylessTasks.loadOrError(preserveValue = false) { sprintsRepository.getSprintTasks(sprintId) }
+                        storylessTasks.loadOrError(showLoading = false) { sprintsRepository.getSprintTasks(sprintId) }
                     }
                 )
             }
@@ -82,7 +82,7 @@ class SprintViewModel : ViewModel() {
     fun editSprint(name: String, start: LocalDate, end: LocalDate) = viewModelScope.launch {
         editResult.loadOrError(R.string.permission_error) {
             sprintsRepository.editSprint(sprintId, name, start, end)
-            screensState.modify()
+            session.sprintEdit.postUpdate()
             loadData().join()
         }
     }
@@ -91,16 +91,19 @@ class SprintViewModel : ViewModel() {
     fun deleteSprint() = viewModelScope.launch {
         deleteResult.loadOrError(R.string.permission_error) {
             sprintsRepository.deleteSprint(sprintId)
-            screensState.modify()
+            session.sprintEdit.postUpdate()
         }
     }
 
-    fun reset() {
-        sprintId = -1
-        sprint.value = NothingResult()
-        statuses.value = NothingResult()
-        storiesWithTasks.value = NothingResult()
-        storylessTasks.value = NothingResult()
-        issues.value = NothingResult()
+    init {
+        session.taskEdit.onEach {
+            sprintId = -1
+            sprint.value = NothingResult()
+            statuses.value = NothingResult()
+            storiesWithTasks.value = NothingResult()
+            storylessTasks.value = NothingResult()
+            issues.value = NothingResult()
+            shouldReload = true
+        }.launchIn(viewModelScope)
     }
 }

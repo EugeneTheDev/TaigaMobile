@@ -26,7 +26,7 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
@@ -54,10 +54,7 @@ fun TeamScreen(
         projectName = projectName,
         team = team.data.orEmpty(),
         isLoading = team is LoadingResult,
-        onTitleClick = {
-            navController.navigate(Routes.projectsSelector)
-            viewModel.reset()
-        },
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateBack = navController::popBackStack
     )
 }

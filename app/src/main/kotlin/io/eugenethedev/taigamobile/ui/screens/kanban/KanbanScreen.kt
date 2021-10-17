@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.domain.entities.*
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -29,7 +29,7 @@ fun KanbanScreen(
 ) {
     val viewModel: KanbanViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
 
     val projectName by viewModel.projectName.collectAsState()
@@ -58,10 +58,7 @@ fun KanbanScreen(
         selectSwimlane = viewModel::selectSwimlane,
         selectedSwimlane = selectedSwimlane,
         navigateToStory = { id, ref -> navController.navigateToTaskScreen(id, CommonTaskType.UserStory, ref) },
-        onTitleClick = {
-            navController.navigate(Routes.projectsSelector)
-            viewModel.reset()
-        },
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateBack = navController::popBackStack,
         navigateToCreateTask = { statusId, swimlaneId ->
             navController.navigateToCreateTaskScreen(CommonTaskType.UserStory, statusId = statusId, swimlaneId = swimlaneId)

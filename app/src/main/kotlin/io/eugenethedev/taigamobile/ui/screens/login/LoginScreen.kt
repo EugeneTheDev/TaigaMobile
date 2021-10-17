@@ -23,9 +23,9 @@ import androidx.navigation.NavController
 import com.google.accompanist.insets.imePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.AuthType
-import io.eugenethedev.taigamobile.ui.commons.ErrorResult
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
-import io.eugenethedev.taigamobile.ui.commons.SuccessResult
+import io.eugenethedev.taigamobile.ui.utils.ErrorResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme

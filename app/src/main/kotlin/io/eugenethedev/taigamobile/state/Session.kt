@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile
+package io.eugenethedev.taigamobile.state
 
 import android.content.Context
 import androidx.core.content.edit
@@ -6,7 +6,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
+/**
+ * Global app state
+ */
 class Session(context: Context) {
 
     private val sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -65,6 +69,7 @@ class Session(context: Context) {
         .stateIn(scope, SharingStarted.Eagerly, initialValue = checkProjectSelected(currentProjectId.value))
 
     fun reset() {
+        scope.launch {  }
         changeAuthCredentials("", "")
         changeServer("")
         changeCurrentUserId(-1)
@@ -79,5 +84,28 @@ class Session(context: Context) {
         private const val PROJECT_NAME_KEY = "project_name"
         private const val PROJECT_ID_KEY = "project_id"
         private const val USER_ID_KEY = "user_id"
+    }
+
+    // Events (no data, just dispatch update to subscribers)
+
+    val taskEdit = EventFlow() // some task was edited
+    val sprintEdit = EventFlow() // sprint was edited
+}
+
+/**
+ * An empty class which describes basic event without any data (for the sake of update only)
+ */
+class Event
+@Suppress("FunctionName")
+fun EventFlow() = MutableSharedFlow<Event>()
+
+suspend fun MutableSharedFlow<Event>.postUpdate() = emit(Event())
+fun MutableSharedFlow<Event>.tryPostUpdate() = tryEmit(Event())
+
+fun CoroutineScope.subscribeToAll(vararg flows: Flow<*>, action: () -> Unit) {
+    flows.forEach {
+        launch {
+            it.collect { action() }
+        }
     }
 }

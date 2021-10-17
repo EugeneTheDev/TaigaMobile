@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository

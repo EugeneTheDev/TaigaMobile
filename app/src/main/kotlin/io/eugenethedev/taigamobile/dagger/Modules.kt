@@ -7,8 +7,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.eugenethedev.taigamobile.BuildConfig
-import io.eugenethedev.taigamobile.Session
-import io.eugenethedev.taigamobile.Settings
+import io.eugenethedev.taigamobile.state.Session
+import io.eugenethedev.taigamobile.state.Settings
 import io.eugenethedev.taigamobile.data.api.RefreshTokenRequest
 import io.eugenethedev.taigamobile.data.api.RefreshTokenResponse
 import io.eugenethedev.taigamobile.data.api.TaigaApi

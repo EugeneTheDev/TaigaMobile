@@ -6,16 +6,15 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.insertHeaderItem
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
-import io.eugenethedev.taigamobile.ui.commons.*
-import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
-import io.eugenethedev.taigamobile.ui.utils.loadOrError
+import io.eugenethedev.taigamobile.state.postUpdate
+import io.eugenethedev.taigamobile.ui.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.io.InputStream
@@ -24,7 +23,6 @@ import javax.inject.Inject
 
 class CommonTaskViewModel : ViewModel() {
     @Inject lateinit var session: Session
-    @Inject lateinit var screensState: ScreensState
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var usersRepository: IUsersRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
@@ -62,23 +60,23 @@ class CommonTaskViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start(commonTaskId: Long, commonTaskType: CommonTaskType) {
+    fun onOpen(commonTaskId: Long, commonTaskType: CommonTaskType) {
         this.commonTaskId = commonTaskId
         this.commonTaskType = commonTaskType
         loadData(isReloading = false)
     }
 
     private fun loadData(isReloading: Boolean = true) = viewModelScope.launch {
-        commonTask.loadOrError(showLoading = commonTask.value is NothingResult) {
+        commonTask.loadOrError(showLoading = !isReloading) {
             tasksRepository.getCommonTask(commonTaskId, commonTaskType).also {
 
                 suspend fun MutableResultFlow<List<User>>.loadUsersFromIds(ids: List<Long>) =
                     loadOrError(showLoading = false) {
-                        ids.map {
-                            coroutineScope {
+                        coroutineScope {
+                            ids.map {
                                 async { usersRepository.getUser(it) }
-                            }
-                        }.awaitAll()
+                            }.awaitAll()
+                        }
                     }
 
                 val jobsToLoad = arrayOf(
@@ -151,7 +149,7 @@ class CommonTaskViewModel : ViewModel() {
         statusSelectResult.loadOrError(R.string.permission_error) {
             tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion.value)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
             status.type
         }
     }
@@ -170,7 +168,7 @@ class CommonTaskViewModel : ViewModel() {
         selectSprintResult.loadOrError(R.string.permission_error) {
             tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion.value)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
         }
     }
 
@@ -195,7 +193,7 @@ class CommonTaskViewModel : ViewModel() {
         linkToEpicResult.loadOrError(R.string.permission_error) {
             tasksRepository.linkToEpic(epic.id, commonTaskId)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
         }
     }
 
@@ -203,7 +201,7 @@ class CommonTaskViewModel : ViewModel() {
         linkToEpicResult.loadOrError(R.string.permission_error) {
             tasksRepository.unlinkFromEpic(epic.id, commonTaskId)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
         }
     }
 
@@ -234,7 +232,7 @@ class CommonTaskViewModel : ViewModel() {
             )
 
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
             assignees.value.data
         }
     }
@@ -307,7 +305,7 @@ class CommonTaskViewModel : ViewModel() {
         editResult.loadOrError(R.string.permission_error) {
             tasksRepository.editCommonTask(commonTaskId, commonTaskType, title, description, commonTaskVersion.value)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
         }
     }
 
@@ -317,7 +315,7 @@ class CommonTaskViewModel : ViewModel() {
     fun deleteTask() = viewModelScope.launch {
         deleteResult.loadOrError(R.string.permission_error) {
             tasksRepository.deleteCommonTask(commonTaskType, commonTaskId)
-            screensState.modify()
+            session.taskEdit.postUpdate()
         }
     }
 
@@ -326,7 +324,7 @@ class CommonTaskViewModel : ViewModel() {
     fun promoteToUserStory() = viewModelScope.launch {
         promoteResult.loadOrError(R.string.permission_error, preserveValue = false) {
             tasksRepository.promoteCommonTaskToUserStory(commonTaskId, commonTaskType).also {
-                screensState.modify()
+                session.taskEdit.postUpdate()
             }
         }
     }
@@ -367,7 +365,7 @@ class CommonTaskViewModel : ViewModel() {
             )
 
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
             tags.value.data
         }
     }
@@ -379,7 +377,7 @@ class CommonTaskViewModel : ViewModel() {
         swimlanes.loadOrError(R.string.permission_error) {
             tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane.takeIf { it != SWIMLANE_HEADER }?.id, commonTaskVersion.value)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
             swimlanes.value.data
         }
     }
@@ -401,7 +399,7 @@ class CommonTaskViewModel : ViewModel() {
         colorResult.loadOrError(R.string.permission_error) {
             tasksRepository.changeEpicColor(commonTaskId, color, commonTaskVersion.value)
             loadData().join()
-            screensState.modify()
+            session.taskEdit.postUpdate()
         }
     }
 }

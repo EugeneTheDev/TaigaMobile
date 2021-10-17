@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
@@ -37,7 +37,7 @@ fun DashboardScreen(
 ) {
     val viewModel: DashboardViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
 
     val workingOn by viewModel.workingOn.collectAsState()

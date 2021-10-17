@@ -12,8 +12,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
-import io.eugenethedev.taigamobile.ui.commons.SuccessResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme

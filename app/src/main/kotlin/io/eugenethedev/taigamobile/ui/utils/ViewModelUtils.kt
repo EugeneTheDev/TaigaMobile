@@ -5,7 +5,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -13,7 +12,6 @@ import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredFunctions
 import timber.log.Timber
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ui.commons.*
 
 inline fun <T> MutableStateFlow<Result<T>>.loadOrError(
     @StringRes messageId: Int = R.string.common_error_message,

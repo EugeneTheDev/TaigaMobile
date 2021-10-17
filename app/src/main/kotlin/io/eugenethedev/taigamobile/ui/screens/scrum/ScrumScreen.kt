@@ -27,7 +27,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
@@ -56,9 +56,6 @@ fun ScrumScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: ScrumViewModel = viewModel()
-    LaunchedEffect(Unit) {
-        viewModel.start()
-    }
 
     val projectName by viewModel.projectName.collectAsState()
 

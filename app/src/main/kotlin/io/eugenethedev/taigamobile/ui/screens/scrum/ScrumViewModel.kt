@@ -5,12 +5,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.*
+import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.utils.NothingResult
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,18 +24,11 @@ class ScrumViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var session: Session
-    @Inject lateinit var screensState: ScreensState
 
     val projectName by lazy { session.currentProjectName }
 
     init {
         TaigaApp.appComponent.inject(this)
-    }
-
-    fun start() {
-        if (screensState.shouldReloadScrumScreen) {
-            reset()
-        }
     }
 
     // stories
@@ -70,10 +64,20 @@ class ScrumViewModel : ViewModel() {
         }
     }
 
-    fun reset() {
-        storiesQuery.value = ""
-        createSprintResult.value = NothingResult()
-        stories.refresh()
-        sprints.refresh()
+    init {
+        session.currentProjectId.onEach {
+            storiesQuery.value = ""
+            createSprintResult.value = NothingResult()
+            stories.refresh()
+            sprints.refresh()
+        }.launchIn(viewModelScope)
+
+        session.taskEdit.onEach {
+            stories.refresh()
+        }.launchIn(viewModelScope)
+
+        session.sprintEdit.onEach {
+            sprints.refresh()
+        }.launchIn(viewModelScope)
     }
 }

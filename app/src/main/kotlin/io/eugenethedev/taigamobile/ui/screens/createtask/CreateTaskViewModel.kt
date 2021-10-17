@@ -6,15 +6,16 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
-import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.state.Session
+import io.eugenethedev.taigamobile.state.postUpdate
+import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CreateTaskViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
-    @Inject lateinit var screensState: ScreensState
+    @Inject lateinit var session: Session
 
     init {
         TaigaApp.appComponent.inject(this)
@@ -33,7 +34,7 @@ class CreateTaskViewModel : ViewModel() {
     ) = viewModelScope.launch {
         creationResult.loadOrError(preserveValue = false) {
             tasksRepository.createCommonTask(commonTaskType, title, description, parentId, sprintId, statusId, swimlaneId).also {
-                screensState.modify()
+                session.taskEdit.postUpdate()
             }
         }
     }

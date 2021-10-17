@@ -27,7 +27,7 @@ import androidx.navigation.compose.*
 import com.google.accompanist.insets.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ThemeSetting
+import io.eugenethedev.taigamobile.state.ThemeSetting
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton

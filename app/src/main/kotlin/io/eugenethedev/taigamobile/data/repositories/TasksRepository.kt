@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.dagger.toLocalDate
 import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.domain.entities.*

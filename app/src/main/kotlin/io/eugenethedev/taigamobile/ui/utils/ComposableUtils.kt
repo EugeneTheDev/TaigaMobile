@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.material.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -21,8 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ui.commons.ErrorResult
-import io.eugenethedev.taigamobile.ui.commons.Result
 import timber.log.Timber
 
 /**

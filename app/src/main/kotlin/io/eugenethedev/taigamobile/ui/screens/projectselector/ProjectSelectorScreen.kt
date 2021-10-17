@@ -31,7 +31,7 @@ fun ProjectSelectorScreen(
 ) {
     val viewModel: ProjectSelectorViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
     val coroutineScope = rememberCoroutineScope()
 

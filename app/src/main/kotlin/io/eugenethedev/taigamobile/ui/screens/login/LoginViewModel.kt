@@ -6,7 +6,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.AuthType
 import io.eugenethedev.taigamobile.domain.repositories.IAuthRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject

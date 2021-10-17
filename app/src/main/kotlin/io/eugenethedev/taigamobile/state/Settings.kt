@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile
+package io.eugenethedev.taigamobile.state
 
 import android.content.Context
 import androidx.core.content.edit

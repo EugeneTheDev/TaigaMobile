@@ -1,8 +1,8 @@
 package io.eugenethedev.taigamobile.ui.screens.main
 
 import androidx.lifecycle.*
-import io.eugenethedev.taigamobile.Session
-import io.eugenethedev.taigamobile.Settings
+import io.eugenethedev.taigamobile.state.Session
+import io.eugenethedev.taigamobile.state.Settings
 import io.eugenethedev.taigamobile.TaigaApp
 import javax.inject.Inject
 
