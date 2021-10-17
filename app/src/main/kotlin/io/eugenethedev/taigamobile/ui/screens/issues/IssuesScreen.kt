@@ -1,7 +1,10 @@
 package io.eugenethedev.taigamobile.ui.screens.issues
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +63,7 @@ fun IssuesScreen(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun IssuesScreenContent(
     projectName: String,
@@ -81,7 +85,8 @@ fun IssuesScreenContent(
         onTitleClick = onTitleClick
     )
 
-    var query by remember { mutableStateOf(TextFieldValue()) }
+    var query by remember { mutableStateOf(TextFieldValue(activeFilters.query)) }
+    val listState = rememberLazyListState()
 
     TextFieldWithHint(
         hintId = R.string.tasks_search_hint,
@@ -93,13 +98,18 @@ fun IssuesScreenContent(
         hasBorder = true
     )
 
-    Filters(
-        selected = activeFilters,
-        onSelect = selectFilters,
-        data = filters
-    )
+    AnimatedVisibility(visible = listState.firstVisibleItemIndex <= 0) {
+        Filters(
+            selected = activeFilters,
+            onSelect = selectFilters,
+            data = filters
+        )
+    }
 
-    LazyColumn(Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState
+    ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = issues,
             navigateToTask = navigateToTask,
