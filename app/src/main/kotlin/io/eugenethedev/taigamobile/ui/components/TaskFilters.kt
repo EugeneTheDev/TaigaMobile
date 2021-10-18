@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun Filters(
+fun TaskFilters(
     selected: FiltersData,
     onSelect: (FiltersData) -> Unit,
     data: FiltersData
@@ -358,13 +358,13 @@ private fun FilterChip(
 
 @Preview(showBackground = true)
 @Composable
-fun FiltersPreview() = TaigaMobileTheme {
+fun TaskFiltersPreview() = TaigaMobileTheme {
     var selected by remember { mutableStateOf(FiltersData()) }
 
     Column {
         Text("test")
 
-        Filters(
+        TaskFilters(
             selected = selected,
             onSelect = { selected = it },
             data = FiltersData(

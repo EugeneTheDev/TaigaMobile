@@ -17,7 +17,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
-import io.eugenethedev.taigamobile.ui.components.Filters
+import io.eugenethedev.taigamobile.ui.components.TaskFilters
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
@@ -99,7 +99,7 @@ fun IssuesScreenContent(
     )
 
     AnimatedVisibility(visible = listState.firstVisibleItemIndex <= 0) {
-        Filters(
+        TaskFilters(
             selected = activeFilters,
             onSelect = selectFilters,
             data = filters
