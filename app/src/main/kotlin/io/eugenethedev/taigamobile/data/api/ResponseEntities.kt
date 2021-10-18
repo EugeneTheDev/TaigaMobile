@@ -37,7 +37,8 @@ data class FiltersDataResponse(
     val statuses: List<Filter>,
     val tags: List<Filter>?,
     val roles: List<Filter>?,
-    val assigned_to: List<AssigneesFilter>,
+    val assigned_to: List<UserFilter>,
+    val owners: List<UserFilter>,
 
     // issue filters
     val priorities: List<Filter>?,
@@ -51,7 +52,7 @@ data class FiltersDataResponse(
         val count: Int
     )
 
-    data class AssigneesFilter(
+    data class UserFilter(
         val id: Long?,
         val full_name: String,
         val count: Int

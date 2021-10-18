@@ -168,6 +168,13 @@ fun Filters(
                                         onRemoveClick = { onSelect(selected.copy(roles = selected.roles - it)) }
                                     )
                                 }
+
+                                selected.createdBy.forEach {
+                                    FilterChip(
+                                        filter = it,
+                                        onRemoveClick = { onSelect(selected.copy(createdBy = selected.createdBy - it)) }
+                                    )
+                                }
                             }
 
                             if (selected.filtersNumber > 0) {
@@ -235,6 +242,14 @@ fun Filters(
                                     titleId = R.string.role_title,
                                     filters = it,
                                     onSelect = { onSelect(selected.copy(roles = selected.roles + it)) }
+                                )
+                            }
+
+                            unselectedFilters.createdBy.ifHasData {
+                                Section(
+                                    titleId = R.string.created_by_title,
+                                    filters = it,
+                                    onSelect = { onSelect(selected.copy(createdBy = selected.createdBy + it)) }
                                 )
                             }
                         }
@@ -354,8 +369,8 @@ fun FiltersPreview() = TaigaMobileTheme {
             onSelect = { selected = it },
             data = FiltersData(
                 assignees = listOf(
-                    AssigneesFilter(null, "", 2),
-                    *List(10) { AssigneesFilter(it.toLong(), "Human $it", it % 3) }.toTypedArray()
+                    UsersFilter(null, "", 2),
+                    *List(10) { UsersFilter(it.toLong(), "Human $it", it % 3) }.toTypedArray()
                 ),
                 roles = listOf(
                     RolesFilter(0, "UX", 1),

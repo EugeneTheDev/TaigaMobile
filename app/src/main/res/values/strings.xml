@@ -168,6 +168,7 @@
     <string name="tags_title">Tags</string>
     <string name="assignees_title">Assignees</string>
     <string name="role_title">Role</string>
+    <string name="created_by_title">Created by</string>
 
     <string name="status_with_number_template" translatable="false">%s - %d</string>
 

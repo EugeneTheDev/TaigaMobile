@@ -33,10 +33,11 @@ class TasksRepository @Inject constructor(
             currentProjectId
         ).let {
             FiltersData(
-                assignees = it.assigned_to.map { AssigneesFilter(it.id, it.full_name, it.count) },
+                assignees = it.assigned_to.map { UsersFilter(it.id, it.full_name, it.count) },
                 roles = it.roles.orEmpty().map { RolesFilter(it.id!!, it.name!!, it.count) },
                 tags = it.tags.orEmpty().map { TagsFilter(it.color.fixNullColor(), it.name!!, it.count) },
                 statuses = it.statuses.map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
+                createdBy = it.owners.map { UsersFilter(it.id!!, it.full_name, it.count) },
                 priorities = it.priorities.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
                 severities = it.severities.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
                 types = it.types.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) }
