@@ -44,6 +44,24 @@ class UsersRepositoryTest : BaseRepositoryTest() {
                 expected = testTeam[index].fullName,
                 actual = member.name
             )
+
+            var count = 0
+            count += TestData.projects[0].issues.filter { it.creator.username == member.username }
+                .count()
+            TestData.projects[0].sprints.map { sprint ->
+                count += sprint.tasks.filter {
+                    it.isClosed && it.assignedTo?.username == member.username
+                }.count()
+            }
+            TestData.projects[0].userstories.map { userStory ->
+                count += userStory.tasks.filter {
+                    it.isClosed && it.assignedTo?.username == member.username
+                }.count()
+            }
+            assertEquals(
+                expected = count,
+                actual = member.totalPower
+            )
         }
     }
 
