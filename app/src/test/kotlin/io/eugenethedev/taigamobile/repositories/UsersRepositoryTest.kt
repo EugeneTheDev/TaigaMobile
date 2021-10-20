@@ -48,6 +48,8 @@ class UsersRepositoryTest : BaseRepositoryTest() {
             var count = 0
             count += TestData.projects[0].issues.filter { it.creator.username == member.username }
                 .count()
+            count += TestData.projects[0].issues.filter { it.isClosed && it.assignedTo?.username == member.username }
+                .count()
             TestData.projects[0].sprints.map { sprint ->
                 count += sprint.tasks.filter {
                     it.isClosed && it.assignedTo?.username == member.username
