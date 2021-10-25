@@ -8,6 +8,9 @@ data class FiltersData(
     val statuses: List<StatusesFilter> = emptyList(),
     val createdBy: List<UsersFilter> = emptyList(),
 
+    // user story filters
+    val epics: List<EpicsFilter> = emptyList(),
+
     // issue filters
     val priorities: List<StatusesFilter> = emptyList(),
     val severities: List<StatusesFilter> = emptyList(),
@@ -21,7 +24,8 @@ data class FiltersData(
         createdBy = createdBy - other.createdBy,
         priorities = priorities - other.priorities,
         severities = severities - other.severities,
-        types = types - other.types
+        types = types - other.types,
+        epics = epics - other.epics
     )
 
     val filtersNumber = listOf(assignees, roles, tags, statuses, createdBy, priorities, severities, types).sumOf { it.size }
@@ -30,20 +34,21 @@ data class FiltersData(
 fun List<Filter>.hasData() = any { it.count > 0 }
 
 sealed interface Filter {
+    val id: Long?
     val name: String
     val count: Int
     val color: String?
 }
 
 data class StatusesFilter(
-    val id: Long,
+    override val id: Long,
     override val color: String,
     override val name: String,
     override val count: Int
 ) : Filter
 
 data class UsersFilter(
-    val id: Long?,
+    override val id: Long?,
     override val name: String,
     override val count: Int
 ) : Filter {
@@ -51,7 +56,7 @@ data class UsersFilter(
 }
 
 data class RolesFilter(
-    val id: Long,
+    override val id: Long,
     override val name: String,
     override val count: Int
 ) : Filter {
@@ -59,7 +64,17 @@ data class RolesFilter(
 }
 
 data class TagsFilter(
+    override val name: String,
     override val color: String,
+    override val count: Int
+) : Filter {
+    override val id: Long? = null
+}
+
+data class EpicsFilter(
+    override val id: Long?,
     override val name: String,
     override val count: Int
-) : Filter
+) : Filter {
+    override val color: String? = null
+}

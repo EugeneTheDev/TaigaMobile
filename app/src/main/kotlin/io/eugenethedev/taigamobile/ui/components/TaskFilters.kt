@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -179,7 +180,7 @@ fun TaskFilters(
                                 selected.assignees.forEach {
                                     FilterChip(
                                         filter = it,
-                                        nullNameId = R.string.unassigned,
+                                        noNameId = R.string.unassigned,
                                         onRemoveClick = { onSelect(selected.copy(assignees = selected.assignees - it)) }
                                     )
                                 }
@@ -195,6 +196,14 @@ fun TaskFilters(
                                     FilterChip(
                                         filter = it,
                                         onRemoveClick = { onSelect(selected.copy(createdBy = selected.createdBy - it)) }
+                                    )
+                                }
+
+                                selected.epics.forEach {
+                                    FilterChip(
+                                        filter = it,
+                                        noNameId = R.string.not_in_an_epic,
+                                        onRemoveClick = { onSelect(selected.copy(epics = selected.epics - it)) }
                                     )
                                 }
                             }
@@ -253,7 +262,7 @@ fun TaskFilters(
                             unselectedFilters.assignees.ifHasData {
                                 Section(
                                     titleId = R.string.assignees_title,
-                                    nullNameId = R.string.unassigned,
+                                    noNameId = R.string.unassigned,
                                     filters = it,
                                     onSelect = { onSelect(selected.copy(assignees = selected.assignees + it)) }
                                 )
@@ -275,13 +284,21 @@ fun TaskFilters(
                                     onSelect = { onSelect(selected.copy(createdBy = selected.createdBy + it)) }
                                 )
                             }
+
+                            unselectedFilters.epics.ifHasData {
+                                Section(
+                                    titleId = R.string.epic_title,
+                                    noNameId = R.string.not_in_an_epic,
+                                    filters = it,
+                                    onSelect = { onSelect(selected.copy(epics = selected.epics + it)) }
+                                )
+                            }
                         }
 
                         Spacer(Modifier.height(space))
                     }
                 }
             )
-
         }
     }
 }
@@ -293,7 +310,7 @@ private inline fun <T : Filter> List<T>.ifHasData(action: (List<T>) -> Unit) =
 @Composable
 private fun <T : Filter> Section(
     @StringRes titleId: Int,
-    @StringRes nullNameId: Int? = null,
+    @StringRes noNameId: Int? = null,
     filters: List<T>,
     onSelect: (T) -> Unit
 ) = Column(
@@ -331,7 +348,7 @@ private fun <T : Filter> Section(
             filters.forEach {
                 FilterChip(
                     filter = it,
-                    nullNameId = nullNameId,
+                    noNameId = noNameId,
                     onClick = { onSelect(it) }
                 )
             }
@@ -343,7 +360,7 @@ private fun <T : Filter> Section(
 @Composable
 private fun FilterChip(
     filter: Filter,
-    @StringRes nullNameId: Int? = null,
+    @StringRes noNameId: Int? = null,
     onClick: () -> Unit = {},
     onRemoveClick: (() -> Unit)? = null
 ) = Chip(
@@ -370,7 +387,11 @@ private fun FilterChip(
             Spacer(Modifier.width(space))
         }
 
-        Text(filter.name.takeIf { it.isNotEmpty() } ?: stringResource(nullNameId!!))
+        Text(
+            text = filter.name.takeIf { it.isNotEmpty() } ?: stringResource(noNameId!!),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
 
         Spacer(Modifier.width(space))
 

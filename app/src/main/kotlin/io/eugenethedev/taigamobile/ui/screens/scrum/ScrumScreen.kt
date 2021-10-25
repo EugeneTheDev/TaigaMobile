@@ -1,8 +1,11 @@
 package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
@@ -11,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,6 +29,8 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
+import io.eugenethedev.taigamobile.ui.components.TaskFilters
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
@@ -35,9 +39,6 @@ import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPage
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
 import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
-import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
@@ -56,6 +57,9 @@ fun ScrumScreen(
     onError: @Composable (message: Int) -> Unit = {},
 ) {
     val viewModel: ScrumViewModel = viewModel()
+    LaunchedEffect(Unit) {
+        viewModel.onOpen()
+    }
 
     val projectName by viewModel.projectName.collectAsState()
 
@@ -69,11 +73,18 @@ fun ScrumScreen(
     val createSprintResult by viewModel.createSprintResult.collectAsState()
     createSprintResult.subscribeOnError(onError)
 
+    val filters by viewModel.filters.collectAsState()
+    filters.subscribeOnError(onError)
+
+    val activeFilters by viewModel.activeFilters.collectAsState()
+
     ScrumScreenContent(
         projectName = projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         stories = stories,
-        searchStories = viewModel::searchStories,
+        filters = filters.data ?: FiltersData(),
+        activeFilters = activeFilters,
+        selectFilters = viewModel::selectFilters,
         sprints = sprints,
         isCreateSprintLoading = createSprintResult is LoadingResult,
         navigateToBoard = {
@@ -91,7 +102,9 @@ fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     stories: LazyPagingItems<CommonTask>? = null,
-    searchStories: (query: String) -> Unit = {},
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
     sprints: LazyPagingItems<Sprint>? = null,
     isCreateSprintLoading: Boolean = false,
     navigateToBoard: (Sprint) -> Unit = {},
@@ -140,7 +153,9 @@ fun ScrumScreenContent(
         when (Tabs.values()[page]) {
             Tabs.Backlog -> BacklogTabContent(
                 stories = stories,
-                searchStories = searchStories,
+                filters = filters,
+                activeFilters = activeFilters,
+                selectFilters = selectFilters,
                 navigateToTask = navigateToTask
             )
             Tabs.Sprints -> SprintsTabContent(
@@ -157,30 +172,36 @@ private enum class Tabs(@StringRes override val titleId: Int) : Tab {
     Sprints(R.string.sprints_title)
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun BacklogTabContent(
     stories: LazyPagingItems<CommonTask>?,
-    searchStories: (String) -> Unit,
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
     navigateToTask: NavigateToTask
 ) = Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth()
 ) {
-    var query by remember { mutableStateOf(TextFieldValue()) }
+    val listState = rememberLazyListState()
+    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
 
-    TextFieldWithHint(
-        hintId = R.string.tasks_search_hint,
-        value = query,
-        onValueChange = { query = it },
-        onSearchClick = { searchStories(query.text) },
-        horizontalPadding = searchFieldHorizontalPadding,
-        verticalPadding = searchFieldVerticalPadding,
-        hasBorder = true
-    )
+    AnimatedVisibility(visible = isVisible) {
+        TaskFilters(
+            selected = activeFilters,
+            onSelect = selectFilters,
+            data = filters
+        )
+    }
 
-    LazyColumn(Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState
+    ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = stories,
+            keysHash = activeFilters.hashCode(),
             navigateToTask = navigateToTask,
             horizontalPadding = mainHorizontalScreenPadding,
             bottomPadding = commonVerticalPadding

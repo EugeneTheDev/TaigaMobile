@@ -40,6 +40,9 @@ data class FiltersDataResponse(
     val assigned_to: List<UserFilter>,
     val owners: List<UserFilter>,
 
+    // user story filters
+    val epics: List<EpicsFilter>?,
+
     // issue filters
     val priorities: List<Filter>?,
     val severities: List<Filter>?,
@@ -58,6 +61,12 @@ data class FiltersDataResponse(
         val count: Int
     )
 
+    data class EpicsFilter(
+        val id: Long?,
+        val ref: Int?,
+        val subject: String?,
+        val count: Int
+    )
 }
 
 data class CommonTaskResponse(

@@ -33,14 +33,73 @@ class TasksRepository @Inject constructor(
             currentProjectId
         ).let {
             FiltersData(
-                assignees = it.assigned_to.map { UsersFilter(it.id, it.full_name, it.count) },
-                roles = it.roles.orEmpty().map { RolesFilter(it.id!!, it.name!!, it.count) },
-                tags = it.tags.orEmpty().map { TagsFilter(it.color.fixNullColor(), it.name!!, it.count) },
-                statuses = it.statuses.map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
-                createdBy = it.owners.map { UsersFilter(it.id!!, it.full_name, it.count) },
-                priorities = it.priorities.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
-                severities = it.severities.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) },
-                types = it.types.orEmpty().map { StatusesFilter(it.id!!, it.color.fixNullColor(), it.name!!, it.count) }
+                assignees = it.assigned_to.map {
+                    UsersFilter(
+                        id = it.id,
+                        name = it.full_name,
+                        count = it.count
+                    )
+                },
+                roles = it.roles.orEmpty().map {
+                    RolesFilter(
+                        id = it.id!!,
+                        name = it.name!!,
+                        count = it.count
+                    )
+                },
+                tags = it.tags.orEmpty().map {
+                    TagsFilter(
+                        name = it.name!!,
+                        color = it.color.fixNullColor(),
+                        count = it.count
+                    )
+                },
+                statuses = it.statuses.map {
+                    StatusesFilter(
+                        id = it.id!!,
+                        color = it.color.fixNullColor(),
+                        name = it.name!!,
+                        count = it.count
+                    )
+                },
+                createdBy = it.owners.map {
+                    UsersFilter(
+                        id = it.id!!,
+                        name = it.full_name,
+                        count = it.count
+                    )
+                },
+                priorities = it.priorities.orEmpty().map {
+                    StatusesFilter(
+                        id = it.id!!,
+                        color = it.color.fixNullColor(),
+                        name = it.name!!,
+                        count = it.count
+                    )
+                },
+                severities = it.severities.orEmpty().map {
+                    StatusesFilter(
+                        id = it.id!!,
+                        color = it.color.fixNullColor(),
+                        name = it.name!!,
+                        count = it.count
+                    )
+                },
+                types = it.types.orEmpty().map {
+                    StatusesFilter(
+                        id = it.id!!,
+                        color = it.color.fixNullColor(),
+                        name = it.name!!,
+                        count = it.count
+                    )
+                },
+                epics = it.epics.orEmpty().map {
+                    EpicsFilter(
+                        id = it.id,
+                        name = it.subject?.let { s -> "#${it.ref} $s" }.orEmpty(),
+                        count = it.count
+                    )
+                }
             )
         }
     }
@@ -133,9 +192,20 @@ class TasksRepository @Inject constructor(
             }
     }
     
-    override suspend fun getBacklogUserStories(page: Int, query: String) = withIO {
+    override suspend fun getBacklogUserStories(page: Int, filters: FiltersData) = withIO {
         handle404 {
-            taigaApi.getUserStories(currentProjectId, sprint = "null", page = page, query = query)
+            taigaApi.getUserStories(
+                    project = currentProjectId,
+                    sprint = "null",
+                    page = page,
+                    query = filters.query,
+                    assignedIds = filters.assignees.commaString(),
+                    ownerIds = filters.createdBy.commaString(),
+                    roles = filters.roles.commaString(),
+                    statuses = filters.statuses.commaString(),
+                    epics = filters.epics.commaString(),
+                    tags = filters.tags.tagsCommaString()
+                )
                 .map { it.toCommonTask(CommonTaskType.UserStory) }
         }
     }
@@ -159,17 +229,25 @@ class TasksRepository @Inject constructor(
                     page = page,
                     project = currentProjectId,
                     query = filters.query,
-                    assignedIds = filters.assignees.map { it.id }.joinToString(separator = ","),
+                    assignedIds = filters.assignees.commaString(),
+                    ownerIds = filters.createdBy.commaString(),
                     priorities = filters.priorities.commaString(),
                     severities = filters.severities.commaString(),
                     types = filters.types.commaString(),
                     statuses = filters.statuses.commaString(),
-                    roles = filters.roles.map { it.id }.joinToString(separator = ","),
-                    tags = filters.tags.joinToString(separator = ",") { it.name.replace(" ", "+") }
+                    roles = filters.roles.commaString(),
+                    tags = filters.tags.tagsCommaString()
                 )
                 .map { it.toCommonTask(CommonTaskType.Issue) }
         }
     }
+
+    private fun List<Filter>.commaString() = map { it.id }
+        .joinToString(separator = ",")
+        .takeIf { it.isNotEmpty() }
+
+    private fun List<TagsFilter>.tagsCommaString() = joinToString(separator = ",") { it.name.replace(" ", "+") }
+        .takeIf { it.isNotEmpty() }
 
     override suspend fun getCommonTask(commonTaskId: Long, type: CommonTaskType) = withIO {
         val filters = async { getFiltersData(type) }
@@ -267,8 +345,6 @@ class TasksRepository @Inject constructor(
             priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority)
         )
     }
-
-    private fun List<StatusesFilter>.commaString() = map { it.id }.joinToString(separator = ",")
 
     // edit related
 
