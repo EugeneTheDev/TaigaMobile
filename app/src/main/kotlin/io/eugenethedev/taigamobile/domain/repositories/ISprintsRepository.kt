@@ -5,7 +5,7 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import java.time.LocalDate
 
 interface ISprintsRepository {
-    suspend fun getSprints(page: Int): List<Sprint>
+    suspend fun getSprints(page: Int, isClosed: Boolean = false): List<Sprint>
     suspend fun getSprint(sprintId: Long): Sprint
 
     suspend fun getSprintIssues(sprintId: Long): List<CommonTask>

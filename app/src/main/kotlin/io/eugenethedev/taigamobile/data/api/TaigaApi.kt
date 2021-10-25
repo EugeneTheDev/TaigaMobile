@@ -55,7 +55,8 @@ interface TaigaApi {
     @GET("milestones")
     suspend fun getSprints(
         @Query("project") project: Long,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("closed") isClosed: Boolean
     ): List<SprintResponse>
 
     @GET("milestones/{id}")

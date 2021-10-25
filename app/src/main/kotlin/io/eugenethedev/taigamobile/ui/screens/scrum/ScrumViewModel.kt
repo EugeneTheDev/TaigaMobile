@@ -62,9 +62,12 @@ class ScrumViewModel : ViewModel() {
 
     // sprints
 
-    val sprints by lazy {
+    val openSprints by sprints(isClosed = false)
+    val closedSprints by sprints(isClosed = true)
+
+    private fun sprints(isClosed: Boolean) = lazy {
         Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
-            CommonPagingSource { sprintsRepository.getSprints(it) }
+            CommonPagingSource { sprintsRepository.getSprints(it, isClosed) }
         }.flow.asLazyPagingItems(viewModelScope)
     }
 
@@ -73,7 +76,7 @@ class ScrumViewModel : ViewModel() {
     fun createSprint(name: String, start: LocalDate, end: LocalDate) = viewModelScope.launch {
         createSprintResult.loadOrError(R.string.permission_error) {
             sprintsRepository.createSprint(name, start, end)
-            sprints.refresh()
+            openSprints.refresh()
         }
     }
 
@@ -82,7 +85,8 @@ class ScrumViewModel : ViewModel() {
             activeFilters.value = FiltersData()
             createSprintResult.value = NothingResult()
             stories.refresh()
-            sprints.refresh()
+            openSprints.refresh()
+            closedSprints.refresh()
             shouldReload = true
         }.launchIn(viewModelScope)
 
@@ -91,7 +95,8 @@ class ScrumViewModel : ViewModel() {
         }.launchIn(viewModelScope)
 
         session.sprintEdit.onEach {
-            sprints.refresh()
+            openSprints.refresh()
+            closedSprints.refresh()
         }.launchIn(viewModelScope)
     }
 }

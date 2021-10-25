@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +34,7 @@ import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TaskFilters
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.buttons.TextButton
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
@@ -68,8 +70,12 @@ fun ScrumScreen(
         onError(R.string.common_error_message)
     }
 
-    val sprints = viewModel.sprints
-    sprints.subscribeOnError(onError)
+    val openSprints = viewModel.openSprints
+    openSprints.subscribeOnError(onError)
+
+    val closedSprints = viewModel.closedSprints
+    closedSprints.subscribeOnError(onError)
+
     val createSprintResult by viewModel.createSprintResult.collectAsState()
     createSprintResult.subscribeOnError(onError)
 
@@ -85,7 +91,8 @@ fun ScrumScreen(
         filters = filters.data ?: FiltersData(),
         activeFilters = activeFilters,
         selectFilters = viewModel::selectFilters,
-        sprints = sprints,
+        openSprints = openSprints,
+        closedSprints = closedSprints,
         isCreateSprintLoading = createSprintResult is LoadingResult,
         navigateToBoard = {
             navController.navigateToSprint(it.id)
@@ -105,7 +112,8 @@ fun ScrumScreenContent(
     filters: FiltersData = FiltersData(),
     activeFilters: FiltersData = FiltersData(),
     selectFilters: (FiltersData) -> Unit = {},
-    sprints: LazyPagingItems<Sprint>? = null,
+    openSprints: LazyPagingItems<Sprint>? = null,
+    closedSprints: LazyPagingItems<Sprint>? = null,
     isCreateSprintLoading: Boolean = false,
     navigateToBoard: (Sprint) -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
@@ -159,7 +167,8 @@ fun ScrumScreenContent(
                 navigateToTask = navigateToTask
             )
             Tabs.Sprints -> SprintsTabContent(
-                sprints = sprints,
+                openSprints = openSprints,
+                closedSprints = closedSprints,
                 navigateToBoard = navigateToBoard
             )
         }
@@ -211,27 +220,61 @@ private fun BacklogTabContent(
 
 @Composable
 private fun SprintsTabContent(
-    sprints: LazyPagingItems<Sprint>?,
+    openSprints: LazyPagingItems<Sprint>?,
+    closedSprints: LazyPagingItems<Sprint>?,
     navigateToBoard: (Sprint) -> Unit,
-) = LazyColumn(Modifier.fillMaxSize()) {
-    if (sprints == null) return@LazyColumn
+) {
+    if (openSprints == null || closedSprints == null) return
 
-    items(sprints, key = { it.id }) {
-        if (it == null) return@items
-        SprintItem(
-            sprint = it,
-            navigateToBoard = navigateToBoard
-        )
-    }
+    var isClosedSprintsVisible by rememberSaveable { mutableStateOf(false) }
 
-    item {
-        if (sprints.loadState.refresh is LoadState.Loading || sprints.loadState.append is LoadState.Loading) {
-            DotsLoader()
-        } else if (sprints.itemCount == 0) {
-            NothingToSeeHereText()
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        items(openSprints, key = { it.id }) {
+            if (it == null) return@items
+            SprintItem(
+                sprint = it,
+                navigateToBoard = navigateToBoard
+            )
         }
 
-        Spacer(Modifier.navigationBarsHeight(8.dp))
+        item {
+            if (openSprints.loadState.refresh is LoadState.Loading || openSprints.loadState.append is LoadState.Loading) {
+                DotsLoader()
+            }
+        }
+
+        item {
+            TextButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
+                Text(stringResource(if (isClosedSprintsVisible) R.string.hide_closed_sprints else R.string.show_closed_sprints))
+            }
+        }
+
+        if (isClosedSprintsVisible) {
+            items(closedSprints, key = { it.id }) {
+                if (it == null) return@items
+                SprintItem(
+                    sprint = it,
+                    navigateToBoard = navigateToBoard
+                )
+            }
+
+            item {
+                if (closedSprints.loadState.refresh is LoadState.Loading || closedSprints.loadState.append is LoadState.Loading) {
+                    DotsLoader()
+                }
+            }
+        }
+
+        item {
+            if (openSprints.itemCount == 0 && closedSprints.itemCount == 0) {
+                NothingToSeeHereText()
+            }
+
+            Spacer(Modifier.navigationBarsHeight(8.dp))
+        }
     }
 }
 

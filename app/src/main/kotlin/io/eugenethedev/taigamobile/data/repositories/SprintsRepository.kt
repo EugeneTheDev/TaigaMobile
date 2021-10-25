@@ -20,9 +20,9 @@ class SprintsRepository @Inject constructor(
             .map { it.toCommonTask(CommonTaskType.UserStory) }
     }
 
-    override suspend fun getSprints(page: Int) = withIO {
+    override suspend fun getSprints(page: Int, isClosed: Boolean) = withIO {
         handle404 {
-            taigaApi.getSprints(currentProjectId, page).map { it.toSprint() }
+            taigaApi.getSprints(currentProjectId, page, isClosed).map { it.toSprint() }
         }
     }
 
