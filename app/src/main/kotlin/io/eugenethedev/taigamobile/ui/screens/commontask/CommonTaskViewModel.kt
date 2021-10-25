@@ -178,7 +178,7 @@ class CommonTaskViewModel : ViewModel() {
     val epics by lazy {
         epicsQuery.flatMapLatest { query ->
             Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
-                CommonPagingSource { tasksRepository.getEpics(it, query) }
+                CommonPagingSource { tasksRepository.getEpics(it, FiltersData(query = query)) }
             }.flow
         }.asLazyPagingItems(viewModelScope)
     }

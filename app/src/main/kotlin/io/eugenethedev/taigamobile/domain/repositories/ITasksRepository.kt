@@ -13,7 +13,7 @@ interface ITasksRepository {
 
     suspend fun getFiltersData(commonTaskType: CommonTaskType): FiltersData
 
-    suspend fun getEpics(page: Int, query: String? = null): List<CommonTask>
+    suspend fun getEpics(page: Int, filters: FiltersData): List<CommonTask>
 
     suspend fun getAllUserStories(): List<CommonTaskExtended> // for stories kanban
     suspend fun getBacklogUserStories(page: Int, filters: FiltersData): List<CommonTask>

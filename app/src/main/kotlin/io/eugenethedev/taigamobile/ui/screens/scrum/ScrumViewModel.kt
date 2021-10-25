@@ -50,7 +50,7 @@ class ScrumViewModel : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
     val stories by lazy {
         activeFilters.flatMapLatest { filters ->
-            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
+            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE, enablePlaceholders = false)) {
                 CommonPagingSource { tasksRepository.getBacklogUserStories(it, filters) }
             }.flow
         }.asLazyPagingItems(viewModelScope)

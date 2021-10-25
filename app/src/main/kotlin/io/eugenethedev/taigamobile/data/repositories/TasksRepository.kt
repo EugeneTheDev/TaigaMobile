@@ -171,9 +171,18 @@ class TasksRepository @Inject constructor(
         }
     }
 
-    override suspend fun getEpics(page: Int, query: String?) = withIO {
+    override suspend fun getEpics(page: Int, filters: FiltersData) = withIO {
         handle404 {
-            taigaApi.getEpics(page = page, project = currentProjectId, query = query).map { it.toCommonTask(CommonTaskType.Epic) }
+            taigaApi.getEpics(
+                    page = page,
+                    project = currentProjectId,
+                    query = filters.query,
+                    assignedIds = filters.assignees.commaString(),
+                    ownerIds = filters.createdBy.commaString(),
+                    statuses = filters.statuses.commaString(),
+                    tags = filters.tags.tagsCommaString()
+                )
+                .map { it.toCommonTask(CommonTaskType.Epic) }
         }
     }
 

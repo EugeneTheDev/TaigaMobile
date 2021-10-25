@@ -144,6 +144,16 @@ interface TaigaApi {
         @Query("watchers") watcherId: Long? = null,
         @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
 
+        // List<Long?>?
+        @Query("assigned_to", encoded = true) assignedIds: String? = null,
+
+        // List<Long>?
+        @Query("owner", encoded = true) ownerIds: String? = null,
+        @Query("status", encoded = true) statuses: String? = null,
+
+        // List<String>?
+        @Query("tags", encoded = true) tags: String? = null,
+
         @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
 
