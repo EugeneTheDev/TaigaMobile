@@ -8,21 +8,16 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TaskFilters
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -58,8 +53,7 @@ fun IssuesScreen(
         filters = filters.data ?: FiltersData(),
         activeFilters = activeFilters,
         selectFilters = viewModel::selectFilters,
-        navigateToTask = navController::navigateToTaskScreen,
-        searchIssues = viewModel::searchIssues
+        navigateToTask = navController::navigateToTaskScreen
     )
 }
 
@@ -73,8 +67,7 @@ fun IssuesScreenContent(
     filters: FiltersData = FiltersData(),
     activeFilters: FiltersData = FiltersData(),
     selectFilters: (FiltersData) -> Unit = {},
-    navigateToTask: NavigateToTask = { _, _, _ -> },
-    searchIssues: (query: String) -> Unit = {}
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -85,20 +78,10 @@ fun IssuesScreenContent(
         onTitleClick = onTitleClick
     )
 
-    var query by remember { mutableStateOf(TextFieldValue(activeFilters.query)) }
     val listState = rememberLazyListState()
+    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
 
-    TextFieldWithHint(
-        hintId = R.string.tasks_search_hint,
-        value = query,
-        onValueChange = { query = it },
-        onSearchClick = { searchIssues(query.text) },
-        horizontalPadding = searchFieldHorizontalPadding,
-        verticalPadding = searchFieldVerticalPadding,
-        hasBorder = true
-    )
-
-    AnimatedVisibility(visible = listState.firstVisibleItemIndex <= 0) {
+    AnimatedVisibility(visible = isVisible) {
         TaskFilters(
             selected = activeFilters,
             onSelect = selectFilters,
@@ -112,6 +95,7 @@ fun IssuesScreenContent(
     ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = issues,
+            keysHash = activeFilters.hashCode(),
             navigateToTask = navigateToTask,
             horizontalPadding = mainHorizontalScreenPadding,
             bottomPadding = commonVerticalPadding

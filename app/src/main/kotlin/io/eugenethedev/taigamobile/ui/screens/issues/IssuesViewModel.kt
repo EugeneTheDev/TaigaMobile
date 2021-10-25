@@ -53,10 +53,6 @@ class IssuesViewModel : ViewModel() {
         }.asLazyPagingItems(viewModelScope)
     }
 
-    fun searchIssues(query: String) {
-        activeFilters.value = activeFilters.value.copy(query = query)
-    }
-
     fun selectFilters(filters: FiltersData) {
         activeFilters.value = filters
     }

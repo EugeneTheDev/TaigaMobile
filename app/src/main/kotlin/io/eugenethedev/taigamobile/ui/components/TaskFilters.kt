@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -32,6 +34,9 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.buttons.TextButton
 import io.eugenethedev.taigamobile.ui.components.badges.Badge
+import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
+import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
+import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.taigaGray
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
@@ -48,13 +53,29 @@ fun TaskFilters(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth()
 ) {
+    // search field
+
+    var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(selected.query)) }
+
+    TextFieldWithHint(
+        hintId = R.string.tasks_search_hint,
+        value = query,
+        onValueChange = { query = it },
+        onSearchClick = { onSelect(selected.copy(query = query.text)) },
+        horizontalPadding = searchFieldHorizontalPadding,
+        verticalPadding = searchFieldVerticalPadding,
+        hasBorder = true
+    )
+
+    // filters
+
     val unselectedFilters = data - selected
 
     val space = 6.dp
     val coroutineScope = rememberCoroutineScope()
 
     // compose version of BottomSheetDialog (from Dialog and ModalBottomSheetLayout)
-    val bottomSheetState =  remember { ModalBottomSheetState( ModalBottomSheetValue.Expanded) } // fix to handle dialog closed state properly
+    val bottomSheetState =  remember { ModalBottomSheetState(ModalBottomSheetValue.Expanded) } // fix to handle dialog closed state properly
     var isVisible by remember { mutableStateOf(false) }
 
     TextButton(
@@ -158,6 +179,7 @@ fun TaskFilters(
                                 selected.assignees.forEach {
                                     FilterChip(
                                         filter = it,
+                                        nullNameId = R.string.unassigned,
                                         onRemoveClick = { onSelect(selected.copy(assignees = selected.assignees - it)) }
                                     )
                                 }
@@ -231,6 +253,7 @@ fun TaskFilters(
                             unselectedFilters.assignees.ifHasData {
                                 Section(
                                     titleId = R.string.assignees_title,
+                                    nullNameId = R.string.unassigned,
                                     filters = it,
                                     onSelect = { onSelect(selected.copy(assignees = selected.assignees + it)) }
                                 )
@@ -270,6 +293,7 @@ private inline fun <T : Filter> List<T>.ifHasData(action: (List<T>) -> Unit) =
 @Composable
 private fun <T : Filter> Section(
     @StringRes titleId: Int,
+    @StringRes nullNameId: Int? = null,
     filters: List<T>,
     onSelect: (T) -> Unit
 ) = Column(
@@ -307,6 +331,7 @@ private fun <T : Filter> Section(
             filters.forEach {
                 FilterChip(
                     filter = it,
+                    nullNameId = nullNameId,
                     onClick = { onSelect(it) }
                 )
             }
@@ -318,6 +343,7 @@ private fun <T : Filter> Section(
 @Composable
 private fun FilterChip(
     filter: Filter,
+    @StringRes nullNameId: Int? = null,
     onClick: () -> Unit = {},
     onRemoveClick: (() -> Unit)? = null
 ) = Chip(
@@ -344,7 +370,7 @@ private fun FilterChip(
             Spacer(Modifier.width(space))
         }
 
-        Text(filter.name.takeIf { it.isNotEmpty() } ?: stringResource(R.string.unassigned))
+        Text(filter.name.takeIf { it.isNotEmpty() } ?: stringResource(nullNameId!!))
 
         Spacer(Modifier.width(space))
 
