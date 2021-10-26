@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.data.api.AuthRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.domain.entities.AuthType
@@ -12,7 +12,7 @@ class AuthRepository @Inject constructor(
     private val session: Session
 ) : IAuthRepository {
     override suspend fun auth(taigaServer: String, authType: AuthType, password: String, username: String) = withIO {
-        session.server = taigaServer
+        session.changeServer(taigaServer)
         taigaApi.auth(
             AuthRequest(
                 username = username,
@@ -23,9 +23,11 @@ class AuthRepository @Inject constructor(
                 }
             )
         ).let {
-            session.token = it.auth_token
-            session.refreshToken = it.refresh ?: "missing" // compatibility with older Taiga versions without refresh token
-            session.currentUserId = it.id
+            session.changeAuthCredentials(
+                token = it.auth_token,
+                refreshToken = it.refresh ?: "missing" // compatibility with older Taiga versions without refresh token
+            )
+            session.changeCurrentUserId(it.id)
         }
     }
 }

@@ -51,16 +51,14 @@
     <string name="taskboard">Board</string>
     <string name="closed">Fermé</string>
     <string name="closed_sprint_name_template">%s (fermé)</string>
-    <string name="add_userstory">Ajouter un récit utilisateur</string>
 
     <string name="sprint_name_hint">Nom du sprint</string>
-    <string name="add_sprint">Ajouter un sprint</string>
+    <string name="show_closed_sprints">Afficher les sprints fermés</string>
+    <string name="hide_closed_sprints">Masquer les sprints fermés</string>
 
     <string name="user_story">Récit utilisateur</string>
     <string name="tasks_without_story">Tâche orpheline</string>
     <string name="sprint_issues">Tickets</string>
-    <string name="add_task">Ajouter une tâche</string>
-    <string name="add_issue">Ajouter un ticket</string>
 
     <string name="userstory_slug">Récit #%d</string>
     <string name="task_slug">Tâche #%d</string>
@@ -154,6 +152,19 @@
     <string name="loading">Chargement …</string>
 
     <string name="tasks_search_hint">Rechercher par ref ou sujet</string>
+    <string name="filters">Filtres</string>
+    <string name="show_filters">Afficher les filtres</string>
+    <string name="hide_filters">Masquer les filtres</string>
+    <string name="type_title">Taper</string>
+    <string name="severity_title">Gravité</string>
+    <string name="priority_title">Priorité</string>
+    <string name="status_title">Statut</string>
+    <string name="tags_title">Mots clés</string>
+    <string name="assignees_title">Cessionnaires</string>
+    <string name="role_title">Rôle</string>
+    <string name="created_by_title">Créé par</string>
+    <string name="epic_title">Épique</string>
+    <string name="not_in_an_epic">Pas dans une épopée</string>
 
     <!-- settings -->
     <string name="logout_title">Se déconnecter</string>

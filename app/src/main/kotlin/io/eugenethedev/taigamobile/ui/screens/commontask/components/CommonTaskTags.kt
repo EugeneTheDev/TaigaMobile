@@ -25,6 +25,7 @@ import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
 
@@ -70,30 +71,35 @@ fun LazyListScope.CommonTaskTags(
 private fun TagItem(
     tag: Tag,
     onRemoveClick: () -> Unit
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-        .background(color = tag.color.toColor(), shape = MaterialTheme.shapes.small)
-        .padding(horizontal = 4.dp, vertical = 2.dp)
 ) {
-    Text(
-        text = tag.name,
-        color = Color.White
-    )
+    val bgColor = tag.color.toColor()
+    val textColor = bgColor.textColor()
 
-    Spacer(Modifier.width(2.dp))
-
-    IconButton(
-        onClick = onRemoveClick,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .size(26.dp)
-            .clip(CircleShape)
+            .background(color = bgColor, shape = MaterialTheme.shapes.small)
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_remove),
-            contentDescription = null,
-            tint = Color.White
+        Text(
+            text = tag.name,
+            color = textColor
         )
+
+        Spacer(Modifier.width(2.dp))
+
+        IconButton(
+            onClick = onRemoveClick,
+            modifier = Modifier
+                .size(26.dp)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_remove),
+                contentDescription = null,
+                tint = textColor
+            )
+        }
     }
 }
 

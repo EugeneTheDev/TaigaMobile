@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.commons
+package io.eugenethedev.taigamobile.ui.utils
 
 import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.MutableStateFlow

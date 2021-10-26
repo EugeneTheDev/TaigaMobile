@@ -36,6 +36,12 @@ data class ProjectResponse(
 data class FiltersDataResponse(
     val statuses: List<Filter>,
     val tags: List<Filter>?,
+    val roles: List<Filter>?,
+    val assigned_to: List<UserFilter>,
+    val owners: List<UserFilter>,
+
+    // user story filters
+    val epics: List<EpicsFilter>?,
 
     // issue filters
     val priorities: List<Filter>?,
@@ -43,9 +49,23 @@ data class FiltersDataResponse(
     val types: List<Filter>?
 ) {
     data class Filter(
-        val id: Long,
-        val name: String,
+        val id: Long?,
+        val name: String?,
         val color: String?,
+        val count: Int
+    )
+
+    data class UserFilter(
+        val id: Long?,
+        val full_name: String,
+        val count: Int
+    )
+
+    data class EpicsFilter(
+        val id: Long?,
+        val ref: Int?,
+        val subject: String?,
+        val count: Int
     )
 }
 

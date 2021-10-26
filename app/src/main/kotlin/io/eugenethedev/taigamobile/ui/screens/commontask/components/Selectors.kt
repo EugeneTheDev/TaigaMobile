@@ -14,7 +14,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
-import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
 import io.eugenethedev.taigamobile.ui.utils.toColor
@@ -274,7 +274,7 @@ private fun EpicItem(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-   TitleWithIndicators(
+   CommonTaskTitle(
        ref = epic.ref,
        title = epic.title,
        indicatorColorsHex = epic.colors,

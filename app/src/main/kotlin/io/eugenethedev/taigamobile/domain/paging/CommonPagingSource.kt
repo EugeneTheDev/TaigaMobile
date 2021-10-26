@@ -21,8 +21,8 @@ class CommonPagingSource<T : Any>(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
         val page = params.key ?: 1
-        val response = loadBackend(page)
         return try {
+            val response = loadBackend(page)
             LoadResult.Page(
                 data = response,
                 prevKey = (page - 1).takeIf { it > 0 },

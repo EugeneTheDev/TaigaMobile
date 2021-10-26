@@ -24,12 +24,12 @@ import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 
 /**
  * List of tasks with optional title.
- * Since Paging 3 is used, we cannot place item before paging items. So there are some workarounds
  */
 fun LazyListScope.SimpleTasksListWithTitle(
     navigateToTask: NavigateToTask,
     commonTasks: List<CommonTask> = emptyList(),
     commonTasksLazy: LazyPagingItems<CommonTask>? = null,
+    keysHash: Int = 0,
     @StringRes titleText: Int? = null,
     topPadding: Dp = 0.dp,
     horizontalPadding: Dp = 0.dp,
@@ -45,10 +45,6 @@ fun LazyListScope.SimpleTasksListWithTitle(
     val lastIndex = commonTasksLazy?.itemCount?.minus(1) ?: commonTasks.lastIndex
 
     val itemContent: @Composable LazyItemScope.(Int, CommonTask?) -> Unit = lambda@ { index, item ->
-        if (index == 0 && titleText == null) {
-            Spacer(Modifier.height(topPadding))
-        }
-
         if (item == null) return@lambda
 
         CommonTaskItem(
@@ -66,10 +62,12 @@ fun LazyListScope.SimpleTasksListWithTitle(
         }
     }
 
+    item {
+        Spacer(Modifier.height(topPadding))
+    }
+
     titleText?.let {
         item {
-            Spacer(Modifier.height(topPadding))
-
             SectionTitle(
                 text = stringResource(it),
                 horizontalPadding = horizontalPadding,
@@ -81,7 +79,7 @@ fun LazyListScope.SimpleTasksListWithTitle(
     commonTasksLazy?.let {
             itemsIndexedLazy(
                 items = it,
-                key = { _, item -> item.id },
+                key = { _, item -> item.id + keysHash },
                 itemContent = itemContent
             )
     } ?: itemsIndexed(commonTasks, itemContent = itemContent)

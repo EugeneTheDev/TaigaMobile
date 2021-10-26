@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.data.api.CreateSprintRequest
 import io.eugenethedev.taigamobile.data.api.EditSprintRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
@@ -13,14 +13,16 @@ class SprintsRepository @Inject constructor(
     private val taigaApi: TaigaApi,
     private val session: Session
 ) : ISprintsRepository {
+    private val currentProjectId get() = session.currentProjectId.value
+    
     override suspend fun getSprintUserStories(sprintId: Long) = withIO {
-        taigaApi.getUserStories(project = session.currentProjectId, sprint = sprintId)
+        taigaApi.getUserStories(project = currentProjectId, sprint = sprintId)
             .map { it.toCommonTask(CommonTaskType.UserStory) }
     }
 
-    override suspend fun getSprints(page: Int) = withIO {
+    override suspend fun getSprints(page: Int, isClosed: Boolean) = withIO {
         handle404 {
-            taigaApi.getSprints(session.currentProjectId, page).map { it.toSprint() }
+            taigaApi.getSprints(currentProjectId, page, isClosed).map { it.toSprint() }
         }
     }
 
@@ -29,18 +31,18 @@ class SprintsRepository @Inject constructor(
     }
 
     override suspend fun getSprintTasks(sprintId: Long) = withIO {
-        taigaApi.getTasks(userStory = "null", project = session.currentProjectId, sprint = sprintId)
+        taigaApi.getTasks(userStory = "null", project = currentProjectId, sprint = sprintId)
             .map { it.toCommonTask(CommonTaskType.Task) }
     }
 
     override suspend fun getSprintIssues(sprintId: Long) = withIO {
-        taigaApi.getIssues(project = session.currentProjectId, sprint = sprintId)
+        taigaApi.getIssues(project = currentProjectId, sprint = sprintId)
             .map { it.toCommonTask(CommonTaskType.Issue) }
 
     }
 
     override suspend fun createSprint(name: String, start: LocalDate, end: LocalDate) = withIO {
-        taigaApi.createSprint(CreateSprintRequest(name, start, end, session.currentProjectId))
+        taigaApi.createSprint(CreateSprintRequest(name, start, end, currentProjectId))
     }
 
     override suspend fun editSprint(

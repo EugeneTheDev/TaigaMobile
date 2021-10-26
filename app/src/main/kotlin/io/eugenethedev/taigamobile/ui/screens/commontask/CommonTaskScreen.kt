@@ -14,8 +14,6 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.entities.CustomField
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
-import io.eugenethedev.taigamobile.ui.commons.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
@@ -38,7 +36,7 @@ fun CommonTaskScreen(
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start(commonTaskId, commonTaskType)
+        viewModel.onOpen(commonTaskId, commonTaskType)
     }
 
     val commonTask by viewModel.commonTask.collectAsState()

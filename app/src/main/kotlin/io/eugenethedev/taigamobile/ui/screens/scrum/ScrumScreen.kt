@@ -6,12 +6,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,17 +27,17 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
-import io.eugenethedev.taigamobile.ui.commons.LoadingResult
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
+import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
 import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
-import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
@@ -57,25 +57,39 @@ fun ScrumScreen(
 ) {
     val viewModel: ScrumViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
+
+    val projectName by viewModel.projectName.collectAsState()
 
     val stories = viewModel.stories
     stories.subscribeOnError {
         onError(R.string.common_error_message)
     }
 
-    val sprints = viewModel.sprints
-    sprints.subscribeOnError(onError)
+    val openSprints = viewModel.openSprints
+    openSprints.subscribeOnError(onError)
+
+    val closedSprints = viewModel.closedSprints
+    closedSprints.subscribeOnError(onError)
+
     val createSprintResult by viewModel.createSprintResult.collectAsState()
     createSprintResult.subscribeOnError(onError)
 
+    val filters by viewModel.filters.collectAsState()
+    filters.subscribeOnError(onError)
+
+    val activeFilters by viewModel.activeFilters.collectAsState()
+
     ScrumScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         stories = stories,
-        searchStories = viewModel::searchStories,
-        sprints = sprints,
+        filters = filters.data ?: FiltersData(),
+        activeFilters = activeFilters,
+        selectFilters = viewModel::selectFilters,
+        openSprints = openSprints,
+        closedSprints = closedSprints,
         isCreateSprintLoading = createSprintResult is LoadingResult,
         navigateToBoard = {
             navController.navigateToSprint(it.id)
@@ -92,8 +106,11 @@ fun ScrumScreenContent(
     projectName: String,
     onTitleClick: () -> Unit = {},
     stories: LazyPagingItems<CommonTask>? = null,
-    searchStories: (query: String) -> Unit = {},
-    sprints: LazyPagingItems<Sprint>? = null,
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
+    openSprints: LazyPagingItems<Sprint>? = null,
+    closedSprints: LazyPagingItems<Sprint>? = null,
     isCreateSprintLoading: Boolean = false,
     navigateToBoard: (Sprint) -> Unit = {},
     navigateToTask: NavigateToTask = { _, _, _ -> },
@@ -141,11 +158,14 @@ fun ScrumScreenContent(
         when (Tabs.values()[page]) {
             Tabs.Backlog -> BacklogTabContent(
                 stories = stories,
-                searchStories = searchStories,
+                filters = filters,
+                activeFilters = activeFilters,
+                selectFilters = selectFilters,
                 navigateToTask = navigateToTask
             )
             Tabs.Sprints -> SprintsTabContent(
-                sprints = sprints,
+                openSprints = openSprints,
+                closedSprints = closedSprints,
                 navigateToBoard = navigateToBoard
             )
         }
@@ -161,27 +181,22 @@ private enum class Tabs(@StringRes override val titleId: Int) : Tab {
 @Composable
 private fun BacklogTabContent(
     stories: LazyPagingItems<CommonTask>?,
-    searchStories: (String) -> Unit,
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
     navigateToTask: NavigateToTask
 ) = Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth()
 ) {
-    var query by remember { mutableStateOf(TextFieldValue()) }
-
-    TextFieldWithHint(
-        hintId = R.string.tasks_search_hint,
-        value = query,
-        onValueChange = { query = it },
-        onSearchClick = { searchStories(query.text) },
-        horizontalPadding = searchFieldHorizontalPadding,
-        verticalPadding = searchFieldVerticalPadding,
-        hasBorder = true
-    )
-
-    LazyColumn(Modifier.fillMaxSize()) {
+    TasksFiltersWithLazyList(
+        filters = filters,
+        activeFilters = activeFilters,
+        selectFilters = selectFilters
+    ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = stories,
+            keysHash = activeFilters.hashCode(),
             navigateToTask = navigateToTask,
             horizontalPadding = mainHorizontalScreenPadding,
             bottomPadding = commonVerticalPadding
@@ -191,27 +206,61 @@ private fun BacklogTabContent(
 
 @Composable
 private fun SprintsTabContent(
-    sprints: LazyPagingItems<Sprint>?,
+    openSprints: LazyPagingItems<Sprint>?,
+    closedSprints: LazyPagingItems<Sprint>?,
     navigateToBoard: (Sprint) -> Unit,
-) = LazyColumn(Modifier.fillMaxSize()) {
-    if (sprints == null) return@LazyColumn
+) {
+    if (openSprints == null || closedSprints == null) return
 
-    items(sprints, key = { it.id }) {
-        if (it == null) return@items
-        SprintItem(
-            sprint = it,
-            navigateToBoard = navigateToBoard
-        )
-    }
+    var isClosedSprintsVisible by rememberSaveable { mutableStateOf(false) }
 
-    item {
-        if (sprints.loadState.refresh is LoadState.Loading || sprints.loadState.append is LoadState.Loading) {
-            DotsLoader()
-        } else if (sprints.itemCount == 0) {
-            NothingToSeeHereText()
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        items(openSprints, key = { it.id }) {
+            if (it == null) return@items
+            SprintItem(
+                sprint = it,
+                navigateToBoard = navigateToBoard
+            )
         }
 
-        Spacer(Modifier.navigationBarsHeight(8.dp))
+        item {
+            if (openSprints.loadState.refresh is LoadState.Loading || openSprints.loadState.append is LoadState.Loading) {
+                DotsLoader()
+            }
+        }
+
+        item {
+            TaigaTextButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
+                Text(stringResource(if (isClosedSprintsVisible) R.string.hide_closed_sprints else R.string.show_closed_sprints))
+            }
+        }
+
+        if (isClosedSprintsVisible) {
+            items(closedSprints, key = { it.id }) {
+                if (it == null) return@items
+                SprintItem(
+                    sprint = it,
+                    navigateToBoard = navigateToBoard
+                )
+            }
+
+            item {
+                if (closedSprints.loadState.refresh is LoadState.Loading || closedSprints.loadState.append is LoadState.Loading) {
+                    DotsLoader()
+                }
+            }
+        }
+
+        item {
+            if (openSprints.itemCount == 0 && closedSprints.itemCount == 0) {
+                NothingToSeeHereText()
+            }
+
+            Spacer(Modifier.navigationBarsHeight(8.dp))
+        }
     }
 }
 

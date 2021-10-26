@@ -4,12 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,15 +19,14 @@ class ProjectSelectorViewModel : ViewModel() {
 
     @Inject lateinit var searchRepository: ISearchRepository
     @Inject lateinit var session: Session
-    @Inject lateinit var screensState: ScreensState
 
-    val currentProjectId get() = session.currentProjectId
+    val currentProjectId by lazy { session.currentProjectId }
 
     init {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start() {
+    fun onOpen() {
         projects.refresh()
     }
 
@@ -47,10 +45,6 @@ class ProjectSelectorViewModel : ViewModel() {
     }
 
     fun selectProject(project: Project) {
-        session.apply {
-            currentProjectId = project.id
-            currentProjectName = project.name
-        }
-        screensState.modify()
+        session.changeCurrentProject(project.id, project.name)
     }
 }

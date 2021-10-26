@@ -33,7 +33,7 @@ import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
-import io.eugenethedev.taigamobile.ThemeSetting
+import io.eugenethedev.taigamobile.state.ThemeSetting
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
@@ -53,8 +53,10 @@ fun SettingsScreen(
 ) {
     val viewModel: SettingsViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
+
+    val serverUrl by viewModel.serverUrl.collectAsState()
 
     val user by viewModel.user.collectAsState()
     user.subscribeOnError(onError)
@@ -65,7 +67,7 @@ fun SettingsScreen(
         avatarUrl = user.data?.avatarUrl,
         displayName = user.data?.displayName.orEmpty(),
         username = user.data?.username.orEmpty(),
-        serverUrl = viewModel.serverUrl,
+        serverUrl = serverUrl,
         navigateBack = navController::popBackStack,
         logout = {
             viewModel.logout()

@@ -1,23 +1,19 @@
 package io.eugenethedev.taigamobile.ui.screens.issues
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
-import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
+import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
-import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -32,19 +28,28 @@ fun IssuesScreen(
 ) {
     val viewModel: IssuesViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
+
+    val projectName by viewModel.projectName.collectAsState()
 
     val issues = viewModel.issues
     issues.subscribeOnError(onError)
 
+    val filters by viewModel.filters.collectAsState()
+    filters.subscribeOnError(onError)
+
+    val activeFilters by viewModel.activeFilters.collectAsState()
+
     IssuesScreenContent(
-        projectName = viewModel.projectName,
+        projectName = projectName,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Issue) },
         issues = issues,
-        navigateToTask = navController::navigateToTaskScreen,
-        searchIssues = viewModel::searchIssues
+        filters = filters.data ?: FiltersData(),
+        activeFilters = activeFilters,
+        selectFilters = viewModel::selectFilters,
+        navigateToTask = navController::navigateToTaskScreen
     )
 }
 
@@ -54,8 +59,10 @@ fun IssuesScreenContent(
     onTitleClick: () -> Unit = {},
     navigateToCreateTask: () -> Unit = {},
     issues: LazyPagingItems<CommonTask>? = null,
-    navigateToTask: NavigateToTask = { _, _, _ -> },
-    searchIssues: (query: String) -> Unit = {}
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
+    navigateToTask: NavigateToTask = { _, _, _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -66,21 +73,14 @@ fun IssuesScreenContent(
         onTitleClick = onTitleClick
     )
 
-    var query by remember { mutableStateOf(TextFieldValue()) }
-
-    TextFieldWithHint(
-        hintId = R.string.tasks_search_hint,
-        value = query,
-        onValueChange = { query = it },
-        onSearchClick = { searchIssues(query.text) },
-        horizontalPadding = searchFieldHorizontalPadding,
-        verticalPadding = searchFieldVerticalPadding,
-        hasBorder = true
-    )
-
-    LazyColumn(Modifier.fillMaxSize()) {
+    TasksFiltersWithLazyList(
+        filters = filters,
+        activeFilters = activeFilters,
+        selectFilters = selectFilters
+    ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = issues,
+            keysHash = activeFilters.hashCode(),
             navigateToTask = navigateToTask,
             horizontalPadding = mainHorizontalScreenPadding,
             bottomPadding = commonVerticalPadding

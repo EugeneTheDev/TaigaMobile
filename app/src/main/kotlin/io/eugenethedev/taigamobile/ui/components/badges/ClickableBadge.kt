@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components
+package io.eugenethedev.taigamobile.ui.components.badges
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
 /**
@@ -35,6 +36,8 @@ fun ClickableBadge(
     isLoading: Boolean = false,
     isClickable: Boolean = true
 ) {
+    val textColor = color.textColor()
+
     val infiniteTransition = rememberInfiniteTransition()
     val animationDuration = 800
 
@@ -86,7 +89,7 @@ fun ClickableBadge(
     ) {
         Text(
             text = text,
-            color = Color.White,
+            color = textColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             // I really want to use Modifier.weight(0.8, fill = false) here and below,
@@ -100,7 +103,7 @@ fun ClickableBadge(
             Image(
                 painter = painterResource(R.drawable.ic_arrow_down),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(Color.White)
+                colorFilter = ColorFilter.tint(textColor)
             )
         } else {
             Spacer(Modifier.width(6.dp))

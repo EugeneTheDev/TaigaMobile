@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.*
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
-import io.eugenethedev.taigamobile.ui.commons.MutableResultFlow
-import io.eugenethedev.taigamobile.ui.commons.ScreensState
+import io.eugenethedev.taigamobile.state.*
+import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,10 +15,9 @@ class SettingsViewModel : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var settings: Settings
     @Inject lateinit var userRepository: IUsersRepository
-    @Inject lateinit var screensState: ScreensState
 
     val user = MutableResultFlow<User>()
-    val serverUrl get() = session.server
+    val serverUrl by lazy { session.server }
 
     val themeSetting by lazy { settings.themeSetting }
 
@@ -26,12 +25,11 @@ class SettingsViewModel : ViewModel() {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start() = viewModelScope.launch {
+    fun onOpen() = viewModelScope.launch {
         user.loadOrError(preserveValue = false) { userRepository.getMe() }
     }
 
     fun logout() {
-        screensState.modify()
         session.reset()
     }
 

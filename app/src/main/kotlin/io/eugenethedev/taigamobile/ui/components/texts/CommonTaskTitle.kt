@@ -20,13 +20,14 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Tag
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
 /**
- * Text with colored dots (indicators) at the end
+ * Text with colored dots (indicators) at the end and tags
  */
 @Composable
-fun TitleWithIndicators(
+fun CommonTaskTitle(
     ref: Int,
     title: String,
     modifier: Modifier = Modifier,
@@ -58,14 +59,15 @@ fun TitleWithIndicators(
 
         FlowRow {
             tags.forEach {
+                val bgColor = it.color.toColor()
                 Text(
                     text = it.name,
-                    color = Color.White,
+                    color = bgColor.textColor(),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier
                         .padding(end = 4.dp, bottom = 4.dp)
                         .background(
-                            color = it.color.toColor(),
+                            color = bgColor,
                             shape = MaterialTheme.shapes.small
                         )
                         .padding(2.dp)
@@ -78,7 +80,7 @@ fun TitleWithIndicators(
 @Preview(showBackground = true)
 @Composable
 fun TitleWithIndicatorsPreview() = TaigaMobileTheme {
-    TitleWithIndicators(
+    CommonTaskTitle(
         ref = 42,
         title = "Some title",
         tags = listOf(Tag("one", "#25A28C"), Tag("two", "#25A28C"))

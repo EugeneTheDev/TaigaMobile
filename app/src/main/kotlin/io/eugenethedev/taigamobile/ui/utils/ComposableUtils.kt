@@ -14,13 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ui.commons.ErrorResult
-import io.eugenethedev.taigamobile.ui.commons.Result
 import timber.log.Timber
 
 /**
@@ -94,3 +93,5 @@ fun String.toColor(): Color = try {
 }
 
 fun Color.toHex() = "#%08X".format(toArgb()).replace("#FF", "#")
+// calculate optimal text color for background
+fun Color.textColor() = if (luminance() < 0.5) Color.White else Color.Black

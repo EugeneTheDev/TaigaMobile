@@ -56,15 +56,13 @@
     <string name="taskboard">Board</string>
     <string name="closed">Closed</string>
     <string name="closed_sprint_name_template">%s (Closed)</string>
-    <string name="add_userstory">Add user story</string>
     <string name="sprint_name_hint">Sprint name</string>
-    <string name="add_sprint">Add sprint</string>
+    <string name="show_closed_sprints">Show closed sprints</string>
+    <string name="hide_closed_sprints">Hide closed sprints</string>
 
     <string name="user_story">User story</string>
     <string name="tasks_without_story">Storyless tasks</string>
     <string name="sprint_issues">Sprint issues</string>
-    <string name="add_task">Add task</string>
-    <string name="add_issue">Add issue</string>
 
     <string name="userstory_slug">User story #%d</string>
     <string name="task_slug">Task #%d</string>
@@ -158,6 +156,19 @@
     <string name="loading">Loading…</string>
 
     <string name="tasks_search_hint">Search by ref or subject</string>
+    <string name="filters">Filters</string>
+    <string name="show_filters">Show filters</string>
+    <string name="hide_filters">Hide filters</string>
+    <string name="type_title">Type</string>
+    <string name="severity_title">Severity</string>
+    <string name="priority_title">Priority</string>
+    <string name="status_title">Status</string>
+    <string name="tags_title">Tags</string>
+    <string name="assignees_title">Assignees</string>
+    <string name="role_title">Role</string>
+    <string name="created_by_title">Created by</string>
+    <string name="epic_title">Epic</string>
+    <string name="not_in_an_epic">Not in an epic</string>
 
     <string name="status_with_number_template" translatable="false">%s - %d</string>
 

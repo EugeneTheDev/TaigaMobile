@@ -1,6 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
@@ -11,15 +11,16 @@ class UsersRepository @Inject constructor(
     private val taigaApi: TaigaApi,
     private val session: Session
 ) : IUsersRepository {
+    private val currentProjectId get() = session.currentProjectId.value
 
     override suspend fun getMe() = withIO { taigaApi.getMyProfile() }
 
     override suspend fun getUser(userId: Long) = withIO { taigaApi.getUser(userId) }
 
     override suspend fun getTeam() = withIO {
-        val team = async { taigaApi.getProject(session.currentProjectId).members }
+        val team = async { taigaApi.getProject(currentProjectId).members }
         val stats = async {
-            taigaApi.getMemberStats(session.currentProjectId).run {
+            taigaApi.getMemberStats(currentProjectId).run {
                 // calculating total number of points for each id
                 (closed_bugs.toList() + closed_tasks.toList() + created_bugs.toList() +
                     iocaine_tasks.toList() + wiki_changes.toList())

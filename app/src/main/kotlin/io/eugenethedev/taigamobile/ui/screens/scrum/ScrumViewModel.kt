@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.Session
+import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
-import io.eugenethedev.taigamobile.ui.commons.*
+import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
+import io.eugenethedev.taigamobile.ui.utils.NothingResult
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,41 +26,48 @@ class ScrumViewModel : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var session: Session
-    @Inject lateinit var screensState: ScreensState
 
-    val projectName: String get() = session.currentProjectName
+    val projectName by lazy { session.currentProjectName }
+
+    private var shouldReload = true
 
     init {
         TaigaApp.appComponent.inject(this)
     }
 
-    fun start() {
-        if (screensState.shouldReloadScrumScreen) {
-            reset()
+    fun onOpen() {
+        if (!shouldReload) return
+        viewModelScope.launch {
+            filters.loadOrError { tasksRepository.getFiltersData(CommonTaskType.UserStory) }
         }
+        shouldReload = false
     }
 
     // stories
 
-    private val storiesQuery = MutableStateFlow("")
+    val filters = MutableResultFlow<FiltersData>()
+    val activeFilters = MutableStateFlow(FiltersData())
     @OptIn(ExperimentalCoroutinesApi::class)
     val stories by lazy {
-        storiesQuery.flatMapLatest { query ->
-            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
-                CommonPagingSource { tasksRepository.getBacklogUserStories(it, query) }
+        activeFilters.flatMapLatest { filters ->
+            Pager(PagingConfig(CommonPagingSource.PAGE_SIZE, enablePlaceholders = false)) {
+                CommonPagingSource { tasksRepository.getBacklogUserStories(it, filters) }
             }.flow
         }.asLazyPagingItems(viewModelScope)
     }
     
-    fun searchStories(query: String) {
-        storiesQuery.value = query
+    fun selectFilters(filters: FiltersData) {
+        activeFilters.value = filters
     }
 
     // sprints
 
-    val sprints by lazy {
+    val openSprints by sprints(isClosed = false)
+    val closedSprints by sprints(isClosed = true)
+
+    private fun sprints(isClosed: Boolean) = lazy {
         Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
-            CommonPagingSource { sprintsRepository.getSprints(it) }
+            CommonPagingSource { sprintsRepository.getSprints(it, isClosed) }
         }.flow.asLazyPagingItems(viewModelScope)
     }
 
@@ -66,13 +76,27 @@ class ScrumViewModel : ViewModel() {
     fun createSprint(name: String, start: LocalDate, end: LocalDate) = viewModelScope.launch {
         createSprintResult.loadOrError(R.string.permission_error) {
             sprintsRepository.createSprint(name, start, end)
-            sprints.refresh()
+            openSprints.refresh()
         }
     }
 
-    fun reset() {
-        createSprintResult.value = NothingResult()
-        stories.refresh()
-        sprints.refresh()
+    init {
+        session.currentProjectId.onEach {
+            activeFilters.value = FiltersData()
+            createSprintResult.value = NothingResult()
+            stories.refresh()
+            openSprints.refresh()
+            closedSprints.refresh()
+            shouldReload = true
+        }.launchIn(viewModelScope)
+
+        session.taskEdit.onEach {
+            stories.refresh()
+        }.launchIn(viewModelScope)
+
+        session.sprintEdit.onEach {
+            openSprints.refresh()
+            closedSprints.refresh()
+        }.launchIn(viewModelScope)
     }
 }

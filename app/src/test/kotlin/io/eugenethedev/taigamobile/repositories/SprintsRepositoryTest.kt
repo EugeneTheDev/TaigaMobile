@@ -35,7 +35,7 @@ class SprintsRepositoryTest : BaseRepositoryTest() {
 
     @Test
     fun `test get sprints`() = runBlocking {
-        val sprints = sprintsRepository.getSprints(1)
+        val sprints = sprintsRepository.getSprints(1) + sprintsRepository.getSprints(1, isClosed = true)
 
         assertEquals(
             expected = TestData.projects[0]

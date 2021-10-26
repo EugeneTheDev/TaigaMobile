@@ -51,16 +51,14 @@
     <string name="taskboard">Дошка</string>
     <string name="closed">Закритий</string>
     <string name="closed_sprint_name_template">%s (Закритий)</string>
-    <string name="add_userstory">Додати історію користувача</string>
 
     <string name="sprint_name_hint">Ім\'я спринту</string>
-    <string name="add_sprint">Додати спринт</string>
+    <string name="show_closed_sprints">Показати закриті спринти</string>
+    <string name="hide_closed_sprints">Приховати закриті спринти</string>
 
     <string name="user_story">Історія користувача</string>
     <string name="tasks_without_story">Історії без завданнь</string>
     <string name="sprint_issues">Проблеми із спринта</string>
-    <string name="add_task">Додати завдання</string>
-    <string name="add_issue">Додати проблему</string>
 
     <string name="userstory_slug">Історія користувача #%d</string>
     <string name="task_slug">Завдання #%d</string>
@@ -153,7 +151,20 @@
 
     <string name="loading">Завантаження…</string>
 
-    <string name="tasks_search_hint">Пошук по номеру чи заголовку?</string>
+    <string name="tasks_search_hint">Пошук по номеру чи заголовку</string>
+    <string name="filters">Фільтри</string>
+    <string name="show_filters">Показати фільтри</string>
+    <string name="hide_filters">Hide filters</string>
+    <string name="type_title">Тип</string>
+    <string name="severity_title">Тяжкість</string>
+    <string name="priority_title">Пріоритет</string>
+    <string name="status_title">Статус</string>
+    <string name="tags_title">Теги</string>
+    <string name="assignees_title">Уповноважені</string>
+    <string name="role_title">Роль</string>
+    <string name="created_by_title">Створений</string>
+    <string name="epic_title">Епік</string>
+    <string name="not_in_an_epic">Не в епосі</string>
 
 
     <!-- settings -->

@@ -55,7 +55,8 @@ interface TaigaApi {
     @GET("milestones")
     suspend fun getSprints(
         @Query("project") project: Long,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("closed") isClosed: Boolean
     ): List<SprintResponse>
 
     @GET("milestones/{id}")
@@ -104,6 +105,18 @@ interface TaigaApi {
         @Query("q") query: String? = null,
         @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
 
+        // List<Long?>?
+        @Query("assigned_to", encoded = true) assignedIds: String? = null,
+        @Query("epic", encoded = true) epics: String? = null,
+
+        // List<Long>?
+        @Query("owner", encoded = true) ownerIds: String? = null,
+        @Query("role", encoded = true) roles: String? = null,
+        @Query("status", encoded = true) statuses: String? = null,
+
+        // List<String>?
+        @Query("tags", encoded = true) tags: String? = null,
+
         // here and below instead of setting header to "false" remove it,
         // because api always returns unpaginated result if header persists, regardless of its value
         @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
@@ -132,6 +145,16 @@ interface TaigaApi {
         @Query("watchers") watcherId: Long? = null,
         @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
 
+        // List<Long?>?
+        @Query("assigned_to", encoded = true) assignedIds: String? = null,
+
+        // List<Long>?
+        @Query("owner", encoded = true) ownerIds: String? = null,
+        @Query("status", encoded = true) statuses: String? = null,
+
+        // List<String>?
+        @Query("tags", encoded = true) tags: String? = null,
+
         @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
 
@@ -141,10 +164,23 @@ interface TaigaApi {
         @Query("project") project: Long? = null,
         @Query("q") query: String? = null,
         @Query("milestone") sprint: Long? = null,
-        @Query("assigned_to") assignedId: Long? = null,
         @Query("status__is_closed") isClosed: Boolean? = null,
         @Query("watchers") watcherId: Long? = null,
         @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE,
+
+        // List<Long?>?
+        @Query("assigned_to", encoded = true) assignedIds: String? = null,
+
+        // List<Long>?
+        @Query("owner", encoded = true) ownerIds: String? = null,
+        @Query("priority", encoded = true) priorities: String? = null,
+        @Query("severity", encoded = true) severities: String? = null,
+        @Query("type", encoded = true) types: String? = null,
+        @Query("role", encoded = true) roles: String? = null,
+        @Query("status", encoded = true) statuses: String? = null,
+
+        // List<String>?
+        @Query("tags", encoded = true) tags: String? = null,
 
         @Header("x-disable-pagination") disablePagination: Boolean? = (page == null).takeIf { it }
     ): List<CommonTaskResponse>
