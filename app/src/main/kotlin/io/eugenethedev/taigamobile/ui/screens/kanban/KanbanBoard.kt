@@ -31,10 +31,10 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
-import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaDarkGray
-import io.eugenethedev.taigamobile.ui.theme.taigaGray
+import io.eugenethedev.taigamobile.ui.theme.taigaDarkGrayDynamic
+import io.eugenethedev.taigamobile.ui.theme.taigaGrayDynamic
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
@@ -52,8 +52,8 @@ fun KanbanBoard(
     val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
-    val backgroundCellColor = taigaGray
-    val headerColor = taigaDarkGray
+    val backgroundCellColor = taigaGrayDynamic
+    val headerColor = taigaDarkGrayDynamic
 
     swimlanes.takeIf { it.isNotEmpty() }?.let {
         Row(
@@ -242,7 +242,7 @@ private fun StoryItem(
 
         Spacer(Modifier.height(4.dp))
 
-        TitleWithIndicators(
+        CommonTaskTitle(
             ref = story.ref,
             title = story.title,
             isInactive = story.isClosed,

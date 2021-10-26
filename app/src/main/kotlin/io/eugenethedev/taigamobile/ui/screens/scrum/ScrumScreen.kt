@@ -1,11 +1,8 @@
 package io.eugenethedev.taigamobile.ui.screens.scrum
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
@@ -31,7 +28,7 @@ import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
-import io.eugenethedev.taigamobile.ui.components.TaskFilters
+import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
@@ -181,7 +178,6 @@ private enum class Tabs(@StringRes override val titleId: Int) : Tab {
     Sprints(R.string.sprints_title)
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun BacklogTabContent(
     stories: LazyPagingItems<CommonTask>?,
@@ -193,20 +189,10 @@ private fun BacklogTabContent(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth()
 ) {
-    val listState = rememberLazyListState()
-    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
-
-    AnimatedVisibility(visible = isVisible) {
-        TaskFilters(
-            selected = activeFilters,
-            onSelect = selectFilters,
-            data = filters
-        )
-    }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState
+    TasksFiltersWithLazyList(
+        filters = filters,
+        activeFilters = activeFilters,
+        selectFilters = selectFilters
     ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = stories,

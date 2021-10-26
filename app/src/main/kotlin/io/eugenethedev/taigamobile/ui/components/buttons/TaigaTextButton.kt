@@ -6,7 +6,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import io.eugenethedev.taigamobile.ui.theme.taigaLightGray
+import io.eugenethedev.taigamobile.ui.theme.taigaLightGrayDynamic
 
 /**
  * Text button with proper style
@@ -18,7 +18,7 @@ fun TaigaTextButton(
 ) = TextButton(
     onClick = onClick,
     colors = ButtonDefaults.textButtonColors(
-        backgroundColor = taigaLightGray
+        backgroundColor = taigaLightGrayDynamic
     ),
     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     content = content

@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaGray
+import io.eugenethedev.taigamobile.ui.theme.taigaGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.textColor
 
 /**
@@ -24,14 +24,14 @@ import io.eugenethedev.taigamobile.ui.utils.textColor
 fun Chip(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    color: Color = taigaGray,
+    color: Color = taigaGrayStatic,
     content: @Composable () -> Unit
 ) = Surface(
     onClick = onClick,
     shape = RoundedCornerShape(50),
     color = color,
     contentColor = color.textColor(),
-    elevation = 2.dp,
+    elevation = 1.dp,
     modifier = modifier
 ) {
     Box(modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp)) {

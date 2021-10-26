@@ -1,10 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.epics
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +11,7 @@ import androidx.paging.compose.LazyPagingItems
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
-import io.eugenethedev.taigamobile.ui.components.TaskFilters
+import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
@@ -57,7 +53,6 @@ fun EpicsScreen(
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun EpicsScreenContent(
     projectName: String,
@@ -78,20 +73,10 @@ fun EpicsScreenContent(
         onTitleClick = onTitleClick
     )
 
-    val listState = rememberLazyListState()
-    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
-
-    AnimatedVisibility(visible = isVisible) {
-        TaskFilters(
-            selected = activeFilters,
-            onSelect = selectFilters,
-            data = filters
-        )
-    }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState
+    TasksFiltersWithLazyList(
+        filters = filters,
+        activeFilters = activeFilters,
+        selectFilters = selectFilters
     ) {
         SimpleTasksListWithTitle(
             commonTasksLazy = epics,

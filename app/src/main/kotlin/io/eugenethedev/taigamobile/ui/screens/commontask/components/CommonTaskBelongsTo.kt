@@ -23,7 +23,7 @@ import io.eugenethedev.taigamobile.domain.entities.UserStoryShortInfo
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
-import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.commontask.NavigationActions
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
@@ -96,7 +96,7 @@ private fun EpicItemWithAction(
         )
     }
 
-    TitleWithIndicators(
+    CommonTaskTitle(
         ref = epic.ref,
         title = epic.title,
         textColor = MaterialTheme.colors.primary,
@@ -125,7 +125,7 @@ private fun EpicItemWithAction(
 private fun UserStoryItem(
     story: UserStoryShortInfo,
     onClick: () -> Unit
-) = TitleWithIndicators(
+) = CommonTaskTitle(
     ref = story.ref,
     title = story.title,
     textColor = MaterialTheme.colors.primary,

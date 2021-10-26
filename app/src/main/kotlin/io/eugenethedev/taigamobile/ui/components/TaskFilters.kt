@@ -5,8 +5,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -39,10 +45,48 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaGray
+import io.eugenethedev.taigamobile.ui.theme.taigaGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import kotlinx.coroutines.launch
+
+/**
+ * TasksFilters which reacts to LazyList scroll state
+ */
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun TasksFiltersWithLazyList(
+    filters: FiltersData = FiltersData(),
+    activeFilters: FiltersData = FiltersData(),
+    selectFilters: (FiltersData) -> Unit = {},
+    content: LazyListScope.() -> Unit
+) {
+    val listState = rememberLazyListState()
+    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex < 2 } }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = expandVertically(animationSpec = tween()),
+        exit = shrinkVertically(animationSpec = tween())
+    ) {
+        TaskFilters(
+            selected = activeFilters,
+            onSelect = selectFilters,
+            data = filters
+        )
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        content = content
+    )
+}
+
+/**
+ * Filters for tasks (like status, assignees etc.).
+ * Filters are placed in bottom sheet dialog as expandable options
+ */
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -135,7 +179,8 @@ fun TaskFilters(
                     ) {
                         Text(
                             text = stringResource(R.string.filters),
-                            style = MaterialTheme.typography.h5
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.padding(start = space)
                         )
 
                         Spacer(Modifier.height(space))
@@ -212,7 +257,7 @@ fun TaskFilters(
                                 Spacer(Modifier.height(space))
                             }
 
-                            val sectionsSpace = 4.dp
+                            val sectionsSpace = 6.dp
 
                             unselectedFilters.types.ifHasData {
                                 Section(
@@ -275,6 +320,7 @@ fun TaskFilters(
                                     filters = it,
                                     onSelect = { onSelect(selected.copy(roles = selected.roles + it)) }
                                 )
+                                Spacer(Modifier.height(sectionsSpace))
                             }
 
                             unselectedFilters.createdBy.ifHasData {
@@ -283,6 +329,7 @@ fun TaskFilters(
                                     filters = it,
                                     onSelect = { onSelect(selected.copy(createdBy = selected.createdBy + it)) }
                                 )
+                                Spacer(Modifier.height(sectionsSpace))
                             }
 
                             unselectedFilters.epics.ifHasData {
@@ -338,7 +385,7 @@ private fun <T : Filter> Section(
 
         Text(
             text = stringResource(titleId),
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(bottom = 2.dp)
         )
     }
@@ -365,7 +412,7 @@ private fun FilterChip(
     onRemoveClick: (() -> Unit)? = null
 ) = Chip(
     onClick = onClick,
-    color = filter.color?.toColor() ?: taigaGray,
+    color = filter.color?.toColor() ?: taigaGrayStatic,
     modifier = Modifier.padding(end = 4.dp, bottom = 6.dp)
 ) {
     val space = 6.dp

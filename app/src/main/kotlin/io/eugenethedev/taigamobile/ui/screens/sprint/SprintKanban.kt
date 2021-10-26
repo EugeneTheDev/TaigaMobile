@@ -32,9 +32,9 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
-import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaLightGray
+import io.eugenethedev.taigamobile.ui.theme.taigaLightGrayDynamic
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.toColor
@@ -56,7 +56,7 @@ fun SprintKanban(
     val cellWidth = 280.dp
     val userStoryHeadingWidth = cellWidth - 20.dp
     val minCellHeight = 80.dp
-    val backgroundCellColor = taigaLightGray
+    val backgroundCellColor = taigaLightGrayDynamic
     val screenWidth = LocalContext.current.resources.configuration.screenWidthDp.dp
     val totalWidth = cellWidth * statuses.size + userStoryHeadingWidth + cellPadding * statuses.size
 
@@ -272,7 +272,7 @@ private fun UserStoryItem(
     Column(
         modifier = Modifier.fillMaxWidth().weight(0.8f, fill = false)
     ) {
-        TitleWithIndicators(
+        CommonTaskTitle(
             ref = userStory.ref,
             title = userStory.title,
             indicatorColorsHex = userStory.colors,
@@ -372,7 +372,7 @@ private fun TaskItem(
             .padding(12.dp)
     ) {
         Column(Modifier.weight(0.8f, fill = false)) {
-            TitleWithIndicators(
+            CommonTaskTitle(
                 ref = task.ref,
                 title = task.title,
                 indicatorColorsHex = task.colors,

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaDarkGray
+import io.eugenethedev.taigamobile.ui.theme.taigaDarkGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.textColor
 
 @Composable
@@ -20,7 +20,7 @@ fun Badge(
     text: String,
     isActive: Boolean = true
 ) {
-    val color = if (isActive) MaterialTheme.colors.primary else taigaDarkGray
+    val color = if (isActive) MaterialTheme.colors.primary else taigaDarkGrayStatic
     Surface(
         shape = MaterialTheme.shapes.small,
         color = color,

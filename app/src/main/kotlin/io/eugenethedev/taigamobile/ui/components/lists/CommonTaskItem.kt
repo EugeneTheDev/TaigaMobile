@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
-import io.eugenethedev.taigamobile.ui.components.texts.TitleWithIndicators
+import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
@@ -76,7 +76,7 @@ fun CommonTaskItem(
             )
         }
 
-        TitleWithIndicators(
+        CommonTaskTitle(
             ref = commonTask.ref,
             title = commonTask.title,
             indicatorColorsHex = commonTask.colors,
