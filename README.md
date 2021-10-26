@@ -22,6 +22,7 @@ This is **unofficial** android app for [taiga.io](https://www.taiga.io/) (agile 
   * Sprints
 * Leave and delete comments
 * Kanban (for sprint and for user stories)
+* Filters for user stories, epics, issues
 
 ## Some screens
 How app looks (dark theme supported)  
