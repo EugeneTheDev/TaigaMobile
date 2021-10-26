@@ -34,7 +34,7 @@ import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TaskFilters
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.buttons.TextButton
+import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
@@ -247,7 +247,7 @@ private fun SprintsTabContent(
         }
 
         item {
-            TextButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
+            TaigaTextButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
                 Text(stringResource(if (isClosedSprintsVisible) R.string.hide_closed_sprints else R.string.show_closed_sprints))
             }
         }

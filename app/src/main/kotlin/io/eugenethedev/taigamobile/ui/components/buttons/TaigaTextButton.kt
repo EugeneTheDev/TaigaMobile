@@ -12,7 +12,7 @@ import io.eugenethedev.taigamobile.ui.theme.taigaLightGray
  * Text button with proper style
  */
 @Composable
-fun TextButton(
+fun TaigaTextButton(
     onClick: () -> Unit,
     content: @Composable RowScope.() -> Unit
 ) = TextButton(

@@ -14,7 +14,7 @@ import io.eugenethedev.taigamobile.R
 fun AddButton(
     text: String,
     onClick: () -> Unit
-) = TextButton(onClick = onClick) {
+) = TaigaTextButton(onClick = onClick) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             painter = painterResource(R.drawable.ic_add),

@@ -33,7 +33,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
-import io.eugenethedev.taigamobile.ui.components.buttons.TextButton
+import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
 import io.eugenethedev.taigamobile.ui.components.badges.Badge
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
@@ -79,7 +79,7 @@ fun TaskFilters(
     val bottomSheetState =  remember { ModalBottomSheetState(ModalBottomSheetValue.Expanded) } // fix to handle dialog closed state properly
     var isVisible by remember { mutableStateOf(false) }
 
-    TextButton(
+    TaigaTextButton(
         onClick = {
             coroutineScope.launch {
                 isVisible = true
