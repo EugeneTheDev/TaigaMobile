@@ -51,7 +51,7 @@ import io.eugenethedev.taigamobile.ui.utils.toColor
 import kotlinx.coroutines.launch
 
 /**
- * TasksFilters which reacts to LazyList scroll state
+ * TaskFilters which reacts to LazyList scroll state
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -62,7 +62,7 @@ fun TasksFiltersWithLazyList(
     content: LazyListScope.() -> Unit
 ) {
     val listState = rememberLazyListState()
-    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex < 2 } }
+    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex < 1 } }
 
     AnimatedVisibility(
         visible = isVisible,
