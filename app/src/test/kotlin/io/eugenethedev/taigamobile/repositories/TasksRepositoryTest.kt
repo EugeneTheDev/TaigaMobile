@@ -1,7 +1,13 @@
 package io.eugenethedev.taigamobile.repositories
 
 import io.eugenethedev.taigamobile.data.repositories.TasksRepository
+import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
+import io.eugenethedev.taigamobile.domain.entities.StatusType
+import io.eugenethedev.taigamobile.domain.entities.UsersFilter
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
+import io.eugenethedev.taigamobile.repositories.utils.TestCommonTask
+import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -88,7 +94,10 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         TestData.projects.forEachIndexed { index, project ->
             val epics = project.epics
-                .filter { TestData.activeUser in it.watchers && !it.isClosed }
+                .filter {
+                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
+                            && !it.isClosed
+                }
                 .map {
                     TestCommonTask(
                         title = it.title,
@@ -111,7 +120,10 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 }
 
             val tasks = getTestTasks(index)
-                .filter { TestData.activeUser in it.watchers && !it.isClosed }
+                .filter {
+                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
+                            && !it.isClosed
+                }
                 .map {
                     TestCommonTask(
                         title = it.title,
@@ -121,7 +133,10 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 }
 
             val issue = project.issues
-                .filter { TestData.activeUser in it.watchers && !it.isClosed }
+                .filter {
+                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
+                            && !it.isClosed
+                }
                 .map {
                     TestCommonTask(
                         title = it.title,
@@ -145,6 +160,94 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 expected = totalTestCommonTasks[index].isClosed,
                 actual = data.isClosed
             )
+        }
+    }
+
+    @Test
+    fun `test get epics`() = runBlocking {
+        val epics = tasksRepository.getEpics(1, FiltersData()).sortedBy { it.title }
+        val testEpics = TestData.projects[0].epics.sortedBy { it.title }
+        val epicsWithFilter = tasksRepository.getEpics(
+            page = 1,
+            filters = FiltersData(
+                createdBy = listOf(
+                    UsersFilter(
+                        id = 0,
+                        name = activeUser.user.fullName,
+                        count = 0
+                    )
+                )
+            )
+        ).sortedBy { it.title }
+        val testEpicsWithFilter = TestData.projects[0].epics
+            .filter { it.creator.fullName == activeUser.user.fullName }
+            .sortedBy { it.title }
+
+        assertEquals(
+            expected = epics.size,
+            actual = testEpics.size
+        )
+        testEpics.forEachIndexed() { index, testEpic ->
+            assertEquals(
+                expected = testEpic.title,
+                actual = epics[index].title
+            )
+            assertEquals(
+                expected = testEpic.assignedTo?.fullName,
+                actual = epics[index].assignee?.fullName
+            )
+            assertEquals(
+                expected = testEpic.isClosed,
+                actual = epics[index].isClosed
+            )
+        }
+
+        assertEquals(
+            expected = epicsWithFilter.size,
+            actual = testEpicsWithFilter.size
+        )
+        testEpicsWithFilter.forEachIndexed() { index, testEpic ->
+            assertEquals(
+                expected = testEpic.title,
+                actual = epicsWithFilter[index].title
+            )
+            assertEquals(
+                expected = testEpic.assignedTo?.fullName,
+                actual = epicsWithFilter[index].assignee?.fullName
+            )
+            assertEquals(
+                expected = testEpic.isClosed,
+                actual = epicsWithFilter[index].isClosed
+            )
+        }
+    }
+
+    @Test
+    fun `test get epic user stories`() = runBlocking {
+        tasksRepository.getEpics(1, FiltersData()).forEach { epic ->
+            val epicsUserStories = tasksRepository.getEpicUserStories(epic.id).sortedBy { it.title }
+            val testEpicsUserStories = TestData.projects[0].userstories
+                .filter { epic.title in it.epics.map { it.title } }
+                .sortedBy { it.title }
+
+            assertEquals(
+                expected = epicsUserStories.size,
+                actual = testEpicsUserStories.size
+            )
+            epicsUserStories.forEachIndexed { index, story ->
+                assertEquals(
+                    expected = testEpicsUserStories[index].title,
+                    actual = story.title
+                )
+                assertEquals(
+                    expected = testEpicsUserStories[index].assignedTo?.fullName,
+                    actual = story.assignee?.fullName
+                )
+                assertEquals(
+                    expected = testEpicsUserStories[index].isClosed,
+                    actual = story.isClosed
+                )
+            }
         }
     }
 

@@ -1,10 +1,10 @@
-package io.eugenethedev.taigamobile.repositories
+package io.eugenethedev.taigamobile.repositories.utils
 
 import io.eugenethedev.taigamobile.testdata.Task
 import io.eugenethedev.taigamobile.testdata.TestData
 import io.eugenethedev.taigamobile.testdata.User
 
-data class TestCommonTask(
+class TestCommonTask(
     val title: String,
     val assignee: User? = null,
     val isClosed: Boolean
