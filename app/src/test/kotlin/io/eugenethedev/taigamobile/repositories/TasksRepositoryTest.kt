@@ -20,41 +20,118 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     @Test
     fun `test get working on`() = runBlocking {
         val listCommonTasks = tasksRepository.getWorkingOn().sortedBy { it.title }
+        val totalTestCommonTasks: MutableList<TestCommonTask> = mutableListOf()
 
-        val epics = TestData.projects[0].epics
-            .filter { it.assignedTo == TestData.activeUser && !it.isClosed }
-            .map{ TestCommonTask(
-                title = it.title,
-                assignee = it.assignedTo,
-                isClosed = it.isClosed
-            )}
+        TestData.projects.forEachIndexed { index, project ->
+            val epics = project.epics
+                .filter { it.assignedTo == TestData.activeUser && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
 
-        val stories = TestData.projects[0].userstories
-            .filter { it.assignedTo == TestData.activeUser && !it.isClosed}
-            .map{ TestCommonTask(
-                title = it.title,
-                assignee = it.assignedTo,
-                isClosed = it.isClosed
-            )}
+            val stories = project.userstories
+                .filter { it.assignedTo == TestData.activeUser && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
 
-        val tasks = getTestTasks()
-            .filter { it.assignedTo == TestData.activeUser && !it.isClosed}
-            .map{ TestCommonTask(
-                title = it.title,
-                assignee = it.assignedTo,
-                isClosed = it.isClosed
-            )}
+            val tasks = getTestTasks(index)
+                .filter { it.assignedTo == TestData.activeUser && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
 
-        val issue = TestData.projects[0].issues
-            .filter { it.assignedTo == TestData.activeUser && !it.isClosed}
-            .map{ TestCommonTask(
-                title = it.title,
-                assignee = it.assignedTo,
-                isClosed = it.isClosed
-            )}
+            val issue = project.issues
+                .filter { it.assignedTo == TestData.activeUser && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
+            totalTestCommonTasks += epics + stories + tasks + issue
+        }
+        totalTestCommonTasks.sortBy { it.title }
+        listCommonTasks.forEachIndexed { index, data ->
+            assertEquals(
+                expected = totalTestCommonTasks[index].title,
+                actual = data.title
+            )
+            assertEquals(
+                expected = totalTestCommonTasks[index].assignee?.fullName,
+                actual = data.assignee?.fullName
+            )
+            assertEquals(
+                expected = totalTestCommonTasks[index].isClosed,
+                actual = data.isClosed
+            )
+        }
+    }
 
-        val totalTestCommonTasks = (epics + stories + tasks + issue).sortedBy { it.title }
+    @Test
+    fun `test get watching`() = runBlocking {
+        val listCommonTasks = tasksRepository.getWatching().sortedBy { it.title }
+        val totalTestCommonTasks: MutableList<TestCommonTask> = mutableListOf()
 
+        TestData.projects.forEachIndexed { index, project ->
+            val epics = project.epics
+                .filter { TestData.activeUser in it.watchers && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
+
+            val stories = project.userstories
+                .filter {
+                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
+                            && !it.isClosed
+                }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
+
+            val tasks = getTestTasks(index)
+                .filter { TestData.activeUser in it.watchers && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
+
+            val issue = project.issues
+                .filter { TestData.activeUser in it.watchers && !it.isClosed }
+                .map {
+                    TestCommonTask(
+                        title = it.title,
+                        assignee = it.assignedTo,
+                        isClosed = it.isClosed
+                    )
+                }
+            totalTestCommonTasks += epics + stories + tasks + issue
+        }
+        totalTestCommonTasks.sortBy { it.title }
         listCommonTasks.forEachIndexed { index, data ->
             assertEquals(
                 expected = totalTestCommonTasks[index].title,

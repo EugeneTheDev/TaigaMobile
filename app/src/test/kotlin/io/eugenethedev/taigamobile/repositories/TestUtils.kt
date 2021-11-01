@@ -10,9 +10,9 @@ data class TestCommonTask(
     val isClosed: Boolean
 )
 
-fun getTestTasks() : List<Task> {
-    val fromSprints = TestData.projects[0].sprints.flatMap { it.tasks }
-    val fromUserStories = TestData.projects[0].userstories.flatMap { it.tasks }
+fun getTestTasks(projectId: Int): List<Task> {
+    val fromSprints = TestData.projects[projectId].sprints.flatMap { it.tasks }
+    val fromUserStories = TestData.projects[projectId].userstories.flatMap { it.tasks }
 
     return fromSprints + fromUserStories
 }
