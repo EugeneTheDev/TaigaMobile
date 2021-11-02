@@ -3,7 +3,6 @@ package io.eugenethedev.taigamobile.repositories
 import io.eugenethedev.taigamobile.data.repositories.TasksRepository
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
-import io.eugenethedev.taigamobile.domain.entities.StatusType
 import io.eugenethedev.taigamobile.domain.entities.UsersFilter
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.repositories.utils.TestCommonTask
@@ -163,6 +162,14 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         }
     }
 
+//    @Test
+//    fun `test get filter data`() = runBlocking {
+//        CommonTaskType.values().forEach { type ->
+//            val filter = tasksRepository.getFiltersData(type)
+//            println(filter)
+//        }
+//    }
+
     @Test
     fun `test get epics`() = runBlocking {
         val epics = tasksRepository.getEpics(1, FiltersData()).sortedBy { it.title }
@@ -223,6 +230,51 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
+    fun `test get all user stories`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories().sortedBy { it.title }
+        val testUsersStory = TestData.projects[0].userstories.sortedBy { it.title }
+
+        userStories.forEachIndexed { index, story ->
+            assertEquals(
+                expected = testUsersStory[index].title,
+                actual = story.title
+            )
+            assertEquals(
+                expected = testUsersStory[index].isClosed,
+                actual = story.isClosed
+            )
+        }
+    }
+
+    @Test
+    fun `test get backlog user stories`() = runBlocking {
+        val listUserStories = tasksRepository
+            .getBacklogUserStories(1, FiltersData())
+            .sortedBy { it.title }
+        val listTestUserStories = TestData.projects[0].userstories
+            .filter { it.sprint == null }
+
+        assertEquals(
+            expected = listTestUserStories.size,
+            actual = listUserStories.size
+        )
+        listUserStories.forEachIndexed { index, story ->
+            assertEquals(
+                expected = story.title,
+                actual = listTestUserStories[index].title
+            )
+            assertEquals(
+                expected = story.assignee?.fullName,
+                actual = listTestUserStories[index].assignedTo?.fullName
+            )
+            assertEquals(
+                expected = story.isClosed,
+                actual = listTestUserStories[index].isClosed
+            )
+        }
+    }
+
+    @Test
     fun `test get epic user stories`() = runBlocking {
         tasksRepository.getEpics(1, FiltersData()).forEach { epic ->
             val epicsUserStories = tasksRepository.getEpicUserStories(epic.id).sortedBy { it.title }
@@ -248,23 +300,6 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     actual = story.isClosed
                 )
             }
-        }
-    }
-
-    @Test
-    fun `test get all user stories`() = runBlocking {
-        val userStories = tasksRepository.getAllUserStories().sortedBy { it.title }
-        val testUsersStory = TestData.projects[0].userstories.sortedBy { it.title }
-
-        userStories.forEachIndexed { index, story ->
-            assertEquals(
-                expected = testUsersStory[index].title,
-                actual = story.title
-            )
-            assertEquals(
-                expected = testUsersStory[index].isClosed,
-                actual = story.isClosed
-            )
         }
     }
 }
