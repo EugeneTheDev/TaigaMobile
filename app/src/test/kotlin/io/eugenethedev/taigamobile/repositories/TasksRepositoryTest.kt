@@ -334,4 +334,29 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
         }
     }
+
+    @Test
+    fun `test get issues`() = runBlocking {
+        val issues = tasksRepository.getIssues(1, FiltersData()).sortedBy { it.title }
+        val testIssues = TestData.projects[0].issues.sortedBy { it.title }
+
+        assertEquals(
+            expected = testIssues.size,
+            actual = issues.size
+        )
+        issues.forEachIndexed { index, issue ->
+            assertEquals(
+                expected = testIssues[index].title,
+                actual = issue.title
+            )
+            assertEquals(
+                expected = testIssues[index].assignedTo?.fullName,
+                actual = issue.assignee?.fullName
+            )
+            assertEquals(
+                expected = testIssues[index].isClosed,
+                actual = issue.isClosed
+            )
+        }
+    }
 }
