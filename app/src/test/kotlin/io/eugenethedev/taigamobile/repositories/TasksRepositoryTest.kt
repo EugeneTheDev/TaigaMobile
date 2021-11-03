@@ -162,14 +162,6 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         }
     }
 
-//    @Test
-//    fun `test get filter data`() = runBlocking {
-//        CommonTaskType.values().forEach { type ->
-//            val filter = tasksRepository.getFiltersData(type)
-//            println(filter)
-//        }
-//    }
-
     @Test
     fun `test get epics`() = runBlocking {
         val epics = tasksRepository.getEpics(1, FiltersData()).sortedBy { it.title }
@@ -358,5 +350,39 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 actual = issue.isClosed
             )
         }
+    }
+
+    @Test
+    fun `test get common task`() = runBlocking {
+        val userStories = TestData.projects[0].userstories + TestData.projects[1].userstories
+        val tasks =
+            TestData.projects[0].sprints.flatMap { it.tasks } + TestData.projects[1].sprints.flatMap { it.tasks }
+        val epics = TestData.projects[0].epics + TestData.projects[1].epics
+        val issue = TestData.projects[0].issues + TestData.projects[1].issues
+        val dataForTest = hashMapOf(
+            CommonTaskType.UserStory to userStories,
+            CommonTaskType.Task to tasks,
+            CommonTaskType.Epic to epics,
+            CommonTaskType.Issue to issue
+        )
+
+        CommonTaskType.values().forEach { type ->
+            for (index in 1..dataForTest[type]?.size!!) {
+                val commonTaskExt = tasksRepository.getCommonTask(index.toLong(), type)
+                assertEquals(
+                    expected = dataForTest[type]?.get(index - 1)?.title,
+                    actual = commonTaskExt.title
+                )
+                assertEquals(
+                    expected = dataForTest[type]?.get(index - 1)?.isClosed,
+                    actual = commonTaskExt.isClosed
+                )
+                assertEquals(
+                    expected = dataForTest[type]?.get(index - 1)?.description,
+                    actual = commonTaskExt.description
+                )
+            }
+        }
+
     }
 }
