@@ -383,6 +383,38 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 )
             }
         }
+    }
 
+    @Test
+    fun `test get comments`() = runBlocking {
+        val userStories = TestData.projects[0].userstories + TestData.projects[1].userstories
+        val tasks =
+            TestData.projects[0].sprints.flatMap { it.tasks } + TestData.projects[1].sprints.flatMap { it.tasks }
+        val epics = TestData.projects[0].epics + TestData.projects[1].epics
+        val issue = TestData.projects[0].issues + TestData.projects[1].issues
+        val dataForTest = hashMapOf(
+            CommonTaskType.UserStory to userStories,
+            CommonTaskType.Task to tasks,
+            CommonTaskType.Epic to epics,
+            CommonTaskType.Issue to issue
+        )
+
+        CommonTaskType.values().forEach { type ->
+            for (index in 1..dataForTest[type]?.size!!) {
+                val comments = tasksRepository.getComments(index.toLong(), type)
+                val testComments = dataForTest[type]?.get(index - 1)?.comments
+
+                assertEquals(
+                    expected = testComments?.size,
+                    actual = comments.size
+                )
+                comments.forEachIndexed { ind, comment ->
+                    assertEquals(
+                        expected = testComments?.get(ind)?.text,
+                        actual = comment.text
+                    )
+                }
+            }
+        }
     }
 }
