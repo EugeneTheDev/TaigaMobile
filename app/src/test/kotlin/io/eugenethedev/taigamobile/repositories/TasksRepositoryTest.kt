@@ -1,9 +1,11 @@
 package io.eugenethedev.taigamobile.repositories
 
+import io.eugenethedev.taigamobile.data.repositories.SprintsRepository
 import io.eugenethedev.taigamobile.data.repositories.TasksRepository
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.domain.entities.UsersFilter
+import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.repositories.utils.TestCommonTask
 import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
@@ -16,10 +18,12 @@ import kotlin.test.assertEquals
 
 class TasksRepositoryTest : BaseRepositoryTest() {
     lateinit var tasksRepository: ITasksRepository
+    lateinit var sprintsRepository: ISprintsRepository
 
     @BeforeTest
     fun setupSprintsRepositoryTest() {
         tasksRepository = TasksRepository(mockTaigaApi, mockSession)
+        sprintsRepository = SprintsRepository(mockTaigaApi, mockSession)
     }
 
     @Test
@@ -433,7 +437,8 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 statuses[index % statuses.size].type,
                 commonTask.version
             )
-            val commonTaskAfterChange = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+            val commonTaskAfterChange =
+                tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
 
             assertEquals(
                 expected = commonTask.id,
@@ -450,6 +455,69 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             assertEquals(
                 expected = commonTask.version + 1,
                 actual = commonTaskAfterChange.version
+            )
+        }
+    }
+
+    @Test
+    fun `test change sprint`() = runBlocking {
+        val issues = tasksRepository.getIssues(1, FiltersData())
+        val userStories = tasksRepository.getAllUserStories()
+        val sprints = sprintsRepository.getSprints(1) + sprintsRepository.getSprints(1, true)
+
+        issues.forEachIndexed { index, issue ->
+            val commonTask = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+            tasksRepository.changeSprint(
+                commonTask.id,
+                commonTask.taskType,
+                sprints[index % sprints.size].id,
+                commonTask.version
+            )
+            val commonTaskAfterChange =
+                tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+
+            assertEquals(
+                expected = commonTask.id,
+                actual = commonTaskAfterChange.id
+            )
+            assertEquals(
+                expected = sprints[index % sprints.size].id,
+                actual = commonTaskAfterChange.sprint?.id
+            )
+            assertEquals(
+                expected = sprints[index % sprints.size].name,
+                actual = commonTaskAfterChange.sprint?.name
+            )
+            assertEquals(
+                expected = commonTask.version + 1,
+                actual = commonTaskAfterChange.version
+            )
+        }
+
+        userStories.forEachIndexed { index, story ->
+            tasksRepository.changeSprint(
+                story.id,
+                story.taskType,
+                sprints[index % sprints.size].id,
+                story.version
+            )
+            val storyAfterChange = tasksRepository.getCommonTask(story.id, CommonTaskType.UserStory)
+
+            assertEquals(
+                expected = story.id,
+                actual = storyAfterChange.id
+            )
+            assertEquals(
+                expected = sprints[index % sprints.size].id,
+                actual = storyAfterChange.sprint?.id
+            )
+            assertEquals(
+                expected = sprints[index % sprints.size].name,
+                actual = storyAfterChange.sprint?.name
+            )
+            assertEquals(
+                expected = story.version + 1,
+                actual = storyAfterChange.version
             )
         }
     }
