@@ -2,16 +2,19 @@ package io.eugenethedev.taigamobile.repositories
 
 import io.eugenethedev.taigamobile.data.repositories.SprintsRepository
 import io.eugenethedev.taigamobile.data.repositories.TasksRepository
+import io.eugenethedev.taigamobile.data.repositories.UsersRepository
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.domain.entities.UsersFilter
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
+import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.repositories.utils.TestCommonTask
 import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import kotlin.math.exp
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
@@ -19,11 +22,13 @@ import kotlin.test.assertEquals
 class TasksRepositoryTest : BaseRepositoryTest() {
     lateinit var tasksRepository: ITasksRepository
     lateinit var sprintsRepository: ISprintsRepository
+    lateinit var usersRepository: IUsersRepository
 
     @BeforeTest
     fun setupSprintsRepositoryTest() {
         tasksRepository = TasksRepository(mockTaigaApi, mockSession)
         sprintsRepository = SprintsRepository(mockTaigaApi, mockSession)
+        usersRepository = UsersRepository(mockTaigaApi, mockSession)
     }
 
     @Test
@@ -519,6 +524,50 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 expected = story.version + 1,
                 actual = storyAfterChange.version
             )
+        }
+    }
+
+    @Test
+    fun `test change assignees`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val users = usersRepository.getTeam()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Epic to tasksRepository.getEpics(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                },
+            CommonTaskType.UserStory to userStories
+        )
+
+        CommonTaskType.values().forEach { type ->
+            dataForTest[type]?.forEachIndexed { index, data ->
+                tasksRepository.changeAssignees(
+                    data.id,
+                    data.taskType,
+                    listOf(users[index % users.size].id),
+                    data.version
+                )
+                val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, type)
+
+                assertEquals(
+                    expected = data.id,
+                    actual = commonTaskAfterChange.id
+                )
+                assertEquals(
+                    expected = listOf(users[index % users.size].id),
+                    actual = commonTaskAfterChange.assignedIds
+                )
+                assertEquals(
+                    expected = data.version + 1,
+                    actual = commonTaskAfterChange.version
+                )
+            }
         }
     }
 }

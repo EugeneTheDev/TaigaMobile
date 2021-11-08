@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.repositories.utils
 
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.testdata.Task
 import io.eugenethedev.taigamobile.testdata.TestData
 import io.eugenethedev.taigamobile.testdata.User
