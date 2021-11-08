@@ -387,9 +387,10 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
     @Test
     fun `test get comments`() = runBlocking {
-        val userStories = TestData.projects[0].userstories + TestData.projects[1].userstories
-        val tasks =
-            TestData.projects[0].sprints.flatMap { it.tasks } + TestData.projects[1].sprints.flatMap { it.tasks }
+        val userStories = TestData.projects[0].userstories +
+                TestData.projects[1].userstories
+        val tasks = TestData.projects[0].sprints.flatMap { it.tasks } +
+                TestData.projects[1].sprints.flatMap { it.tasks }
         val epics = TestData.projects[0].epics + TestData.projects[1].epics
         val issue = TestData.projects[0].issues + TestData.projects[1].issues
         val dataForTest = hashMapOf(
@@ -415,6 +416,41 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     )
                 }
             }
+        }
+    }
+
+    @Test
+    fun `test change status`() = runBlocking {
+        val issues = tasksRepository.getIssues(1, FiltersData())
+        val statuses = tasksRepository.getStatuses(CommonTaskType.Issue)
+
+        issues.forEachIndexed { index, issue ->
+            val commonTask = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+            tasksRepository.changeStatus(
+                commonTask.id,
+                commonTask.taskType,
+                statuses[index % statuses.size].id,
+                statuses[index % statuses.size].type,
+                commonTask.version
+            )
+            val commonTaskAfterChange = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+
+            assertEquals(
+                expected = commonTask.id,
+                actual = commonTaskAfterChange.id
+            )
+            assertEquals(
+                expected = statuses[index % statuses.size].id,
+                actual = commonTaskAfterChange.status.id
+            )
+            assertEquals(
+                expected = statuses[index % statuses.size].type,
+                actual = commonTaskAfterChange.status.type
+            )
+            assertEquals(
+                expected = commonTask.version + 1,
+                actual = commonTaskAfterChange.version
+            )
         }
     }
 }
