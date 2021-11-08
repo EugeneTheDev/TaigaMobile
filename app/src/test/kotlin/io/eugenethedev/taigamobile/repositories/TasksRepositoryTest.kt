@@ -14,8 +14,10 @@ import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 
 class TasksRepositoryTest : BaseRepositoryTest() {
@@ -527,6 +529,47 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
+    fun `test link to epic`() = runBlocking {
+        val epics = tasksRepository.getEpics(1, FiltersData())
+        val userStories = tasksRepository.getAllUserStories()
+
+        epics.forEachIndexed { index, epic ->
+            tasksRepository.linkToEpic(epic.id, userStories[(index + 1) % userStories.size].id)
+            val userStoryLink = tasksRepository.getEpicUserStories(epic.id)
+                .find { it.id == userStories[(index + 1) % userStories.size].id }
+
+            assertEquals(
+                expected = userStories[(index + 1) % userStories.size].title,
+                actual = userStoryLink?.title
+            )
+            assertEquals(
+                expected = userStories[(index + 1) % userStories.size].isClosed,
+                actual = userStoryLink?.isClosed
+            )
+            assertEquals(
+                expected = userStories[(index + 1) % userStories.size].status,
+                actual = userStoryLink?.status
+            )
+        }
+    }
+
+    @Test
+    fun `test unlink to epic`() = runBlocking {
+        val epics = tasksRepository.getEpics(1, FiltersData())
+
+        epics.forEach { epic ->
+            tasksRepository.getEpicUserStories(epic.id).forEach { story ->
+                tasksRepository.unlinkFromEpic(epic.id, story.id)
+                val currentUserStories = tasksRepository.getEpicUserStories(epic.id)
+                assertTrue(
+                    story.id !in currentUserStories.map { it.id }
+                )
+            }
+        }
+    }
+
+
+    @Test
     fun `test change assignees`() = runBlocking {
         val userStories = tasksRepository.getAllUserStories()
         val users = usersRepository.getTeam()
@@ -552,7 +595,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     listOf(users[index % users.size].id),
                     data.version
                 )
-                val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, type)
+                val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
                 assertEquals(
                     expected = data.id,
@@ -596,7 +639,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     listOf(users[index % users.size].id),
                     data.version
                 )
-                val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, type)
+                val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
                 assertEquals(
                     expected = data.id,
@@ -611,6 +654,49 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     actual = commonTaskAfterChange.version
                 )
             }
+        }
+    }
+
+    @Test
+    fun `test change due date`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                },
+            CommonTaskType.UserStory to userStories
+        )
+
+
+        dataForTest.forEach {
+            it.value.forEach { data ->
+                val currentDate = LocalDate.now()
+                tasksRepository.changeDueDate(
+                    data.id,
+                    data.taskType,
+                    currentDate,
+                    data.version
+                )
+                val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
+
+                assertEquals(
+                    expected = data.id,
+                    actual = commonTaskAfterChange.id
+                )
+                assertEquals(
+                    expected = currentDate,
+                    actual = commonTaskAfterChange.dueDate
+                )
+                assertEquals(
+                    expected = data.version + 1,
+                    actual = commonTaskAfterChange.version
+                )
+            }
+
         }
     }
 }
