@@ -944,4 +944,34 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
         }
     }
+
+    @Test
+    fun `test change epic color`() = runBlocking {
+        val epics = tasksRepository.getEpics(1, FiltersData()).map {
+            tasksRepository.getCommonTask(it.id, it.taskType)
+        }
+        val colors = listOf("#108D32", "#C207BF", "#950A52", "#BD33EE")
+
+        epics.forEachIndexed { index, epic ->
+            tasksRepository.changeEpicColor(
+                epic.id,
+                colors[index % colors.size],
+                epic.version
+            )
+            val epicAfterChange = tasksRepository.getCommonTask(epic.id, CommonTaskType.Epic)
+
+            assertEquals(
+                expected = epic.id,
+                actual = epicAfterChange.id
+            )
+            assertEquals(
+                expected = colors[index % colors.size],
+                actual = epicAfterChange.color
+            )
+            assertEquals(
+                expected = epic.version + 1,
+                actual = epicAfterChange.version
+            )
+        }
+    }
 }
