@@ -14,7 +14,6 @@ import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.lang.Exception
 import java.time.LocalDate
 import kotlin.test.*
 
@@ -634,7 +633,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             dataForTest[type]?.forEachIndexed { index, data ->
                 tasksRepository.changeWatchers(
                     data.id,
-                    type,
+                    data.taskType,
                     listOf(users[index % users.size].id),
                     data.version
                 )
@@ -822,7 +821,8 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 statusId = if (statuses.isNotEmpty()) statuses[index % statuses.size].id else null,
                 swimlaneId = if (swimlanes.isNotEmpty()) swimlanes[index % swimlanes.size].id else null
             )
-            val extendedCommonTask = tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
+            val extendedCommonTask =
+                tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
 
             assertEquals(
                 expected = type,
@@ -862,6 +862,40 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 assertFailsWith<retrofit2.HttpException> {
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `test promote common task to userstory`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                }
+        )
+
+        dataForTest.forEach {
+            it.value.forEachIndexed { index, commonTask ->
+                val promotedCommonTask =
+                    tasksRepository.promoteCommonTaskToUserStory(commonTask.id, commonTask.taskType)
+
+                assertEquals(
+                    expected = CommonTaskType.UserStory,
+                    actual = promotedCommonTask.taskType
+                )
+                assertEquals(
+                    expected = commonTask.title,
+                    actual = promotedCommonTask.title
+                )
+                assertEquals(
+                    expected = commonTask.tags,
+                    actual = promotedCommonTask.tags
+                )
             }
         }
     }
