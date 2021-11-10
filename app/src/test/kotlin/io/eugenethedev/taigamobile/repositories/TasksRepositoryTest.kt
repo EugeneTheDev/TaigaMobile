@@ -17,6 +17,7 @@ import org.junit.Test
 import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
@@ -696,7 +697,39 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     actual = commonTaskAfterChange.version
                 )
             }
+        }
+    }
 
+    @Test
+    fun `test create comment`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Epic to tasksRepository.getEpics(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                },
+            CommonTaskType.UserStory to userStories
+        )
+
+        dataForTest.forEach {
+            it.value.forEachIndexed { index, data ->
+                tasksRepository.createComment(
+                    data.id,
+                    data.taskType,
+                    "Comment${index}",
+                    data.version
+                )
+                assertNotNull(
+                    tasksRepository.getComments(data.id, data.taskType)
+                        .find { it.text == "Comment${index}" }
+                )
+            }
         }
     }
 }
