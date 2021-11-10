@@ -14,11 +14,9 @@ import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import java.lang.Exception
 import java.time.LocalDate
-import kotlin.test.BeforeTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 
 class TasksRepositoryTest : BaseRepositoryTest() {
@@ -636,7 +634,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             dataForTest[type]?.forEachIndexed { index, data ->
                 tasksRepository.changeWatchers(
                     data.id,
-                    data.taskType,
+                    type,
                     listOf(users[index % users.size].id),
                     data.version
                 )
@@ -674,7 +672,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
 
         dataForTest.forEach {
-            it.value.forEach { data ->
+            it.value.forEachIndexed { index, data ->
                 val currentDate = LocalDate.now()
                 tasksRepository.changeDueDate(
                     data.id,
@@ -729,6 +727,141 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                     tasksRepository.getComments(data.id, data.taskType)
                         .find { it.text == "Comment${index}" }
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `test delete comment`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                }
+        )
+
+        dataForTest.forEach {
+            it.value.forEachIndexed { index, data ->
+                var comments = tasksRepository.getComments(data.id, data.taskType)
+                if (comments.isEmpty()) {
+                    tasksRepository.createComment(
+                        data.id,
+                        data.taskType,
+                        "Comment${index}",
+                        data.version
+                    )
+                    comments = tasksRepository.getComments(data.id, data.taskType)
+                }
+                comments.forEach { comment ->
+                    tasksRepository.deleteComment(data.id, data.taskType, comment.id)
+                    assertTrue {
+                        comment !in tasksRepository.getComments(data.id, data.taskType)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `test edit common task`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Epic to tasksRepository.getEpics(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                },
+            CommonTaskType.UserStory to userStories
+        )
+
+        dataForTest.forEach {
+            it.value.forEachIndexed { index, commonTask ->
+                tasksRepository.editCommonTask(
+                    commonTask.id,
+                    commonTask.taskType,
+                    "Title${index}",
+                    "Description${index}",
+                    commonTask.version
+                )
+
+                val taskAfterChange =
+                    tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
+                assertEquals(
+                    expected = "Title${index}",
+                    actual = taskAfterChange.title
+                )
+                assertEquals(
+                    expected = "Description${index}",
+                    actual = taskAfterChange.description
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `test create common task`() = runBlocking {
+        val sprints = sprintsRepository.getSprints(1)
+        val swimlanes = tasksRepository.getSwimlanes()
+        CommonTaskType.values().forEachIndexed { index, type ->
+            val statuses = tasksRepository.getStatuses(type)
+            val commonTask = tasksRepository.createCommonTask(
+                commonTaskType = type,
+                title = "Title${index}",
+                description = "Description${index}",
+                parentId = null,
+                sprintId = if (sprints.isNotEmpty()) sprints[index % sprints.size].id else null,
+                statusId = if (statuses.isNotEmpty()) statuses[index % statuses.size].id else null,
+                swimlaneId = if (swimlanes.isNotEmpty()) swimlanes[index % swimlanes.size].id else null
+            )
+            val extendedCommonTask = tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
+
+            assertEquals(
+                expected = type,
+                actual = extendedCommonTask.taskType
+            )
+            assertEquals(
+                expected = "Title${index}",
+                actual = extendedCommonTask.title
+            )
+            assertEquals(
+                expected = "Description${index}",
+                actual = extendedCommonTask.description
+            )
+        }
+    }
+
+    @Test
+    fun `test delete common task`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Epic to tasksRepository.getEpics(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                },
+            CommonTaskType.UserStory to userStories
+        )
+
+        dataForTest.forEach {
+            it.value.forEachIndexed { index, commonTask ->
+                tasksRepository.deleteCommonTask(commonTask.taskType, commonTask.id)
+                assertFailsWith<retrofit2.HttpException> {
+                    tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
+                }
             }
         }
     }
