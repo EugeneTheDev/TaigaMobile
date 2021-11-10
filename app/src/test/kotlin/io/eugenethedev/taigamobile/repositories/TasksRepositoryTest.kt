@@ -899,4 +899,49 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
         }
     }
+
+    @Test
+    fun `test edit tags`() = runBlocking {
+        val userStories = tasksRepository.getAllUserStories()
+        val dataForTest = hashMapOf(
+            CommonTaskType.Epic to tasksRepository.getEpics(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Issue to tasksRepository.getIssues(1, FiltersData()).map {
+                tasksRepository.getCommonTask(it.id, it.taskType)
+            },
+            CommonTaskType.Task to userStories.flatMap { tasksRepository.getUserStoryTasks(it.id) }
+                .map {
+                    tasksRepository.getCommonTask(it.id, it.taskType)
+                },
+            CommonTaskType.UserStory to userStories
+        )
+
+        dataForTest.forEach {
+            val tags = tasksRepository.getAllTags(it.key)
+            it.value.forEachIndexed { index, commonTask ->
+                tasksRepository.editTags(
+                    commonTask.taskType,
+                    commonTask.id,
+                    if (tags.isNotEmpty()) listOf(tags[index % tags.size]) else listOf(),
+                    commonTask.version
+                )
+                val commonTaskAfterChange =
+                    tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
+
+                assertEquals(
+                    expected = commonTask.id,
+                    actual = commonTaskAfterChange.id
+                )
+                assertEquals(
+                    expected = if (tags.isNotEmpty()) listOf(tags[index % tags.size]) else listOf(),
+                    actual = commonTaskAfterChange.tags,
+                )
+                assertEquals(
+                    expected = commonTask.version + 1,
+                    actual = commonTaskAfterChange.version
+                )
+            }
+        }
+    }
 }
