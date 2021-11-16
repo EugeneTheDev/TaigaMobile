@@ -5,7 +5,6 @@ import io.eugenethedev.taigamobile.data.repositories.TasksRepository
 import io.eugenethedev.taigamobile.data.repositories.UsersRepository
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
-import io.eugenethedev.taigamobile.domain.entities.UsersFilter
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
@@ -30,188 +29,132 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         usersRepository = UsersRepository(mockTaigaApi, mockSession)
     }
 
+    private fun testCommonTaskEquality(
+        expectedList: List<TestCommonTask>,
+        actualList: List<TestCommonTask>
+    ) {
+
+        assertEquals(
+            expected = expectedList.size,
+            actual = actualList.size
+        )
+        actualList.forEachIndexed { index, data ->
+            assertEquals(
+                expected = expectedList[index].title,
+                actual = data.title
+            )
+            assertEquals(
+                expected = expectedList[index].assigneeFullName,
+                actual = data.assigneeFullName
+            )
+            assertEquals(
+                expected = expectedList[index].isClosed,
+                actual = data.isClosed
+            )
+        }
+    }
+
     @Test
     fun `test get working on`() = runBlocking {
-        val listCommonTasks = tasksRepository.getWorkingOn().sortedBy { it.title }
-
+        val listCommonTasks = tasksRepository.getWorkingOn()
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = it.assignee?.fullName,
+                    isClosed = it.isClosed
+                )
+            }
+            .sortedBy { it.title }
         val totalTestCommonTasks = TestData.projects
             .flatMapIndexed { index, project -> project.epics + getTestTasks(index) + project.issues + project.userstories }
             .filter { it.assignedTo == TestData.activeUser && !it.isClosed }
             .map {
                 TestCommonTask(
                     title = it.title,
-                    assignee = it.assignedTo,
+                    assigneeFullName = it.assignedTo?.fullName,
                     isClosed = it.isClosed
                 )
             }
             .sortedBy { it.title }
 
-        listCommonTasks.forEachIndexed { index, data ->
-            assertEquals(
-                expected = totalTestCommonTasks[index].title,
-                actual = data.title
-            )
-            assertEquals(
-                expected = totalTestCommonTasks[index].assignee?.fullName,
-                actual = data.assignee?.fullName
-            )
-            assertEquals(
-                expected = totalTestCommonTasks[index].isClosed,
-                actual = data.isClosed
-            )
-        }
+        testCommonTaskEquality(totalTestCommonTasks, listCommonTasks)
     }
 
     @Test
     fun `test get watching`() = runBlocking {
-        val listCommonTasks = tasksRepository.getWatching().sortedBy { it.title }
-        val totalTestCommonTasks: MutableList<TestCommonTask> = mutableListOf()
+        val listCommonTasks = tasksRepository.getWatching()
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = it.assignee?.fullName,
+                    isClosed = it.isClosed
+                )
+            }
+            .sortedBy { it.title }
+        val totalTestCommonTasks = TestData.projects
+            .flatMapIndexed { index, project -> project.epics + getTestTasks(index) + project.issues + project.userstories }
+            .filter { commonTask ->
+                (TestData.activeUser in commonTask.watchers || TestData.activeUser in commonTask.comments.map { it.author })
+                        && !commonTask.isClosed
+            }
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = it.assignedTo?.fullName,
+                    isClosed = it.isClosed
+                )
+            }
+            .sortedBy { it.title }
 
-        TestData.projects.forEachIndexed { index, project ->
-            val epics = project.epics
-                .filter {
-                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
-                            && !it.isClosed
-                }
-                .map {
-                    TestCommonTask(
-                        title = it.title,
-                        assignee = it.assignedTo,
-                        isClosed = it.isClosed
-                    )
-                }
-
-            val stories = project.userstories
-                .filter {
-                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
-                            && !it.isClosed
-                }
-                .map {
-                    TestCommonTask(
-                        title = it.title,
-                        assignee = it.assignedTo,
-                        isClosed = it.isClosed
-                    )
-                }
-
-            val tasks = getTestTasks(index)
-                .filter {
-                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
-                            && !it.isClosed
-                }
-                .map {
-                    TestCommonTask(
-                        title = it.title,
-                        assignee = it.assignedTo,
-                        isClosed = it.isClosed
-                    )
-                }
-
-            val issue = project.issues
-                .filter {
-                    (TestData.activeUser in it.watchers || TestData.activeUser in it.comments.map { it.author })
-                            && !it.isClosed
-                }
-                .map {
-                    TestCommonTask(
-                        title = it.title,
-                        assignee = it.assignedTo,
-                        isClosed = it.isClosed
-                    )
-                }
-            totalTestCommonTasks += epics + stories + tasks + issue
-        }
-        totalTestCommonTasks.sortBy { it.title }
-        listCommonTasks.forEachIndexed { index, data ->
-            assertEquals(
-                expected = totalTestCommonTasks[index].title,
-                actual = data.title
-            )
-            assertEquals(
-                expected = totalTestCommonTasks[index].assignee?.fullName,
-                actual = data.assignee?.fullName
-            )
-            assertEquals(
-                expected = totalTestCommonTasks[index].isClosed,
-                actual = data.isClosed
-            )
-        }
+        testCommonTaskEquality(totalTestCommonTasks, listCommonTasks)
     }
 
     @Test
     fun `test get epics`() = runBlocking {
-        val epics = tasksRepository.getEpics(1, FiltersData()).sortedBy { it.title }
-        val testEpics = TestData.projects[0].epics.sortedBy { it.title }
-        val epicsWithFilter = tasksRepository.getEpics(
-            page = 1,
-            filters = FiltersData(
-                createdBy = listOf(
-                    UsersFilter(
-                        id = 0,
-                        name = activeUser.user.fullName,
-                        count = 0
-                    )
+        val epics = tasksRepository.getEpics(1, FiltersData())
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = it.assignee?.fullName,
+                    isClosed = it.isClosed
                 )
-            )
-        ).sortedBy { it.title }
-        val testEpicsWithFilter = TestData.projects[0].epics
-            .filter { it.creator.fullName == activeUser.user.fullName }
+            }
+            .sortedBy { it.title }
+        val testEpics = TestData.projects[0].epics
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = it.assignedTo?.fullName,
+                    isClosed = it.isClosed
+                )
+            }
             .sortedBy { it.title }
 
-        assertEquals(
-            expected = epics.size,
-            actual = testEpics.size
-        )
-        testEpics.forEachIndexed() { index, testEpic ->
-            assertEquals(
-                expected = testEpic.title,
-                actual = epics[index].title
-            )
-            assertEquals(
-                expected = testEpic.assignedTo?.fullName,
-                actual = epics[index].assignee?.fullName
-            )
-            assertEquals(
-                expected = testEpic.isClosed,
-                actual = epics[index].isClosed
-            )
-        }
-
-        assertEquals(
-            expected = epicsWithFilter.size,
-            actual = testEpicsWithFilter.size
-        )
-        testEpicsWithFilter.forEachIndexed() { index, testEpic ->
-            assertEquals(
-                expected = testEpic.title,
-                actual = epicsWithFilter[index].title
-            )
-            assertEquals(
-                expected = testEpic.assignedTo?.fullName,
-                actual = epicsWithFilter[index].assignee?.fullName
-            )
-            assertEquals(
-                expected = testEpic.isClosed,
-                actual = epicsWithFilter[index].isClosed
-            )
-        }
+        testCommonTaskEquality(testEpics, epics)
     }
 
     @Test
     fun `test get all user stories`() = runBlocking {
-        val userStories = tasksRepository.getAllUserStories().sortedBy { it.title }
-        val testUsersStory = TestData.projects[0].userstories.sortedBy { it.title }
+        val userStories = tasksRepository.getAllUserStories()
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = null,
+                    isClosed = it.isClosed
+                )
+            }
+            .sortedBy { it.title }
+        val testUsersStory = TestData.projects[0].userstories
+            .map {
+                TestCommonTask(
+                    title = it.title,
+                    assigneeFullName = null,
+                    isClosed = it.isClosed
+                )
+            }
+            .sortedBy { it.title }
 
-        userStories.forEachIndexed { index, story ->
-            assertEquals(
-                expected = testUsersStory[index].title,
-                actual = story.title
-            )
-            assertEquals(
-                expected = testUsersStory[index].isClosed,
-                actual = story.isClosed
-            )
-        }
+        testCommonTaskEquality(testUsersStory, userStories)
     }
 
     @Test
@@ -284,18 +227,18 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 expected = testTask?.size,
                 actual = tasks.size
             )
-            if (testTask != null) {
+            testTask?.let { testData ->
                 tasks.forEachIndexed { index, task ->
                     assertEquals(
-                        expected = testTask[index].title,
+                        expected = testData[index].title,
                         actual = task.title
                     )
                     assertEquals(
-                        expected = testTask[index].assignedTo?.fullName,
+                        expected = testData[index].assignedTo?.fullName,
                         actual = task.assignee?.fullName
                     )
                     assertEquals(
-                        expected = testTask[index].isClosed,
+                        expected = testData[index].isClosed,
                         actual = task.isClosed
                     )
                 }
