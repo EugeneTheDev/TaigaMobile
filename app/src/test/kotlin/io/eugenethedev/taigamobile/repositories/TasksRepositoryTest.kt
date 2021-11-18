@@ -30,7 +30,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         usersRepository = UsersRepository(mockTaigaApi, mockSession)
     }
 
-    private fun testCommonTaskEquality(
+    private fun checkCommonTasksEquality(
         expectedList: List<TestCommonTask>,
         actualList: List<TestCommonTask>
     ) {
@@ -55,7 +55,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         }
     }
 
-    private fun testCommonTaskExtEquality(
+    private fun checkCommonTaskExtendedEquality(
         expectedTask: CommonTaskExtended,
         actualTask: CommonTaskExtended
     ) {
@@ -128,7 +128,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
             .sortedBy { it.title }
 
-        testCommonTaskEquality(totalTestCommonTasks, listCommonTasks)
+        checkCommonTasksEquality(totalTestCommonTasks, listCommonTasks)
     }
 
     @Test
@@ -157,7 +157,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
             .sortedBy { it.title }
 
-        testCommonTaskEquality(totalTestCommonTasks, listCommonTasks)
+        checkCommonTasksEquality(totalTestCommonTasks, listCommonTasks)
     }
 
     @Test
@@ -181,7 +181,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
             .sortedBy { it.title }
 
-        testCommonTaskEquality(testEpics, epics)
+        checkCommonTasksEquality(testEpics, epics)
     }
 
     @Test
@@ -205,7 +205,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
             .sortedBy { it.title }
 
-        testCommonTaskEquality(testUsersStory, userStories)
+        checkCommonTasksEquality(testUsersStory, userStories)
     }
 
     @Test
@@ -231,7 +231,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
             .sortedBy { it.title }
 
-        testCommonTaskEquality(listTestUserStories, listUserStories)
+        checkCommonTasksEquality(listTestUserStories, listUserStories)
     }
 
     @Test
@@ -257,7 +257,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 }
                 .sortedBy { it.title }
 
-            testCommonTaskEquality(testEpicsUserStories, epicsUserStories)
+            checkCommonTasksEquality(testEpicsUserStories, epicsUserStories)
         }
     }
 
@@ -286,7 +286,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 ?.sortedBy { it.title }
 
             testTask?.let {
-                testCommonTaskEquality(it, tasks)
+                checkCommonTasksEquality(it, tasks)
             }
         }
     }
@@ -312,7 +312,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             }
             .sortedBy { it.title }
 
-        testCommonTaskEquality(testIssues, issues)
+        checkCommonTasksEquality(testIssues, issues)
     }
 
     @Test
@@ -330,7 +330,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         CommonTaskType.values().forEach { type ->
-            for ((index, task) in dataForTest[type]?.withIndex()!!) {
+            dataForTest[type]!!.forEachIndexed { index, task ->
                 val commonTaskExt = tasksRepository.getCommonTask(index.toLong() + 1, type)
                 assertEquals(
                     expected = task.title,
@@ -363,7 +363,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         CommonTaskType.values().forEach { type ->
-            for ((index, task) in dataForTest[type]?.withIndex()!!) {
+            dataForTest[type]!!.forEachIndexed { index, task ->
                 val comments = tasksRepository.getComments(index.toLong() + 1, type)
                 val testComments = task.comments
 
@@ -388,23 +388,24 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         issues.forEachIndexed { index, issue ->
             val commonTask = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+            val status = statuses[index % statuses.size]
             tasksRepository.changeStatus(
                 commonTask.id,
                 commonTask.taskType,
-                statuses[index % statuses.size].id,
-                statuses[index % statuses.size].type,
+                status.id,
+                status.type,
                 commonTask.version
             )
             val commonTaskAfterChange =
                 tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
 
-            testCommonTaskExtEquality(commonTask, commonTaskAfterChange)
+            checkCommonTaskExtendedEquality(commonTask, commonTaskAfterChange)
             assertEquals(
-                expected = statuses[index % statuses.size].id,
+                expected = status.id,
                 actual = commonTaskAfterChange.status.id
             )
             assertEquals(
-                expected = statuses[index % statuses.size].type,
+                expected = status.type,
                 actual = commonTaskAfterChange.status.type
             )
         }
@@ -418,42 +419,44 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         issues.forEachIndexed { index, issue ->
             val commonTask = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
+            val sprint = sprints[index % sprints.size]
             tasksRepository.changeSprint(
                 commonTask.id,
                 commonTask.taskType,
-                sprints[index % sprints.size].id,
+                sprint.id,
                 commonTask.version
             )
             val commonTaskAfterChange =
                 tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
 
-            testCommonTaskExtEquality(commonTask, commonTaskAfterChange)
+            checkCommonTaskExtendedEquality(commonTask, commonTaskAfterChange)
             assertEquals(
-                expected = sprints[index % sprints.size].id,
+                expected = sprint.id,
                 actual = commonTaskAfterChange.sprint?.id
             )
             assertEquals(
-                expected = sprints[index % sprints.size].name,
+                expected = sprint.name,
                 actual = commonTaskAfterChange.sprint?.name
             )
         }
 
         userStories.forEachIndexed { index, story ->
+            val sprint = sprints[index % sprints.size]
             tasksRepository.changeSprint(
                 story.id,
                 story.taskType,
-                sprints[index % sprints.size].id,
+                sprint.id,
                 story.version
             )
             val storyAfterChange = tasksRepository.getCommonTask(story.id, CommonTaskType.UserStory)
 
-            testCommonTaskExtEquality(story, storyAfterChange)
+            checkCommonTaskExtendedEquality(story, storyAfterChange)
             assertEquals(
-                expected = sprints[index % sprints.size].id,
+                expected = sprint.id,
                 actual = storyAfterChange.sprint?.id
             )
             assertEquals(
-                expected = sprints[index % sprints.size].name,
+                expected = sprint.name,
                 actual = storyAfterChange.sprint?.name
             )
         }
@@ -468,17 +471,18 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             tasksRepository.linkToEpic(epic.id, userStories[(index + 1) % userStories.size].id)
             val userStoryLink = tasksRepository.getEpicUserStories(epic.id)
                 .find { it.id == userStories[(index + 1) % userStories.size].id }
+            val userStory = userStories[(index + 1) % userStories.size]
 
             assertEquals(
-                expected = userStories[(index + 1) % userStories.size].title,
+                expected = userStory.title,
                 actual = userStoryLink?.title
             )
             assertEquals(
-                expected = userStories[(index + 1) % userStories.size].isClosed,
+                expected = userStory.isClosed,
                 actual = userStoryLink?.isClosed
             )
             assertEquals(
-                expected = userStories[(index + 1) % userStories.size].status,
+                expected = userStory.status,
                 actual = userStoryLink?.status
             )
         }
@@ -513,18 +517,19 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         CommonTaskType.values().forEach { type ->
-            dataForTest[type]?.forEachIndexed { index, data ->
+            dataForTest[type]!!.forEachIndexed { index, data ->
+                val assigneeUsers = listOf(users[index % users.size].id)
                 tasksRepository.changeAssignees(
                     data.id,
                     data.taskType,
-                    listOf(users[index % users.size].id),
+                    assigneeUsers,
                     data.version
                 )
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
-                testCommonTaskExtEquality(data, commonTaskAfterChange)
+                checkCommonTaskExtendedEquality(data, commonTaskAfterChange)
                 assertEquals(
-                    expected = listOf(users[index % users.size].id),
+                    expected = assigneeUsers,
                     actual = commonTaskAfterChange.assignedIds
                 )
             }
@@ -544,18 +549,19 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         CommonTaskType.values().forEach { type ->
-            dataForTest[type]?.forEachIndexed { index, data ->
+            dataForTest[type]!!.forEachIndexed { index, data ->
+                val watchers = listOf(users[index % users.size].id)
                 tasksRepository.changeWatchers(
                     data.id,
                     data.taskType,
-                    listOf(users[index % users.size].id),
+                    watchers,
                     data.version
                 )
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
-                testCommonTaskExtEquality(data, commonTaskAfterChange)
+                checkCommonTaskExtendedEquality(data, commonTaskAfterChange)
                 assertEquals(
-                    expected = listOf(users[index % users.size].id),
+                    expected = watchers,
                     actual = commonTaskAfterChange.watcherIds
                 )
             }
@@ -583,7 +589,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 )
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
-                testCommonTaskExtEquality(data, commonTaskAfterChange)
+                checkCommonTaskExtendedEquality(data, commonTaskAfterChange)
                 assertEquals(
                     expected = currentDate,
                     actual = commonTaskAfterChange.dueDate
@@ -605,15 +611,16 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         dataForTest.forEach {
             it.value.forEachIndexed { index, data ->
+                val comment = "Comment${index}"
                 tasksRepository.createComment(
                     data.id,
                     data.taskType,
-                    "Comment${index}",
+                    comment,
                     data.version
                 )
                 assertNotNull(
                     tasksRepository.getComments(data.id, data.taskType)
-                        .find { it.text == "Comment${index}" }
+                        .find { it.text == comment }
                 )
             }
         }
@@ -663,22 +670,24 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         dataForTest.forEach {
             it.value.forEachIndexed { index, commonTask ->
+                val title = "Title${index}"
+                val description = "Description${index}"
                 tasksRepository.editCommonTask(
                     commonTask.id,
                     commonTask.taskType,
-                    "Title${index}",
-                    "Description${index}",
+                    title,
+                    description,
                     commonTask.version
                 )
 
                 val taskAfterChange =
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
                 assertEquals(
-                    expected = "Title${index}",
+                    expected = title,
                     actual = taskAfterChange.title
                 )
                 assertEquals(
-                    expected = "Description${index}",
+                    expected = description,
                     actual = taskAfterChange.description
                 )
             }
@@ -691,10 +700,12 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         val swimlanes = tasksRepository.getSwimlanes()
         CommonTaskType.values().forEachIndexed { index, type ->
             val statuses = tasksRepository.getStatuses(type)
+            val title = "Title${index}"
+            val description = "Description${index}"
             val commonTask = tasksRepository.createCommonTask(
                 commonTaskType = type,
-                title = "Title${index}",
-                description = "Description${index}",
+                title = title,
+                description = description,
                 parentId = null,
                 sprintId = if (sprints.isNotEmpty()) sprints[index % sprints.size].id else null,
                 statusId = if (statuses.isNotEmpty()) statuses[index % statuses.size].id else null,
@@ -708,11 +719,11 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 actual = extendedCommonTask.taskType
             )
             assertEquals(
-                expected = "Title${index}",
+                expected = title,
                 actual = extendedCommonTask.title
             )
             assertEquals(
-                expected = "Description${index}",
+                expected = description,
                 actual = extendedCommonTask.description
             )
         }
@@ -783,18 +794,20 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         dataForTest.forEach {
             val tags = tasksRepository.getAllTags(it.key)
             it.value.forEachIndexed { index, commonTask ->
+                val currentTags =
+                    if (tags.isNotEmpty()) listOf(tags[index % tags.size]) else listOf()
                 tasksRepository.editTags(
                     commonTask.taskType,
                     commonTask.id,
-                    if (tags.isNotEmpty()) listOf(tags[index % tags.size]) else listOf(),
+                    currentTags,
                     commonTask.version
                 )
                 val commonTaskAfterChange =
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
 
-                testCommonTaskExtEquality(commonTask, commonTaskAfterChange)
+                checkCommonTaskExtendedEquality(commonTask, commonTaskAfterChange)
                 assertEquals(
-                    expected = if (tags.isNotEmpty()) listOf(tags[index % tags.size]) else listOf(),
+                    expected = currentTags,
                     actual = commonTaskAfterChange.tags,
                 )
             }
@@ -809,16 +822,17 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         val colors = listOf("#108D32", "#C207BF", "#950A52", "#BD33EE")
 
         epics.forEachIndexed { index, epic ->
+            val color = colors[index % colors.size]
             tasksRepository.changeEpicColor(
                 epic.id,
-                colors[index % colors.size],
+                color,
                 epic.version
             )
             val epicAfterChange = tasksRepository.getCommonTask(epic.id, CommonTaskType.Epic)
 
-            testCommonTaskExtEquality(epic, epicAfterChange)
+            checkCommonTaskExtendedEquality(epic, epicAfterChange)
             assertEquals(
-                expected = colors[index % colors.size],
+                expected = color,
                 actual = epicAfterChange.color
             )
         }
