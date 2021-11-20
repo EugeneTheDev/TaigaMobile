@@ -178,6 +178,9 @@ dependencies {
     // since we need to connect to test db instance
     testRuntimeOnly("org.postgresql:postgresql:42.3.1")
     androidTestRuntimeOnly("org.postgresql:postgresql:42.3.1")
+
+    // MockK
+    testImplementation("io.mockk:mockk:1.12.1")
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {

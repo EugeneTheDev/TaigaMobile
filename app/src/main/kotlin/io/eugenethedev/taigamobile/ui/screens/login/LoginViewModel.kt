@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.AuthType
 import io.eugenethedev.taigamobile.domain.repositories.IAuthRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
@@ -11,13 +12,13 @@ import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var authRepository: IAuthRepository
 
     val loginResult = MutableResultFlow<Unit>()
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
     fun login(taigaServer: String, authType: AuthType, username: String, password: String) = viewModelScope.launch {
