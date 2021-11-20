@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -14,6 +13,7 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.color.ARGBPickerState
 import com.vanpra.composematerialdialogs.color.ColorPalette
 import com.vanpra.composematerialdialogs.color.colorChooser
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
@@ -28,9 +28,10 @@ fun ColorPicker(
     color: Color,
     onColorPicked: (Color) -> Unit = {}
 ) {
-    val dialog = remember { MaterialDialog() }
+    val dialogState = rememberMaterialDialogState()
 
-    dialog.build(
+    MaterialDialog(
+        dialogState = dialogState,
         buttons = {
             positiveButton(res = R.string.ok)
             negativeButton(res = R.string.cancel)
@@ -48,6 +49,6 @@ fun ColorPicker(
     Spacer(
         Modifier.size(size)
             .background(color = color, shape = MaterialTheme.shapes.medium)
-            .clickableUnindicated { dialog.show() }
+            .clickableUnindicated { dialogState.show() }
     )
 }

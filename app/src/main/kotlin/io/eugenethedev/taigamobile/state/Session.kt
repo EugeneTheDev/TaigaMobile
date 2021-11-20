@@ -69,7 +69,6 @@ class Session(context: Context) {
         .stateIn(scope, SharingStarted.Eagerly, initialValue = checkProjectSelected(currentProjectId.value))
 
     fun reset() {
-        scope.launch {  }
         changeAuthCredentials("", "")
         changeServer("")
         changeCurrentUserId(-1)

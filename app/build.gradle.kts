@@ -7,7 +7,7 @@ plugins {
     kotlin("kapt")
 }
 
-val composeVersion = "1.0.3"
+val composeVersion = "1.0.5"
 
 android {
     compileSdk = 31
@@ -97,7 +97,7 @@ dependencies {
 
     implementation(kotlin("reflect"))
 
-    implementation("androidx.core:core-ktx:1.6.0")
+    implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
 
@@ -107,9 +107,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
-    implementation("androidx.activity:activity-compose:1.3.1")
+    implementation("androidx.activity:activity-compose:1.4.0")
     // view model support
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-rc01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     // compose constraint layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01")
 
@@ -125,10 +125,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
 
     // Paging (with Compose)
-    implementation("androidx.paging:paging-compose:1.0.0-alpha13")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha14")
 
     // Coroutines
     val coroutinesVersion = "1.5.2-native-mt"
@@ -147,7 +147,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Dagger 2
-    val daggerVersion = "2.38.1"
+    val daggerVersion = "2.40.1"
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -161,7 +161,7 @@ dependencies {
     implementation("io.noties.markwon:image-coil:$markwonVersion")
 
     // Compose material dialogs (color picker)
-    implementation("io.github.vanpra.compose-material-dialogs:color:0.5.1")
+    implementation("io.github.vanpra.compose-material-dialogs:color:0.6.1")
 
     /**
      * Test frameworks
@@ -169,15 +169,15 @@ dependencies {
     allTestsImplementation(kotlin("test-junit"))
 
     // Robolectric (run android tests on local host)
-    testImplementation("org.robolectric:robolectric:4.6.1")
+    testRuntimeOnly("org.robolectric:robolectric:4.7.1")
 
     allTestsImplementation("androidx.test:core-ktx:1.4.0")
     allTestsImplementation("androidx.test:runner:1.4.0")
     allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
 
     // since we need to connect to test db instance
-    testRuntimeOnly("org.postgresql:postgresql:42.2.23")
-    androidTestRuntimeOnly("org.postgresql:postgresql:42.2.23")
+    testRuntimeOnly("org.postgresql:postgresql:42.3.1")
+    androidTestRuntimeOnly("org.postgresql:postgresql:42.3.1")
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {
