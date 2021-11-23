@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
-class ScrumViewModel : ViewModel() {
+class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var session: Session
@@ -32,7 +33,7 @@ class ScrumViewModel : ViewModel() {
     private var shouldReload = true
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
     fun onOpen() {

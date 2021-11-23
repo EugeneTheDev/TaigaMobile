@@ -42,7 +42,7 @@ fun TeamScreen(
 ) {
     val viewModel: TeamViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.start()
+        viewModel.onOpen()
     }
 
     val projectName by viewModel.projectName.collectAsState()

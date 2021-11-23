@@ -4,9 +4,10 @@ import androidx.lifecycle.*
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.state.Settings
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+class MainViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var settings: Settings
 
@@ -16,6 +17,6 @@ class MainViewModel : ViewModel() {
     val theme by lazy { settings.themeSetting }
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 }

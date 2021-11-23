@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.Sprint
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
-class SprintViewModel : ViewModel() {
+class SprintViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var session: Session
@@ -40,7 +41,7 @@ class SprintViewModel : ViewModel() {
     private var shouldReload = true
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
     fun onOpen(sprintId: Long) {

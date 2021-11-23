@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TeamViewModel : ViewModel() {
+class TeamViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var usersRepository: IUsersRepository
     @Inject lateinit var session: Session
 
@@ -24,10 +25,10 @@ class TeamViewModel : ViewModel() {
     private var shouldReload = true
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
-    fun start() {
+    fun onOpen() {
         if (!shouldReload) return
         viewModelScope.launch {
             team.loadOrError { usersRepository.getTeam() }

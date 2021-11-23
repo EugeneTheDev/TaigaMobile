@@ -6,6 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
@@ -21,7 +22,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class EpicsViewModel : ViewModel() {
+class EpicsViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var tasksRepository: ITasksRepository
 
@@ -30,7 +31,7 @@ class EpicsViewModel : ViewModel() {
     private var shouldReload = true
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
     fun onOpen() {

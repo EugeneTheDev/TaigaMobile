@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.*
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
 import io.eugenethedev.taigamobile.state.*
@@ -11,7 +12,7 @@ import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SettingsViewModel : ViewModel() {
+class SettingsViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var settings: Settings
     @Inject lateinit var userRepository: IUsersRepository
@@ -22,7 +23,7 @@ class SettingsViewModel : ViewModel() {
     val themeSetting by lazy { settings.themeSetting }
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
     fun onOpen() = viewModelScope.launch {

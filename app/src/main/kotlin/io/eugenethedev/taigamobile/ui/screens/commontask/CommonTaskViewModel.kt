@@ -8,6 +8,7 @@ import androidx.paging.insertHeaderItem
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
@@ -21,7 +22,7 @@ import java.io.InputStream
 import java.time.LocalDate
 import javax.inject.Inject
 
-class CommonTaskViewModel : ViewModel() {
+class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject lateinit var session: Session
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var usersRepository: IUsersRepository
@@ -57,7 +58,7 @@ class CommonTaskViewModel : ViewModel() {
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
 
     init {
-        TaigaApp.appComponent.inject(this)
+        appComponent.inject(this)
     }
 
     fun onOpen(commonTaskId: Long, commonTaskType: CommonTaskType) {
