@@ -5,7 +5,7 @@ import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
 import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.viewmodels.utils.assertResultEquals
-import io.eugenethedev.taigamobile.viewmodels.utils.badInternetException
+import io.eugenethedev.taigamobile.viewmodels.utils.notFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -41,11 +41,11 @@ class KanbanViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test on open error result`(): Unit = runBlocking {
-        coEvery { mockTaskRepository.getStatuses(any()) } throws badInternetException
-        coEvery { mockUsersRepository.getTeam() } throws badInternetException
-        coEvery { mockTaskRepository.getAllUserStories() } throws badInternetException
-        coEvery { mockTaskRepository.getSwimlanes() } throws badInternetException
+    fun `test on open error`(): Unit = runBlocking {
+        coEvery { mockTaskRepository.getStatuses(any()) } throws notFoundException
+        coEvery { mockUsersRepository.getTeam() } throws notFoundException
+        coEvery { mockTaskRepository.getAllUserStories() } throws notFoundException
+        coEvery { mockTaskRepository.getSwimlanes() } throws notFoundException
         viewModel.onOpen()
 
         assertIs<ErrorResult<List<Status>>>(viewModel.statuses.value)
