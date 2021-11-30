@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 
 
 val accessDeniedException = HttpException(Response.error<String>(403, "".toResponseBody(null)))
+val badInternetException = HttpException(Response.error<String>(404, "".toResponseBody(null)))
 
 fun User.toTeamMember(id: Long, name: String, role: String, totalPower: Int) = TeamMember(
     id = id,
