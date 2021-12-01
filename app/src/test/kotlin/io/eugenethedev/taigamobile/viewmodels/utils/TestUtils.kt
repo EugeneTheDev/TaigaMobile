@@ -17,6 +17,7 @@ import kotlin.test.assertFails
 
 val accessDeniedException = HttpException(Response.error<String>(403, "".toResponseBody(null)))
 val notFoundException = HttpException(Response.error<String>(404, "".toResponseBody(null)))
+val createDeniedException = HttpException(Response.error<String>(405, "".toResponseBody(null)))
 
 fun <T> assertResultEquals(expected: Result<T>, actual: Result<T>) {
     assertEquals(expected::class, actual::class)
