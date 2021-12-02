@@ -72,7 +72,7 @@ class ScrumViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test open sprints list`() = runBlocking {
+    fun `test open sprints list`(): Unit = runBlocking {
         testLazyPagingItems(viewModel.openSprints) {
             mockSprintsRepository.getSprints(
                 any(),
@@ -82,7 +82,7 @@ class ScrumViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test closed sprints list`() = runBlocking {
+    fun `test closed sprints list`(): Unit = runBlocking {
         testLazyPagingItems(viewModel.closedSprints) {
             mockSprintsRepository.getSprints(
                 any(),
@@ -92,7 +92,7 @@ class ScrumViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test stories list with filters`() = runBlocking {
+    fun `test stories list with filters`(): Unit = runBlocking {
         val query = "query"
         testLazyPagingItems(viewModel.stories) {
             mockTaskRepository.getBacklogUserStories(
@@ -109,6 +109,5 @@ class ScrumViewModelTest : BaseViewModelTest() {
                 )
             )
         }
-
     }
 }
