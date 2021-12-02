@@ -7,6 +7,7 @@ import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.viewmodels.utils.assertResultEquals
 import io.eugenethedev.taigamobile.viewmodels.utils.createDeniedException
 import io.eugenethedev.taigamobile.viewmodels.utils.notFoundException
+import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -68,6 +69,46 @@ class ScrumViewModelTest : BaseViewModelTest() {
 
         viewModel.createSprint(testName + "wrong", startLocalDate, endLocalDate)
         assertIs<ErrorResult<Unit>>(viewModel.createSprintResult.value)
+    }
+
+    @Test
+    fun `test open sprints list`() = runBlocking {
+        testLazyPagingItems(viewModel.openSprints) {
+            mockSprintsRepository.getSprints(
+                any(),
+                eq(false)
+            )
+        }
+    }
+
+    @Test
+    fun `test closed sprints list`() = runBlocking {
+        testLazyPagingItems(viewModel.closedSprints) {
+            mockSprintsRepository.getSprints(
+                any(),
+                eq(true)
+            )
+        }
+    }
+
+    @Test
+    fun `test stories list with filters`() = runBlocking {
+        val query = "query"
+        testLazyPagingItems(viewModel.stories) {
+            mockTaskRepository.getBacklogUserStories(
+                any(), eq(
+                    FiltersData()
+                )
+            )
+        }
+        viewModel.selectFilters(FiltersData(query = query))
+        testLazyPagingItems(viewModel.stories) {
+            mockTaskRepository.getBacklogUserStories(
+                any(), eq(
+                    FiltersData(query = query)
+                )
+            )
+        }
 
     }
 }
