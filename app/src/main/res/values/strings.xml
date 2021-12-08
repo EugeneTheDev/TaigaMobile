@@ -9,7 +9,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
-    <string name="common_error_message">An error was occurred. Check your connection</string>
+    <string name="common_error_message">An error has occurred. Check your connection</string>
     <string name="permission_error">Error, you may not have sufficient permissions</string>
 
     <string name="nothing_to_see">Nothing to see here</string>
@@ -22,7 +22,7 @@
     <string name="login_error_message">Error during login. Check credentials or connection</string>
 
     <string name="login_alert_title">Unencrypted connection</string>
-    <string name="login_alert_text">You are going to use unencrypted connection. Are you sure?</string>
+    <string name="login_alert_text">You are going to use an unencrypted connection. Are you sure?</string>
 
     <string name="dashboard">Dashboard</string>
     <string name="dashboard_short">Board</string>
@@ -85,7 +85,7 @@
     <string name="comments_template">%d Comments</string>
     <string name="comment_hint">Comment</string>
     <string name="delete_comment_title">Delete comment</string>
-    <string name="delete_comment_text">Are you sure you want to delete comment?</string>
+    <string name="delete_comment_text">Are you sure you want to delete this comment?</string>
     <string name="add_user">Add user</string>
     <string name="attachments_template">%d Attachments</string>
     <string name="custom_fields">Custom fields</string>
@@ -120,22 +120,22 @@
     <string name="power">power</string>
 
     <string name="unlink_epic_title">Unlink epic</string>
-    <string name="unlink_epic_text">Are you sure you want to unlink epic?</string>
+    <string name="unlink_epic_text">Are you sure you want to unlink this epic?</string>
 
     <string name="remove_user_title">Remove user</string>
-    <string name="remove_user_text">Are you sure you want to remove user?</string>
+    <string name="remove_user_text">Are you sure you want to remove this user?</string>
 
     <string name="delete_task_title">Delete task</string>
-    <string name="delete_task_text">Are you sure you want to delete task?</string>
+    <string name="delete_task_text">Are you sure you want to delete thistask?</string>
 
     <string name="promote_title">Promote</string>
-    <string name="promote_text">Are you sure you want to promote this task to user story?</string>
+    <string name="promote_text">Are you sure you want to promote this task to a user story?</string>
 
     <string name="remove_attachment_title">Remove attachment</string>
-    <string name="remove_attachment_text">Are you sure you want to remove attachment?</string>
+    <string name="remove_attachment_text">Are you sure you want to remove this attachment?</string>
 
     <string name="delete_sprint_title">Delete sprint</string>
-    <string name="delete_sprint_text">Are you sure you want to delete sprint?</string>
+    <string name="delete_sprint_text">Are you sure you want to delete this sprint?</string>
 
     <string name="title_hint">Title</string>
     <string name="description_hint">Description</string>
@@ -182,7 +182,7 @@
     <string name="help">Help</string>
     <string name="submit_report">Submit report</string>
 
-    <string name="credits_message">Made with ❤️ by EugeneTheDev. If you enjoy the app please consider rating it on Google Play and starring project on GitHub</string>
+    <string name="credits_message">Made with ❤️ by EugeneTheDev. If you enjoy the app please consider rating it on Google Play and starring the project on GitHub</string>
 
     <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>
     <string name="source_code">Source code</string>
