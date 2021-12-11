@@ -98,7 +98,7 @@ dependencies {
     implementation(kotlin("reflect"))
 
     implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("com.google.android.material:material:1.4.0")
 
     // Main Compose dependencies
@@ -111,7 +111,7 @@ dependencies {
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02")
 
     // Accompanist
     val accompanistVersion = "0.18.0"
@@ -147,7 +147,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Dagger 2
-    val daggerVersion = "2.40.1"
+    val daggerVersion = "2.40.5"
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -169,7 +169,7 @@ dependencies {
     allTestsImplementation(kotlin("test-junit"))
 
     // Robolectric (run android tests on local host)
-    testRuntimeOnly("org.robolectric:robolectric:4.7.1")
+    testRuntimeOnly("org.robolectric:robolectric:4.7.3")
 
     allTestsImplementation("androidx.test:core-ktx:1.4.0")
     allTestsImplementation("androidx.test:runner:1.4.0")
