@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
@@ -7,12 +8,12 @@ import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.viewmodels.utils.accessDeniedException
 import io.eugenethedev.taigamobile.viewmodels.utils.assertResultEquals
 import io.eugenethedev.taigamobile.viewmodels.utils.notFoundException
+import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class CommonTaskViewModelTest : BaseViewModelTest() {
@@ -37,7 +38,8 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockListOfStatus = mockk<List<Status>>(relaxed = true)
     }
 
-    private fun setupMockForLoadData() {
+    @BeforeTest
+    fun setupMockForLoadData() {
         coEvery { mockTaskRepository.getCommonTask(any(), any()) } returns mockCommonTask
         coEvery { mockUsersRepository.getUser(any()) } returns mockUser
         coEvery { mockTaskRepository.getCustomFields(any(), any()) } returns mockCustomFields
@@ -51,7 +53,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         coEvery { mockTaskRepository.getStatusByType(any(), any()) } returns mockListOfStatus
     }
 
-    private fun checkEqualityForLoadData(mockCommonTaskType: CommonTaskType, mockStatus: Status) {
+    private fun checkEqualityForLoadData(mockCommonTaskType: CommonTaskType) {
         val mapOfStatuses = StatusType.values().filter {
             if (mockCommonTaskType != CommonTaskType.Issue) it == StatusType.Status else true
         }.associateWith { mockListOfStatus }
@@ -79,11 +81,9 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     fun `test on open`(): Unit = runBlocking {
         val testCommonTaskId = 1L
         val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
-        val mockStatus = mockk<Status>(relaxed = true)
 
-        setupMockForLoadData()
         viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
-        checkEqualityForLoadData(mockCommonTaskType, mockStatus)
+        checkEqualityForLoadData(mockCommonTaskType)
 
         coEvery { mockTaskRepository.getCommonTask(any(), any()) } throws notFoundException
         viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
@@ -102,7 +102,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             type = mockStatus.type
         )
 
-        setupMockForLoadData()
         viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
         coEvery {
             mockTaskRepository.changeStatus(
@@ -115,10 +114,61 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
 
         viewModel.selectStatus(mockStatus)
-        checkEqualityForLoadData(mockCommonTaskType, mockStatus)
+        checkEqualityForLoadData(mockCommonTaskType)
         assertResultEquals(SuccessResult(mockStatus.type), viewModel.statusSelectResult.value)
 
         viewModel.selectStatus(errorStatus)
         assertIs<ErrorResult<StatusType>>(viewModel.statusSelectResult.value)
+    }
+
+    @Test
+    fun `test select sprint`() {
+        val testCommonTaskId = 1L
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
+        val mockSprint = mockk<Sprint>(relaxed = true)
+        val errorSprint = Sprint(
+            id = mockSprint.id + 1,
+            name = mockSprint.name,
+            order = mockSprint.order,
+            start = mockSprint.start,
+            end = mockSprint.end,
+            storiesCount = mockSprint.storiesCount,
+            isClosed = mockSprint.isClosed
+        )
+
+        viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
+        coEvery {
+            mockTaskRepository.changeSprint(
+                any(),
+                any(),
+                neq(mockSprint.id),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.selectSprint(mockSprint)
+        checkEqualityForLoadData(mockCommonTaskType)
+        assertResultEquals(SuccessResult(Unit), viewModel.selectSprintResult.value)
+
+        viewModel.selectSprint(errorSprint)
+        assertIs<ErrorResult<Unit>>(viewModel.selectSprintResult.value)
+    }
+
+    @Test
+    fun `test epics list with filters`() {
+        val query = "query"
+        testLazyPagingItems(viewModel.epics) {
+            mockTaskRepository.getEpics(
+                any(),
+                eq(FiltersData())
+            )
+        }
+        viewModel.searchEpics(query)
+        testLazyPagingItems(viewModel.epics) {
+            mockTaskRepository.getEpics(
+                any(),
+                eq(FiltersData(query = query))
+            )
+        }
     }
 }
