@@ -1,7 +1,7 @@
 package io.eugenethedev.taigamobile.viewmodels
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
+import io.eugenethedev.taigamobile.testdata.Epic
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
 import io.eugenethedev.taigamobile.ui.utils.SuccessResult
@@ -53,6 +53,13 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         coEvery { mockTaskRepository.getStatusByType(any(), any()) } returns mockListOfStatus
     }
 
+    private fun initOnOpen(mockCommonTaskType: CommonTaskType) {
+        val testCommonTaskId = 1L
+
+        viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
+    }
+
+
     private fun checkEqualityForLoadData(mockCommonTaskType: CommonTaskType) {
         val mapOfStatuses = StatusType.values().filter {
             if (mockCommonTaskType != CommonTaskType.Issue) it == StatusType.Status else true
@@ -92,7 +99,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test select status`(): Unit = runBlocking {
-        val testCommonTaskId = 1L
         val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockStatus = mockk<Status>(relaxed = true)
         val errorStatus = Status(
@@ -102,7 +108,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             type = mockStatus.type
         )
 
-        viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
+        initOnOpen(mockCommonTaskType)
         coEvery {
             mockTaskRepository.changeStatus(
                 any(),
@@ -123,7 +129,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test select sprint`(): Unit = runBlocking {
-        val testCommonTaskId = 1L
         val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockSprint = mockk<Sprint>(relaxed = true)
         val errorSprint = Sprint(
@@ -136,7 +141,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             isClosed = mockSprint.isClosed
         )
 
-        viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
+        initOnOpen(mockCommonTaskType)
         coEvery {
             mockTaskRepository.changeSprint(
                 any(),
@@ -170,5 +175,36 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
                 eq(FiltersData(query = query))
             )
         }
+    }
+
+    @Test
+    fun `test link to epic`(): Unit = runBlocking {
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
+        val mockEpic = mockk<CommonTask>(relaxed = true)
+        val errorEpic = CommonTask(
+            id = mockEpic.id + 1,
+            createdDate = mockEpic.createdDate,
+            title = mockEpic.title,
+            ref = mockEpic.ref,
+            status = mockEpic.status,
+            projectInfo = mockEpic.projectInfo,
+            taskType = mockEpic.taskType,
+            isClosed = mockEpic.isClosed
+        )
+
+        initOnOpen(mockCommonTaskType)
+        coEvery {
+            mockTaskRepository.linkToEpic(
+                neq(mockEpic.id),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.linkToEpic(mockEpic)
+        checkEqualityForLoadData(mockCommonTaskType)
+        assertResultEquals(SuccessResult(Unit), viewModel.linkToEpicResult.value)
+
+        viewModel.linkToEpic(errorEpic)
+        assertIs<ErrorResult<Unit>>(viewModel.linkToEpicResult.value)
     }
 }
