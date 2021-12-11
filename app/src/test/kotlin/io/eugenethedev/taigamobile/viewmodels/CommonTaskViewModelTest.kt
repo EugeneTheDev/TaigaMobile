@@ -122,7 +122,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test select sprint`() {
+    fun `test select sprint`(): Unit = runBlocking {
         val testCommonTaskId = 1L
         val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockSprint = mockk<Sprint>(relaxed = true)
@@ -155,7 +155,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test epics list with filters`() {
+    fun `test epics list with filters`(): Unit = runBlocking {
         val query = "query"
         testLazyPagingItems(viewModel.epics) {
             mockTaskRepository.getEpics(
