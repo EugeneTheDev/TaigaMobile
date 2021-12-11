@@ -3,7 +3,7 @@ package io.eugenethedev.taigamobile.ui.components.pickers
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,6 +16,7 @@ import com.vanpra.composematerialdialogs.color.colorChooser
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 
 /**
@@ -33,6 +34,7 @@ fun ColorPicker(
     MaterialDialog(
         dialogState = dialogState,
         buttons = {
+            // TODO update buttons to comply with material3 color schema?
             positiveButton(res = R.string.ok)
             negativeButton(res = R.string.cancel)
         }
@@ -48,7 +50,7 @@ fun ColorPicker(
 
     Spacer(
         Modifier.size(size)
-            .background(color = color, shape = MaterialTheme.shapes.medium)
+            .background(color = color, shape = shapes.medium) // TODO material3 update
             .clickableUnindicated { dialogState.show() }
     )
 }

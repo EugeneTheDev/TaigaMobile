@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -18,6 +18,7 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.theme.shapes
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -25,7 +26,7 @@ fun CreateCommentBar(
     createComment: (String) -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth(),
-    elevation = 8.dp,
+    tonalElevation = 8.dp, // TODO shadow probably?
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
@@ -42,11 +43,11 @@ fun CreateCommentBar(
                 .padding(end = 4.dp)
                 .border(
                     width = 2.dp,
-                    color = MaterialTheme.colors.primary,
-                    shape = MaterialTheme.shapes.large
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = shapes.large
                 )
-                .clip(MaterialTheme.shapes.large)
-                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.04f))
+                .clip(shapes.large)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f))
                 .padding(8.dp),
             contentAlignment = Alignment.CenterStart
         ) {
@@ -68,12 +69,12 @@ fun CreateCommentBar(
             },
             modifier = Modifier.size(36.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colors.primary)
+                .background(MaterialTheme.colorScheme.primary)
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_send),
                 contentDescription = null,
-                tint = MaterialTheme.colors.onPrimary
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

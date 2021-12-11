@@ -4,8 +4,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
@@ -71,13 +72,13 @@ fun ClickableBadge(
         modifier = Modifier
             .background(
                 color = color,
-                shape = MaterialTheme.shapes.medium
+                shape = shapes.medium // TODO wait for material3 update
             )
             .let {
                 if (isLoading) {
                     it.background(
                         brush = brush,
-                        shape = MaterialTheme.shapes.medium
+                        shape = shapes.medium // TODO wait for material3 update
                     )
                 } else {
                     it

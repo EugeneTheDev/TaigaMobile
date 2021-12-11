@@ -4,10 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +36,7 @@ fun TaskEditor(
 ) = Column(
     modifier = Modifier
         .fillMaxSize()
-        .background(MaterialTheme.colors.surface)
+        .background(MaterialTheme.colorScheme.surface)
         .imePadding()
 ) {
     onBackPressed(navigateBack)
@@ -57,7 +57,7 @@ fun TaskEditor(
                 Icon(
                     painter = painterResource(R.drawable.ic_save),
                     contentDescription = null,
-                    tint = MaterialTheme.colors.primary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         },
@@ -77,7 +77,7 @@ fun TaskEditor(
             hintId = R.string.title_hint,
             value = titleInput,
             onValueChange = { titleInput = it },
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(Modifier.height(16.dp))

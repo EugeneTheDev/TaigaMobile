@@ -3,8 +3,8 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
-import androidx.compose.material.ButtonDefaults.buttonColors
+import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -31,7 +31,6 @@ import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
@@ -233,7 +232,7 @@ private fun SprintsTabContent(
         }
 
         item {
-            TaigaTextButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
+            FilledTonalButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
                 Text(stringResource(if (isClosedSprintsVisible) R.string.hide_closed_sprints else R.string.show_closed_sprints))
             }
         }
@@ -268,7 +267,7 @@ private fun SprintsTabContent(
 private fun SprintItem(
     sprint: Sprint,
     navigateToBoard: (Sprint) -> Unit = {}
-) = ContainerBox(clickEnabled = false) {
+) = ContainerBox {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
     Row(
@@ -279,7 +278,7 @@ private fun SprintItem(
         Column(Modifier.weight(0.7f)) {
             Text(
                 text = sprint.name,
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.titleMedium
             )
 
             Text(
@@ -292,8 +291,8 @@ private fun SprintItem(
             Row {
                 Text(
                     text = stringResource(R.string.stories_count_template).format(sprint.storiesCount),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.body2
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(Modifier.width(6.dp))
@@ -302,7 +301,7 @@ private fun SprintItem(
                     Text(
                         text = stringResource(R.string.closed),
                         color = Color.Gray,
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
@@ -312,11 +311,11 @@ private fun SprintItem(
             onClick = { navigateToBoard(sprint) },
             modifier = Modifier.weight(0.3f),
             colors = buttonColors(
-                backgroundColor = if (!sprint.isClosed) {
-                    MaterialTheme.colors.primary
+                containerColor = if (!sprint.isClosed) {
+                    MaterialTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-                        .compositeOver(MaterialTheme.colors.surface)
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        .compositeOver(MaterialTheme.colorScheme.surface)
                 }
             )
         ) {

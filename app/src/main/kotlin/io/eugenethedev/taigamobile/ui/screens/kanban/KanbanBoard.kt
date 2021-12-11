@@ -7,9 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.theme.taigaDarkGrayDynamic
 import io.eugenethedev.taigamobile.ui.theme.taigaGrayDynamic
 import io.eugenethedev.taigamobile.ui.utils.toColor
@@ -62,7 +63,7 @@ fun KanbanBoard(
         ) {
             Text(
                 text = stringResource(R.string.swimlane_title),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.headlineSmall
             )
 
             Spacer(Modifier.width(8.dp))
@@ -74,15 +75,15 @@ fun KanbanBoard(
                 itemContent = {
                     Text(
                         text = it?.name ?: stringResource(R.string.unclassifed),
-                        style = MaterialTheme.typography.body1,
-                        color = it?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = it?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary
                     )
                 },
                 selectedItemContent = {
                     Text(
                         text = it?.name ?: stringResource(R.string.unclassifed),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             )
@@ -152,7 +153,7 @@ private fun Header(
         .width(cellWidth)
         .background(
             color = backgroundColor,
-            shape = MaterialTheme.shapes.medium.copy(
+            shape = shapes.medium.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )
@@ -160,7 +161,7 @@ private fun Header(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {
-    val textStyle = MaterialTheme.typography.subtitle1
+    val textStyle = MaterialTheme.typography.titleMedium
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -204,8 +205,8 @@ private fun StoryItem(
     modifier = Modifier
         .fillMaxWidth()
         .padding(4.dp),
-    shape = MaterialTheme.shapes.medium,
-    elevation = 8.dp
+    shape = shapes.medium,
+    tonalElevation = 8.dp // TODO shadow probably?
 ) {
     Column(
         modifier = Modifier
@@ -214,14 +215,14 @@ private fun StoryItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
                     bounded = true,
-                    color = MaterialTheme.colors.primary
+                    color = MaterialTheme.colorScheme.primary
                 ),
                 onClick = onTaskClick
             )
             .padding(12.dp)
     ) {
         story.epicsShortInfo.forEach {
-            val textStyle = MaterialTheme.typography.caption
+            val textStyle = MaterialTheme.typography.bodySmall
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(
                     Modifier

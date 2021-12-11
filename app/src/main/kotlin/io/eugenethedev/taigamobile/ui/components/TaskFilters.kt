@@ -16,7 +16,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,12 +43,12 @@ import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
-import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
 import io.eugenethedev.taigamobile.ui.components.badges.Badge
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.theme.taigaGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.toColor
@@ -62,7 +66,7 @@ fun TasksFiltersWithLazyList(
     content: LazyListScope.() -> Unit
 ) {
     val listState = rememberLazyListState()
-    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex < 1 } }
+    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex < 2 } }
 
     AnimatedVisibility(
         visible = isVisible,
@@ -123,7 +127,7 @@ fun TaskFilters(
     val bottomSheetState =  remember { ModalBottomSheetState(ModalBottomSheetValue.Expanded) } // fix to handle dialog closed state properly
     var isVisible by remember { mutableStateOf(false) }
 
-    TaigaTextButton(
+    FilledTonalButton(
         onClick = {
             coroutineScope.launch {
                 isVisible = true
@@ -167,7 +171,7 @@ fun TaskFilters(
             ModalBottomSheetLayout(
                 modifier = Modifier.fillMaxSize(),
                 sheetState = bottomSheetState,
-                sheetShape = MaterialTheme.shapes.medium,
+                sheetShape = shapes.medium, // TODO wait for material3 update
                 scrimColor = Color.Transparent,
                 content = {},
                 sheetContent = {
@@ -179,7 +183,7 @@ fun TaskFilters(
                     ) {
                         Text(
                             text = stringResource(R.string.filters),
-                            style = MaterialTheme.typography.h5,
+                            style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(start = space)
                         )
 
@@ -378,14 +382,14 @@ private fun <T : Filter> Section(
         ).animateFloat { if (it) 0f else -90f }
         Icon(
             painter = painterResource(R.drawable.ic_arrow_down),
-            tint = MaterialTheme.colors.primary,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.rotate(arrowRotation),
             contentDescription = null
         )
 
         Text(
             text = stringResource(titleId),
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 2.dp)
         )
     }

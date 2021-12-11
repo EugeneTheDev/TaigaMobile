@@ -7,7 +7,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +32,7 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.activity
 import java.time.LocalDate
 import kotlin.math.floor
@@ -45,13 +46,13 @@ fun CustomField(
 ) = Column {
     Text(
        text = customField.name,
-       style = MaterialTheme.typography.subtitle1
+       style = MaterialTheme.typography.titleMedium
     )
 
     customField.description?.let {
         Text(
             text = it,
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.bodySmall,
             color = Color.Gray
         )
     }
@@ -65,9 +66,9 @@ fun CustomField(
 
     var fieldState by remember { mutableStateOf(FieldState.Default) }
     val borderColor = when (fieldState) {
-        FieldState.Focused -> MaterialTheme.colors.primary
-        FieldState.Error -> MaterialTheme.colors.error
-        FieldState.Default -> if (value == customField.value) Color.Gray else MaterialTheme.colors.primary
+        FieldState.Focused -> MaterialTheme.colorScheme.primary
+        FieldState.Error -> MaterialTheme.colorScheme.error
+        FieldState.Default -> if (value == customField.value) Color.Gray else MaterialTheme.colorScheme.primary
     }
 
     Row {
@@ -77,9 +78,9 @@ fun CustomField(
                 .border(
                     width = 1.5.dp,
                     color = if (customField.type == CustomFieldType.Checkbox) Color.Transparent else borderColor,
-                    shape = MaterialTheme.shapes.small
+                    shape = shapes.small
                 )
-                .clip(MaterialTheme.shapes.small)
+                .clip(shapes.small)
                 .padding(6.dp)
         ) {
 
@@ -205,7 +206,7 @@ private fun TextValue(
     focusRequester: FocusRequester = remember { FocusRequester() },
     singleLine: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
-    textColor: Color = MaterialTheme.colors.onSurface
+    textColor: Color = MaterialTheme.colorScheme.onSurface
 ) = TextFieldWithHint(
     hintId = hintId,
     value = text,
@@ -356,7 +357,7 @@ private fun CustomFieldUrl(
                 },
                 keyboardType = KeyboardType.Uri,
                 singleLine = true,
-                textColor = MaterialTheme.colors.primary
+                textColor = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -381,7 +382,7 @@ private fun CustomFieldUrl(
             Icon(
                 painter = painterResource(R.drawable.ic_open),
                 contentDescription = null,
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -425,12 +426,12 @@ private fun CustomFieldDropdown(
             if (it.isNotEmpty()) {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.bodyLarge
                 )
             } else {
                 Text(
                     text = stringResource(R.string.empty),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.Gray
                 )
             }

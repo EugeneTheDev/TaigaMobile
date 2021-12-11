@@ -2,18 +2,15 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +31,7 @@ import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.theme.taigaLightGrayDynamic
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
@@ -155,7 +153,7 @@ fun SprintKanban(
                 Modifier.height(4.dp)
                     .padding(start = cellPadding)
                     .width(totalWidth)
-                    .background(MaterialTheme.colors.primary.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
             )
         }
 
@@ -203,7 +201,7 @@ private fun Header(
         .width(cellWidth)
         .background(
             color = backgroundColor,
-            shape = MaterialTheme.shapes.medium.copy(
+            shape = shapes.medium.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )
@@ -212,7 +210,7 @@ private fun Header(
 ) {
     Text(
         text = text.uppercase(),
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.titleMedium,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.padding(8.dp)
@@ -236,7 +234,7 @@ private fun IssueHeader(
     modifier = Modifier
         .width(width)
         .padding(padding)
-        .clip(MaterialTheme.shapes.small)
+        .clip(shapes.small)
         .background(backgroundColor)
         .padding(horizontal = 6.dp, vertical = 4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -285,7 +283,7 @@ private fun UserStoryItem(
         Text(
             text = userStory.status.name,
             color = userStory.status.color.toColor(),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 
@@ -354,22 +352,13 @@ private fun TaskItem(
     modifier = Modifier
         .fillMaxWidth()
         .padding(4.dp),
-    shape = MaterialTheme.shapes.medium,
-    elevation = 8.dp
+    shape = shapes.medium,
+    onClick = onTaskClick,
+    tonalElevation = 8.dp // TODO maybe shadow?
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = MaterialTheme.colors.primary
-                ),
-                onClick = onTaskClick
-            )
-            .padding(12.dp)
+        modifier = Modifier.fillMaxWidth().padding(12.dp)
     ) {
         Column(Modifier.weight(0.8f, fill = false)) {
             CommonTaskTitle(
@@ -385,8 +374,8 @@ private fun TaskItem(
                     stringResource(R.string.assignee_pattern)
                         .format(it)
                 } ?: stringResource(R.string.unassigned),
-                color = MaterialTheme.colors.primary,
-                style = MaterialTheme.typography.body2
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 

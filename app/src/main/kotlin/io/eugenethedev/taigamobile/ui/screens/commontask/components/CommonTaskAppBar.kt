@@ -1,7 +1,9 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,7 +38,7 @@ fun CommonTaskAppBar(
                     Icon(
                         painter = painterResource(R.drawable.ic_options),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.primary
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -81,7 +83,7 @@ fun CommonTaskAppBar(
                     ) {
                         Text(
                             text = stringResource(R.string.edit),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -94,7 +96,7 @@ fun CommonTaskAppBar(
                     ) {
                         Text(
                             text = stringResource(R.string.delete),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -108,7 +110,7 @@ fun CommonTaskAppBar(
                         ) {
                             Text(
                                 text = stringResource(R.string.promote_to_user_story),
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }

@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +28,7 @@ import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
@@ -51,7 +55,8 @@ fun LazyListScope.CommonTaskTags(
             when {
                 editActions.editTags.isResultLoading -> CircularProgressIndicator(
                     modifier = Modifier.size(28.dp),
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 isAddTagFieldVisible -> AddTagField(
                     tags = editActions.editTags.items,
@@ -78,7 +83,7 @@ private fun TagItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(color = bgColor, shape = MaterialTheme.shapes.small)
+            .background(color = bgColor, shape = shapes.small)
             .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(
@@ -139,7 +144,7 @@ private fun AddTagField(
                         Modifier.size(22.dp)
                             .background(
                                 color = it.color.toColor(),
-                                shape = MaterialTheme.shapes.small
+                                shape = shapes.small
                             )
                     )
 
@@ -147,7 +152,7 @@ private fun AddTagField(
 
                     Text(
                         text = it.name,
-                        style = MaterialTheme.typography.body1
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }

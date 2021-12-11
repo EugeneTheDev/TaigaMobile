@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +99,7 @@ private fun EpicItemWithAction(
     CommonTaskTitle(
         ref = epic.ref,
         title = epic.title,
-        textColor = MaterialTheme.colors.primary,
+        textColor = MaterialTheme.colorScheme.primary,
         indicatorColorsHex = listOf(epic.color),
         modifier = Modifier
             .weight(1f)
@@ -128,7 +128,7 @@ private fun UserStoryItem(
 ) = CommonTaskTitle(
     ref = story.ref,
     title = story.title,
-    textColor = MaterialTheme.colors.primary,
+    textColor = MaterialTheme.colorScheme.primary,
     indicatorColorsHex = story.epicColors,
     modifier = Modifier.clickableUnindicated(onClick = onClick)
 )

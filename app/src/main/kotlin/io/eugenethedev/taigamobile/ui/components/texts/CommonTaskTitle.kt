@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +20,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Tag
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
@@ -32,7 +33,7 @@ fun CommonTaskTitle(
     title: String,
     modifier: Modifier = Modifier,
     isInactive: Boolean = false,
-    textColor: Color = MaterialTheme.colors.onSurface,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorColorsHex: List<String> = emptyList(),
     tags: List<Tag> = emptyList()
 ) = Column(modifier = modifier) {
@@ -51,7 +52,7 @@ fun CommonTaskTitle(
             }
         },
         color = textColor,
-        style = MaterialTheme.typography.subtitle1
+        style = MaterialTheme.typography.titleMedium
     )
 
     if (tags.isNotEmpty()) {
@@ -63,12 +64,12 @@ fun CommonTaskTitle(
                 Text(
                     text = it.name,
                     color = bgColor.textColor(),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(end = 4.dp, bottom = 4.dp)
                         .background(
                             color = bgColor,
-                            shape = MaterialTheme.shapes.small
+                            shape = shapes.small // TODO material3 update
                         )
                         .padding(2.dp)
                 )

@@ -3,9 +3,8 @@ package io.eugenethedev.taigamobile.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +18,6 @@ import io.eugenethedev.taigamobile.ui.utils.textColor
  * Material chip component (rounded rectangle)
  */
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Chip(
     modifier: Modifier = Modifier,
@@ -31,7 +29,7 @@ fun Chip(
     shape = RoundedCornerShape(50),
     color = color,
     contentColor = color.textColor(),
-    elevation = 1.dp,
+    tonalElevation = 1.dp, // TODO probably shadow elevation?
     modifier = modifier
 ) {
     Box(modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp)) {

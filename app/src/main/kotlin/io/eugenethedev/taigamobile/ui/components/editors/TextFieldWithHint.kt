@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.theme.shapes
 
 /**
  * You've read it right. Text field. With hint.
@@ -39,17 +40,17 @@ fun TextFieldWithHint(
     horizontalPadding: Dp = 0.dp,
     verticalPadding: Dp = 0.dp,
     width: Dp? = null,
-    style: TextStyle = MaterialTheme.typography.body1,
+    style: TextStyle = MaterialTheme.typography.bodyLarge,
     singleLine: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     onFocusChange: (Boolean) -> Unit = {},
     focusRequester: FocusRequester = remember { FocusRequester() },
     maxLines: Int = Int.MAX_VALUE,
-    textColor: Color = MaterialTheme.colors.onSurface,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     onSearchClick: (() -> Unit)? = null,
     hasBorder: Boolean = false
 ) {
-    val primaryColor = MaterialTheme.colors.primary
+    val primaryColor = MaterialTheme.colorScheme.primary
     var outlineColor by remember { mutableStateOf(Color.Gray) }
 
     Box(
@@ -58,7 +59,7 @@ fun TextFieldWithHint(
             .padding(horizontal = horizontalPadding, vertical = verticalPadding)
             .let {
                 if (hasBorder) {
-                    it.border(width = 2.dp, color = outlineColor, shape = MaterialTheme.shapes.medium)
+                    it.border(width = 2.dp, color = outlineColor, shape = shapes.medium) // TODO material3 update
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 } else {
                     it
@@ -83,7 +84,7 @@ fun TextFieldWithHint(
                     outlineColor = if (it.isFocused) primaryColor else Color.Gray
                 },
             textStyle = style.merge(TextStyle(color = textColor)),
-            cursorBrush = SolidColor(MaterialTheme.colors.onSurface),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             singleLine = singleLine,
             maxLines = maxLines,
             keyboardOptions = KeyboardOptions(

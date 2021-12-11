@@ -4,7 +4,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +29,7 @@ fun <T> DropdownSelector(
     selectedItemContent: @Composable (T) -> Unit,
     takeMaxWidth: Boolean = false,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    tint: Color = MaterialTheme.colors.primary,
+    tint: Color = MaterialTheme.colorScheme.primary,
     onExpanded: () -> Unit = {},
     onDismissRequest: () -> Unit = {}
 ) {

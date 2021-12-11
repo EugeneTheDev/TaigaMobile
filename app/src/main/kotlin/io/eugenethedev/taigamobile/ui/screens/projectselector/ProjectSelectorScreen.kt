@@ -2,7 +2,7 @@ package io.eugenethedev.taigamobile.ui.screens.projectselector
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -113,8 +113,8 @@ private fun ItemProject(
         Column(Modifier.weight(0.8f)) {
             project.takeIf { it.isMember || it.isAdmin || it.isOwner }?.let {
                 Text(
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
                     text = stringResource(
                         when {
                             project.isOwner -> R.string.project_owner
@@ -138,7 +138,7 @@ private fun ItemProject(
             Image(
                 painter = painterResource(R.drawable.ic_check),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                 modifier = Modifier.weight(0.2f)
             )
         }

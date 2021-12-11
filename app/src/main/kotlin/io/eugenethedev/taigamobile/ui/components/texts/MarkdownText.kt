@@ -1,7 +1,7 @@
 package io.eugenethedev.taigamobile.ui.components.texts
 
 import android.widget.TextView
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -24,8 +24,8 @@ fun MarkdownText(
             .usePlugin(CoilImagesPlugin.create(LocalContext.current))
             .build()
     }
-    val textSize = MaterialTheme.typography.body1.fontSize.value
-    val textColor = MaterialTheme.colors.onSurface.toArgb()
+    val textSize = MaterialTheme.typography.bodyLarge.fontSize.value
+    val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
     AndroidView(
         factory = ::TextView,
         modifier = modifier

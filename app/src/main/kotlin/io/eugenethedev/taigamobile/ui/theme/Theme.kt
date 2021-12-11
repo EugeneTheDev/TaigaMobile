@@ -1,11 +1,11 @@
 package io.eugenethedev.taigamobile.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Colors
@@ -29,14 +29,16 @@ var taigaDarkGrayDynamic = Color(0xFFD8DEE9)
     private set
 
 
-private val DarkColorPalette = darkColors(
+private val DarkColorPalette = darkColorScheme(
     primary = taigaGreen,
-    primaryVariant = taigaGreenDark,
+    secondary = taigaGreenDark,
+    secondaryContainer = taigaGreen.copy(alpha = 0.5f)
 )
 
-private val LightColorPalette = lightColors(
+private val LightColorPalette = lightColorScheme(
     primary = taigaGreen,
-    primaryVariant = taigaGreenDark
+    secondary = taigaGreenDark,
+    secondaryContainer = taigaGreen.copy(alpha = 0.3f)
 )
 
 @Composable
@@ -47,20 +49,21 @@ fun TaigaMobileTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
         taigaGrayDynamic = taigaGrayStatic.copy(alpha = 0.08f)
         taigaDarkGrayDynamic = taigaDarkGrayStatic.copy(alpha = 0.12f)
 
-        DarkColorPalette
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicDarkColorScheme(LocalContext.current)
+        else DarkColorPalette
     } else {
         // restore original colors for light theme
         taigaLightGrayDynamic = taigaLightGrayStatic
         taigaGrayDynamic = taigaGrayStatic
         taigaDarkGrayDynamic = taigaDarkGrayStatic
 
-        LightColorPalette
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicLightColorScheme(LocalContext.current)
+        else LightColorPalette
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colors,
         typography = typography,
-        shapes = shapes,
         content = content
     )
 }

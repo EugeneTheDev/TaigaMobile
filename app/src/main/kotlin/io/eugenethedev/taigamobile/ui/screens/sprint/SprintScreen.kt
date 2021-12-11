@@ -1,7 +1,9 @@
 package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,7 +122,7 @@ fun SprintScreenContent(
                         sprint?.start?.format(dateFormatter).orEmpty(),
                         sprint?.end?.format(dateFormatter).orEmpty()
                     ),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -132,7 +134,7 @@ fun SprintScreenContent(
                     Icon(
                         painter = painterResource(R.drawable.ic_options),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.primary
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -177,7 +179,7 @@ fun SprintScreenContent(
                     ) {
                         Text(
                             text = stringResource(R.string.edit),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -190,7 +192,7 @@ fun SprintScreenContent(
                     ) {
                         Text(
                             text = stringResource(R.string.delete),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
