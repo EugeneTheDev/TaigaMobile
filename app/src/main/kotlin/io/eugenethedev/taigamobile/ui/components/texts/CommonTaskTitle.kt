@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.components.texts
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -19,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Tag
+import io.eugenethedev.taigamobile.ui.components.Chip
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
@@ -61,18 +60,17 @@ fun CommonTaskTitle(
         FlowRow {
             tags.forEach {
                 val bgColor = it.color.toColor()
-                Text(
-                    text = it.name,
-                    color = bgColor.textColor(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(end = 4.dp, bottom = 4.dp)
-                        .background(
-                            color = bgColor,
-                            shape = shapes.small // TODO material3 update
-                        )
-                        .padding(2.dp)
-                )
+
+                Chip(
+                    color = bgColor,
+                    modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
+                ) {
+                    Text(
+                        text = it.name,
+                        color = bgColor.textColor(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
@@ -80,7 +78,7 @@ fun CommonTaskTitle(
 
 @Preview(showBackground = true)
 @Composable
-fun TitleWithIndicatorsPreview() = TaigaMobileTheme {
+fun CommonTaskTitlePreview() = TaigaMobileTheme {
     CommonTaskTitle(
         ref = 42,
         title = "Some title",

@@ -24,6 +24,7 @@ import com.vanpra.composematerialdialogs.color.ColorPalette
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.Tag
+import io.eugenethedev.taigamobile.ui.components.Chip
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
@@ -80,30 +81,30 @@ private fun TagItem(
     val bgColor = tag.color.toColor()
     val textColor = bgColor.textColor()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(color = bgColor, shape = shapes.small)
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+    Chip(
+        color = bgColor,
+        modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
     ) {
-        Text(
-            text = tag.name,
-            color = textColor
-        )
-
-        Spacer(Modifier.width(2.dp))
-
-        IconButton(
-            onClick = onRemoveClick,
-            modifier = Modifier
-                .size(26.dp)
-                .clip(CircleShape)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_remove),
-                contentDescription = null,
-                tint = textColor
+            Text(
+                text = tag.name,
+                color = textColor
             )
+
+            Spacer(Modifier.width(2.dp))
+
+            IconButton(
+                onClick = onRemoveClick,
+                modifier = Modifier.size(26.dp).clip(CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_remove),
+                    contentDescription = null,
+                    tint = textColor
+                )
+            }
         }
     }
 }
@@ -176,9 +177,7 @@ private fun AddTagField(
                 value = TextFieldValue()
             }
         },
-        modifier = Modifier
-            .size(32.dp)
-            .clip(CircleShape)
+        modifier = Modifier.size(32.dp).clip(CircleShape)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_save),

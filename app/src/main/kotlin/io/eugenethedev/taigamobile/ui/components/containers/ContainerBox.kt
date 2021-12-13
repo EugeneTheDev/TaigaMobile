@@ -16,32 +16,21 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
  * It is clickable, has padding inside and ripple effect
  */
 
-// TODO check that everything is alright now
 @Composable
 fun ContainerBox(
     horizontalPadding: Dp = mainHorizontalScreenPadding,
     verticalPadding: Dp = 8.dp,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit = {}
+) = Surface(
+    modifier = Modifier.fillMaxWidth(),
+    enabled = onClick != null,
+    onClick = onClick ?: {},
+    indication = rememberRipple()
 ) {
-    val containerContent: @Composable () -> Unit = {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontalPadding, verticalPadding),
-            content = content
-        )
-    }
-
-    onClick?.let {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            content = containerContent,
-            onClick = it,
-            indication = rememberRipple()
-        )
-    } ?: Surface(
-        modifier = Modifier.fillMaxWidth(),
-        content = containerContent
+    Box(
+        modifier = Modifier.fillMaxWidth().padding(horizontalPadding, verticalPadding),
+        content = content
     )
 }
+

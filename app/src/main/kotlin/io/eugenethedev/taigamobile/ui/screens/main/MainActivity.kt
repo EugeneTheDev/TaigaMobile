@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -109,7 +110,9 @@ class MainActivity : AppCompatActivity() {
 
                     CompositionLocalProvider(
                         LocalFilePicker provides filePicker,
-                        LocalRippleTheme provides TaigaMobileRippleTheme
+                        LocalRippleTheme provides TaigaMobileRippleTheme,
+                        // Do not make elements to big. Maybe should be reconsidered in future
+                        LocalMinimumTouchTargetEnforcement provides false
                     ) {
 
                         // use Scaffold from material2, because material3 Scaffold lacks some functionality

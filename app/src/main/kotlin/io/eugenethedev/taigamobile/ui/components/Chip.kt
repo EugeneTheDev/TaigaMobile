@@ -22,11 +22,12 @@ import io.eugenethedev.taigamobile.ui.utils.textColor
 @Composable
 fun Chip(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     color: Color = taigaGrayStatic,
     content: @Composable () -> Unit
 ) = Surface(
-    onClick = onClick,
+    onClick = onClick ?: {},
+    enabled = onClick != null,
     shape = RoundedCornerShape(50),
     color = color,
     contentColor = color.textColor(),
