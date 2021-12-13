@@ -357,7 +357,6 @@ fun TaskFilters(
 private inline fun <T : Filter> List<T>.ifHasData(action: (List<T>) -> Unit) =
     takeIf { it.hasData() }?.let(action)
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun <T : Filter> Section(
     @StringRes titleId: Int,
@@ -417,7 +416,7 @@ private fun FilterChip(
 ) = Chip(
     onClick = onClick,
     color = filter.color?.toColor() ?: taigaGrayStatic,
-    modifier = Modifier.padding(end = 4.dp, bottom = 6.dp)
+    modifier = Modifier.padding(end = 4.dp)
 ) {
     val space = 6.dp
 
@@ -440,7 +439,7 @@ private fun FilterChip(
 
         Text(
             text = filter.name.takeIf { it.isNotEmpty() } ?: stringResource(noNameId!!),
-            maxLines = 2,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 

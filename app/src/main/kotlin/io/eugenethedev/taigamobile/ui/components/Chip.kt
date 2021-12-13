@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,8 +30,9 @@ fun Chip(
     shape = RoundedCornerShape(50),
     color = color,
     contentColor = color.textColor(),
-    tonalElevation = 1.dp, // TODO probably shadow elevation?
-    modifier = modifier
+    shadowElevation = 1.dp,
+    modifier = modifier,
+    indication = rememberRipple()
 ) {
     Box(modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp)) {
         content()
