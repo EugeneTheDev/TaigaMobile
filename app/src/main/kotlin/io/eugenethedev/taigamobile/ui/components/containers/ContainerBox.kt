@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.components.containers
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,17 +21,27 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 fun ContainerBox(
     horizontalPadding: Dp = mainHorizontalScreenPadding,
     verticalPadding: Dp = 8.dp,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit = {}
-) = Surface(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontalPadding, verticalPadding),
-    content = {
+) {
+    val containerContent: @Composable () -> Unit = {
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontalPadding, verticalPadding),
             content = content
         )
-    },
-    onClick = onClick
-)
+    }
+
+    onClick?.let {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            content = containerContent,
+            onClick = it,
+            indication = rememberRipple()
+        )
+    } ?: Surface(
+        modifier = Modifier.fillMaxWidth(),
+        content = containerContent
+    )
+}

@@ -32,10 +32,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
-import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
-import io.eugenethedev.taigamobile.ui.theme.taigaDarkGrayDynamic
-import io.eugenethedev.taigamobile.ui.theme.taigaGrayDynamic
+import io.eugenethedev.taigamobile.ui.theme.*
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
@@ -63,7 +60,7 @@ fun KanbanBoard(
         ) {
             Text(
                 text = stringResource(R.string.swimlane_title),
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.titleLarge
             )
 
             Spacer(Modifier.width(8.dp))
@@ -202,24 +199,14 @@ private fun StoryItem(
     assignees: List<User>,
     onTaskClick: () -> Unit
 ) = Surface(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(4.dp),
+    modifier = Modifier.fillMaxWidth().padding(4.dp),
     shape = shapes.medium,
-    tonalElevation = 8.dp // TODO shadow probably?
+    shadowElevation = cardShadowElevation,
+    onClick = onTaskClick,
+    indication = rememberRipple()
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                onClick = onTaskClick
-            )
-            .padding(12.dp)
+        modifier = Modifier.fillMaxWidth().padding(12.dp)
     ) {
         story.epicsShortInfo.forEach {
             val textStyle = MaterialTheme.typography.bodySmall

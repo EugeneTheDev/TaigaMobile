@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.cardShadowElevation
 import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.theme.taigaLightGrayDynamic
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
@@ -349,12 +351,11 @@ private fun TaskItem(
     task: CommonTask,
     onTaskClick: () -> Unit
 ) = Surface(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(4.dp),
+    modifier = Modifier.fillMaxWidth().padding(4.dp),
     shape = shapes.medium,
     onClick = onTaskClick,
-    tonalElevation = 8.dp // TODO maybe shadow?
+    shadowElevation = cardShadowElevation,
+    indication = rememberRipple()
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -371,8 +372,7 @@ private fun TaskItem(
 
             Text(
                 text = task.assignee?.fullName?.let {
-                    stringResource(R.string.assignee_pattern)
-                        .format(it)
+                    stringResource(R.string.assignee_pattern).format(it)
                 } ?: stringResource(R.string.unassigned),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium
@@ -390,8 +390,7 @@ private fun TaskItem(
                 ),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(32.dp)
+                modifier = Modifier.size(32.dp)
                     .clip(CircleShape)
                     .weight(0.2f, fill = false)
             )

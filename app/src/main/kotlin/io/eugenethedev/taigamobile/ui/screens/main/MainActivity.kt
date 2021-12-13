@@ -10,6 +10,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
@@ -19,6 +20,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,7 +50,7 @@ import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
-import io.eugenethedev.taigamobile.ui.theme.ClearRippleTheme
+import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.shapes
 import java.io.InputStream
@@ -105,40 +107,44 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
 
-                    // use Scaffold from material2, because material3 Scaffold lacks some functionality
-                    androidx.compose.material.Scaffold(
-                        scaffoldState = scaffoldState,
-                        snackbarHost = {
-                            SnackbarHost(
-                                hostState = it,
-                                modifier = Modifier.navigationBarsPadding()
-                            ) {
-                                Snackbar(
-                                    snackbarData = it,
-                                    backgroundColor = MaterialTheme.colorScheme.surface,
-                                    contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
-                                    shape = shapes.medium
-                                )
-                            }
-                        },
-                        bottomBar = {
-                            val items = Screens.values()
-                            val routes = items.map { it.route }
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute = navBackStackEntry?.destination?.hierarchy?.first()?.route
+                    CompositionLocalProvider(
+                        LocalFilePicker provides filePicker,
+                        LocalRippleTheme provides TaigaMobileRippleTheme
+                    ) {
 
-                            // hide bottom bar for other screens
-                            if (currentRoute !in routes) return@Scaffold
+                        // use Scaffold from material2, because material3 Scaffold lacks some functionality
+                        androidx.compose.material.Scaffold(
+                            scaffoldState = scaffoldState,
+                            snackbarHost = {
+                                SnackbarHost(
+                                    hostState = it,
+                                    modifier = Modifier.navigationBarsPadding()
+                                ) {
+                                    Snackbar(
+                                        snackbarData = it,
+                                        backgroundColor = MaterialTheme.colorScheme.surface,
+                                        contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
+                                        shape = shapes.medium
+                                    )
+                                }
+                            },
+                            bottomBar = {
+                                val items = Screens.values()
+                                val routes = items.map { it.route }
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentRoute =
+                                    navBackStackEntry?.destination?.hierarchy?.first()?.route
 
-                            CompositionLocalProvider(
-                                LocalRippleTheme provides ClearRippleTheme
-                            ) {
+                                // hide bottom bar for other screens
+                                if (currentRoute !in routes) return@Scaffold
+
                                 NavigationBar(
                                     modifier = Modifier.navigationBarsHeight(70.dp)
                                 ) {
                                     items.forEach { screen ->
                                         NavigationBarItem(
-                                            modifier = Modifier.navigationBarsPadding(),
+                                            modifier = Modifier.navigationBarsPadding()
+                                                .clip(CircleShape),
                                             icon = {
                                                 Icon(
                                                     painter = painterResource(screen.iconId),
@@ -157,12 +163,8 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     }
                                 }
-                            }
-                        },
-                        content = {
-                            CompositionLocalProvider(
-                                LocalFilePicker provides filePicker
-                            ) {
+                            },
+                            content = {
                                 MainScreen(
                                     viewModel = viewModel,
                                     scaffoldState = scaffoldState,
@@ -170,8 +172,8 @@ class MainActivity : AppCompatActivity() {
                                     navController = navController
                                 )
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -412,7 +414,7 @@ fun MoreScreen(
         }
     }
 
-    val space = 8.dp
+    val space = 2.dp
 
     Item(R.drawable.ic_team, R.string.team, Routes.team)
     Spacer(Modifier.height(space))
