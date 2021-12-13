@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.kanban
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.insets.navigationBarsHeight
@@ -192,7 +190,6 @@ private fun Header(
     )
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun StoryItem(
     story: CommonTaskExtended,

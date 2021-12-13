@@ -31,7 +31,6 @@ import io.eugenethedev.taigamobile.ui.utils.onBackPressed
  * Selector list, which expands from bottom to top.
  * Could be used to search and select something
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun <T : Any> SelectorList(
     @StringRes titleHintId: Int,

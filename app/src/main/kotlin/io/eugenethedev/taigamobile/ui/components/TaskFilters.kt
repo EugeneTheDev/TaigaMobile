@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.ui.components
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -57,7 +56,6 @@ import kotlinx.coroutines.launch
 /**
  * TaskFilters which reacts to LazyList scroll state
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TasksFiltersWithLazyList(
     filters: FiltersData = FiltersData(),
@@ -92,7 +90,7 @@ fun TasksFiltersWithLazyList(
  * Filters are placed in bottom sheet dialog as expandable options
  */
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun TaskFilters(
     selected: FiltersData,
