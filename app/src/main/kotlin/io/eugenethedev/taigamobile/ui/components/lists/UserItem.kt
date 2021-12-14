@@ -61,7 +61,7 @@ fun UserItem(
         dateTime?.let {
             Text(
                 text = it.format(dateTimeFormatter),
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.outline,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -98,7 +98,7 @@ fun UserItemWithAction(
             Icon(
                 painter = painterResource(R.drawable.ic_remove),
                 contentDescription = null,
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.outline
             )
         }
     }

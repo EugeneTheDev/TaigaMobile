@@ -38,7 +38,7 @@ fun CommonTaskTitle(
 ) = Column(modifier = modifier) {
     Text(
         text = buildAnnotatedString {
-            if (isInactive) pushStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.LineThrough))
+            if (isInactive) pushStyle(SpanStyle(color = MaterialTheme.colorScheme.outline, textDecoration = TextDecoration.LineThrough))
             append(stringResource(R.string.title_with_ref_pattern).format(ref, title))
             if (isInactive) pop()
 

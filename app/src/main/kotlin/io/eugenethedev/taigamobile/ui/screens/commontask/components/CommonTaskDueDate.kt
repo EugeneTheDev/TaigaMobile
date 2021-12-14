@@ -8,7 +8,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -55,7 +54,7 @@ fun LazyListScope.CommonTaskDueDate(
                     Icon(
                         painter = painterResource(R.drawable.ic_clock),
                         contentDescription = null,
-                        tint = commonTask.dueDate?.let { Color.White } ?: MaterialTheme.colorScheme.primary,
+                        tint = commonTask.dueDate?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary,
                         modifier = Modifier.fillMaxSize()
                     )
                 }

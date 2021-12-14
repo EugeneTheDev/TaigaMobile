@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -176,7 +175,7 @@ fun SettingsScreenContent(
         Text(
             text = serverUrl,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.outline
         )
     }
 
@@ -281,7 +280,7 @@ fun SettingsScreenContent(
                 stringResource(R.string.app_name), BuildConfig.VERSION_NAME
             ),
             style = MaterialTheme.typography.bodyLarge.merge(TextStyle(fontSize = 18.sp)),
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.outline,
         )
 
         val activity = LocalContext.current.activity

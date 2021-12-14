@@ -6,7 +6,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
@@ -59,7 +58,7 @@ fun LazyListScope.CommonTaskHeader(
             if (commonTask.taskType != CommonTaskType.Epic) {
                 ClickableBadge(
                     text = commonTask.sprint?.name ?: stringResource(R.string.no_sprint),
-                    color = commonTask.sprint?.let { MaterialTheme.colorScheme.primary } ?: Color.Gray,
+                    color = commonTask.sprint?.let { MaterialTheme.colorScheme.primary } ?: MaterialTheme.colorScheme.outline,
                     onClick = { showSprintSelector() },
                     isLoading = editActions.editSprint.isResultLoading,
                     isClickable = commonTask.taskType != CommonTaskType.Task
@@ -72,7 +71,7 @@ fun LazyListScope.CommonTaskHeader(
             if (commonTask.taskType == CommonTaskType.UserStory) {
                 ClickableBadge(
                     text = commonTask.swimlane?.name ?: stringResource(R.string.unclassifed),
-                    color = commonTask.swimlane?.let { MaterialTheme.colorScheme.primary } ?: Color.Gray,
+                    color = commonTask.swimlane?.let { MaterialTheme.colorScheme.primary } ?: MaterialTheme.colorScheme.outline,
                     isLoading = editActions.editSwimlane.isResultLoading,
                     onClick = { showSwimlaneSelector() }
                 )
@@ -120,7 +119,7 @@ fun LazyListScope.CommonTaskHeader(
                 if (commonTask.isClosed) {
                     it.merge(
                         SpanStyle(
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.outline,
                             textDecoration = TextDecoration.LineThrough
                         )
                     )

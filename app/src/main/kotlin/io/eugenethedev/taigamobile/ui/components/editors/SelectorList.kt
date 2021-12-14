@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -68,7 +67,7 @@ fun <T : Any> SelectorList(
         if (index < lastIndex) {
             Divider(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.outline
             )
         }
     }

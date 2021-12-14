@@ -233,7 +233,8 @@ fun MainScreen(
     val isProjectSelected by viewModel.isProjectSelected.collectAsState()
 
     Surface(
-        Modifier.fillMaxSize().padding(paddingValues)
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
     ) {
         NavHost(
             navController = navController,
@@ -405,7 +406,7 @@ fun MoreScreen(
                 painter = painterResource(iconId),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.outline
             )
 
             Spacer(Modifier.width(8.dp))

@@ -184,7 +184,7 @@ private fun Header(
     }
 
     PlusButton(
-        tint = Color.Gray,
+        tint = MaterialTheme.colorScheme.outline,
         onClick = onAddClick,
         modifier = Modifier.weight(0.2f)
     )

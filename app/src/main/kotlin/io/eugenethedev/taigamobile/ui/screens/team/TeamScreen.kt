@@ -140,7 +140,7 @@ private fun TeamMemberItem(
 
             Text(
                 text = teamMember.role,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.outline,
                 style = MaterialTheme.typography.bodyLarge,
             )
         }

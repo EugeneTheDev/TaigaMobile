@@ -247,7 +247,7 @@ private fun IssueHeader(
     )
 
     PlusButton(
-        tint = Color.Gray,
+        tint = MaterialTheme.colorScheme.outline,
         onClick = onAddClick,
         modifier = Modifier.weight(0.2f)
     )
@@ -289,7 +289,7 @@ private fun UserStoryItem(
     }
 
     PlusButton(
-        tint = Color.Gray,
+        tint = MaterialTheme.colorScheme.outline,
         onClick = onAddClick,
         modifier = Modifier.weight(0.2f)
     )
@@ -320,7 +320,7 @@ private fun CategoryItem(
         )
 
         PlusButton(
-            tint = Color.Gray,
+            tint = MaterialTheme.colorScheme.outline,
             onClick = onAddClick,
             modifier = Modifier.weight(0.2f)
         )

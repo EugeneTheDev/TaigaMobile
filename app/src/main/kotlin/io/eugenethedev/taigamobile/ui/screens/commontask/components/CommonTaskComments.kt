@@ -6,10 +6,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,7 +39,7 @@ fun LazyListScope.CommonTaskComments(
         if (index < comments.lastIndex) {
             Divider(
                 modifier = Modifier.padding(vertical = 12.dp),
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.outline
             )
         }
     }
@@ -85,7 +85,7 @@ private fun CommentItem(
                 Icon(
                     painter = painterResource(R.drawable.ic_delete),
                     contentDescription = null,
-                    tint = Color.Red
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }

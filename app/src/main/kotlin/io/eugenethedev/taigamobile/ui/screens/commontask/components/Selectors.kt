@@ -6,7 +6,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -227,7 +226,7 @@ private fun SprintItem(
 
     sprint.takeIf { it != CommonTaskViewModel.SPRINT_HEADER }?.also {
         Surface(
-            contentColor = if (it.isClosed) Color.Gray else MaterialTheme.colorScheme.onSurface
+            contentColor = if (it.isClosed) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
         ) {
             Column {
                 Text(

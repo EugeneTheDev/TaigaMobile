@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.components.pickers
 
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -81,7 +79,7 @@ fun DatePicker(
                 onOpen()
                 dialog.show(fragmentManager, dialog.toString())
             },
-            color = date?.let { MaterialTheme.colorScheme.onSurface } ?: Color.Gray
+            color = date?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.outline
         )
 
         if (showClearButton && date != null) { // do not show clear button if there is no date (sounds right to me)
@@ -94,7 +92,7 @@ fun DatePicker(
                 Icon(
                     painter = painterResource(R.drawable.ic_remove),
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.outline
                 )
             }
         }

@@ -10,7 +10,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +69,7 @@ fun EditSprintDialog(
             val pickerStyle = MaterialTheme.typography.titleMedium.merge(TextStyle(fontWeight = FontWeight.Normal))
             val pickerModifier = Modifier.border(
                 width = 1.5.dp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.outline,
                 shape = shapes.small // TODO wait for material3 update
             ).padding(6.dp)
 

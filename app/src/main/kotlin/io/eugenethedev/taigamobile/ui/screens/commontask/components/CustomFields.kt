@@ -53,7 +53,7 @@ fun CustomField(
         Text(
             text = it,
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.outline
         )
     }
 
@@ -68,7 +68,7 @@ fun CustomField(
     val borderColor = when (fieldState) {
         FieldState.Focused -> MaterialTheme.colorScheme.primary
         FieldState.Error -> MaterialTheme.colorScheme.error
-        FieldState.Default -> if (value == customField.value) Color.Gray else MaterialTheme.colorScheme.primary
+        FieldState.Default -> if (value == customField.value) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
     }
 
     Row {
@@ -162,7 +162,7 @@ fun CustomField(
                     Icon(
                         painter = painterResource(R.drawable.ic_edit),
                         contentDescription = null,
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             } else {
@@ -183,7 +183,7 @@ fun CustomField(
                 Icon(
                     painter = painterResource(R.drawable.ic_save),
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.outline
                 )
             }
 
@@ -432,7 +432,7 @@ private fun CustomFieldDropdown(
                 Text(
                     text = stringResource(R.string.empty),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
         },

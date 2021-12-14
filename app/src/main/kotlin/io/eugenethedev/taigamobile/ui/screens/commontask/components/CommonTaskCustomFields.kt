@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -40,7 +40,7 @@ fun LazyListScope.CommonTaskCustomFields(
         if (index < customFields.lastIndex) {
             Divider(
                 modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.outline
             )
         }
     }
