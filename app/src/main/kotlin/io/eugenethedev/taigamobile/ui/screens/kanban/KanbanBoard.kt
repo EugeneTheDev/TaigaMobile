@@ -31,6 +31,7 @@ import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.*
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
@@ -48,8 +49,7 @@ fun KanbanBoard(
     val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
-    val backgroundCellColor = taigaGrayDynamic
-    val headerColor = taigaDarkGrayDynamic
+    val backgroundCellColor = MaterialTheme.colorScheme.surfaceColorAtElevation(kanbanBoardTonalElevation)
 
     swimlanes.takeIf { it.isNotEmpty() }?.let {
         Row(
@@ -105,7 +105,7 @@ fun KanbanBoard(
                     cellWidth = cellWidth,
                     cellOuterPadding = cellOuterPadding,
                     stripeColor = status.color.toColor(),
-                    backgroundColor = headerColor,
+                    backgroundColor = backgroundCellColor,
                     onAddClick = { navigateToCreateTask(status.id, selectedSwimlane?.id) }
                 )
 
