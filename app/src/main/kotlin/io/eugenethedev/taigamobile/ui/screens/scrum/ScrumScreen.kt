@@ -306,21 +306,21 @@ private fun SprintItem(
             }
         }
 
-        Button(
-            onClick = { navigateToBoard(sprint) },
-            modifier = Modifier.weight(0.3f),
-            colors = buttonColors(
-                containerColor = if (!sprint.isClosed) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                        .compositeOver(MaterialTheme.colorScheme.surface)
-                }
-            )
-        ) {
-            Text(stringResource(R.string.taskboard))
+        buttonColors().let {
+            val containerColor by it.containerColor(!sprint.isClosed)
+            val contentColor by it.contentColor(!sprint.isClosed)
+
+            Button(
+                onClick = { navigateToBoard(sprint) },
+                modifier = Modifier.weight(0.3f),
+                colors = buttonColors(
+                    containerColor = containerColor,
+                    contentColor = contentColor
+                )
+            ) {
+                Text(stringResource(R.string.taskboard))
+            }
         }
-        
     }
 }
 
