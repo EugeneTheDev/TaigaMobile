@@ -20,7 +20,7 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.theme.shapes
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCommentBar(
     createComment: (String) -> Unit
@@ -59,23 +59,27 @@ fun CreateCommentBar(
             )
         }
 
-        IconButton(
-            onClick = {
-                commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
-                    createComment(it)
-                    commentTextValue = TextFieldValue()
-                    keyboardController?.hide()
-                }
-            },
-            modifier = Modifier.size(36.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+        CompositionLocalProvider(
+            LocalMinimumTouchTargetEnforcement provides false
         ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_send),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+            IconButton(
+                onClick = {
+                    commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
+                        createComment(it)
+                        commentTextValue = TextFieldValue()
+                        keyboardController?.hide()
+                    }
+                },
+                modifier = Modifier.size(36.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_send),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }

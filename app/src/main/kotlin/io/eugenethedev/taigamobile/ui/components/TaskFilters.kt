@@ -414,7 +414,7 @@ private fun FilterChip(
 ) = Chip(
     onClick = onClick,
     color = filter.color?.toColor() ?: taigaGrayStatic,
-    modifier = Modifier.padding(end = 4.dp, bottom = 6.dp)
+    modifier = Modifier.padding(end = 4.dp)
 ) {
     val space = 6.dp
 

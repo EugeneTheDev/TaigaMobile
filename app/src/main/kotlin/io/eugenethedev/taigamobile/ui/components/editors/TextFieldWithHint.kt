@@ -51,7 +51,8 @@ fun TextFieldWithHint(
     hasBorder: Boolean = false
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
-    var outlineColor by remember { mutableStateOf(Color.Gray) }
+    val unfocusedColor = MaterialTheme.colorScheme.outline
+    var outlineColor by remember { mutableStateOf(unfocusedColor) }
 
     Box(
         contentAlignment = Alignment.CenterStart,
@@ -59,8 +60,8 @@ fun TextFieldWithHint(
             .padding(horizontal = horizontalPadding, vertical = verticalPadding)
             .let {
                 if (hasBorder) {
-                    it.border(width = 2.dp, color = outlineColor, shape = shapes.medium) // TODO material3 update
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                    it.border(width = 2.dp, color = outlineColor, shape = shapes.large)
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
                 } else {
                     it
                 }
@@ -70,7 +71,7 @@ fun TextFieldWithHint(
             Text(
                 text = stringResource(hintId),
                 style = style,
-                color = Color.Gray
+                color = unfocusedColor
             )
         }
 
@@ -81,7 +82,7 @@ fun TextFieldWithHint(
                 .focusRequester(focusRequester)
                 .onFocusChanged {
                     onFocusChange(it.isFocused)
-                    outlineColor = if (it.isFocused) primaryColor else Color.Gray
+                    outlineColor = if (it.isFocused) primaryColor else unfocusedColor
                 },
             textStyle = style.merge(TextStyle(color = textColor)),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
