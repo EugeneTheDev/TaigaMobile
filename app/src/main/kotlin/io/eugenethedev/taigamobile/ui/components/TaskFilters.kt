@@ -173,178 +173,180 @@ fun TaskFilters(
                 scrimColor = Color.Transparent,
                 content = {},
                 sheetContent = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                            .padding(space)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.filters),
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(start = space)
-                        )
+                    Surface {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .verticalScroll(rememberScrollState())
+                                .padding(space)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.filters),
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier.padding(start = space)
+                            )
 
-                        Spacer(Modifier.height(space))
+                            Spacer(Modifier.height(space))
 
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            FlowRow {
-                                selected.types.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(types = selected.types - it)) }
-                                    )
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                FlowRow {
+                                    selected.types.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(types = selected.types - it)) }
+                                        )
+                                    }
+
+                                    selected.severities.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(severities = selected.severities - it)) }
+                                        )
+                                    }
+
+                                    selected.priorities.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(priorities = selected.priorities - it)) }
+                                        )
+                                    }
+
+                                    selected.statuses.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(statuses = selected.statuses - it)) }
+                                        )
+                                    }
+
+                                    selected.tags.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(tags = selected.tags - it)) }
+                                        )
+                                    }
+
+                                    selected.assignees.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            noNameId = R.string.unassigned,
+                                            onRemoveClick = { onSelect(selected.copy(assignees = selected.assignees - it)) }
+                                        )
+                                    }
+
+                                    selected.roles.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(roles = selected.roles - it)) }
+                                        )
+                                    }
+
+                                    selected.createdBy.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            onRemoveClick = { onSelect(selected.copy(createdBy = selected.createdBy - it)) }
+                                        )
+                                    }
+
+                                    selected.epics.forEach {
+                                        FilterChip(
+                                            filter = it,
+                                            noNameId = R.string.not_in_an_epic,
+                                            onRemoveClick = { onSelect(selected.copy(epics = selected.epics - it)) }
+                                        )
+                                    }
                                 }
 
-                                selected.severities.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(severities = selected.severities - it)) }
-                                    )
+                                if (selected.filtersNumber > 0) {
+                                    Spacer(Modifier.height(space))
                                 }
 
-                                selected.priorities.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(priorities = selected.priorities - it)) }
+                                val sectionsSpace = 6.dp
+
+                                unselectedFilters.types.ifHasData {
+                                    Section(
+                                        titleId = R.string.type_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(types = selected.types + it)) }
                                     )
+                                    Spacer(Modifier.height(sectionsSpace))
                                 }
 
-                                selected.statuses.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(statuses = selected.statuses - it)) }
+                                unselectedFilters.severities.ifHasData {
+                                    Section(
+                                        titleId = R.string.severity_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(severities = selected.severities + it)) }
                                     )
+                                    Spacer(Modifier.height(sectionsSpace))
                                 }
 
-                                selected.tags.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(tags = selected.tags - it)) }
+                                unselectedFilters.priorities.ifHasData {
+                                    Section(
+                                        titleId = R.string.priority_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(priorities = selected.priorities + it)) }
                                     )
+                                    Spacer(Modifier.height(sectionsSpace))
                                 }
 
-                                selected.assignees.forEach {
-                                    FilterChip(
-                                        filter = it,
+                                unselectedFilters.statuses.ifHasData {
+                                    Section(
+                                        titleId = R.string.status_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(statuses = selected.statuses + it)) }
+                                    )
+                                    Spacer(Modifier.height(sectionsSpace))
+                                }
+
+                                unselectedFilters.tags.ifHasData {
+                                    Section(
+                                        titleId = R.string.tags_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(tags = selected.tags + it)) }
+                                    )
+                                    Spacer(Modifier.height(sectionsSpace))
+                                }
+
+                                unselectedFilters.assignees.ifHasData {
+                                    Section(
+                                        titleId = R.string.assignees_title,
                                         noNameId = R.string.unassigned,
-                                        onRemoveClick = { onSelect(selected.copy(assignees = selected.assignees - it)) }
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(assignees = selected.assignees + it)) }
                                     )
+                                    Spacer(Modifier.height(sectionsSpace))
                                 }
 
-                                selected.roles.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(roles = selected.roles - it)) }
+                                unselectedFilters.roles.ifHasData {
+                                    Section(
+                                        titleId = R.string.role_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(roles = selected.roles + it)) }
                                     )
+                                    Spacer(Modifier.height(sectionsSpace))
                                 }
 
-                                selected.createdBy.forEach {
-                                    FilterChip(
-                                        filter = it,
-                                        onRemoveClick = { onSelect(selected.copy(createdBy = selected.createdBy - it)) }
+                                unselectedFilters.createdBy.ifHasData {
+                                    Section(
+                                        titleId = R.string.created_by_title,
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(createdBy = selected.createdBy + it)) }
                                     )
+                                    Spacer(Modifier.height(sectionsSpace))
                                 }
 
-                                selected.epics.forEach {
-                                    FilterChip(
-                                        filter = it,
+                                unselectedFilters.epics.ifHasData {
+                                    Section(
+                                        titleId = R.string.epic_title,
                                         noNameId = R.string.not_in_an_epic,
-                                        onRemoveClick = { onSelect(selected.copy(epics = selected.epics - it)) }
+                                        filters = it,
+                                        onSelect = { onSelect(selected.copy(epics = selected.epics + it)) }
                                     )
                                 }
                             }
 
-                            if (selected.filtersNumber > 0) {
-                                Spacer(Modifier.height(space))
-                            }
-
-                            val sectionsSpace = 6.dp
-
-                            unselectedFilters.types.ifHasData {
-                                Section(
-                                    titleId = R.string.type_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(types = selected.types + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.severities.ifHasData {
-                                Section(
-                                    titleId = R.string.severity_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(severities = selected.severities + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.priorities.ifHasData {
-                                Section(
-                                    titleId = R.string.priority_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(priorities = selected.priorities + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.statuses.ifHasData {
-                                Section(
-                                    titleId = R.string.status_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(statuses = selected.statuses + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.tags.ifHasData {
-                                Section(
-                                    titleId = R.string.tags_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(tags = selected.tags + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.assignees.ifHasData {
-                                Section(
-                                    titleId = R.string.assignees_title,
-                                    noNameId = R.string.unassigned,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(assignees = selected.assignees + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.roles.ifHasData {
-                                Section(
-                                    titleId = R.string.role_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(roles = selected.roles + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.createdBy.ifHasData {
-                                Section(
-                                    titleId = R.string.created_by_title,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(createdBy = selected.createdBy + it)) }
-                                )
-                                Spacer(Modifier.height(sectionsSpace))
-                            }
-
-                            unselectedFilters.epics.ifHasData {
-                                Section(
-                                    titleId = R.string.epic_title,
-                                    noNameId = R.string.not_in_an_epic,
-                                    filters = it,
-                                    onSelect = { onSelect(selected.copy(epics = selected.epics + it)) }
-                                )
-                            }
+                            Spacer(Modifier.height(space))
                         }
-
-                        Spacer(Modifier.height(space))
                     }
                 }
             )

@@ -28,7 +28,9 @@ import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.shapes
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
@@ -137,6 +139,7 @@ private fun AddTagField(
             onDismissRequest = {},
             properties = PopupProperties(clippingEnabled = false),
             modifier = Modifier.heightIn(max = 200.dp)
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation))
         ) {
             tags.forEach {
                 DropdownMenuItem(onClick = { onSaveClick(it) }) {

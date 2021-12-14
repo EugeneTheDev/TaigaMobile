@@ -1,10 +1,12 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -14,6 +16,8 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.commontask.NavigationActions
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 
 @Composable
 fun CommonTaskAppBar(
@@ -71,6 +75,9 @@ fun CommonTaskAppBar(
                 }
 
                 DropdownMenu(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation)
+                    ),
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false }
                 ) {

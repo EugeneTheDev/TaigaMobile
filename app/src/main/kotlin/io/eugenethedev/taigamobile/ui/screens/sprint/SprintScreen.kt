@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.sprint
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -26,6 +27,7 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.EditSprintDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.utils.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -167,6 +169,9 @@ fun SprintScreenContent(
                 }
 
                 DropdownMenu(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation)
+                    ),
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false }
                 ) {

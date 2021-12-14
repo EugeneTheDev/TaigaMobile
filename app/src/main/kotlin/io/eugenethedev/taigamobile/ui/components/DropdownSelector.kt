@@ -3,6 +3,7 @@ package io.eugenethedev.taigamobile.ui.components
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -14,7 +15,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 
 /**
  * Dropdown selector with animated arrow
@@ -44,7 +47,8 @@ fun <T> DropdownSelector(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = horizontalArrangement,
-            modifier = Modifier.let { if (takeMaxWidth) it.fillMaxWidth() else it }
+            modifier = Modifier
+                .let { if (takeMaxWidth) it.fillMaxWidth() else it }
                 .clickableUnindicated {
                     isExpanded = !isExpanded
                 }
@@ -66,6 +70,9 @@ fun <T> DropdownSelector(
         }
 
         DropdownMenu(
+            modifier = Modifier.background(
+                MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation)
+            ),
             expanded = isExpanded,
             onDismissRequest = {
                 isExpanded = false
