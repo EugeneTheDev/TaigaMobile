@@ -54,7 +54,7 @@ fun LazyListScope.CommonTaskDueDate(
                     Icon(
                         painter = painterResource(R.drawable.ic_clock),
                         contentDescription = null,
-                        tint = commonTask.dueDate?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary,
+                        tint = commonTask.dueDate?.let { MaterialTheme.colorScheme.inverseOnSurface } ?: MaterialTheme.colorScheme.primary,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -66,7 +66,6 @@ fun LazyListScope.CommonTaskDueDate(
                 hintId = R.string.no_due_date,
                 modifier = Modifier.padding(6.dp)
             )
-
         }
     }
 }

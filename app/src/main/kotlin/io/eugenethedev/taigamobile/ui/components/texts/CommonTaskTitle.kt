@@ -57,14 +57,14 @@ fun CommonTaskTitle(
     if (tags.isNotEmpty()) {
         Spacer(Modifier.height(4.dp))
 
-        FlowRow {
+        FlowRow(
+            mainAxisSpacing = 4.dp,
+            crossAxisSpacing = 4.dp
+        ) {
             tags.forEach {
                 val bgColor = it.color.toColor()
 
-                Chip(
-                    color = bgColor,
-                    modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
-                ) {
+                Chip(color = bgColor) {
                     Text(
                         text = it.name,
                         color = bgColor.textColor(),

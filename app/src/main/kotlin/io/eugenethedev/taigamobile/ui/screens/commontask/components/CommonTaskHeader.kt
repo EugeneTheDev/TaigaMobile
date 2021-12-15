@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
@@ -32,7 +33,11 @@ fun LazyListScope.CommonTaskHeader(
     val badgesPadding = 8.dp
 
     item {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        FlowRow(
+            crossAxisAlignment = FlowCrossAxisAlignment.Center,
+            crossAxisSpacing = badgesPadding,
+            mainAxisSpacing = badgesPadding
+        ) {
             // epic color
             if (commonTask.taskType == CommonTaskType.Epic) {
                 ColorPicker(
@@ -41,7 +46,6 @@ fun LazyListScope.CommonTaskHeader(
                     onColorPicked = { editActions.editEpicColor.select(it.toHex()) }
                 )
 
-                Spacer(Modifier.width(badgesPadding))
             }
 
             // status
@@ -52,36 +56,30 @@ fun LazyListScope.CommonTaskHeader(
                 isLoading = editActions.editStatus.isResultLoading
             )
 
-            Spacer(Modifier.width(badgesPadding))
-
             // sprint
             if (commonTask.taskType != CommonTaskType.Epic) {
                 ClickableBadge(
                     text = commonTask.sprint?.name ?: stringResource(R.string.no_sprint),
-                    color = commonTask.sprint?.let { MaterialTheme.colorScheme.primary } ?: MaterialTheme.colorScheme.outline,
+                    color = commonTask.sprint?.let { MaterialTheme.colorScheme.primary }
+                        ?: MaterialTheme.colorScheme.outline,
                     onClick = { showSprintSelector() },
                     isLoading = editActions.editSprint.isResultLoading,
                     isClickable = commonTask.taskType != CommonTaskType.Task
                 )
             }
 
-            Spacer(Modifier.width(badgesPadding))
-
             // swimlane
             if (commonTask.taskType == CommonTaskType.UserStory) {
                 ClickableBadge(
                     text = commonTask.swimlane?.name ?: stringResource(R.string.unclassifed),
-                    color = commonTask.swimlane?.let { MaterialTheme.colorScheme.primary } ?: MaterialTheme.colorScheme.outline,
+                    color = commonTask.swimlane?.let { MaterialTheme.colorScheme.primary }
+                        ?: MaterialTheme.colorScheme.outline,
                     isLoading = editActions.editSwimlane.isResultLoading,
                     onClick = { showSwimlaneSelector() }
                 )
             }
-        }
 
-        if (commonTask.taskType == CommonTaskType.Issue) {
-            Spacer(Modifier.height(badgesPadding))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (commonTask.taskType == CommonTaskType.Issue) {
                 // type
                 ClickableBadge(
                     text = commonTask.type!!.name,
@@ -90,8 +88,6 @@ fun LazyListScope.CommonTaskHeader(
                     isLoading = editActions.editType.isResultLoading
                 )
 
-                Spacer(Modifier.width(badgesPadding))
-
                 // severity
                 ClickableBadge(
                     text = commonTask.severity!!.name,
@@ -99,8 +95,6 @@ fun LazyListScope.CommonTaskHeader(
                     onClick = { showSeveritySelector() },
                     isLoading = editActions.editSeverity.isResultLoading
                 )
-
-                Spacer(Modifier.width(badgesPadding))
 
                 // priority
                 ClickableBadge(

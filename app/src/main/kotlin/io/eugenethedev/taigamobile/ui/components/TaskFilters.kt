@@ -47,6 +47,7 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPadding
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.theme.taigaGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
@@ -169,11 +170,13 @@ fun TaskFilters(
             ModalBottomSheetLayout(
                 modifier = Modifier.fillMaxSize(),
                 sheetState = bottomSheetState,
-                sheetShape = shapes.medium, // TODO wait for material3 update
+                sheetShape = shapes.medium,
                 scrimColor = Color.Transparent,
                 content = {},
                 sheetContent = {
-                    Surface {
+                    Surface(
+                        tonalElevation = dialogTonalElevation
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -189,7 +192,7 @@ fun TaskFilters(
                             Spacer(Modifier.height(space))
 
                             Column(modifier = Modifier.fillMaxWidth()) {
-                                FlowRow {
+                                FlowRow(mainAxisSpacing = 4.dp) {
                                     selected.types.forEach {
                                         FilterChip(
                                             filter = it,
@@ -394,7 +397,10 @@ private fun <T : Filter> Section(
     }
 
     AnimatedVisibility(visible = isExpanded) {
-        FlowRow(modifier = Modifier.padding(vertical = 2.dp, horizontal = 6.dp)) {
+        FlowRow(
+            modifier = Modifier.padding(vertical = 2.dp, horizontal = 6.dp),
+            mainAxisSpacing = 4.dp
+        ) {
             filters.forEach {
                 FilterChip(
                     filter = it,
@@ -415,8 +421,7 @@ private fun FilterChip(
     onRemoveClick: (() -> Unit)? = null
 ) = Chip(
     onClick = onClick,
-    color = filter.color?.toColor() ?: taigaGrayStatic,
-    modifier = Modifier.padding(end = 4.dp)
+    color = filter.color?.toColor() ?: taigaGrayStatic
 ) {
     val space = 6.dp
 

@@ -236,7 +236,10 @@ private fun StoryItem(
 
         Spacer(Modifier.height(8.dp))
 
-        FlowRow {
+        FlowRow(
+            mainAxisSpacing = 4.dp,
+            crossAxisSpacing = 4.dp
+        ) {
             assignees.forEach {
                 Image(
                     painter = rememberImagePainter(
@@ -248,9 +251,7 @@ private fun StoryItem(
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(end = 4.dp, bottom = 4.dp)
-                        .size(28.dp)
+                    modifier = Modifier.size(28.dp)
                         .clip(CircleShape)
                         .weight(0.2f, fill = false)
                 )
