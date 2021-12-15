@@ -1,13 +1,10 @@
 package io.eugenethedev.taigamobile.viewmodels
 
 import io.eugenethedev.taigamobile.ui.screens.dashboard.DashboardViewModel
-import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
-import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
 import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.viewmodels.utils.assertResultEquals
-import io.eugenethedev.taigamobile.viewmodels.utils.createDeniedException
 import io.eugenethedev.taigamobile.viewmodels.utils.notFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
