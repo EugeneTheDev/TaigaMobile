@@ -5,10 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldColors
-import androidx.compose.material3.*
+import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.shapes
 
 @Composable
 fun LoginScreen(
@@ -241,7 +243,6 @@ fun LoginTextField(
     val focusManager = LocalFocusManager.current
 
     val textStyle = MaterialTheme.typography.titleMedium.merge(TextStyle(fontWeight = FontWeight.Normal))
-    // TODO update to comply with material3 color schema
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -255,7 +256,23 @@ fun LoginTextField(
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        isError = isError
+        isError = isError,
+        shape = shapes.medium,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = androidx.compose.material3.LocalContentColor.current.copy(LocalContentAlpha.current),
+            cursorColor = MaterialTheme.colorScheme.primary,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled),
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            leadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
+            trailingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
+            errorTrailingIconColor = MaterialTheme.colorScheme.error,
+            focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            placeholderColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
+        )
     )
 }
 
