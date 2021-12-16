@@ -26,7 +26,7 @@ fun LazyListScope.CommonTaskDueDate(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .background(taigaGrayDynamic, shapes.small)
+                .background(taigaGrayDynamic, shapes.medium)
 
         ) {
             Box(
@@ -40,7 +40,7 @@ fun LazyListScope.CommonTaskDueDate(
                             DueDateStatus.DueSoon -> taigaOrange
                             DueDateStatus.PastDue -> taigaRed
                         }.takeUnless { editActions.editDueDate.isResultLoading } ?: taigaDarkGrayDynamic,
-                        shape = shapes.small
+                        shape = shapes.medium
                     )
                     .padding(4.dp)
             ) {
