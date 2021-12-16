@@ -132,7 +132,8 @@ fun SettingsScreenContent(
                 isAlertVisible = false
                 logout()
             },
-            onDismiss = { isAlertVisible = false }
+            onDismiss = { isAlertVisible = false },
+            iconId = R.drawable.ic_logout
         )
     }
 

@@ -91,7 +91,8 @@ private fun EpicItemWithAction(
                 isAlertVisible = false
                 onRemoveClick()
             },
-            onDismiss = { isAlertVisible = false }
+            onDismiss = { isAlertVisible = false },
+            iconId = R.drawable.ic_remove
         )
     }
 

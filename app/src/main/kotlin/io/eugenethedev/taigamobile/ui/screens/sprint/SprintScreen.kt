@@ -150,7 +150,8 @@ fun SprintScreenContent(
                             isDeleteAlertVisible = false
                             deleteSprint()
                         },
-                        onDismiss = { isDeleteAlertVisible = false }
+                        onDismiss = { isDeleteAlertVisible = false },
+                        iconId = R.drawable.ic_delete
                     )
                 }
 

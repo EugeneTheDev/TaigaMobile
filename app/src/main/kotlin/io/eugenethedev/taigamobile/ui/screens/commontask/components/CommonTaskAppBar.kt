@@ -56,7 +56,8 @@ fun CommonTaskAppBar(
                             isDeleteAlertVisible = false
                             editActions.deleteTask()
                         },
-                        onDismiss = { isDeleteAlertVisible = false }
+                        onDismiss = { isDeleteAlertVisible = false },
+                        iconId = R.drawable.ic_delete
                     )
                 }
 
@@ -70,7 +71,8 @@ fun CommonTaskAppBar(
                             isPromoteAlertVisible = false
                             editActions.promoteTask()
                         },
-                        onDismiss = { isPromoteAlertVisible = false }
+                        onDismiss = { isPromoteAlertVisible = false },
+                        iconId = R.drawable.ic_arrow_upward
                     )
                 }
 

@@ -179,7 +179,8 @@ fun LoginScreenContent(
                     isAlertVisible = false
                     loginAction()
                 },
-                onDismiss = { isAlertVisible = false }
+                onDismiss = { isAlertVisible = false },
+                iconId = R.drawable.ic_insecure
             )
         }
 

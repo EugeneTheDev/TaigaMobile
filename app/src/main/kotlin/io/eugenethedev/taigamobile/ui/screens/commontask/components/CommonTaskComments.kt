@@ -66,7 +66,8 @@ private fun CommentItem(
                 isAlertVisible = false
                 onDeleteClick()
             },
-            onDismiss = { isAlertVisible = false }
+            onDismiss = { isAlertVisible = false },
+            iconId = R.drawable.ic_delete
         )
     }
 
