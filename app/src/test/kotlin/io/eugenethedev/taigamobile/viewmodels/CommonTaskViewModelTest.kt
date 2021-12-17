@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels
 
+import android.util.Log
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.testdata.Epic
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
@@ -14,6 +15,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class CommonTaskViewModelTest : BaseViewModelTest() {
@@ -206,5 +208,47 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         viewModel.linkToEpic(errorEpic)
         assertIs<ErrorResult<Unit>>(viewModel.linkToEpicResult.value)
+    }
+
+    @Test
+    fun `test unlink to epic`(): Unit = runBlocking {
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
+        val mockEpic = mockk<EpicShortInfo>(relaxed = true)
+        val errorEpic = EpicShortInfo(
+            id = mockEpic.id + 1,
+            title = mockEpic.title,
+            ref = mockEpic.ref,
+            color = mockEpic.color
+        )
+
+        initOnOpen(mockCommonTaskType)
+        coEvery {
+            mockTaskRepository.unlinkFromEpic(
+                neq(mockEpic.id),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.unlinkFromEpic(mockEpic)
+        checkEqualityForLoadData(mockCommonTaskType)
+        assertResultEquals(SuccessResult(Unit), viewModel.linkToEpicResult.value)
+
+        viewModel.unlinkFromEpic(errorEpic)
+        assertIs<ErrorResult<Unit>>(viewModel.linkToEpicResult.value)
+    }
+
+    @Test
+    fun `test search team`() = runBlocking {
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
+        val teamName = "teamName"
+
+        initOnOpen(mockCommonTaskType)
+        checkEqualityForLoadData(mockCommonTaskType)
+
+        viewModel.searchEpics(teamName)
+        assertEquals(
+            expected = mockListOfTeamMember.filter { it.name == teamName }.map { it.toUser() },
+            actual = viewModel.teamSearched.value
+        )
     }
 }
