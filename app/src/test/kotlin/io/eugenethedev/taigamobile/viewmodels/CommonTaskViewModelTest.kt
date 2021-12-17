@@ -50,10 +50,12 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         coEvery { mockTaskRepository.getStatusByType(any(), any()) } returns mockListOfStatus
     }
 
-    private fun initOnOpen(mockCommonTaskType: CommonTaskType) {
+    private fun initOnOpen() {
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val testCommonTaskId = 1L
 
         viewModel.onOpen(testCommonTaskId, mockCommonTaskType)
+        checkEqualityForLoadData(mockCommonTaskType)
     }
 
 
@@ -96,7 +98,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test select status`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockStatus = mockk<Status>(relaxed = true)
         val errorStatus = Status(
             id = mockStatus.id + 1,
@@ -105,7 +106,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             type = mockStatus.type
         )
 
-        initOnOpen(mockCommonTaskType)
+        initOnOpen()
         coEvery {
             mockTaskRepository.changeStatus(
                 any(),
@@ -117,7 +118,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
 
         viewModel.selectStatus(mockStatus)
-        checkEqualityForLoadData(mockCommonTaskType)
         assertResultEquals(SuccessResult(mockStatus.type), viewModel.statusSelectResult.value)
 
         viewModel.selectStatus(errorStatus)
@@ -126,7 +126,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test select sprint`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockSprint = mockk<Sprint>(relaxed = true)
         val errorSprint = Sprint(
             id = mockSprint.id + 1,
@@ -138,7 +137,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             isClosed = mockSprint.isClosed
         )
 
-        initOnOpen(mockCommonTaskType)
+        initOnOpen()
         coEvery {
             mockTaskRepository.changeSprint(
                 any(),
@@ -149,7 +148,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
 
         viewModel.selectSprint(mockSprint)
-        checkEqualityForLoadData(mockCommonTaskType)
         assertResultEquals(SuccessResult(Unit), viewModel.selectSprintResult.value)
 
         viewModel.selectSprint(errorSprint)
@@ -176,7 +174,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test link to epic`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockEpic = mockk<CommonTask>(relaxed = true)
         val errorEpic = CommonTask(
             id = mockEpic.id + 1,
@@ -189,7 +186,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             isClosed = mockEpic.isClosed
         )
 
-        initOnOpen(mockCommonTaskType)
+        initOnOpen()
         coEvery {
             mockTaskRepository.linkToEpic(
                 neq(mockEpic.id),
@@ -198,7 +195,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
 
         viewModel.linkToEpic(mockEpic)
-        checkEqualityForLoadData(mockCommonTaskType)
         assertResultEquals(SuccessResult(Unit), viewModel.linkToEpicResult.value)
 
         viewModel.linkToEpic(errorEpic)
@@ -207,7 +203,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test unlink to epic`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockEpic = mockk<EpicShortInfo>(relaxed = true)
         val errorEpic = EpicShortInfo(
             id = mockEpic.id + 1,
@@ -216,7 +211,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             color = mockEpic.color
         )
 
-        initOnOpen(mockCommonTaskType)
+        initOnOpen()
         coEvery {
             mockTaskRepository.unlinkFromEpic(
                 neq(mockEpic.id),
@@ -225,7 +220,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
 
         viewModel.unlinkFromEpic(mockEpic)
-        checkEqualityForLoadData(mockCommonTaskType)
         assertResultEquals(SuccessResult(Unit), viewModel.linkToEpicResult.value)
 
         viewModel.unlinkFromEpic(errorEpic)
@@ -234,12 +228,9 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test search team`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val teamName = "teamName"
 
-        initOnOpen(mockCommonTaskType)
-        checkEqualityForLoadData(mockCommonTaskType)
-
+        initOnOpen()
         viewModel.searchEpics(teamName)
         assertEquals(
             expected = mockListOfTeamMember.filter { it.name == teamName }.map { it.toUser() },
@@ -249,12 +240,9 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test add assignee`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockUser = mockk<User>(relaxed = true)
 
-        initOnOpen(mockCommonTaskType)
-        checkEqualityForLoadData(mockCommonTaskType)
-
+        initOnOpen()
         viewModel.addAssignee(mockUser)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
@@ -275,12 +263,9 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test remove assignee`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockUser = mockk<User>(relaxed = true)
 
-        initOnOpen(mockCommonTaskType)
-        checkEqualityForLoadData(mockCommonTaskType)
-
+        initOnOpen()
         viewModel.removeAssignee(mockUser)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
@@ -301,12 +286,9 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test add watcher`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockUser = mockk<User>(relaxed = true)
 
-        initOnOpen(mockCommonTaskType)
-        checkEqualityForLoadData(mockCommonTaskType)
-
+        initOnOpen()
         viewModel.addWatcher(mockUser)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
@@ -327,12 +309,9 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test remove watcher`(): Unit = runBlocking {
-        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val mockUser = mockk<User>(relaxed = true)
 
-        initOnOpen(mockCommonTaskType)
-        checkEqualityForLoadData(mockCommonTaskType)
-
+        initOnOpen()
         viewModel.removeWatcher(mockUser)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
@@ -349,5 +328,53 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
         viewModel.removeWatcher(mockUser)
         assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
+    }
+
+    @Test
+    fun `test create comment`(): Unit = runBlocking {
+        val comment = "comment"
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.createComment(
+                any(),
+                any(),
+                neq(comment),
+                any()
+            )
+        } throws notFoundException
+
+        viewModel.createComment(comment)
+        assertResultEquals(SuccessResult(mockListOfComments), viewModel.comments.value)
+
+        viewModel.createComment(comment + "error")
+        assertIs<ErrorResult<List<Comment>>>(viewModel.comments.value)
+    }
+
+    @Test
+    fun `test delete comment`(): Unit = runBlocking {
+        val mockComment = mockk<Comment>(relaxed = true)
+        val errorComment = Comment(
+            id = mockComment.id + "error",
+            author = mockComment.author,
+            text = mockComment.text,
+            postDateTime = mockComment.postDateTime,
+            deleteDate = mockComment.deleteDate
+        )
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.deleteComment(
+                any(),
+                any(),
+                neq(mockComment.id)
+            )
+        } throws notFoundException
+
+        viewModel.deleteComment(mockComment)
+        assertResultEquals(SuccessResult(mockListOfComments), viewModel.comments.value)
+
+        viewModel.deleteComment(errorComment)
+        assertIs<ErrorResult<List<Comment>>>(viewModel.comments.value)
     }
 }
