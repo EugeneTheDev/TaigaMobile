@@ -11,6 +11,7 @@ import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import java.io.InputStream
 import kotlin.test.*
 
 class CommonTaskViewModelTest : BaseViewModelTest() {
@@ -376,5 +377,52 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         viewModel.deleteComment(errorComment)
         assertIs<ErrorResult<List<Comment>>>(viewModel.comments.value)
+    }
+
+    @Test
+    fun `test delete attachment`(): Unit = runBlocking {
+        val mockAttachment = mockk<Attachment>(relaxed = true)
+        val errorAttachment = Attachment(
+            id = mockAttachment.id + 1L,
+            name = mockAttachment.name,
+            sizeInBytes = mockAttachment.sizeInBytes,
+            url = mockAttachment.url
+        )
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.deleteAttachment(
+                any(),
+                neq(mockAttachment.id)
+            )
+        } throws accessDeniedException
+
+        viewModel.deleteAttachment(mockAttachment)
+        assertResultEquals(SuccessResult(mockListOfAttachments), viewModel.attachments.value)
+
+        viewModel.deleteAttachment(errorAttachment)
+        assertIs<ErrorResult<List<Attachment>>>(viewModel.attachments.value)
+    }
+
+    @Test
+    fun `test add attachment`(): Unit = runBlocking {
+        val fileName = "fileName"
+        val mockInputStream = mockk<InputStream>(relaxed = true)
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.addAttachment(
+                any(),
+                any(),
+                neq(fileName),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.addAttachment(fileName, mockInputStream)
+        assertResultEquals(SuccessResult(mockListOfAttachments), viewModel.attachments.value)
+
+        viewModel.addAttachment(fileName + "error", mockInputStream)
+        assertIs<ErrorResult<List<Attachment>>>(viewModel.attachments.value)
     }
 }
