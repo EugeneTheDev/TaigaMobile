@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.viewmodels
 
 import android.util.Log
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.testdata.Epic
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
@@ -13,10 +14,7 @@ import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
+import kotlin.test.*
 
 class CommonTaskViewModelTest : BaseViewModelTest() {
     private lateinit var viewModel: CommonTaskViewModel
@@ -238,7 +236,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test search team`() = runBlocking {
+    fun `test search team`(): Unit = runBlocking {
         val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
         val teamName = "teamName"
 
@@ -250,5 +248,57 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             expected = mockListOfTeamMember.filter { it.name == teamName }.map { it.toUser() },
             actual = viewModel.teamSearched.value
         )
+    }
+
+    @Test
+    fun `test add assignee`(): Unit = runBlocking {
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
+        val mockUser = mockk<User>(relaxed = true)
+
+        initOnOpen(mockCommonTaskType)
+        checkEqualityForLoadData(mockCommonTaskType)
+
+        viewModel.addAssignee(mockUser)
+        assertResultEquals(
+            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
+            viewModel.assignees.value
+        )
+
+        coEvery {
+            mockTaskRepository.changeAssignees(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+        viewModel.addAssignee(mockUser)
+        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
+    }
+
+    @Test
+    fun `test remove assignee`(): Unit = runBlocking {
+        val mockCommonTaskType = mockk<CommonTaskType>(relaxed = true)
+        val mockUser = mockk<User>(relaxed = true)
+
+        initOnOpen(mockCommonTaskType)
+        checkEqualityForLoadData(mockCommonTaskType)
+
+        viewModel.removeAssignee(mockUser)
+        assertResultEquals(
+            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
+            viewModel.assignees.value
+        )
+
+        coEvery {
+            mockTaskRepository.changeAssignees(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+        viewModel.removeAssignee(mockUser)
+        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
     }
 }
