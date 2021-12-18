@@ -16,17 +16,21 @@ import io.eugenethedev.taigamobile.domain.entities.DueDateStatus
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.theme.*
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 
 fun LazyListScope.CommonTaskDueDate(
     commonTask: CommonTaskExtended,
     editActions: EditActions
 ) {
     item {
+        val background = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
+        val defaultIconBackground = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp)
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .background(taigaGrayDynamic, shapes.medium)
+                .background(background, shapes.medium)
 
         ) {
             Box(
@@ -35,11 +39,11 @@ fun LazyListScope.CommonTaskDueDate(
                     .aspectRatio(1f)
                     .background(
                         color = when (commonTask.dueDateStatus) {
-                            DueDateStatus.NotSet, null -> taigaDarkGrayDynamic
+                            DueDateStatus.NotSet, null -> defaultIconBackground
                             DueDateStatus.Set -> taigaGreenPositive
                             DueDateStatus.DueSoon -> taigaOrange
                             DueDateStatus.PastDue -> taigaRed
-                        }.takeUnless { editActions.editDueDate.isResultLoading } ?: taigaDarkGrayDynamic,
+                        }.takeUnless { editActions.editDueDate.isResultLoading } ?: defaultIconBackground,
                         shape = shapes.medium
                     )
                     .padding(4.dp)

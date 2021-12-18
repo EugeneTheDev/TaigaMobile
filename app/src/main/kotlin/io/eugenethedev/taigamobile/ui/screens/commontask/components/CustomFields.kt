@@ -65,10 +65,11 @@ fun CustomField(
     var buttonsAlignment = Alignment.CenterVertically
 
     var fieldState by remember { mutableStateOf(FieldState.Default) }
+    val indicationColor = if (value == customField.value) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
     val borderColor = when (fieldState) {
         FieldState.Focused -> MaterialTheme.colorScheme.primary
         FieldState.Error -> MaterialTheme.colorScheme.error
-        FieldState.Default -> if (value == customField.value) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
+        FieldState.Default -> indicationColor
     }
 
     Row {
@@ -183,7 +184,7 @@ fun CustomField(
                 Icon(
                     painter = painterResource(R.drawable.ic_save),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline
+                    tint = indicationColor
                 )
             }
 

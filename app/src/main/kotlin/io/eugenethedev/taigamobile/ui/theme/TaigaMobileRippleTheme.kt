@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 
 object TaigaMobileRippleTheme : RippleTheme {
     @Composable
-    override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
+    override fun defaultColor(): Color = MaterialTheme.colorScheme.secondary
 
     @Composable
     override fun rippleAlpha() = RippleAlpha(

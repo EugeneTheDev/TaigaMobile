@@ -42,12 +42,12 @@ fun CreateCommentBar(
                 .weight(1f)
                 .padding(end = 4.dp)
                 .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
+                    width = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outline,
                     shape = shapes.large
                 )
                 .clip(shapes.large)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f))
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                 .padding(8.dp),
             contentAlignment = Alignment.CenterStart
         ) {

@@ -165,9 +165,9 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     val selectSprintResult = MutableResultFlow<Unit>(NothingResult())
 
-    fun selectSprint(sprint: Sprint?) = viewModelScope.launch {
+    fun selectSprint(sprint: Sprint) = viewModelScope.launch {
         selectSprintResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint?.id, commonTaskVersion.value)
+            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint.takeIf { it != SPRINT_HEADER }?.id, commonTaskVersion.value)
             loadData().join()
             session.taskEdit.postUpdate()
         }

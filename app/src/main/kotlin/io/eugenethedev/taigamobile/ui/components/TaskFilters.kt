@@ -49,7 +49,6 @@ import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadd
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.shapes
-import io.eugenethedev.taigamobile.ui.theme.taigaGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import kotlinx.coroutines.launch
@@ -64,8 +63,15 @@ fun TasksFiltersWithLazyList(
     selectFilters: (FiltersData) -> Unit = {},
     content: LazyListScope.() -> Unit
 ) {
+    val visibilityThreshold = 2
     val listState = rememberLazyListState()
-    val isVisible by remember { derivedStateOf { listState.firstVisibleItemIndex < 2 } }
+    val isVisible by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex < visibilityThreshold || listState.layoutInfo.let {
+                it.totalItemsCount - it.visibleItemsInfo.size < visibilityThreshold * 2
+            }
+        }
+    }
 
     AnimatedVisibility(
         visible = isVisible,
@@ -421,7 +427,7 @@ private fun FilterChip(
     onRemoveClick: (() -> Unit)? = null
 ) = Chip(
     onClick = onClick,
-    color = filter.color?.toColor() ?: taigaGrayStatic
+    color = filter.color?.toColor() ?: MaterialTheme.colorScheme.outline
 ) {
     val space = 6.dp
 
@@ -443,6 +449,7 @@ private fun FilterChip(
         }
 
         Text(
+            modifier = Modifier.weight(1f, fill = false),
             text = filter.name.takeIf { it.isNotEmpty() } ?: stringResource(noNameId!!),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

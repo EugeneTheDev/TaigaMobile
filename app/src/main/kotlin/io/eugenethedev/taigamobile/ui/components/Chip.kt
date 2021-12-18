@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -15,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaGrayStatic
 import io.eugenethedev.taigamobile.ui.utils.textColor
 
 /**
@@ -27,7 +23,7 @@ import io.eugenethedev.taigamobile.ui.utils.textColor
 fun Chip(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    color: Color = taigaGrayStatic,
+    color: Color = MaterialTheme.colorScheme.outline,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(

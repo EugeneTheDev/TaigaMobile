@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.shapes
-import io.eugenethedev.taigamobile.ui.theme.taigaGrayDynamic
 
 /**
  * Title with optional add button
@@ -37,7 +36,7 @@ fun SectionTitle(
         .fillMaxWidth()
         .padding(horizontal = horizontalPadding)
         .padding(bottom = bottomPadding)
-        .background(taigaGrayDynamic, shapes.medium) // TODO material3 update
+        .background(MaterialTheme.colorScheme.surfaceVariant, shapes.medium)
 ) {
     Text(
         text = text,
