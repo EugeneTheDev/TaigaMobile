@@ -1,7 +1,5 @@
 package io.eugenethedev.taigamobile.viewmodels
 
-import android.icu.util.LocaleData
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
