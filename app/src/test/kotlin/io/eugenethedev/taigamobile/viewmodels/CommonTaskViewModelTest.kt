@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels
 
+import android.icu.util.LocaleData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
@@ -13,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import java.io.InputStream
+import java.time.LocalDate
 import kotlin.test.*
 
 class CommonTaskViewModelTest : BaseViewModelTest() {
@@ -579,8 +581,56 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         viewModel.selectSwimlane(mockSwimlane)
         assertResultEquals(SuccessResult(mockListOfSwimlanes), viewModel.swimlanes.value)
 
-        coEvery { mockTaskRepository.changeUserStorySwimlane(any(), any(), any()) } throws accessDeniedException
+        coEvery {
+            mockTaskRepository.changeUserStorySwimlane(
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
         viewModel.selectSwimlane(mockSwimlane)
         assertIs<ErrorResult<List<Swimlane>>>(viewModel.swimlanes.value)
+    }
+
+    @Test
+    fun `test select due date`(): Unit = runBlocking {
+        val mockLocaleDate = LocalDate.of(2000, 1, 1)
+        val errorLocaleDate = LocalDate.of(3000, 1, 1)
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.changeDueDate(
+                any(),
+                any(),
+                neq(mockLocaleDate),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.selectDueDate(mockLocaleDate)
+        assertResultEquals(SuccessResult(Unit), viewModel.dueDateResult.value)
+
+        viewModel.selectDueDate(errorLocaleDate)
+        assertIs<ErrorResult<Unit>>(viewModel.dueDateResult.value)
+    }
+
+    @Test
+    fun `test select epic color`(): Unit = runBlocking {
+        val color = "color"
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.changeEpicColor(
+                any(),
+                neq(color),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.selectEpicColor(color)
+        assertResultEquals(SuccessResult(Unit), viewModel.colorResult.value)
+
+        viewModel.selectEpicColor(color + "error")
+        assertIs<ErrorResult<Unit>>(viewModel.colorResult.value)
     }
 }
