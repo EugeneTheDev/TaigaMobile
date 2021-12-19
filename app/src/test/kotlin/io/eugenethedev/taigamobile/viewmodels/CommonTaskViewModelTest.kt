@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
@@ -461,5 +462,44 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         coEvery { mockTaskRepository.deleteCommonTask(any(), any()) } throws notFoundException
         viewModel.deleteTask()
         assertIs<ErrorResult<Unit>>(viewModel.deleteResult.value)
+    }
+
+    @Test
+    fun `test promote to userstory`(): Unit = runBlocking {
+        val mockCommonTask = mockk<CommonTask>(relaxed = true)
+
+        initOnOpen()
+
+        coEvery {
+            mockTaskRepository.promoteCommonTaskToUserStory(
+                any(),
+                any()
+            )
+        } returns mockCommonTask
+        viewModel.promoteToUserStory()
+        assertResultEquals(SuccessResult(mockCommonTask), viewModel.promoteResult.value)
+
+        coEvery {
+            mockTaskRepository.promoteCommonTaskToUserStory(
+                any(),
+                any()
+            )
+        } throws notFoundException
+        viewModel.promoteToUserStory()
+        assertIs<ErrorResult<CommonTask>>(viewModel.promoteResult.value)
+    }
+
+    @Test
+    fun `test edit custom field`(): Unit = runBlocking {
+        val mockCustomField = mockk<CustomField>(relaxed = true)
+        val mockCustomFieldValue = mockk<CustomFieldValue>(relaxed = true)
+
+        initOnOpen()
+        viewModel.editCustomField(mockCustomField, mockCustomFieldValue)
+        assertResultEquals(SuccessResult(mockCustomFields), viewModel.customFields.value)
+
+        coEvery { mockTaskRepository.editCustomFields(any(), any(), any(), any()) } throws accessDeniedException
+        viewModel.editCustomField(mockCustomField, mockCustomFieldValue)
+        assertIs<ErrorResult<CustomFields>>(viewModel.customFields.value)
     }
 }
