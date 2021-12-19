@@ -233,6 +233,8 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         initOnOpen()
         viewModel.searchEpics(teamName)
+
+        assertIs<List<User>>(viewModel.teamSearched.value)
         assertEquals(
             expected = mockListOfTeamMember.filter { it.name == teamName }.map { it.toUser() },
             actual = viewModel.teamSearched.value
@@ -424,5 +426,40 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         viewModel.addAttachment(fileName + "error", mockInputStream)
         assertIs<ErrorResult<List<Attachment>>>(viewModel.attachments.value)
+    }
+
+    @Test
+    fun `test edit task`(): Unit = runBlocking {
+        val title = "title"
+        val description = "description"
+
+        initOnOpen()
+        coEvery {
+            mockTaskRepository.editCommonTask(
+                any(),
+                any(),
+                neq(title),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+
+        viewModel.editTask(title, description)
+        assertResultEquals(SuccessResult(Unit), viewModel.editResult.value)
+
+        viewModel.editTask(title + "error", description)
+        assertIs<ErrorResult<Unit>>(viewModel.editResult.value)
+    }
+
+    @Test
+    fun `test delete task`(): Unit = runBlocking {
+        initOnOpen()
+
+        viewModel.deleteTask()
+        assertResultEquals(SuccessResult(Unit), viewModel.deleteResult.value)
+
+        coEvery { mockTaskRepository.deleteCommonTask(any(), any()) } throws notFoundException
+        viewModel.deleteTask()
+        assertIs<ErrorResult<Unit>>(viewModel.deleteResult.value)
     }
 }
