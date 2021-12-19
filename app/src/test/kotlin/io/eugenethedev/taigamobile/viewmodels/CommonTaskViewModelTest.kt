@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.viewmodels
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
@@ -498,8 +497,75 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         viewModel.editCustomField(mockCustomField, mockCustomFieldValue)
         assertResultEquals(SuccessResult(mockCustomFields), viewModel.customFields.value)
 
-        coEvery { mockTaskRepository.editCustomFields(any(), any(), any(), any()) } throws accessDeniedException
+        coEvery {
+            mockTaskRepository.editCustomFields(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
         viewModel.editCustomField(mockCustomField, mockCustomFieldValue)
         assertIs<ErrorResult<CustomFields>>(viewModel.customFields.value)
+    }
+
+    @Test
+    fun `test search tags`(): Unit = runBlocking {
+        val query = "query"
+
+        initOnOpen()
+        viewModel.searchTags(query)
+
+        assertIs<List<Tag>>(viewModel.tagsSearched.value)
+        assertEquals(
+            expected = mockListOfTags.filter { query.isNotEmpty() && query.lowercase() in it.name },
+            actual = viewModel.tagsSearched.value
+        )
+    }
+
+    @Test
+    fun `test add tags`(): Unit = runBlocking {
+        val mockTag = mockk<Tag>(relaxed = true)
+
+        initOnOpen()
+        viewModel.addTag(mockTag)
+        assertResultEquals(
+            SuccessResult(mockListOfTags),
+            viewModel.tags.value
+        )
+
+        coEvery {
+            mockTaskRepository.editTags(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+        viewModel.addTag(mockTag)
+        assertIs<ErrorResult<List<Tag>>>(viewModel.tags.value)
+    }
+
+    @Test
+    fun `test delete tags`(): Unit = runBlocking {
+        val mockTag = mockk<Tag>(relaxed = true)
+
+        initOnOpen()
+        viewModel.deleteTag(mockTag)
+        assertResultEquals(
+            SuccessResult(mockListOfTags),
+            viewModel.tags.value
+        )
+
+        coEvery {
+            mockTaskRepository.editTags(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+        viewModel.deleteTag(mockTag)
+        assertIs<ErrorResult<List<Tag>>>(viewModel.tags.value)
     }
 }
