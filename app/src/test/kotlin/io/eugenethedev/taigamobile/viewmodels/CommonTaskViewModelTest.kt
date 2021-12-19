@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
@@ -567,5 +568,19 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
         viewModel.deleteTag(mockTag)
         assertIs<ErrorResult<List<Tag>>>(viewModel.tags.value)
+    }
+
+    @Test
+    fun `test select swimlane`(): Unit = runBlocking {
+        val mockSwimlane = mockk<Swimlane>(relaxed = true)
+
+        initOnOpen()
+        viewModel.swimlanes.value = SuccessResult(mockListOfSwimlanes)
+        viewModel.selectSwimlane(mockSwimlane)
+        assertResultEquals(SuccessResult(mockListOfSwimlanes), viewModel.swimlanes.value)
+
+        coEvery { mockTaskRepository.changeUserStorySwimlane(any(), any(), any()) } throws accessDeniedException
+        viewModel.selectSwimlane(mockSwimlane)
+        assertIs<ErrorResult<List<Swimlane>>>(viewModel.swimlanes.value)
     }
 }
