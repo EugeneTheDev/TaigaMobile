@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "io.eugenethedev.taigamobile"
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 31
         versionCode = 19
         versionName = "1.6"
         project.base.archivesBaseName = "TaigaMobile-$versionName"
@@ -99,7 +99,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("com.google.android.material:material:1.6.0-alpha01")
 
     // Main Compose dependencies
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -127,7 +127,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
+    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
 
     // Paging (with Compose)
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")

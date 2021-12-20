@@ -47,6 +47,7 @@ fun DatePicker(
     val dialog = MaterialDatePicker.Builder
         .datePicker()
         .setTitleText(R.string.select_date)
+        .setTheme(R.style.DatePicker)
         .setSelection(
             date?.atStartOfDay(ZoneOffset.UTC)
                 ?.toInstant()
