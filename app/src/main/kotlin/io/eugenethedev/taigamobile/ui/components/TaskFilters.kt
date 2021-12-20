@@ -4,14 +4,10 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -63,33 +59,20 @@ fun TasksFiltersWithLazyList(
     selectFilters: (FiltersData) -> Unit = {},
     content: LazyListScope.() -> Unit
 ) {
-    val visibilityThreshold = 2
-    val listState = rememberLazyListState()
-    val isVisible by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex < visibilityThreshold || listState.layoutInfo.let {
-                it.totalItemsCount - it.visibleItemsInfo.size < visibilityThreshold * 2
-            }
-        }
-    }
-
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = expandVertically(animationSpec = tween()),
-        exit = shrinkVertically(animationSpec = tween())
-    ) {
-        TaskFilters(
-            selected = activeFilters,
-            onSelect = selectFilters,
-            data = filters
-        )
-    }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
-        content = content
-    )
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item {
+            TaskFilters(
+                selected = activeFilters,
+                onSelect = selectFilters,
+                data = filters
+            )
+        }
+
+        content()
+    }
 }
 
 /**
