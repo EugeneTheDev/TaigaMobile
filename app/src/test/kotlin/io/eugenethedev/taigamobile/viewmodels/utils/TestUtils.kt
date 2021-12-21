@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels.utils
 
 import androidx.paging.compose.LazyPagingItems
-import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.mockk.MockKMatcherScope
@@ -10,7 +9,6 @@ import io.mockk.mockkClass
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
-import java.time.LocalDate
 import kotlin.math.min
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
