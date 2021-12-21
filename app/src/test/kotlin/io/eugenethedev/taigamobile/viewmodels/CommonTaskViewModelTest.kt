@@ -4,10 +4,7 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.utils.ErrorResult
 import io.eugenethedev.taigamobile.ui.utils.SuccessResult
-import io.eugenethedev.taigamobile.viewmodels.utils.accessDeniedException
-import io.eugenethedev.taigamobile.viewmodels.utils.assertResultEquals
-import io.eugenethedev.taigamobile.viewmodels.utils.notFoundException
-import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
+import io.eugenethedev.taigamobile.viewmodels.utils.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -124,6 +121,13 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         viewModel.selectStatus(errorStatus)
         assertIs<ErrorResult<StatusType>>(viewModel.statusSelectResult.value)
+    }
+
+    @Test
+    fun `test list of sprints`(): Unit = runBlocking {
+        testLazyPagingItems(viewModel.sprints, isSprintHead = true) {
+            mockSprintsRepository.getSprints(any())
+        }
     }
 
     @Test

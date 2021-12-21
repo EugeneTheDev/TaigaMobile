@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.viewmodels.utils
 
 import androidx.paging.compose.LazyPagingItems
+import io.eugenethedev.taigamobile.domain.entities.Sprint
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.ui.utils.Result
 import io.mockk.MockKMatcherScope
@@ -9,6 +10,7 @@ import io.mockk.mockkClass
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
+import java.time.LocalDate
 import kotlin.math.min
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
@@ -29,7 +31,7 @@ fun <T> assertResultEquals(expected: Result<T>, actual: Result<T>) {
  * This little thingy helps us test LazyPagingItems (that everything loads exactly like it should)
  * Do not call this function directly, look at the next one
  */
-fun <T : Any> testLazyPagingItems(klass: KClass<T>, items: LazyPagingItems<T>, stubBlock: suspend MockKMatcherScope.() -> List<T>) {
+fun <T : Any> testLazyPagingItems(klass: KClass<T>, items: LazyPagingItems<T>, isSprintHead: Boolean  = false,stubBlock: suspend MockKMatcherScope.() -> List<T>) {
     val pages = List(CommonPagingSource.PAGE_SIZE * 4) { mockkClass(klass, relaxed = true) }
 
     coEvery(stubBlock) answers {
@@ -39,10 +41,16 @@ fun <T : Any> testLazyPagingItems(klass: KClass<T>, items: LazyPagingItems<T>, s
     }
     items.refresh()
 
-    pages.forEachIndexed { i, item -> assertEquals(item, items[i]) }
-    assertFails { items[pages.size] }
+    if (isSprintHead) {
+        pages.forEachIndexed { i, item -> assertEquals(item, items[i + 1]) }
+        assertFails { items[pages.size + 1] }
+    }
+    else {
+        pages.forEachIndexed { i, item -> assertEquals(item, items[i]) }
+        assertFails { items[pages.size] }
+    }
 }
 
-inline fun <reified T : Any> testLazyPagingItems(items: LazyPagingItems<T>, noinline stubBlock: suspend MockKMatcherScope.() -> List<T>) =
-    testLazyPagingItems(T::class, items, stubBlock)
+inline fun <reified T : Any> testLazyPagingItems(items: LazyPagingItems<T>, isSprintHead: Boolean = false, noinline stubBlock: suspend MockKMatcherScope.() -> List<T>) =
+    testLazyPagingItems(T::class, items, isSprintHead, stubBlock)
 
