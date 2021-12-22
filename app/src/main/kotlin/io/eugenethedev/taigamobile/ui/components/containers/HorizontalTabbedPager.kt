@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -40,13 +42,18 @@ fun HorizontalTabbedPager(
 
     val tabsRow: @Composable () -> Unit = {
         tabs.forEachIndexed { index, tab ->
+            val selected = pagerState.run { targetPage.takeIf { it != currentPage } ?: currentPage == index }
             Tab(
-                selected = pagerState.run { targetPage.takeIf { it != currentPage } ?: currentPage == index },
+                selected = selected,
                 onClick = {
                     coroutineScope.launch { pagerState.animateScrollToPage(index) }
                 },
-                text = { Text(stringResource(tab.titleId)) },
-                unselectedContentColor = Color.Gray
+                text = {
+                    Text(
+                        text = stringResource(tab.titleId),
+                        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             )
         }
     }
@@ -55,8 +62,8 @@ fun HorizontalTabbedPager(
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
             modifier = Modifier.fillMaxWidth(),
-            contentColor = MaterialTheme.colors.primary,
-            backgroundColor = MaterialTheme.colors.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.surface,
             indicator = indicator,
             tabs = tabsRow,
             divider = {},
@@ -66,8 +73,8 @@ fun HorizontalTabbedPager(
         TabRow(
             selectedTabIndex = pagerState.currentPage,
             modifier = Modifier.fillMaxWidth(),
-            contentColor = MaterialTheme.colors.primary,
-            backgroundColor = MaterialTheme.colors.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.surface,
             indicator = indicator,
             tabs = tabsRow,
             divider = {}

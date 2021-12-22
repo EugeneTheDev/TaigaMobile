@@ -28,7 +28,7 @@ data class FiltersData(
         epics = epics - other.epics
     )
 
-    val filtersNumber = listOf(assignees, roles, tags, statuses, createdBy, priorities, severities, types).sumOf { it.size }
+    val filtersNumber = listOf(assignees, roles, tags, statuses, createdBy, priorities, severities, types, epics).sumOf { it.size }
 }
 
 fun List<Filter>.hasData() = any { it.count > 0 }

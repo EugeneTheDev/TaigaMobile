@@ -3,13 +3,12 @@ package io.eugenethedev.taigamobile.ui.screens.scrum
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
-import androidx.compose.material.ButtonDefaults.buttonColors
+import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +30,6 @@ import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
-import io.eugenethedev.taigamobile.ui.components.buttons.TaigaTextButton
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
@@ -233,7 +231,7 @@ private fun SprintsTabContent(
         }
 
         item {
-            TaigaTextButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
+            FilledTonalButton(onClick = { isClosedSprintsVisible = !isClosedSprintsVisible }) {
                 Text(stringResource(if (isClosedSprintsVisible) R.string.hide_closed_sprints else R.string.show_closed_sprints))
             }
         }
@@ -268,7 +266,7 @@ private fun SprintsTabContent(
 private fun SprintItem(
     sprint: Sprint,
     navigateToBoard: (Sprint) -> Unit = {}
-) = ContainerBox(clickEnabled = false) {
+) = ContainerBox {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
 
     Row(
@@ -279,7 +277,7 @@ private fun SprintItem(
         Column(Modifier.weight(0.7f)) {
             Text(
                 text = sprint.name,
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.titleMedium
             )
 
             Text(
@@ -292,8 +290,8 @@ private fun SprintItem(
             Row {
                 Text(
                     text = stringResource(R.string.stories_count_template).format(sprint.storiesCount),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.body2
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(Modifier.width(6.dp))
@@ -301,28 +299,28 @@ private fun SprintItem(
                 if (sprint.isClosed) {
                     Text(
                         text = stringResource(R.string.closed),
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.body2
+                        color = MaterialTheme.colorScheme.outline,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
         }
 
-        Button(
-            onClick = { navigateToBoard(sprint) },
-            modifier = Modifier.weight(0.3f),
-            colors = buttonColors(
-                backgroundColor = if (!sprint.isClosed) {
-                    MaterialTheme.colors.primary
-                } else {
-                    MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-                        .compositeOver(MaterialTheme.colors.surface)
-                }
-            )
-        ) {
-            Text(stringResource(R.string.taskboard))
+        buttonColors().let {
+            val containerColor by it.containerColor(!sprint.isClosed)
+            val contentColor by it.contentColor(!sprint.isClosed)
+
+            Button(
+                onClick = { navigateToBoard(sprint) },
+                modifier = Modifier.weight(0.3f),
+                colors = buttonColors(
+                    containerColor = containerColor,
+                    contentColor = contentColor
+                )
+            ) {
+                Text(stringResource(R.string.taskboard))
+            }
         }
-        
     }
 }
 

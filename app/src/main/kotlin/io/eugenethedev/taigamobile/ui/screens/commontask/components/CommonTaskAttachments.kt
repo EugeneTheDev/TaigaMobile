@@ -7,15 +7,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -76,7 +75,8 @@ private fun AttachmentItem(
                 isAlertVisible = false
                 onRemoveClick()
             },
-            onDismiss = { isAlertVisible = false }
+            onDismiss = { isAlertVisible = false },
+            iconId = R.drawable.ic_remove
         )
     }
     Row(
@@ -89,13 +89,13 @@ private fun AttachmentItem(
         Icon(
             painter = painterResource(R.drawable.ic_attachment),
             contentDescription = null,
-            tint = Color.Gray,
+            tint = MaterialTheme.colorScheme.outline,
             modifier = Modifier.padding(end = 2.dp)
         )
 
         Text(
             text = attachment.name,
-            color = MaterialTheme.colors.primary,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url)))
             }
@@ -111,7 +111,7 @@ private fun AttachmentItem(
         Icon(
             painter = painterResource(R.drawable.ic_delete),
             contentDescription = null,
-            tint = Color.Red
+            tint = MaterialTheme.colorScheme.error
         )
     }
 

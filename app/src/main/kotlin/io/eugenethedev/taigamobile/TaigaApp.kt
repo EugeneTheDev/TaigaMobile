@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile
 
 import android.app.Application
 import android.util.Log
+import com.google.android.material.color.DynamicColors
 import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.dagger.DaggerAppComponent
 import io.eugenethedev.taigamobile.utils.FileLoggingTree
@@ -35,6 +36,8 @@ class TaigaApp : Application() {
             Timber.w("Cannot setup FileLoggingTree, skipping")
         }
 
+        // Apply dynamic color
+        DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
     companion object {

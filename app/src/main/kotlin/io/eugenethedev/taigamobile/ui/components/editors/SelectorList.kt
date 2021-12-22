@@ -10,12 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -31,7 +30,6 @@ import io.eugenethedev.taigamobile.ui.utils.onBackPressed
  * Selector list, which expands from bottom to top.
  * Could be used to search and select something
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun <T : Any> SelectorList(
     @StringRes titleHintId: Int,
@@ -69,13 +67,13 @@ fun <T : Any> SelectorList(
         if (index < lastIndex) {
             Divider(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.outline
             )
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface),
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

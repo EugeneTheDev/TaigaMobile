@@ -1,8 +1,12 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -12,6 +16,8 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.commontask.NavigationActions
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 
 @Composable
 fun CommonTaskAppBar(
@@ -36,7 +42,7 @@ fun CommonTaskAppBar(
                     Icon(
                         painter = painterResource(R.drawable.ic_options),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.primary
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -50,7 +56,8 @@ fun CommonTaskAppBar(
                             isDeleteAlertVisible = false
                             editActions.deleteTask()
                         },
-                        onDismiss = { isDeleteAlertVisible = false }
+                        onDismiss = { isDeleteAlertVisible = false },
+                        iconId = R.drawable.ic_delete
                     )
                 }
 
@@ -64,11 +71,15 @@ fun CommonTaskAppBar(
                             isPromoteAlertVisible = false
                             editActions.promoteTask()
                         },
-                        onDismiss = { isPromoteAlertVisible = false }
+                        onDismiss = { isPromoteAlertVisible = false },
+                        iconId = R.drawable.ic_arrow_upward
                     )
                 }
 
                 DropdownMenu(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation)
+                    ),
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false }
                 ) {
@@ -81,7 +92,7 @@ fun CommonTaskAppBar(
                     ) {
                         Text(
                             text = stringResource(R.string.edit),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -94,7 +105,7 @@ fun CommonTaskAppBar(
                     ) {
                         Text(
                             text = stringResource(R.string.delete),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -108,7 +119,7 @@ fun CommonTaskAppBar(
                         ) {
                             Text(
                                 text = stringResource(R.string.promote_to_user_story),
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }

@@ -4,12 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -55,7 +54,7 @@ fun CommonTaskItem(
                         CommonTaskType.Issue -> R.string.issue
                     }
                 ).uppercase(),
-                color = MaterialTheme.colors.primaryVariant
+                color = MaterialTheme.colorScheme.secondary
             )
         }
 
@@ -66,13 +65,13 @@ fun CommonTaskItem(
             Text(
                 text = commonTask.status.name,
                 color = commonTask.status.color.toColor(),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
                 text = commonTask.createdDate.format(dateTimeFormatter),
-                color = Color.Gray,
-                style = MaterialTheme.typography.body2
+                color = MaterialTheme.colorScheme.outline,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 
@@ -87,8 +86,8 @@ fun CommonTaskItem(
         Text(
             text = commonTask.assignee?.fullName?.let { stringResource(R.string.assignee_pattern)
                 .format(it) } ?: stringResource(R.string.unassigned),
-            color = MaterialTheme.colors.primary,
-            style = MaterialTheme.typography.body2
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

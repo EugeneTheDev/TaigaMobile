@@ -2,16 +2,15 @@ package io.eugenethedev.taigamobile.ui.components.badges
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -20,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
@@ -28,6 +27,7 @@ import io.eugenethedev.taigamobile.ui.utils.toColor
  * Badge on which you can click. With cool shimmer loading animation
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClickableBadge(
     text: String,
@@ -41,72 +41,47 @@ fun ClickableBadge(
     val infiniteTransition = rememberInfiniteTransition()
     val animationDuration = 800
 
-    val offsetX by infiniteTransition.animateFloat(
+    val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 300f, // BoxWithConstraints won't work there, because maxWidth always changing when this element is part of a list
+        targetValue = 360f, // BoxWithConstraints won't work there, because maxWidth always changing when this element is part of a list
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = animationDuration, easing = LinearEasing),
-        )
-    )
-    val offsetY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 300f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = animationDuration, easing = LinearEasing),
+            animation = tween(durationMillis = animationDuration, easing = FastOutSlowInEasing),
         )
     )
 
-    val brush = Brush.linearGradient(
-        colors = listOf(
-            Color.Transparent,
-            Color.LightGray.copy(alpha = 0.9f),
-            Color.Transparent
-        ),
-        start = Offset(offsetX, offsetY),
-        end = Offset(offsetX + 50, offsetY + 50)
-    )
+    CompositionLocalProvider(
+        LocalMinimumTouchTargetEnforcement provides false
+    ) {
+        Surface(
+            enabled = isClickable,
+            onClick = onClick,
+            shape = shapes.large,
+            indication = rememberRipple(),
+            color = color
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = text,
+                    color = textColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 120.dp)
+                )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(
-                color = color,
-                shape = MaterialTheme.shapes.medium
-            )
-            .let {
-                if (isLoading) {
-                    it.background(
-                        brush = brush,
-                        shape = MaterialTheme.shapes.medium
+                if (isClickable) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_arrow_down),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(textColor),
+                        modifier = Modifier.rotate(if (isLoading) rotation else 0f)
                     )
                 } else {
-                    it
+                    Spacer(Modifier.width(6.dp))
                 }
             }
-            .padding(start = 6.dp)
-            .padding(vertical = 2.dp)
-            .clickableUnindicated(enabled = isClickable, onClick = onClick)
-    ) {
-        Text(
-            text = text,
-            color = textColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            // I really want to use Modifier.weight(0.8, fill = false) here and below,
-            // but its a peace of shit and fill = false modifier simply doesn't work at all
-            // (this Row takes all available width anyways, which is of course bad for this case).
-            // Maybe this will be fixed in the future, but for now I'll leave it like this...
-            modifier = Modifier.widthIn(max = 120.dp)
-        )
-
-        if (isClickable) {
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_down),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(textColor)
-            )
-        } else {
-            Spacer(Modifier.width(6.dp))
         }
     }
 }

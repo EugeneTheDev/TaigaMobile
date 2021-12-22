@@ -1,19 +1,17 @@
 package io.eugenethedev.taigamobile.ui.components.pickers
 
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,7 +38,7 @@ fun DatePicker(
     modifier: Modifier = Modifier,
     @StringRes hintId: Int = R.string.date_hint,
     showClearButton: Boolean = true,
-    style: TextStyle = MaterialTheme.typography.body1,
+    style: TextStyle = MaterialTheme.typography.bodyLarge,
     onClose: () -> Unit = {},
     onOpen: () -> Unit = {}
 ) = Box {
@@ -49,6 +47,7 @@ fun DatePicker(
     val dialog = MaterialDatePicker.Builder
         .datePicker()
         .setTitleText(R.string.select_date)
+        .setTheme(R.style.DatePicker)
         .setSelection(
             date?.atStartOfDay(ZoneOffset.UTC)
                 ?.toInstant()
@@ -81,7 +80,7 @@ fun DatePicker(
                 onOpen()
                 dialog.show(fragmentManager, dialog.toString())
             },
-            color = date?.let { MaterialTheme.colors.onSurface } ?: Color.Gray
+            color = date?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.outline
         )
 
         if (showClearButton && date != null) { // do not show clear button if there is no date (sounds right to me)
@@ -94,7 +93,7 @@ fun DatePicker(
                 Icon(
                     painter = painterResource(R.drawable.ic_remove),
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.outline
                 )
             }
         }

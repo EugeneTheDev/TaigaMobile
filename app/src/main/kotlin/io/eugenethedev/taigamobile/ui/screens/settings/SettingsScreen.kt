@@ -6,12 +6,11 @@ import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -27,7 +26,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
@@ -41,6 +39,7 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.activity
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
@@ -80,7 +79,6 @@ fun SettingsScreen(
     )
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun SettingsScreenContent(
     avatarUrl: String?,
@@ -116,7 +114,7 @@ fun SettingsScreenContent(
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .size(120.dp)
-            .clip(MaterialTheme.shapes.large)
+            .clip(shapes.large)
             .constrainAs(avatar) {
                 top.linkTo(topBar.bottom, margin = 20.dp)
                 start.linkTo(parent.start)
@@ -134,7 +132,8 @@ fun SettingsScreenContent(
                 isAlertVisible = false
                 logout()
             },
-            onDismiss = { isAlertVisible = false }
+            onDismiss = { isAlertVisible = false },
+            iconId = R.drawable.ic_logout
         )
     }
 
@@ -148,7 +147,7 @@ fun SettingsScreenContent(
         Icon(
             painter = painterResource(R.drawable.ic_logout),
             contentDescription = null,
-            tint = MaterialTheme.colors.primary,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(28.dp)
         )
     }
@@ -164,20 +163,20 @@ fun SettingsScreenContent(
     ) {
         Text(
             text = displayName,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.titleLarge
         )
 
         Text(
             text = stringResource(R.string.username_template).format(username),
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.titleMedium
         )
 
         Spacer(Modifier.height(4.dp))
 
         Text(
             text = serverUrl,
-            style = MaterialTheme.typography.body2,
-            color = Color.Gray
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline
         )
     }
 
@@ -214,14 +213,14 @@ fun SettingsScreenContent(
                         itemContent = {
                             Text(
                                 text = titleForThemeSetting(it),
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         },
                         selectedItemContent = {
                             Text(
                                 text = titleForThemeSetting(it),
-                                style = MaterialTheme.typography.subtitle1,
-                                color = MaterialTheme.colors.primary
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     )
@@ -270,7 +269,7 @@ fun SettingsScreenContent(
     ) {
         Text(
             text = stringResource(R.string.credits_message),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding),
             textAlign = TextAlign.Center
         )
@@ -281,15 +280,15 @@ fun SettingsScreenContent(
             text = stringResource(R.string.app_name_with_version_template).format(
                 stringResource(R.string.app_name), BuildConfig.VERSION_NAME
             ),
-            style = MaterialTheme.typography.body1.merge(TextStyle(fontSize = 18.sp)),
-            color = Color.Gray,
+            style = MaterialTheme.typography.bodyLarge.merge(TextStyle(fontSize = 18.sp)),
+            color = MaterialTheme.colorScheme.outline,
         )
 
         val activity = LocalContext.current.activity
         val githubUrl = stringResource(R.string.github_url)
         Text(
             text = stringResource(R.string.source_code),
-            style = MaterialTheme.typography.body1.merge(SpanStyle(color = MaterialTheme.colors.primary, textDecoration = TextDecoration.Underline)),
+            style = MaterialTheme.typography.bodyLarge.merge(SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)),
             modifier = Modifier.clickableUnindicated { activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(githubUrl))) }
         )
 
@@ -306,8 +305,8 @@ private fun SettingsBlock(
 
     Text(
         text = stringResource(titleId),
-        style = MaterialTheme.typography.subtitle2,
-        color = MaterialTheme.colors.primary,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(horizontal = mainHorizontalScreenPadding)
     )
 

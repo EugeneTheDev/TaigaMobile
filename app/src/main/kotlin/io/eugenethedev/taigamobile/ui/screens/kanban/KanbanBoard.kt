@@ -1,15 +1,14 @@
 package io.eugenethedev.taigamobile.ui.screens.kanban
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.insets.navigationBarsHeight
@@ -32,9 +30,8 @@ import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.components.DropdownSelector
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
-import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaDarkGrayDynamic
-import io.eugenethedev.taigamobile.ui.theme.taigaGrayDynamic
+import io.eugenethedev.taigamobile.ui.theme.*
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
@@ -52,8 +49,7 @@ fun KanbanBoard(
     val cellOuterPadding = 8.dp
     val cellPadding = 8.dp
     val cellWidth = 280.dp
-    val backgroundCellColor = taigaGrayDynamic
-    val headerColor = taigaDarkGrayDynamic
+    val backgroundCellColor = MaterialTheme.colorScheme.surfaceColorAtElevation(kanbanBoardTonalElevation)
 
     swimlanes.takeIf { it.isNotEmpty() }?.let {
         Row(
@@ -62,7 +58,7 @@ fun KanbanBoard(
         ) {
             Text(
                 text = stringResource(R.string.swimlane_title),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
 
             Spacer(Modifier.width(8.dp))
@@ -74,15 +70,15 @@ fun KanbanBoard(
                 itemContent = {
                     Text(
                         text = it?.name ?: stringResource(R.string.unclassifed),
-                        style = MaterialTheme.typography.body1,
-                        color = it?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = it?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary
                     )
                 },
                 selectedItemContent = {
                     Text(
                         text = it?.name ?: stringResource(R.string.unclassifed),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             )
@@ -109,7 +105,7 @@ fun KanbanBoard(
                     cellWidth = cellWidth,
                     cellOuterPadding = cellOuterPadding,
                     stripeColor = status.color.toColor(),
-                    backgroundColor = headerColor,
+                    backgroundColor = backgroundCellColor,
                     onAddClick = { navigateToCreateTask(status.id, selectedSwimlane?.id) }
                 )
 
@@ -152,7 +148,7 @@ private fun Header(
         .width(cellWidth)
         .background(
             color = backgroundColor,
-            shape = MaterialTheme.shapes.medium.copy(
+            shape = shapes.medium.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )
@@ -160,7 +156,7 @@ private fun Header(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {
-    val textStyle = MaterialTheme.typography.subtitle1
+    val textStyle = MaterialTheme.typography.titleMedium
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -188,40 +184,29 @@ private fun Header(
     }
 
     PlusButton(
-        tint = Color.Gray,
+        tint = MaterialTheme.colorScheme.outline,
         onClick = onAddClick,
         modifier = Modifier.weight(0.2f)
     )
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun StoryItem(
     story: CommonTaskExtended,
     assignees: List<User>,
     onTaskClick: () -> Unit
 ) = Surface(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(4.dp),
-    shape = MaterialTheme.shapes.medium,
-    elevation = 8.dp
+    modifier = Modifier.fillMaxWidth().padding(4.dp),
+    shape = shapes.medium,
+    shadowElevation = cardShadowElevation,
+    onClick = onTaskClick,
+    indication = rememberRipple()
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = MaterialTheme.colors.primary
-                ),
-                onClick = onTaskClick
-            )
-            .padding(12.dp)
+        modifier = Modifier.fillMaxWidth().padding(12.dp)
     ) {
         story.epicsShortInfo.forEach {
-            val textStyle = MaterialTheme.typography.caption
+            val textStyle = MaterialTheme.typography.bodySmall
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(
                     Modifier
@@ -251,7 +236,10 @@ private fun StoryItem(
 
         Spacer(Modifier.height(8.dp))
 
-        FlowRow {
+        FlowRow(
+            mainAxisSpacing = 4.dp,
+            crossAxisSpacing = 4.dp
+        ) {
             assignees.forEach {
                 Image(
                     painter = rememberImagePainter(
@@ -263,9 +251,7 @@ private fun StoryItem(
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(end = 4.dp, bottom = 4.dp)
-                        .size(28.dp)
+                    modifier = Modifier.size(28.dp)
                         .clip(CircleShape)
                         .weight(0.2f, fill = false)
                 )

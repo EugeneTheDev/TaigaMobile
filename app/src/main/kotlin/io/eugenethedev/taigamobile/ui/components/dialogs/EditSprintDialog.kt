@@ -3,14 +3,13 @@ package io.eugenethedev.taigamobile.ui.components.dialogs
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import java.time.LocalDate
 
 @Composable
@@ -35,31 +35,26 @@ fun EditSprintDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        buttons = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.padding(8.dp).fillMaxWidth()
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    name.text.trim()
+                        .takeIf { it.isNotEmpty() }
+                        ?.let { onConfirm(it, start, end) }
+                }
             ) {
-                TextButton(onClick = onDismiss) {
-                    Text(
-                        text = stringResource(R.string.cancel),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-
-                TextButton(
-                    onClick = {
-                        name.text.trim()
-                            .takeIf { it.isNotEmpty() }
-                            ?.let { onConfirm(it, start, end) }
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.ok),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.ok),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         },
         title = {
@@ -67,15 +62,15 @@ fun EditSprintDialog(
                 hintId = R.string.sprint_name_hint,
                 value = name,
                 onValueChange = { name = it },
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
         },
         text = {
-            val pickerStyle = MaterialTheme.typography.subtitle1.merge(TextStyle(fontWeight = FontWeight.Normal))
+            val pickerStyle = MaterialTheme.typography.titleMedium.merge(TextStyle(fontWeight = FontWeight.Normal))
             val pickerModifier = Modifier.border(
                 width = 1.5.dp,
-                color = Color.Gray,
-                shape = MaterialTheme.shapes.small
+                color = MaterialTheme.colorScheme.outline,
+                shape = shapes.small // TODO wait for material3 update
             ).padding(6.dp)
 
             Row(
@@ -91,7 +86,7 @@ fun EditSprintDialog(
                     modifier = pickerModifier
                 )
 
-                Spacer(Modifier.width(16.dp).height(1.5.dp).background(MaterialTheme.colors.onSurface))
+                Spacer(Modifier.width(16.dp).height(1.5.dp).background(MaterialTheme.colorScheme.onSurface))
 
                 DatePicker(
                     date = end,

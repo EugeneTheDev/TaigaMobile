@@ -4,7 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -63,7 +63,7 @@ private fun Dot(
     Modifier.size(12.dp)
         .scale(scale)
         .background(
-            color = MaterialTheme.colors.primary,
+            color = MaterialTheme.colorScheme.primary,
             shape = CircleShape
         )
 )

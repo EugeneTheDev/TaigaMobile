@@ -1,12 +1,11 @@
 package io.eugenethedev.taigamobile.ui.components.texts
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Tag
+import io.eugenethedev.taigamobile.ui.components.Chip
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
@@ -32,13 +32,13 @@ fun CommonTaskTitle(
     title: String,
     modifier: Modifier = Modifier,
     isInactive: Boolean = false,
-    textColor: Color = MaterialTheme.colors.onSurface,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorColorsHex: List<String> = emptyList(),
     tags: List<Tag> = emptyList()
 ) = Column(modifier = modifier) {
     Text(
         text = buildAnnotatedString {
-            if (isInactive) pushStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.LineThrough))
+            if (isInactive) pushStyle(SpanStyle(color = MaterialTheme.colorScheme.outline, textDecoration = TextDecoration.LineThrough))
             append(stringResource(R.string.title_with_ref_pattern).format(ref, title))
             if (isInactive) pop()
 
@@ -51,27 +51,26 @@ fun CommonTaskTitle(
             }
         },
         color = textColor,
-        style = MaterialTheme.typography.subtitle1
+        style = MaterialTheme.typography.titleMedium
     )
 
     if (tags.isNotEmpty()) {
         Spacer(Modifier.height(4.dp))
 
-        FlowRow {
+        FlowRow(
+            mainAxisSpacing = 4.dp,
+            crossAxisSpacing = 4.dp
+        ) {
             tags.forEach {
                 val bgColor = it.color.toColor()
-                Text(
-                    text = it.name,
-                    color = bgColor.textColor(),
-                    style = MaterialTheme.typography.body2,
-                    modifier = Modifier
-                        .padding(end = 4.dp, bottom = 4.dp)
-                        .background(
-                            color = bgColor,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(2.dp)
-                )
+
+                Chip(color = bgColor) {
+                    Text(
+                        text = it.name,
+                        color = bgColor.textColor(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
@@ -79,7 +78,7 @@ fun CommonTaskTitle(
 
 @Preview(showBackground = true)
 @Composable
-fun TitleWithIndicatorsPreview() = TaigaMobileTheme {
+fun CommonTaskTitlePreview() = TaigaMobileTheme {
     CommonTaskTitle(
         ref = 42,
         title = "Some title",

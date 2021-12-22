@@ -1,12 +1,11 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
@@ -227,7 +226,7 @@ private fun SprintItem(
 
     sprint.takeIf { it != CommonTaskViewModel.SPRINT_HEADER }?.also {
         Surface(
-            contentColor = if (it.isClosed) Color.Gray else MaterialTheme.colors.onSurface
+            contentColor = if (it.isClosed) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
         ) {
             Column {
                 Text(
@@ -243,14 +242,14 @@ private fun SprintItem(
                         it.start.format(dateFormatter),
                         it.end.format(dateFormatter)
                     ),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
     } ?: run {
         Text(
             text = stringResource(R.string.move_to_backlog),
-            color = MaterialTheme.colors.primary
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -294,7 +293,7 @@ private fun SwimlaneItem(
 
     Text(
         text = getOrNull()?.name ?: stringResource(R.string.unclassifed),
-        style = MaterialTheme.typography.body1,
-        color = getOrNull()?.let { MaterialTheme.colors.onSurface } ?: MaterialTheme.colors.primary
+        style = MaterialTheme.typography.bodyLarge,
+        color = getOrNull()?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary
     )
 }

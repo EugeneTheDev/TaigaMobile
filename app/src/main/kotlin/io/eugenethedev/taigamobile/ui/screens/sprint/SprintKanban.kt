@@ -2,18 +2,16 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +23,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
@@ -34,9 +31,12 @@ import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.lists.CommonTaskItem
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.taigaLightGrayDynamic
+import io.eugenethedev.taigamobile.ui.theme.cardShadowElevation
+import io.eugenethedev.taigamobile.ui.theme.kanbanBoardTonalElevation
+import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.LocalDateTime
 
@@ -56,7 +56,7 @@ fun SprintKanban(
     val cellWidth = 280.dp
     val userStoryHeadingWidth = cellWidth - 20.dp
     val minCellHeight = 80.dp
-    val backgroundCellColor = taigaLightGrayDynamic
+    val backgroundCellColor = MaterialTheme.colorScheme.surfaceColorAtElevation(kanbanBoardTonalElevation)
     val screenWidth = LocalContext.current.resources.configuration.screenWidthDp.dp
     val totalWidth = cellWidth * statuses.size + userStoryHeadingWidth + cellPadding * statuses.size
 
@@ -155,7 +155,7 @@ fun SprintKanban(
                 Modifier.height(4.dp)
                     .padding(start = cellPadding)
                     .width(totalWidth)
-                    .background(MaterialTheme.colors.primary.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
             )
         }
 
@@ -203,7 +203,7 @@ private fun Header(
         .width(cellWidth)
         .background(
             color = backgroundColor,
-            shape = MaterialTheme.shapes.medium.copy(
+            shape = shapes.medium.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )
@@ -212,7 +212,7 @@ private fun Header(
 ) {
     Text(
         text = text.uppercase(),
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.titleMedium,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.padding(8.dp)
@@ -236,7 +236,7 @@ private fun IssueHeader(
     modifier = Modifier
         .width(width)
         .padding(padding)
-        .clip(MaterialTheme.shapes.small)
+        .clip(shapes.small)
         .background(backgroundColor)
         .padding(horizontal = 6.dp, vertical = 4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -248,7 +248,7 @@ private fun IssueHeader(
     )
 
     PlusButton(
-        tint = Color.Gray,
+        tint = MaterialTheme.colorScheme.outline,
         onClick = onAddClick,
         modifier = Modifier.weight(0.2f)
     )
@@ -285,12 +285,12 @@ private fun UserStoryItem(
         Text(
             text = userStory.status.name,
             color = userStory.status.color.toColor(),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 
     PlusButton(
-        tint = Color.Gray,
+        tint = MaterialTheme.colorScheme.outline,
         onClick = onAddClick,
         modifier = Modifier.weight(0.2f)
     )
@@ -321,7 +321,7 @@ private fun CategoryItem(
         )
 
         PlusButton(
-            tint = Color.Gray,
+            tint = MaterialTheme.colorScheme.outline,
             onClick = onAddClick,
             modifier = Modifier.weight(0.2f)
         )
@@ -345,31 +345,20 @@ private fun Cell(
     content = content
 )
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun TaskItem(
     task: CommonTask,
     onTaskClick: () -> Unit
 ) = Surface(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(4.dp),
-    shape = MaterialTheme.shapes.medium,
-    elevation = 8.dp
+    modifier = Modifier.fillMaxWidth().padding(4.dp),
+    shape = shapes.medium,
+    onClick = onTaskClick,
+    shadowElevation = cardShadowElevation,
+    indication = rememberRipple()
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = MaterialTheme.colors.primary
-                ),
-                onClick = onTaskClick
-            )
-            .padding(12.dp)
+        modifier = Modifier.fillMaxWidth().padding(12.dp)
     ) {
         Column(Modifier.weight(0.8f, fill = false)) {
             CommonTaskTitle(
@@ -382,11 +371,10 @@ private fun TaskItem(
 
             Text(
                 text = task.assignee?.fullName?.let {
-                    stringResource(R.string.assignee_pattern)
-                        .format(it)
+                    stringResource(R.string.assignee_pattern).format(it)
                 } ?: stringResource(R.string.unassigned),
-                color = MaterialTheme.colors.primary,
-                style = MaterialTheme.typography.body2
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 
@@ -401,8 +389,7 @@ private fun TaskItem(
                 ),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(32.dp)
+                modifier = Modifier.size(32.dp)
                     .clip(CircleShape)
                     .weight(0.2f, fill = false)
             )

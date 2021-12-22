@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -16,7 +16,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ui.theme.taigaGrayDynamic
+import io.eugenethedev.taigamobile.ui.theme.shapes
 
 /**
  * Title with optional add button
@@ -36,11 +36,11 @@ fun SectionTitle(
         .fillMaxWidth()
         .padding(horizontal = horizontalPadding)
         .padding(bottom = bottomPadding)
-        .background(taigaGrayDynamic, MaterialTheme.shapes.medium)
+        .background(MaterialTheme.colorScheme.surfaceVariant, shapes.medium)
 ) {
     Text(
         text = text,
-        style = MaterialTheme.typography.h6,
+        style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(6.dp)
     )
 
@@ -48,8 +48,8 @@ fun SectionTitle(
         Box(
             modifier = Modifier.fillMaxHeight()
                 .aspectRatio(1f)
-                .background(MaterialTheme.colors.primary, MaterialTheme.shapes.medium)
-                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.primary, shapes.medium)
+                .clip(shapes.medium)
                 .clickable(
                     onClick = it,
                     role = Role.Button,
@@ -61,7 +61,7 @@ fun SectionTitle(
             Icon(
                 painter = painterResource(R.drawable.ic_add),
                 contentDescription = null,
-                tint = MaterialTheme.colors.onPrimary,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.fillMaxSize()
             )
         }

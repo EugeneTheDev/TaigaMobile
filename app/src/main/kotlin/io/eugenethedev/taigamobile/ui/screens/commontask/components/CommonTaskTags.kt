@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -21,10 +23,14 @@ import com.vanpra.composematerialdialogs.color.ColorPalette
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.Tag
+import io.eugenethedev.taigamobile.ui.components.Chip
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
+import io.eugenethedev.taigamobile.ui.theme.shapes
+import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
@@ -51,7 +57,8 @@ fun LazyListScope.CommonTaskTags(
             when {
                 editActions.editTags.isResultLoading -> CircularProgressIndicator(
                     modifier = Modifier.size(28.dp),
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 isAddTagFieldVisible -> AddTagField(
                     tags = editActions.editTags.items,
@@ -75,30 +82,30 @@ private fun TagItem(
     val bgColor = tag.color.toColor()
     val textColor = bgColor.textColor()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(color = bgColor, shape = MaterialTheme.shapes.small)
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+    Chip(
+        color = bgColor,
+        modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
     ) {
-        Text(
-            text = tag.name,
-            color = textColor
-        )
-
-        Spacer(Modifier.width(2.dp))
-
-        IconButton(
-            onClick = onRemoveClick,
-            modifier = Modifier
-                .size(26.dp)
-                .clip(CircleShape)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_remove),
-                contentDescription = null,
-                tint = textColor
+            Text(
+                text = tag.name,
+                color = textColor
             )
+
+            Spacer(Modifier.width(2.dp))
+
+            IconButton(
+                onClick = onRemoveClick,
+                modifier = Modifier.size(26.dp).clip(CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_remove),
+                    contentDescription = null,
+                    tint = textColor
+                )
+            }
         }
     }
 }
@@ -132,6 +139,7 @@ private fun AddTagField(
             onDismissRequest = {},
             properties = PopupProperties(clippingEnabled = false),
             modifier = Modifier.heightIn(max = 200.dp)
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation))
         ) {
             tags.forEach {
                 DropdownMenuItem(onClick = { onSaveClick(it) }) {
@@ -139,7 +147,7 @@ private fun AddTagField(
                         Modifier.size(22.dp)
                             .background(
                                 color = it.color.toColor(),
-                                shape = MaterialTheme.shapes.small
+                                shape = shapes.small
                             )
                     )
 
@@ -147,7 +155,7 @@ private fun AddTagField(
 
                     Text(
                         text = it.name,
-                        style = MaterialTheme.typography.body1
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
@@ -171,14 +179,12 @@ private fun AddTagField(
                 value = TextFieldValue()
             }
         },
-        modifier = Modifier
-            .size(32.dp)
-            .clip(CircleShape)
+        modifier = Modifier.size(32.dp).clip(CircleShape)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_save),
             contentDescription = null,
-            tint = Color.Gray
+            tint = MaterialTheme.colorScheme.outline
         )
     }
 }

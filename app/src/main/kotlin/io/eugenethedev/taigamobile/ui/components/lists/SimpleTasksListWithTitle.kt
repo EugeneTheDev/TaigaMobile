@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -57,7 +57,7 @@ fun LazyListScope.SimpleTasksListWithTitle(
         if (index < lastIndex) {
             Divider(
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = horizontalPadding),
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.outline
             )
         }
     }
