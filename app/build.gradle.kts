@@ -16,9 +16,9 @@ android {
     defaultConfig {
         applicationId = "io.eugenethedev.taigamobile"
         minSdk = 21
-        targetSdk = 30
-        versionCode = 20
-        versionName = "1.6.1"
+        targetSdk = 31
+        versionCode = 21
+        versionName = "1.7"
         project.base.archivesBaseName = "TaigaMobile-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
