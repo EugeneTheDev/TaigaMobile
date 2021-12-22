@@ -19,7 +19,7 @@ import io.eugenethedev.taigamobile.ui.theme.shapes
  */
 @Composable
 fun LoadingDialog() = Dialog(onDismissRequest = { /* cannot dismiss */ }) {
-    Surface(shape = shapes.medium /*TODO you know*/) {
+    Surface(shape = shapes.medium) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(20.dp)

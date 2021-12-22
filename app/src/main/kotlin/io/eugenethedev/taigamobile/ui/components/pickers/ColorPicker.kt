@@ -50,7 +50,7 @@ fun ColorPicker(
 
     Spacer(
         Modifier.size(size)
-            .background(color = color, shape = shapes.medium) // TODO material3 update
+            .background(color = color, shape = shapes.medium)
             .clickableUnindicated { dialogState.show() }
     )
 }

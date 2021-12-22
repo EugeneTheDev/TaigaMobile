@@ -31,6 +31,5 @@ fun AppBarWithBackButton(
         }
     } ?: {},
     actions = actions,
-    // TODO color background surface?
     modifier = modifier.statusBarsPadding()
 )

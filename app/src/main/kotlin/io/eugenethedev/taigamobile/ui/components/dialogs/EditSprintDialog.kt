@@ -70,7 +70,7 @@ fun EditSprintDialog(
             val pickerModifier = Modifier.border(
                 width = 1.5.dp,
                 color = MaterialTheme.colorScheme.outline,
-                shape = shapes.small // TODO wait for material3 update
+                shape = shapes.small
             ).padding(6.dp)
 
             Row(

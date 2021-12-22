@@ -26,7 +26,7 @@ fun CreateCommentBar(
     createComment: (String) -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth(),
-    tonalElevation = 8.dp, // TODO shadow probably?
+    tonalElevation = 8.dp,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var commentTextValue by remember { mutableStateOf(TextFieldValue()) }
