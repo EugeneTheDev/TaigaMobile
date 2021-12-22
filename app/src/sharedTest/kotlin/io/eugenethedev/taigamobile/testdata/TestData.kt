@@ -20,7 +20,7 @@ object TestData {
 
     val activeUser = users[1]
 
-    val projects = listOf<Project>(
+    val projects = listOf(
         object : Project(
             name = "Cool Test Project",
             description = "And cool description",

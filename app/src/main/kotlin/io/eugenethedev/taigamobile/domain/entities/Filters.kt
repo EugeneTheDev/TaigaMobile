@@ -17,15 +17,15 @@ data class FiltersData(
     val types: List<StatusesFilter> = emptyList()
 ) {
     operator fun minus(other: FiltersData) = FiltersData(
-        assignees = assignees - other.assignees,
-        roles = roles - other.roles,
-        tags = tags - other.tags,
-        statuses = statuses - other.statuses,
-        createdBy = createdBy - other.createdBy,
-        priorities = priorities - other.priorities,
-        severities = severities - other.severities,
-        types = types - other.types,
-        epics = epics - other.epics
+        assignees = assignees - other.assignees.toSet(),
+        roles = roles - other.roles.toSet(),
+        tags = tags - other.tags.toSet(),
+        statuses = statuses - other.statuses.toSet(),
+        createdBy = createdBy - other.createdBy.toSet(),
+        priorities = priorities - other.priorities.toSet(),
+        severities = severities - other.severities.toSet(),
+        types = types - other.types.toSet(),
+        epics = epics - other.epics.toSet()
     )
 
     val filtersNumber = listOf(assignees, roles, tags, statuses, createdBy, priorities, severities, types, epics).sumOf { it.size }

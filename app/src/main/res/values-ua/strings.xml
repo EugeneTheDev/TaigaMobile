@@ -71,8 +71,6 @@
     <string name="issue">Проблема</string>
     
     <string name="no_sprint">Без спринта</string>
-    <string name="belongs_to_epics">Належить епікам</string>
-    <string name="belongs_to_story">Належить історіям користувача</string>
     <string name="link_to_epic">Зв\'язати з епіком</string>
     <string name="add_tag">Додати тег</string>
     <string name="created_by">Створений</string>
@@ -100,8 +98,6 @@
     <string name="date_hint">Дата</string>
     <string name="no_due_date">Не має терміну</string>
 
-    <string name="open">Відкрити</string>
-    <string name="clear">Відчистити</string>
     <string name="select_date">Виберіть дату</string>
     <string name="select_color">Виберіть колір</string>
     <string name="tag">Позначка</string>
@@ -154,7 +150,6 @@
     <string name="tasks_search_hint">Пошук по номеру чи заголовку</string>
     <string name="filters">Фільтри</string>
     <string name="show_filters">Показати фільтри</string>
-    <string name="hide_filters">Hide filters</string>
     <string name="type_title">Тип</string>
     <string name="severity_title">Тяжкість</string>
     <string name="priority_title">Пріоритет</string>

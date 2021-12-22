@@ -71,8 +71,6 @@
     <string name="issue">Ticket</string>
     
     <string name="no_sprint">Aucun sprint</string>
-    <string name="belongs_to_epics">Fait partie de l\'épopée</string>
-    <string name="belongs_to_story">Fait partie du récit</string>
     <string name="link_to_epic">Lien ver l\'épopée</string>
     <string name="add_tag">Ajouter une étiquette</string>
     <string name="created_by">Créé par</string>
@@ -100,8 +98,6 @@
     <string name="date_hint">Date</string>
     <string name="no_due_date">Pas de date d\'échéance</string>
 
-    <string name="open">Ouvert</string>
-    <string name="clear">Dégager</string>
     <string name="select_color">Sélectionnez la couleur</string>
     <string name="tag">Tag</string>
     <string name="select_date">Sélectionner une date</string>
@@ -154,7 +150,6 @@
     <string name="tasks_search_hint">Rechercher par ref ou sujet</string>
     <string name="filters">Filtres</string>
     <string name="show_filters">Afficher les filtres</string>
-    <string name="hide_filters">Masquer les filtres</string>
     <string name="type_title">Taper</string>
     <string name="severity_title">Gravité</string>
     <string name="priority_title">Priorité</string>

@@ -31,5 +31,5 @@ class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
 }
 
 // used in TaskRepository
-fun String.toLocalDate() = LocalDate.parse(this)
+fun String.toLocalDate(): LocalDate = LocalDate.parse(this)
 

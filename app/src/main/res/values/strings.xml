@@ -75,8 +75,6 @@
     <string name="issue">Issue</string>
     
     <string name="no_sprint">No sprint</string>
-    <string name="belongs_to_epics">Belongs to epics</string>
-    <string name="belongs_to_story">Belongs to user story</string>
     <string name="link_to_epic">Link to epic</string>
     <string name="add_tag">Add tag</string>
     <string name="created_by">Created by</string>
@@ -104,8 +102,6 @@
     <string name="date_hint">Date</string>
     <string name="no_due_date">No due date</string>
 
-    <string name="open">Open</string>
-    <string name="clear">Clear</string>
     <string name="select_date">Select date</string>
     <string name="select_color">Select color</string>
     <string name="tag">Tag</string>
@@ -158,7 +154,6 @@
     <string name="tasks_search_hint">Search by ref or subject</string>
     <string name="filters">Filters</string>
     <string name="show_filters">Show filters</string>
-    <string name="hide_filters">Hide filters</string>
     <string name="type_title">Type</string>
     <string name="severity_title">Severity</string>
     <string name="priority_title">Priority</string>
