@@ -6,35 +6,32 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
+import io.mockk.coVerify
 import kotlin.test.Test
-import kotlin.test.assertIs
 
-class ProjectSelectorViewModelTest: BaseViewModelTest() {
+class ProjectSelectorViewModelTest : BaseViewModelTest() {
     private lateinit var viewModel: ProjectSelectorViewModel
 
     @BeforeTest
-    fun setup() = runBlocking {
+    fun setup() {
         viewModel = ProjectSelectorViewModel(mockAppComponent)
     }
 
+    //Fixme
     @Test
-    fun `test search projects`(): Unit = runBlocking {
+    fun `test list of projects`(): Unit = runBlocking {
         val query = "query"
         viewModel.onOpen()
         viewModel.searchProjects(query)
         testLazyPagingItems(viewModel.projects) {
-            mockSearchRepository.searchProjects(
-                any(),
-                any()
-            )
+            mockSearchRepository.searchProjects(any(), any())
         }
     }
 
     @Test
     fun `test select project`(): Unit = runBlocking {
-        val mockProject = mockk<Project>()
-
+        val mockProject = mockk<Project>(relaxed = true)
         viewModel.selectProject(mockProject)
-        assertIs<Project>(viewModel.currentProjectId.value)
+        coVerify { mockSession.changeCurrentProject(any(), any()) }
     }
 }
