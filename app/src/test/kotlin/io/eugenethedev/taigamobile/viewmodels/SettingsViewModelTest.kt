@@ -48,7 +48,6 @@ class SettingsViewModelTest : BaseViewModelTest() {
         coVerify { mockSession.reset() }
     }
 
-    //Fixme
     @Test
     fun `test switch theme`(): Unit = runBlocking {
         val themeSetting = ThemeSetting.Light
