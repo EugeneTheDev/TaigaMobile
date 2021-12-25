@@ -6,14 +6,13 @@ import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredFunctions
 import timber.log.Timber
 import io.eugenethedev.taigamobile.R
 
-inline fun <T> MutableStateFlow<Result<T>>.loadOrError(
+inline fun <T> MutableResultFlow<T>.loadOrError(
     @StringRes messageId: Int = R.string.common_error_message,
     preserveValue: Boolean = true,
     showLoading: Boolean = true,
