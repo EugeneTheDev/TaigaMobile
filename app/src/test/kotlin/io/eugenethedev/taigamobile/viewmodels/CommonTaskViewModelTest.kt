@@ -125,7 +125,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test list of sprints`(): Unit = runBlocking {
-        testLazyPagingItems(viewModel.sprints, isSprintHead = true) {
+        testLazyPagingItems(viewModel.sprints, offset = 1) { // because of SPRINT_HEADER
             mockSprintsRepository.getSprints(any())
         }
     }

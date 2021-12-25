@@ -19,10 +19,7 @@ import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumViewModel
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintViewModel
 import io.eugenethedev.taigamobile.ui.screens.team.TeamViewModel
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.unmockkAll
+import io.mockk.*
 import org.junit.AfterClass
 import kotlin.test.AfterTest
 
@@ -33,8 +30,8 @@ abstract class BaseViewModelTest : BaseUnitTest() {
     private val mockContext = mockk<Context> {
         every { getSharedPreferences(any(), any()) } returns mockk(relaxed = true)
     }
-    protected val mockSession = Session(mockContext)
-    protected val mockSettings = Settings(mockContext)
+    protected val mockSession = spyk(Session(mockContext))
+    protected val mockSettings = spyk(Settings(mockContext))
 
     // repository mocks
     protected val mockAuthRepository = mockk<IAuthRepository>(relaxed = true)

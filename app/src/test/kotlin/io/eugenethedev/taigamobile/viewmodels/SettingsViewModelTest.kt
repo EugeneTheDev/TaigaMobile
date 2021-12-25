@@ -51,8 +51,8 @@ class SettingsViewModelTest : BaseViewModelTest() {
     //Fixme
     @Test
     fun `test switch theme`(): Unit = runBlocking {
-        val mockThemeSetting = mockk<ThemeSetting>(relaxed = true)
-        viewModel.switchTheme(mockThemeSetting)
-        coVerify { mockSettings.changeThemeSetting(eq(mockThemeSetting)) }
+        val themeSetting = ThemeSetting.Light
+        viewModel.switchTheme(themeSetting)
+        coVerify { mockSettings.changeThemeSetting(eq(themeSetting)) }
     }
 }

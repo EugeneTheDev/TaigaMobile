@@ -17,13 +17,9 @@ class ProjectSelectorViewModelTest : BaseViewModelTest() {
         viewModel = ProjectSelectorViewModel(mockAppComponent)
     }
 
-    //Fixme
     @Test
     fun `test list of projects`(): Unit = runBlocking {
-        val query = "query"
-        viewModel.onOpen()
-        viewModel.searchProjects(query)
-        testLazyPagingItems(viewModel.projects) {
+        testLazyPagingItems(viewModel.projects, pageArg = { secondArg() }) {
             mockSearchRepository.searchProjects(any(), any())
         }
     }
