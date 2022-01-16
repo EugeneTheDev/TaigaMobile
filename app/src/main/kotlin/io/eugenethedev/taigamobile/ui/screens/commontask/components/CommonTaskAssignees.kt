@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
@@ -45,9 +44,18 @@ fun LazyListScope.CommonTaskAssignees(
         if (editActions.editAssignees.isResultLoading) {
             DotsLoader()
         }
-        AddButton(
-            text = stringResource(R.string.add_user),
-            onClick = { showAssigneesSelector() }
-        )
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            AddButton(
+                text = stringResource(R.string.add_user),
+                onClick = { showAssigneesSelector() }
+            )
+            AddButton(
+                text = stringResource(R.string.assign_to_me),
+                onClick = {  }
+            )
+        }
     }
 }

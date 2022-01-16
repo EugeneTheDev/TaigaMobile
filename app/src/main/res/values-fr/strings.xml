@@ -83,6 +83,7 @@
     <string name="delete_comment_title">Supprimer le commentaire</string>
     <string name="delete_comment_text">Etes vous sûr de vouloir supprimer le commentaire ?</string>
     <string name="add_user">Ajouter un utilisateur</string>
+    <string name="assign_to_me">Me l\'affecter</string>
     <string name="attachments_template">%d Pièces jointes</string>
     <string name="custom_fields">Champs personnalisés</string>
 
