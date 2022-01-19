@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
+import io.eugenethedev.taigamobile.ui.components.buttons.TextButton
 import io.eugenethedev.taigamobile.ui.components.lists.UserItemWithAction
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
@@ -46,13 +47,16 @@ fun LazyListScope.CommonTaskAssignees(
         }
         Row (
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.Start
         ){
             AddButton(
-                text = stringResource(R.string.add_user),
+                text = stringResource(R.string.add_assigned),
                 onClick = { showAssigneesSelector() }
             )
-            AddButton(
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            TextButton(
                 text = stringResource(R.string.assign_to_me),
                 onClick = {  }
             )

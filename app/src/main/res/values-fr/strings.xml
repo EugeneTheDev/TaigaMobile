@@ -83,9 +83,13 @@
     <string name="delete_comment_title">Supprimer le commentaire</string>
     <string name="delete_comment_text">Etes vous sûr de vouloir supprimer le commentaire ?</string>
     <string name="add_user">Ajouter un utilisateur</string>
-    <string name="assign_to_me">Me l\'affecter</string>
     <string name="attachments_template">%d Pièces jointes</string>
     <string name="custom_fields">Champs personnalisés</string>
+
+    <string name="add_assigned">Ajouter un utilisateur affecté</string>
+    <string name="assign_to_me">Me l\'affecter</string>
+    <string name="add_watchers">Ajouter des observateurs</string>
+    <string name="watch">Suivre</string>
 
     <string name="swimlane_title">Swimlanes:</string>
     <string name="unclassifed">Non classé</string>

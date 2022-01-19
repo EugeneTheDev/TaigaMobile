@@ -87,10 +87,15 @@
     <string name="delete_comment_title">Delete comment</string>
     <string name="delete_comment_text">Are you sure you want to delete comment?</string>
     <string name="add_user">Add user</string>
-    <string name="assign_to_me">Assign to me</string>
     <string name="attachments_template">%d Attachments</string>
     <string name="custom_fields">Custom fields</string>
-    
+
+
+    <string name="add_assigned">Add assigned</string>
+    <string name="assign_to_me">Assign to me</string>
+    <string name="add_watchers">Add watchers</string>
+    <string name="watch">Watch</string>
+
     <string name="swimlane_title">Swimlane:</string>
     <string name="unclassifed">Unclassified</string>
 

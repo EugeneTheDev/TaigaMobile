@@ -83,9 +83,13 @@
     <string name="delete_comment_title">Видалити коментар</string>
     <string name="delete_comment_text">Ви впевнені, що бажаєте видалити коментар?</string>
     <string name="add_user">Додати користувача</string>
-    <string name="assign_to_me">Назначити на мене</string>
     <string name="attachments_template">%d Вкладення</string>
     <string name="custom_fields">Спеціальні поля</string>
+
+    <string name="add_assigned">Назначити на…</string>
+    <string name="assign_to_me">Назначити на мене</string>
+    <string name="add_watchers">Додати спостерігачів</string>
+    <string name="watch">Відслідковувати</string>
 
     <string name="swimlane_title">Доріжки:</string>
     <string name="unclassifed">Некласифікований</string>
