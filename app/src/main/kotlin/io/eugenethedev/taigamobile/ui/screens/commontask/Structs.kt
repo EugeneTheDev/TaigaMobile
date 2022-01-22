@@ -62,6 +62,7 @@ class EditActions(
     val editEpicColor: EditSimple<String> = EditSimple(),
     val deleteTask: () -> Unit = {},
     val promoteTask: () -> Unit = {},
+    val assigneeToMe: (User) -> Unit = {},
 )
 
 // all loading statuses in one place

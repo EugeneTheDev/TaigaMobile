@@ -210,7 +210,8 @@ fun CommonTaskScreen(
             editEpicColor = EditSimple(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
-            )
+            ),
+            assigneeToMe = viewModel::addAssignee
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
