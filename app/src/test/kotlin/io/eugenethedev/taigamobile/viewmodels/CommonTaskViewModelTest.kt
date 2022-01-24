@@ -57,7 +57,6 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         checkEqualityForLoadData(mockCommonTaskType)
     }
 
-
     private fun checkEqualityForLoadData(mockCommonTaskType: CommonTaskType) {
         val mapOfStatuses = StatusType.values().filter {
             if (mockCommonTaskType != CommonTaskType.Issue) it == StatusType.Status else true
@@ -290,6 +289,50 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         } throws accessDeniedException
         viewModel.removeAssignee(mockUser)
         assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
+    }
+
+    @Test
+    fun `test assignee or watch to me`(): Unit = runBlocking {
+        val mockUser = mockk<User>(relaxed = true)
+
+        initOnOpen()
+        coEvery { mockUsersRepository.getUser(any()) } returns mockUser
+
+        viewModel.assigneeOrWatchToMe()
+        assertResultEquals(
+            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
+            viewModel.assignees.value
+        )
+
+        viewModel.assigneeOrWatchToMe(isWatcher = true)
+        assertResultEquals(
+            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
+            viewModel.watchers.value
+        )
+
+        coEvery {
+            mockTaskRepository.changeAssignees(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+        coEvery {
+            mockTaskRepository.changeWatchers(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws accessDeniedException
+
+
+        viewModel.assigneeOrWatchToMe()
+        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
+
+        viewModel.assigneeOrWatchToMe(isWatcher = true)
+        assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
     }
 
     @Test
