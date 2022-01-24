@@ -17,9 +17,18 @@ import io.eugenethedev.taigamobile.R
 @Composable
 fun TextButton(
     text: String,
+    icon: Int? = null,
     onClick: () -> Unit
 ) = FilledTonalButton(onClick = onClick) {
     Row(verticalAlignment = Alignment.CenterVertically) {
+        icon?.let {
+            Icon(
+                painter = painterResource(it),
+                contentDescription = null
+            )
+
+            Spacer(Modifier.width(6.dp))
+        }
         Text(text)
     }
 }

@@ -63,7 +63,8 @@ fun LazyListScope.CommonTaskWatchers(
 
             TextButton(
                 text = stringResource(R.string.watch),
-                onClick = { }
+                icon = R.drawable.ic_eye,
+                onClick = { editActions.assigneeOrWatchToMe.select(true) }
             )
         }
     }

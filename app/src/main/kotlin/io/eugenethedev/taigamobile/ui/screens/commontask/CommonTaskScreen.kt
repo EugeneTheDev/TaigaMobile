@@ -211,7 +211,7 @@ fun CommonTaskScreen(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
             ),
-            assigneeToMe = EditSimple(
+            assigneeOrWatchToMe = EditSimple(
                 select = viewModel::assigneeOrWatchToMe,
                 isResultLoading = assignees is LoadingResult,
             )
