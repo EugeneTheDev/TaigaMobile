@@ -117,7 +117,7 @@ fun CommonTaskScreen(
             navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
         }
     }
-    
+
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data?.get(statusType).orEmpty(),
         selectItem = viewModel::selectStatus,
@@ -211,7 +211,10 @@ fun CommonTaskScreen(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
             ),
-            assigneeToMe = viewModel::addAssignee
+            assigneeToMe = EditSimple(
+                select = viewModel::assigneeOrWatchToMe,
+                isResultLoading = assignees is LoadingResult,
+            )
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
@@ -257,9 +260,9 @@ fun CommonTaskScreenContent(
     var isEpicsSelectorVisible by remember { mutableStateOf(false) }
     var isSwimlaneSelectorVisible by remember { mutableStateOf(false) }
 
-
     var customFieldsValues by remember { mutableStateOf(emptyMap<Long, CustomFieldValue?>()) }
-    customFieldsValues = customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
+    customFieldsValues =
+        customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
 
     Column(Modifier.fillMaxSize()) {
         CommonTaskAppBar(
@@ -372,7 +375,9 @@ fun CommonTaskScreenContent(
                         CommonTaskCustomFields(
                             customFields = customFields,
                             customFieldsValues = customFieldsValues,
-                            onValueChange = { itemId, value -> customFieldsValues = customFieldsValues - itemId + Pair(itemId, value) },
+                            onValueChange = { itemId, value ->
+                                customFieldsValues = customFieldsValues - itemId + Pair(itemId, value)
+                            },
                             editActions = editActions,
                             loaders = loaders
                         )
@@ -425,7 +430,8 @@ fun CommonTaskScreenContent(
                         Spacer(
                             Modifier
                                 .navigationBarsWithImePadding()
-                                .height(72.dp))
+                                .height(72.dp)
+                        )
                     }
                 }
 
@@ -433,7 +439,6 @@ fun CommonTaskScreenContent(
             }
         }
     }
-
 
     // Bunch of list selectors
     Selectors(

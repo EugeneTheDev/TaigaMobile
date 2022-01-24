@@ -240,6 +240,13 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     fun addAssignee(user: User) = changeAssignees(user, remove = false)
     fun removeAssignee(user: User) = changeAssignees(user, remove = true)
+    fun assigneeOrWatchToMe(isWatcher: Boolean = false) = viewModelScope.launch {
+        val user = usersRepository.getUser(session.currentUserId.value)
+        if (isWatcher)
+            addWatcher(user)
+        else
+            addAssignee(user)
+    }
 
     // Edit watchers
 

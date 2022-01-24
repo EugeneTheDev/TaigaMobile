@@ -58,7 +58,7 @@ fun LazyListScope.CommonTaskAssignees(
 
             TextButton(
                 text = stringResource(R.string.assign_to_me),
-                onClick = { editActions.assigneeToMe }
+                onClick = { editActions.assigneeToMe.select(false) }
             )
         }
     }
