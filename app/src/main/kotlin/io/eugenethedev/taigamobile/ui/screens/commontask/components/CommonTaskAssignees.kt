@@ -45,22 +45,24 @@ fun LazyListScope.CommonTaskAssignees(
         if (editActions.editAssignees.isResultLoading) {
             DotsLoader()
         }
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
-        ){
+        ) {
             AddButton(
                 text = stringResource(R.string.add_assigned),
                 onClick = { showAssigneesSelector() }
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            if (!editActions.checkAssigneeToMe()) {
+                Spacer(modifier = Modifier.width(16.dp))
 
-            TextButton(
-                text = stringResource(R.string.assign_to_me),
-                icon = R.drawable.ic_assignee_to_me,
-                onClick = { editActions.assigneeOrWatchToMe.select(false) }
-            )
+                TextButton(
+                    text = stringResource(R.string.assign_to_me),
+                    icon = R.drawable.ic_assignee_to_me,
+                    onClick = { editActions.assigneeOrWatchToMe.select(false) }
+                )
+            }
         }
     }
 }

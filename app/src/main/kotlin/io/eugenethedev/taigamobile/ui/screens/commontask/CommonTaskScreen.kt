@@ -214,7 +214,9 @@ fun CommonTaskScreen(
             assigneeOrWatchToMe = EditSimple(
                 select = viewModel::assigneeOrWatchToMe,
                 isResultLoading = assignees is LoadingResult,
-            )
+            ),
+            checkAssigneeToMe = viewModel::checkAssigneeToMe,
+            checkWatchingMe = viewModel::checkWatchingMe
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,

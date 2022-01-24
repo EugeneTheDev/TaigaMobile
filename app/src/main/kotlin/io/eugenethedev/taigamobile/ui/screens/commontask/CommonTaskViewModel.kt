@@ -248,6 +248,14 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             addAssignee(user)
     }
 
+    fun checkAssigneeToMe(): Boolean {
+        assignees.value.data?.map { it._id }?.let { ids ->
+            if (session.currentUserId.value in ids)
+                return true
+        }
+        return false
+    }
+
     // Edit watchers
 
     private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
@@ -270,6 +278,14 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     fun addWatcher(user: User) = changeWatchers(user, remove = false)
     fun removeWatcher(user: User) = changeWatchers(user, remove = true)
+
+    fun checkWatchingMe(): Boolean {
+        watchers.value.data?.map { it._id }?.let { ids ->
+            if (session.currentUserId.value in ids)
+                return true
+        }
+        return false
+    }
 
     // Edit comments
 

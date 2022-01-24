@@ -59,13 +59,15 @@ fun LazyListScope.CommonTaskWatchers(
                 onClick = { showWatchersSelector() }
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            if (!editActions.checkWatchingMe()) {
+                Spacer(modifier = Modifier.width(16.dp))
 
-            TextButton(
-                text = stringResource(R.string.watch),
-                icon = R.drawable.ic_eye,
-                onClick = { editActions.assigneeOrWatchToMe.select(true) }
-            )
+                TextButton(
+                    text = stringResource(R.string.watch),
+                    icon = R.drawable.ic_eye,
+                    onClick = { editActions.assigneeOrWatchToMe.select(true) }
+                )
+            }
         }
     }
 }
