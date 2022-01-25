@@ -336,6 +336,32 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
+    fun `test check assignee to me`(): Unit = runBlocking {
+        val mockUser = mockk<User>(relaxed = true)
+
+        viewModel.addAssignee(mockUser)
+        viewModel.assignees.value.data?.map { it._id }?.let { ids ->
+            assertEquals(
+                expected = mockUser._id in ids,
+                actual = viewModel.checkAssigneeToMe()
+            )
+        }
+    }
+
+    @Test
+    fun `test check watching me`(): Unit = runBlocking {
+        val mockUser = mockk<User>(relaxed = true)
+
+        viewModel.addWatcher(mockUser)
+        viewModel.watchers.value.data?.map { it._id }?.let { ids ->
+            assertEquals(
+                expected = mockUser._id in ids,
+                actual = viewModel.checkAssigneeToMe()
+            )
+        }
+    }
+
+    @Test
     fun `test add watcher`(): Unit = runBlocking {
         val mockUser = mockk<User>(relaxed = true)
 
@@ -677,5 +703,13 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         viewModel.selectEpicColor(color + "error")
         assertIs<ErrorResult<Unit>>(viewModel.colorResult.value)
+    }
+
+    @Test
+    fun `test get current project name`(): Unit = runBlocking {
+        assertEquals(
+            expected = mockSession.currentProjectName.value,
+            actual = viewModel.getCurrentProjectName()
+        )
     }
 }
