@@ -426,4 +426,9 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             session.taskEdit.postUpdate()
         }
     }
+
+    // Get currentProjectName
+    fun getCurrentProjectName(): String {
+        return session.currentProjectName.value
+    }
 }

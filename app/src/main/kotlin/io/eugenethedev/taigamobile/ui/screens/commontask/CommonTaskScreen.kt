@@ -134,6 +134,7 @@ fun CommonTaskScreen(
                 CommonTaskType.Issue -> R.string.issue_slug
             }
         ).format(ref),
+        toolbarSubtitle = viewModel.getCurrentProjectName(),
         commonTask = commonTask.data,
         creator = creator.data,
         customFields = customFields.data?.fields.orEmpty(),
@@ -237,6 +238,7 @@ fun CommonTaskScreen(
 fun CommonTaskScreenContent(
     commonTaskType: CommonTaskType,
     toolbarTitle: String,
+    toolbarSubtitle: String,
     commonTask: CommonTaskExtended?,
     creator: User?,
     customFields: List<CustomField> = emptyList(),
@@ -269,6 +271,7 @@ fun CommonTaskScreenContent(
     Column(Modifier.fillMaxSize()) {
         CommonTaskAppBar(
             toolbarTitle = toolbarTitle,
+            toolbarSubtitle = toolbarSubtitle,
             commonTaskType = commonTaskType,
             showTaskEditor = { isTaskEditorVisible = true },
             editActions = editActions,
@@ -519,6 +522,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         CommonTaskScreenContent(
             commonTaskType = CommonTaskType.UserStory,
             toolbarTitle = "Userstory #99",
+            toolbarSubtitle =  "Project #228",
             commonTask = null, // TODO left it null for now since I do not really use this preview
             creator = User(
                 _id = 0L,

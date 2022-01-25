@@ -1,7 +1,9 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
@@ -9,7 +11,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
@@ -22,6 +26,7 @@ import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 @Composable
 fun CommonTaskAppBar(
     toolbarTitle: String,
+    toolbarSubtitle: String,
     commonTaskType: CommonTaskType,
     showTaskEditor: () -> Unit,
     editActions: EditActions,
@@ -30,11 +35,22 @@ fun CommonTaskAppBar(
     var isMenuExpanded by remember { mutableStateOf(false) }
     AppBarWithBackButton(
         title = {
-            Text(
-                text = toolbarTitle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = toolbarTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = toolbarSubtitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 12.sp
+                )
+            }
         },
         actions = {
             Box {
