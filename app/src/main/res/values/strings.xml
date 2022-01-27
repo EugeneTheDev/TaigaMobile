@@ -126,7 +126,7 @@
     <string name="remove_user_text">Are you sure you want to remove this user?</string>
 
     <string name="delete_task_title">Delete task</string>
-    <string name="delete_task_text">Are you sure you want to delete thist ask?</string>
+    <string name="delete_task_text">Are you sure you want to delete this task?</string>
 
     <string name="promote_title">Promote</string>
     <string name="promote_text">Are you sure you want to promote this task to a user story?</string>

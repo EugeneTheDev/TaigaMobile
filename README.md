@@ -45,4 +45,4 @@ Probably sucks. I'm not very good at designing UI, but I'm doing my best. So, if
 Check out the app on [Google Play](https://play.google.com/store/apps/details?id=io.eugenethedev.taigamobile&utm_source=github) or go to the [Releases page](https://github.com/EugeneTheDev/TaigaMobile/releases) to download the latest apk.
 
 ## Issues
-If you have any problems or suggestions, please post an [Issue](https://github.com/EugeneTheDev/TaigaMobile/issues).
+If you have any problems or suggestions, please submit an [Issue](https://github.com/EugeneTheDev/TaigaMobile/issues).
