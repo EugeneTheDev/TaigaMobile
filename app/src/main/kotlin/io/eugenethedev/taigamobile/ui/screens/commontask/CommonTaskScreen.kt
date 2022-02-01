@@ -118,6 +118,14 @@ fun CommonTaskScreen(
         }
     }
 
+    val projectName by viewModel.getCurrentProjectName().collectAsState()
+
+    val assigneeMe by viewModel.assigneeMe.collectAsState()
+    assigneeMe.subscribeOnError(onError)
+
+    val watchMe by viewModel.watchMe.collectAsState()
+    watchMe.subscribeOnError(onError)
+
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data?.get(statusType).orEmpty(),
         selectItem = viewModel::selectStatus,
@@ -134,7 +142,7 @@ fun CommonTaskScreen(
                 CommonTaskType.Issue -> R.string.issue_slug
             }
         ).format(ref),
-        toolbarSubtitle = viewModel.getCurrentProjectName(),
+        toolbarSubtitle = projectName,
         commonTask = commonTask.data,
         creator = creator.data,
         customFields = customFields.data?.fields.orEmpty(),
@@ -220,8 +228,8 @@ fun CommonTaskScreen(
                 select = viewModel::watchMe,
                 isResultLoading = watchers is LoadingResult,
             ),
-            checkAssigneeToMe = viewModel::checkAssigneeMe,
-            checkWatchingMe = viewModel::checkWatchingMe
+            checkAssigneeToMe = assigneeMe.data,
+            checkWatchingMe = watchMe.data
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,

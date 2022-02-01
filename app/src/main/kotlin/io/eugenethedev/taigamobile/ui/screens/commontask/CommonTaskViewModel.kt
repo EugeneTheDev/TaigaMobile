@@ -57,6 +57,9 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     val swimlanes = MutableResultFlow<List<Swimlane>>()
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
 
+    val assigneeMe = MutableResultFlow<Boolean>()
+    val watchMe = MutableResultFlow<Boolean>()
+
     init {
         appComponent.inject(this)
     }
@@ -135,6 +138,8 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
                 joinAll(*jobsToLoad)
             }
         }
+        checkAssigneeMe()
+        checkWatchMe()
     }
 
     /**
@@ -241,12 +246,14 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     fun removeAssignee(user: User) = changeAssignees(user.id, remove = true)
     fun assigneeMe() = changeAssignees(session.currentUserId.value, remove = false)
 
-    fun checkAssigneeMe(): Boolean {
-        assignees.value.data?.map { it._id }?.let { ids ->
-            if (session.currentUserId.value in ids)
-                return true
+    fun checkAssigneeMe() {
+        assigneeMe.loadOrError(showLoading = false) {
+            assignees.value.data?.map { it._id }?.let { ids ->
+                if (session.currentUserId.value in ids)
+                    return@loadOrError true
+            }
+            return@loadOrError false
         }
-        return false
     }
 
     // Edit watchers
@@ -273,12 +280,14 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     fun removeWatcher(user: User) = changeWatchers(user.id, remove = true)
     fun watchMe() = changeWatchers(session.currentUserId.value, remove = false)
 
-    fun checkWatchingMe(): Boolean {
-        watchers.value.data?.map { it._id }?.let { ids ->
-            if (session.currentUserId.value in ids)
-                return true
+    fun checkWatchMe() {
+        watchMe.loadOrError (showLoading = false) {
+            watchers.value.data?.map { it._id }?.let { ids ->
+                if (session.currentUserId.value in ids)
+                    return@loadOrError true
+            }
+            return@loadOrError false
         }
-        return false
     }
 
     // Edit comments
@@ -422,7 +431,7 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     }
 
     // Get currentProjectName
-    fun getCurrentProjectName(): String {
-        return session.currentProjectName.value
+    fun getCurrentProjectName(): StateFlow<String> {
+        return session.currentProjectName
     }
 }
