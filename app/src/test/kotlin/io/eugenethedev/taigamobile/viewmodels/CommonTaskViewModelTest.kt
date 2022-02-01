@@ -292,22 +292,16 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test assignee or watch to me`(): Unit = runBlocking {
+    fun `test assignee me`(): Unit = runBlocking {
         val mockUser = mockk<User>(relaxed = true)
 
         initOnOpen()
         coEvery { mockUsersRepository.getUser(any()) } returns mockUser
 
-        viewModel.assigneeOrWatchToMe()
+        viewModel.assigneeMe()
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
             viewModel.assignees.value
-        )
-
-        viewModel.assigneeOrWatchToMe(isWatcher = true)
-        assertResultEquals(
-            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
-            viewModel.watchers.value
         )
 
         coEvery {
@@ -318,6 +312,23 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
                 any()
             )
         } throws accessDeniedException
+        viewModel.assigneeMe()
+        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
+    }
+
+    @Test
+    fun `test watch me`(): Unit = runBlocking {
+        val mockUser = mockk<User>(relaxed = true)
+
+        initOnOpen()
+        coEvery { mockUsersRepository.getUser(any()) } returns mockUser
+
+        viewModel.watchMe()
+        assertResultEquals(
+            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
+            viewModel.watchers.value
+        )
+
         coEvery {
             mockTaskRepository.changeWatchers(
                 any(),
@@ -326,39 +337,26 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
                 any()
             )
         } throws accessDeniedException
-
-
-        viewModel.assigneeOrWatchToMe()
-        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
-
-        viewModel.assigneeOrWatchToMe(isWatcher = true)
+        viewModel.watchMe()
         assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
     }
 
     @Test
     fun `test check assignee to me`(): Unit = runBlocking {
-        val mockUser = mockk<User>(relaxed = true)
-
-        viewModel.addAssignee(mockUser)
-        viewModel.assignees.value.data?.map { it._id }?.let { ids ->
-            assertEquals(
-                expected = mockUser._id in ids,
-                actual = viewModel.checkAssigneeToMe()
-            )
-        }
+        viewModel.checkAssigneeMe()
+        assertResultEquals(
+            SuccessResult(false),
+            viewModel.assigneeMe.value
+        )
     }
 
     @Test
     fun `test check watching me`(): Unit = runBlocking {
-        val mockUser = mockk<User>(relaxed = true)
-
-        viewModel.addWatcher(mockUser)
-        viewModel.watchers.value.data?.map { it._id }?.let { ids ->
-            assertEquals(
-                expected = mockUser._id in ids,
-                actual = viewModel.checkAssigneeToMe()
-            )
-        }
+        viewModel.checkWatchMe()
+        assertResultEquals(
+            SuccessResult(false),
+            viewModel.watchMe.value
+        )
     }
 
     @Test
@@ -709,7 +707,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     fun `test get current project name`(): Unit = runBlocking {
         assertEquals(
             expected = mockSession.currentProjectName.value,
-            actual = viewModel.getCurrentProjectName()
+            actual = viewModel.getCurrentProjectName().value
         )
     }
 }
