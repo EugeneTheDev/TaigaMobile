@@ -118,13 +118,9 @@ fun CommonTaskScreen(
         }
     }
 
-    val projectName by viewModel.getCurrentProjectName().collectAsState()
-
-    val assigneeMe by viewModel.assigneeMe.collectAsState()
-    assigneeMe.subscribeOnError(onError)
-
-    val watchMe by viewModel.watchMe.collectAsState()
-    watchMe.subscribeOnError(onError)
+    val projectName by viewModel.projectName.collectAsState()
+    val isAssigneeToMe by viewModel.isAssigneeToMe.collectAsState()
+    val isWatchByMe by viewModel.isWatchByMe.collectAsState()
 
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data?.get(statusType).orEmpty(),
@@ -220,16 +216,16 @@ fun CommonTaskScreen(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
             ),
-            assigneeMe = EditSimpleEmpty(
-                select = viewModel::assigneeMe,
+            assigne = EditSimpleEmpty(
+                select =  viewModel::addAssigneeById ,
                 isResultLoading = assignees is LoadingResult,
             ),
-            watchMe = EditSimpleEmpty(
-                select = viewModel::watchMe,
+            watch = EditSimpleEmpty(
+                select = viewModel::addWatcherById,
                 isResultLoading = watchers is LoadingResult,
             ),
-            checkAssigneeToMe = assigneeMe.data,
-            checkWatchingMe = watchMe.data
+            isAssigneeToMe = isAssigneeToMe,
+            isWatchingByMe = isWatchByMe
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,

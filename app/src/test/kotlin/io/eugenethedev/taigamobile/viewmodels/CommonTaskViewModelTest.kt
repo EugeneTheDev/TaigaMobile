@@ -250,7 +250,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockUser = mockk<User>(relaxed = true)
 
         initOnOpen()
-        viewModel.addAssignee(mockUser)
+        viewModel.addAssignee(mockUser.id)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
             viewModel.assignees.value
@@ -264,7 +264,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
                 any()
             )
         } throws accessDeniedException
-        viewModel.addAssignee(mockUser)
+        viewModel.addAssignee(mockUser.id)
         assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
     }
 

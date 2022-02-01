@@ -57,8 +57,9 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     val swimlanes = MutableResultFlow<List<Swimlane>>()
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
 
-    val assigneeMe = MutableResultFlow<Boolean>()
-    val watchMe = MutableResultFlow<Boolean>()
+    val isAssigneeToMe = MutableStateFlow<Boolean>(false)
+    val isWatchByMe = MutableStateFlow<Boolean>(false)
+    val projectName by lazy { session.currentProjectName }
 
     init {
         appComponent.inject(this)
@@ -93,8 +94,14 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
                     launch {
                         attachments.loadOrError(showLoading = false) { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
                     },
-                    launch { assignees.loadUsersFromIds(it.assignedIds) },
-                    launch { watchers.loadUsersFromIds(it.watcherIds) },
+                    launch {
+                        assignees.loadUsersFromIds(it.assignedIds)
+                        isAssigneeToMe.value = session.currentUserId.value in assignees.value.data?.map { it.id }.orEmpty()
+                    },
+                    launch {
+                        watchers.loadUsersFromIds(it.watcherIds)
+                        isWatchByMe.value = session.currentUserId.value in watchers.value.data?.map { it.id }.orEmpty()
+                    },
                     launch {
                         userStories.loadOrError(showLoading = false) { tasksRepository.getEpicUserStories(commonTaskId) }
                     },
@@ -138,8 +145,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
                 joinAll(*jobsToLoad)
             }
         }
-        checkAssigneeMe()
-        checkWatchMe()
     }
 
     /**
@@ -243,18 +248,10 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     }
 
     fun addAssignee(user: User) = changeAssignees(user.id, remove = false)
+    fun addAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = false)
     fun removeAssignee(user: User) = changeAssignees(user.id, remove = true)
-    fun assigneeMe() = changeAssignees(session.currentUserId.value, remove = false)
+    fun removeAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = true)
 
-    fun checkAssigneeMe() {
-        assigneeMe.loadOrError(showLoading = false) {
-            assignees.value.data?.map { it._id }?.let { ids ->
-                if (session.currentUserId.value in ids)
-                    return@loadOrError true
-            }
-            return@loadOrError false
-        }
-    }
 
     // Edit watchers
 
@@ -277,18 +274,9 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     }
 
     fun addWatcher(user: User) = changeWatchers(user.id, remove = false)
+    fun addWatcherById(userId: Long = session.currentUserId.value) = changeWatchers(userId, remove = false)
     fun removeWatcher(user: User) = changeWatchers(user.id, remove = true)
-    fun watchMe() = changeWatchers(session.currentUserId.value, remove = false)
-
-    fun checkWatchMe() {
-        watchMe.loadOrError (showLoading = false) {
-            watchers.value.data?.map { it._id }?.let { ids ->
-                if (session.currentUserId.value in ids)
-                    return@loadOrError true
-            }
-            return@loadOrError false
-        }
-    }
+    fun removeWatcherById(userId: Long = session.currentUserId.value) = changeWatchers(userId, remove = true)
 
     // Edit comments
 
@@ -428,10 +416,5 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             loadData().join()
             session.taskEdit.postUpdate()
         }
-    }
-
-    // Get currentProjectName
-    fun getCurrentProjectName(): StateFlow<String> {
-        return session.currentProjectName
     }
 }

@@ -54,17 +54,17 @@ fun LazyListScope.CommonTaskAssignees(
                 onClick = { showAssigneesSelector() }
             )
 
-            editActions.checkAssigneeToMe?.let { assigneeMe ->
-                if (!assigneeMe) {
-                    Spacer(modifier = Modifier.width(16.dp))
 
-                    TextButton(
-                        text = stringResource(R.string.assign_to_me),
-                        icon = R.drawable.ic_assignee_to_me,
-                        onClick = { editActions.assigneeMe.select() }
-                    )
-                }
+            if (!editActions.isAssigneeToMe) {
+                Spacer(modifier = Modifier.width(16.dp))
+
+                TextButton(
+                    text = stringResource(R.string.assign_to_me),
+                    icon = R.drawable.ic_assignee_to_me,
+                    onClick = { editActions.assigne.select() }
+                )
             }
+
         }
     }
 }

@@ -41,6 +41,7 @@ class EditSimple<T>(
 
 class EditSimpleEmpty(
     val select: () -> Unit = {},
+    val remove: () -> Unit = {},
     val isResultLoading: Boolean = false
 )
 
@@ -65,10 +66,10 @@ class EditActions(
     val editEpicColor: EditSimple<String> = EditSimple(),
     val deleteTask: () -> Unit = {},
     val promoteTask: () -> Unit = {},
-    val assigneeMe: EditSimpleEmpty = EditSimpleEmpty(),
-    val watchMe: EditSimpleEmpty = EditSimpleEmpty(),
-    val checkAssigneeToMe: Boolean? = false,
-    val checkWatchingMe: Boolean? = false
+    val assigne: EditSimpleEmpty = EditSimpleEmpty(),
+    val watch: EditSimpleEmpty = EditSimpleEmpty(),
+    val isAssigneeToMe: Boolean = false,
+    val isWatchingByMe: Boolean = false
 )
 
 // all loading statuses in one place

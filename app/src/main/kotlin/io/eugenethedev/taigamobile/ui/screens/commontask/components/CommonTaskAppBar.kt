@@ -47,8 +47,7 @@ fun CommonTaskAppBar(
                     text = toolbarSubtitle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontWeight = FontWeight.Light,
-                    fontSize = MaterialTheme.typography.labelSmall.fontSize
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         },
