@@ -88,8 +88,10 @@
 
     <string name="add_assigned">Назначити на…</string>
     <string name="assign_to_me">Назначити на мене</string>
+    <string name="not_assign_to_me">Не призначати мені</string>
     <string name="add_watchers">Додати спостерігачів</string>
     <string name="watch">Відслідковувати</string>
+    <string name="not_watch">Не дивитися</string>
 
     <string name="swimlane_title">Доріжки:</string>
     <string name="unclassifed">Некласифікований</string>

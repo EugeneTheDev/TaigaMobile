@@ -93,8 +93,10 @@
 
     <string name="add_assigned">Add assigned</string>
     <string name="assign_to_me">Assign to me</string>
+    <string name="not_assign_to_me">Don\'t assign</string>
     <string name="add_watchers">Add watchers</string>
     <string name="watch">Watch</string>
+    <string name="not_watch">Don\'t watch</string>
 
     <string name="swimlane_title">Swimlane:</string>
     <string name="unclassifed">Unclassified</string>

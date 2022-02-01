@@ -54,17 +54,29 @@ fun LazyListScope.CommonTaskAssignees(
                 onClick = { showAssigneesSelector() }
             )
 
+            Spacer(modifier = Modifier.width(16.dp))
+
+            val buttonText: Int
+            val buttonIcon: Int
 
             if (!editActions.isAssigneeToMe) {
-                Spacer(modifier = Modifier.width(16.dp))
-
-                TextButton(
-                    text = stringResource(R.string.assign_to_me),
-                    icon = R.drawable.ic_assignee_to_me,
-                    onClick = { editActions.assigne.select() }
-                )
+                buttonText = R.string.assign_to_me
+                buttonIcon = R.drawable.ic_assignee_to_me
+            }
+            else {
+                buttonText = R.string.not_assign_to_me
+                buttonIcon = R.drawable.ic_unassigned
             }
 
+            TextButton(
+                text = stringResource(buttonText),
+                icon = buttonIcon,
+                onClick = {
+                    if (!editActions.isAssigneeToMe) editActions.assigne.select() else editActions.assigne.remove()
+                    editActions.isAssigneeToMe = !editActions.isAssigneeToMe
+                }
+            )
         }
     }
 }
+

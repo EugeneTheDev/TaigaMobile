@@ -88,8 +88,10 @@
 
     <string name="add_assigned">Ajouter un utilisateur affecté</string>
     <string name="assign_to_me">Me l\'affecter</string>
+    <string name="not_assign_to_me">Ne pas me nommer</string>
     <string name="add_watchers">Ajouter des observateurs</string>
     <string name="watch">Suivre</string>
+    <string name="not_watch">Ne pas regarder</string>
 
     <string name="swimlane_title">Swimlanes:</string>
     <string name="unclassifed">Non classé</string>

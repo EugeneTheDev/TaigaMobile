@@ -59,17 +59,28 @@ fun LazyListScope.CommonTaskWatchers(
                 onClick = { showWatchersSelector() }
             )
 
+            Spacer(modifier = Modifier.width(16.dp))
 
-                if (!editActions.isWatchingByMe) {
-                    Spacer(modifier = Modifier.width(16.dp))
+            val buttonText: Int
+            val buttonIcon: Int
 
-                    TextButton(
-                        text = stringResource(R.string.watch),
-                        icon = R.drawable.ic_eye,
-                        onClick = { editActions.watch.select() }
-                    )
+            if (!editActions.isWatchingByMe) {
+                buttonText = R.string.watch
+                buttonIcon = R.drawable.ic_eye
+            }
+            else {
+                buttonText = R.string.not_watch
+                buttonIcon = R.drawable.ic_not_watch
+            }
+
+            TextButton(
+                text = stringResource(buttonText),
+                icon = buttonIcon,
+                onClick = {
+                    if (!editActions.isWatchingByMe) editActions.watch.select() else editActions.watch.remove()
+                    editActions.isWatchingByMe = !editActions.isWatchingByMe
                 }
-
+            )
         }
     }
 }

@@ -218,10 +218,12 @@ fun CommonTaskScreen(
             ),
             assigne = EditSimpleEmpty(
                 select =  viewModel::addAssigneeById ,
+                remove = viewModel::removeAssigneeById,
                 isResultLoading = assignees is LoadingResult,
             ),
             watch = EditSimpleEmpty(
                 select = viewModel::addWatcherById,
+                remove = viewModel::removeWatcherById,
                 isResultLoading = watchers is LoadingResult,
             ),
             isAssigneeToMe = isAssigneeToMe,
