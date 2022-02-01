@@ -212,11 +212,15 @@ fun CommonTaskScreen(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
             ),
-            assigneeOrWatchToMe = EditSimple(
-                select = viewModel::assigneeOrWatchToMe,
+            assigneeMe = EditSimpleEmpty(
+                select = viewModel::assigneeMe,
                 isResultLoading = assignees is LoadingResult,
             ),
-            checkAssigneeToMe = viewModel::checkAssigneeToMe,
+            watchMe = EditSimpleEmpty(
+                select = viewModel::watchMe,
+                isResultLoading = watchers is LoadingResult,
+            ),
+            checkAssigneeToMe = viewModel::checkAssigneeMe,
             checkWatchingMe = viewModel::checkWatchingMe
         ),
         loaders = Loaders(
@@ -380,9 +384,7 @@ fun CommonTaskScreenContent(
                         CommonTaskCustomFields(
                             customFields = customFields,
                             customFieldsValues = customFieldsValues,
-                            onValueChange = { itemId, value ->
-                                customFieldsValues = customFieldsValues - itemId + Pair(itemId, value)
-                            },
+                            onValueChange = { itemId, value -> customFieldsValues = customFieldsValues - itemId + Pair(itemId, value) },
                             editActions = editActions,
                             loaders = loaders
                         )

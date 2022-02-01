@@ -42,7 +42,7 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         started = SharingStarted.Eagerly,
         initialValue = -1
     )
-    
+
     val creator = MutableResultFlow<User>()
     val customFields = MutableResultFlow<CustomFields>()
     val attachments = MutableResultFlow<List<Attachment>>()
@@ -206,7 +206,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-
     // use team for both assignees and watchers
     val teamSearched = MutableStateFlow(emptyList<User>())
 
@@ -219,15 +218,15 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     // Edit assignees
 
-    private fun changeAssignees(user: User, remove: Boolean) = viewModelScope.launch {
+    private fun changeAssignees(userId: Long, remove: Boolean) = viewModelScope.launch {
         assignees.loadOrError(R.string.permission_error) {
             teamSearched.value = team.value.data.orEmpty()
 
             tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
                 commonTask.value.data?.assignedIds.orEmpty().let {
-                    if (remove) it - user.id
-                    else it + user.id
+                    if (remove) it - userId
+                    else it + userId
                 },
                 commonTaskVersion.value
             )
@@ -238,17 +237,11 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    fun addAssignee(user: User) = changeAssignees(user, remove = false)
-    fun removeAssignee(user: User) = changeAssignees(user, remove = true)
-    fun assigneeOrWatchToMe(isWatcher: Boolean = false) = viewModelScope.launch {
-        val user = usersRepository.getUser(session.currentUserId.value)
-        if (isWatcher)
-            addWatcher(user)
-        else
-            addAssignee(user)
-    }
+    fun addAssignee(user: User) = changeAssignees(user.id, remove = false)
+    fun removeAssignee(user: User) = changeAssignees(user.id, remove = true)
+    fun assigneeMe() = changeAssignees(session.currentUserId.value, remove = false)
 
-    fun checkAssigneeToMe(): Boolean {
+    fun checkAssigneeMe(): Boolean {
         assignees.value.data?.map { it._id }?.let { ids ->
             if (session.currentUserId.value in ids)
                 return true
@@ -258,15 +251,15 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     // Edit watchers
 
-    private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
+    private fun changeWatchers(userId: Long, remove: Boolean) = viewModelScope.launch {
         watchers.loadOrError(R.string.permission_error) {
             teamSearched.value = team.value.data.orEmpty()
 
             tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
                 commonTask.value.data?.watcherIds.orEmpty().let {
-                    if (remove) it - user.id
-                    else it + user.id
+                    if (remove) it - userId
+                    else it + userId
                 },
                 commonTaskVersion.value
             )
@@ -276,8 +269,9 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    fun addWatcher(user: User) = changeWatchers(user, remove = false)
-    fun removeWatcher(user: User) = changeWatchers(user, remove = true)
+    fun addWatcher(user: User) = changeWatchers(user.id, remove = false)
+    fun removeWatcher(user: User) = changeWatchers(user.id, remove = true)
+    fun watchMe() = changeWatchers(session.currentUserId.value, remove = false)
 
     fun checkWatchingMe(): Boolean {
         watchers.value.data?.map { it._id }?.let { ids ->

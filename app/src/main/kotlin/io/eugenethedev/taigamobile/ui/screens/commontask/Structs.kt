@@ -39,6 +39,11 @@ class EditSimple<T>(
     val isResultLoading: Boolean = false
 )
 
+class EditSimpleEmpty(
+    val select: () -> Unit = {},
+    val isResultLoading: Boolean = false
+)
+
 // all edit actions in one place
 class EditActions(
     val editStatus: EditAction<Status> = EditAction(),
@@ -60,7 +65,8 @@ class EditActions(
     val editEpicColor: EditSimple<String> = EditSimple(),
     val deleteTask: () -> Unit = {},
     val promoteTask: () -> Unit = {},
-    val assigneeOrWatchToMe: EditSimple<Boolean> = EditSimple(),
+    val assigneeMe: EditSimpleEmpty = EditSimpleEmpty(),
+    val watchMe: EditSimpleEmpty = EditSimpleEmpty(),
     val checkAssigneeToMe: () -> Boolean = { false },
     val checkWatchingMe: () -> Boolean = { false }
 )
