@@ -78,7 +78,7 @@ fun LazyListScope.CommonTaskWatchers(
                 icon = buttonIcon,
                 onClick = {
                     if (!editActions.isWatchedByMe) editActions.watch.select() else editActions.watch.remove()
-                    editActions.isWatchedByMe = !editActions.isWatchedByMe
+                    editActions.changeWatchers()
                 }
             )
         }

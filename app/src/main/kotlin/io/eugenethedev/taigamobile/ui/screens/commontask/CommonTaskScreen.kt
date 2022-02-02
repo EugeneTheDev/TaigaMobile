@@ -227,7 +227,9 @@ fun CommonTaskScreen(
                 isResultLoading = watchers is LoadingResult,
             ),
             isAssignedToMe = isAssignedToMe,
-            isWatchedByMe = isWatchedByMe
+            isWatchedByMe = isWatchedByMe,
+            changeAssignees = viewModel::changeAssignees,
+            changeWatchers = viewModel::changeWatchers
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,

@@ -69,7 +69,9 @@ class EditActions(
     val assigne: EditSimpleEmpty = EditSimpleEmpty(),
     val watch: EditSimpleEmpty = EditSimpleEmpty(),
     var isAssignedToMe: Boolean = false,
-    var isWatchedByMe: Boolean = false
+    var isWatchedByMe: Boolean = false,
+    val changeAssignees: () -> Unit = {},
+    val changeWatchers: () -> Unit = {}
 )
 
 // all loading statuses in one place
