@@ -10,7 +10,6 @@ import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import java.io.InputStream
 import java.time.LocalDate
 
-
 /**
  * Common fields when performing editing (choosing something from list)
  */
@@ -40,6 +39,11 @@ class EditSimple<T>(
     val isResultLoading: Boolean = false
 )
 
+class EditSimpleEmpty(
+    val select: () -> Unit = {},
+    val remove: () -> Unit = {},
+    val isResultLoading: Boolean = false
+)
 
 // all edit actions in one place
 class EditActions(
@@ -62,6 +66,10 @@ class EditActions(
     val editEpicColor: EditSimple<String> = EditSimple(),
     val deleteTask: () -> Unit = {},
     val promoteTask: () -> Unit = {},
+    val assign: EditSimpleEmpty = EditSimpleEmpty(),
+    val watch: EditSimpleEmpty = EditSimpleEmpty(),
+    var isAssignedToMe: Boolean = false,
+    var isWatchedByMe: Boolean = false
 )
 
 // all loading statuses in one place
@@ -70,7 +78,7 @@ class Loaders(
     val isEditLoading: Boolean = false,
     val isDeleteLoading: Boolean = false,
     val isPromoteLoading: Boolean = false,
-    val isCustomFieldsLoading: Boolean = false 
+    val isCustomFieldsLoading: Boolean = false
 )
 
 // all navigate actions

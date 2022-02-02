@@ -117,7 +117,11 @@ fun CommonTaskScreen(
             navController.navigateToTaskScreen(it.id, CommonTaskType.UserStory, it.ref)
         }
     }
-    
+
+    val projectName by viewModel.projectName.collectAsState()
+    val isAssignedToMe by viewModel.isAssignedToMe.collectAsState()
+    val isWatchedByMe by viewModel.isWatchedByMe.collectAsState()
+
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data?.get(statusType).orEmpty(),
         selectItem = viewModel::selectStatus,
@@ -134,6 +138,7 @@ fun CommonTaskScreen(
                 CommonTaskType.Issue -> R.string.issue_slug
             }
         ).format(ref),
+        toolbarSubtitle = projectName,
         commonTask = commonTask.data,
         creator = creator.data,
         customFields = customFields.data?.fields.orEmpty(),
@@ -210,7 +215,19 @@ fun CommonTaskScreen(
             editEpicColor = EditSimple(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
-            )
+            ),
+            assign = EditSimpleEmpty(
+                select =  viewModel::addAssigneeById ,
+                remove = viewModel::removeAssigneeById,
+                isResultLoading = assignees is LoadingResult,
+            ),
+            watch = EditSimpleEmpty(
+                select = viewModel::addWatcherById,
+                remove = viewModel::removeWatcherById,
+                isResultLoading = watchers is LoadingResult,
+            ),
+            isAssignedToMe = isAssignedToMe,
+            isWatchedByMe = isWatchedByMe
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
@@ -231,6 +248,7 @@ fun CommonTaskScreen(
 fun CommonTaskScreenContent(
     commonTaskType: CommonTaskType,
     toolbarTitle: String,
+    toolbarSubtitle: String,
     commonTask: CommonTaskExtended?,
     creator: User?,
     customFields: List<CustomField> = emptyList(),
@@ -256,13 +274,14 @@ fun CommonTaskScreenContent(
     var isEpicsSelectorVisible by remember { mutableStateOf(false) }
     var isSwimlaneSelectorVisible by remember { mutableStateOf(false) }
 
-
     var customFieldsValues by remember { mutableStateOf(emptyMap<Long, CustomFieldValue?>()) }
-    customFieldsValues = customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
+    customFieldsValues =
+        customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
 
     Column(Modifier.fillMaxSize()) {
         CommonTaskAppBar(
             toolbarTitle = toolbarTitle,
+            toolbarSubtitle = toolbarSubtitle,
             commonTaskType = commonTaskType,
             showTaskEditor = { isTaskEditorVisible = true },
             editActions = editActions,
@@ -424,7 +443,8 @@ fun CommonTaskScreenContent(
                         Spacer(
                             Modifier
                                 .navigationBarsWithImePadding()
-                                .height(72.dp))
+                                .height(72.dp)
+                        )
                     }
                 }
 
@@ -432,7 +452,6 @@ fun CommonTaskScreenContent(
             }
         }
     }
-
 
     // Bunch of list selectors
     Selectors(
@@ -511,6 +530,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         CommonTaskScreenContent(
             commonTaskType = CommonTaskType.UserStory,
             toolbarTitle = "Userstory #99",
+            toolbarSubtitle =  "Project #228",
             commonTask = null, // TODO left it null for now since I do not really use this preview
             creator = User(
                 _id = 0L,

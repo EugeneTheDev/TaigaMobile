@@ -42,7 +42,7 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         started = SharingStarted.Eagerly,
         initialValue = -1
     )
-    
+
     val creator = MutableResultFlow<User>()
     val customFields = MutableResultFlow<CustomFields>()
     val attachments = MutableResultFlow<List<Attachment>>()
@@ -56,6 +56,12 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     val tags = MutableResultFlow<List<Tag>>()
     val swimlanes = MutableResultFlow<List<Swimlane>>()
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
+
+    val isAssignedToMe = assignees.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val isWatchedByMe = watchers.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val projectName by lazy { session.currentProjectName }
 
     init {
         appComponent.inject(this)
@@ -206,7 +212,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-
     // use team for both assignees and watchers
     val teamSearched = MutableStateFlow(emptyList<User>())
 
@@ -219,15 +224,15 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     // Edit assignees
 
-    private fun changeAssignees(user: User, remove: Boolean) = viewModelScope.launch {
+    private fun changeAssignees(userId: Long, remove: Boolean) = viewModelScope.launch {
         assignees.loadOrError(R.string.permission_error) {
             teamSearched.value = team.value.data.orEmpty()
 
             tasksRepository.changeAssignees(
                 commonTaskId, commonTaskType,
                 commonTask.value.data?.assignedIds.orEmpty().let {
-                    if (remove) it - user.id
-                    else it + user.id
+                    if (remove) it - userId
+                    else it + userId
                 },
                 commonTaskVersion.value
             )
@@ -238,20 +243,23 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    fun addAssignee(user: User) = changeAssignees(user, remove = false)
-    fun removeAssignee(user: User) = changeAssignees(user, remove = true)
+    fun addAssignee(user: User) = changeAssignees(user.id, remove = false)
+    fun addAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = false)
+    fun removeAssignee(user: User) = changeAssignees(user.id, remove = true)
+    fun removeAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = true)
+
 
     // Edit watchers
 
-    private fun changeWatchers(user: User, remove: Boolean) = viewModelScope.launch {
+    private fun changeWatchers(userId: Long, remove: Boolean) = viewModelScope.launch {
         watchers.loadOrError(R.string.permission_error) {
             teamSearched.value = team.value.data.orEmpty()
 
             tasksRepository.changeWatchers(
                 commonTaskId, commonTaskType,
                 commonTask.value.data?.watcherIds.orEmpty().let {
-                    if (remove) it - user.id
-                    else it + user.id
+                    if (remove) it - userId
+                    else it + userId
                 },
                 commonTaskVersion.value
             )
@@ -261,8 +269,10 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    fun addWatcher(user: User) = changeWatchers(user, remove = false)
-    fun removeWatcher(user: User) = changeWatchers(user, remove = true)
+    fun addWatcher(user: User) = changeWatchers(user.id, remove = false)
+    fun addWatcherById(userId: Long = session.currentUserId.value) = changeWatchers(userId, remove = false)
+    fun removeWatcher(user: User) = changeWatchers(user.id, remove = true)
+    fun removeWatcherById(userId: Long = session.currentUserId.value) = changeWatchers(userId, remove = true)
 
     // Edit comments
 

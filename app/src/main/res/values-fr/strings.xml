@@ -86,6 +86,13 @@
     <string name="attachments_template">%d Pièces jointes</string>
     <string name="custom_fields">Champs personnalisés</string>
 
+    <string name="add_assignee">Ajouter un cessionnaire</string>
+    <string name="assign_to_me">Me l\'affecter</string>
+    <string name="unassign">Désassigner</string>
+    <string name="add_watcher">Ajouter un observateur</string>
+    <string name="watch">Suivre</string>
+    <string name="unwatch">Unwatch</string>
+
     <string name="swimlane_title">Swimlanes:</string>
     <string name="unclassifed">Non classé</string>
 

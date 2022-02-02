@@ -86,6 +86,13 @@
     <string name="attachments_template">%d Вкладення</string>
     <string name="custom_fields">Спеціальні поля</string>
 
+    <string name="add_assignee">Додати правонаступника</string>
+    <string name="assign_to_me">Назначити на мене</string>
+    <string name="unassign">Скасувати призначення</string>
+    <string name="add_watcher">Додати спостерігача</string>
+    <string name="watch">Відслідковувати</string>
+    <string name="unwatch">Не дивитися</string>
+
     <string name="swimlane_title">Доріжки:</string>
     <string name="unclassifed">Некласифікований</string>
 

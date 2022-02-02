@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.buttons.AddButton
+import io.eugenethedev.taigamobile.ui.components.buttons.TextButton
 import io.eugenethedev.taigamobile.ui.components.lists.UserItemWithAction
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
@@ -45,9 +45,37 @@ fun LazyListScope.CommonTaskAssignees(
         if (editActions.editAssignees.isResultLoading) {
             DotsLoader()
         }
-        AddButton(
-            text = stringResource(R.string.add_user),
-            onClick = { showAssigneesSelector() }
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            AddButton(
+                text = stringResource(R.string.add_assignee),
+                onClick = { showAssigneesSelector() }
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            val buttonText: Int
+            val buttonIcon: Int
+
+            if (!editActions.isAssignedToMe) {
+                buttonText = R.string.assign_to_me
+                buttonIcon = R.drawable.ic_assignee_to_me
+            }
+            else {
+                buttonText = R.string.unassign
+                buttonIcon = R.drawable.ic_unassigned
+            }
+
+            TextButton(
+                text = stringResource(buttonText),
+                icon = buttonIcon,
+                onClick = {
+                    if (!editActions.isAssignedToMe) editActions.assign.select() else editActions.assign.remove()
+                }
+            )
+        }
     }
 }
+
