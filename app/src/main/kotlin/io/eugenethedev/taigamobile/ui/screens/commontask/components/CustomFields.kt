@@ -452,6 +452,7 @@ private fun CustomFieldDropdown(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CustomFieldCheckbox(
     value: CustomFieldValue?,

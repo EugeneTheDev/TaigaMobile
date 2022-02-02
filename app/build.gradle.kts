@@ -75,21 +75,23 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
         isCoreLibraryDesugaringEnabled = true
     }
+
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = composeVersion
     }
 
     lint { 
-        isAbortOnError = false
+        abortOnError = false
     }
-
 }
 
 dependencies {
@@ -98,14 +100,14 @@ dependencies {
     implementation(kotlin("reflect"))
 
     implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("com.google.android.material:material:1.6.0-alpha01")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("com.google.android.material:material:1.6.0-alpha02")
 
     // Main Compose dependencies
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     // Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha02")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha04")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
@@ -113,7 +115,7 @@ dependencies {
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
 
     // Accompanist
     val accompanistVersion = "0.18.0"
@@ -127,13 +129,13 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
+    implementation("androidx.navigation:navigation-compose:2.5.0-alpha01")
 
     // Paging (with Compose)
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
 
     // Coroutines
-    val coroutinesVersion = "1.5.2-native-mt"
+    val coroutinesVersion = "1.6.0-native-mt"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
@@ -163,7 +165,7 @@ dependencies {
     implementation("io.noties.markwon:image-coil:$markwonVersion")
 
     // Compose material dialogs (color picker)
-    implementation("io.github.vanpra.compose-material-dialogs:color:0.6.1")
+    implementation("io.github.vanpra.compose-material-dialogs:color:0.6.3")
 
     /**
      * Test frameworks
@@ -178,11 +180,12 @@ dependencies {
     allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
 
     // since we need to connect to test db instance
-    testRuntimeOnly("org.postgresql:postgresql:42.3.1")
-    androidTestRuntimeOnly("org.postgresql:postgresql:42.3.1")
+    val postgresDriverVersion = "42.3.2"
+    testRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
+    androidTestRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
 
     // MockK
-    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("io.mockk:mockk:1.12.2")
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {
