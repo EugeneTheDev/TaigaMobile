@@ -57,8 +57,10 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     val swimlanes = MutableResultFlow<List<Swimlane>>()
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
 
-    val isAssigneeToMe = MutableStateFlow<Boolean>(false)
-    val isWatchByMe = MutableStateFlow<Boolean>(false)
+    val isAssignedToMe = assignees.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val isWatchedByMe = watchers.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
     val projectName by lazy { session.currentProjectName }
 
     init {
@@ -94,14 +96,8 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
                     launch {
                         attachments.loadOrError(showLoading = false) { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
                     },
-                    launch {
-                        assignees.loadUsersFromIds(it.assignedIds)
-                        isAssigneeToMe.value = session.currentUserId.value in assignees.value.data?.map { it.id }.orEmpty()
-                    },
-                    launch {
-                        watchers.loadUsersFromIds(it.watcherIds)
-                        isWatchByMe.value = session.currentUserId.value in watchers.value.data?.map { it.id }.orEmpty()
-                    },
+                    launch { assignees.loadUsersFromIds(it.assignedIds) },
+                    launch { watchers.loadUsersFromIds(it.watcherIds) },
                     launch {
                         userStories.loadOrError(showLoading = false) { tasksRepository.getEpicUserStories(commonTaskId) }
                     },

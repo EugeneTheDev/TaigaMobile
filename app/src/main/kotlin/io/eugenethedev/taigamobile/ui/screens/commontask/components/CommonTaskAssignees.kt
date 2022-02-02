@@ -50,7 +50,7 @@ fun LazyListScope.CommonTaskAssignees(
             horizontalArrangement = Arrangement.Start
         ) {
             AddButton(
-                text = stringResource(R.string.add_assigned),
+                text = stringResource(R.string.add_assignee),
                 onClick = { showAssigneesSelector() }
             )
 
@@ -59,12 +59,12 @@ fun LazyListScope.CommonTaskAssignees(
             val buttonText: Int
             val buttonIcon: Int
 
-            if (!editActions.isAssigneeToMe) {
+            if (!editActions.isAssignedToMe) {
                 buttonText = R.string.assign_to_me
                 buttonIcon = R.drawable.ic_assignee_to_me
             }
             else {
-                buttonText = R.string.not_assign_to_me
+                buttonText = R.string.unassign
                 buttonIcon = R.drawable.ic_unassigned
             }
 
@@ -72,8 +72,8 @@ fun LazyListScope.CommonTaskAssignees(
                 text = stringResource(buttonText),
                 icon = buttonIcon,
                 onClick = {
-                    if (!editActions.isAssigneeToMe) editActions.assigne.select() else editActions.assigne.remove()
-                    editActions.isAssigneeToMe = !editActions.isAssigneeToMe
+                    if (!editActions.isAssignedToMe) editActions.assigne.select() else editActions.assigne.remove()
+                    editActions.isAssignedToMe = !editActions.isAssignedToMe
                 }
             )
         }

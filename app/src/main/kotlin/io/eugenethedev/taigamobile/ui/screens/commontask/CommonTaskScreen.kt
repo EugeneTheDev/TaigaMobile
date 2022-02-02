@@ -119,8 +119,8 @@ fun CommonTaskScreen(
     }
 
     val projectName by viewModel.projectName.collectAsState()
-    val isAssigneeToMe by viewModel.isAssigneeToMe.collectAsState()
-    val isWatchByMe by viewModel.isWatchByMe.collectAsState()
+    val isAssignedToMe by viewModel.isAssignedToMe.collectAsState()
+    val isWatchedByMe by viewModel.isWatchedByMe.collectAsState()
 
     fun makeEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data?.get(statusType).orEmpty(),
@@ -226,8 +226,8 @@ fun CommonTaskScreen(
                 remove = viewModel::removeWatcherById,
                 isResultLoading = watchers is LoadingResult,
             ),
-            isAssigneeToMe = isAssigneeToMe,
-            isWatchingByMe = isWatchByMe
+            isAssignedToMe = isAssignedToMe,
+            isWatchedByMe = isWatchedByMe
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
