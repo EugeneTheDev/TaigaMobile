@@ -66,7 +66,7 @@ class EditActions(
     val editEpicColor: EditSimple<String> = EditSimple(),
     val deleteTask: () -> Unit = {},
     val promoteTask: () -> Unit = {},
-    val assigne: EditSimpleEmpty = EditSimpleEmpty(),
+    val assign: EditSimpleEmpty = EditSimpleEmpty(),
     val watch: EditSimpleEmpty = EditSimpleEmpty(),
     var isAssignedToMe: Boolean = false,
     var isWatchedByMe: Boolean = false

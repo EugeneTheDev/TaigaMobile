@@ -216,7 +216,7 @@ fun CommonTaskScreen(
                 select = viewModel::selectEpicColor,
                 isResultLoading = colorResult is LoadingResult
             ),
-            assigne = EditSimpleEmpty(
+            assign = EditSimpleEmpty(
                 select =  viewModel::addAssigneeById ,
                 remove = viewModel::removeAssigneeById,
                 isResultLoading = assignees is LoadingResult,
