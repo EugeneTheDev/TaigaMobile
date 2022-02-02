@@ -57,18 +57,10 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     val swimlanes = MutableResultFlow<List<Swimlane>>()
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
 
-    var isAssignedToMe = MutableStateFlow<Boolean>(
-        assignees
-            .map { users -> session.currentUserId.value in users.data?.map { it.id }.orEmpty() }
-            .stateIn(viewModelScope, SharingStarted.Lazily, false)
-            .value
-    )
-    val isWatchedByMe = MutableStateFlow<Boolean>(
-        watchers
-            .map { users -> session.currentUserId.value in users.data?.map { it.id }.orEmpty() }
-            .stateIn(viewModelScope, SharingStarted.Lazily, false)
-            .value
-    )
+    val isAssignedToMe = assignees.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val isWatchedByMe = watchers.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
     val projectName by lazy { session.currentProjectName }
 
     init {
@@ -420,14 +412,5 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             loadData().join()
             session.taskEdit.postUpdate()
         }
-    }
-
-    //Change watchers and assignees
-    fun changeAssignees() {
-        isAssignedToMe.value = !isAssignedToMe.value
-    }
-
-    fun changeWatchers() {
-        isWatchedByMe.value = !isWatchedByMe.value
     }
 }

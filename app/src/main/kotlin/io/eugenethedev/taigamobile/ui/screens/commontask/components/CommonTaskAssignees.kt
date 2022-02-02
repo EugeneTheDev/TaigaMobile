@@ -73,7 +73,6 @@ fun LazyListScope.CommonTaskAssignees(
                 icon = buttonIcon,
                 onClick = {
                     if (!editActions.isAssignedToMe) editActions.assigne.select() else editActions.assigne.remove()
-                    editActions.changeAssignees()
                 }
             )
         }
