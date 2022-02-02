@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.repositories
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.eugenethedev.taigamobile.BaseUnitTest
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.data.api.TaigaApi
@@ -13,7 +12,7 @@ import org.junit.runner.RunWith
 import kotlin.test.AfterTest
 
 @RunWith(AndroidJUnit4::class)
-abstract class BaseRepositoryTest : BaseUnitTest() {
+abstract class BaseRepositoryTest {
     lateinit var mockSession: Session
     lateinit var mockTaigaApi: TaigaApi
     lateinit var activeUser: UserInfo

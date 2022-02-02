@@ -1,7 +1,6 @@
 package io.eugenethedev.taigamobile.viewmodels
 
 import android.content.Context
-import io.eugenethedev.taigamobile.BaseUnitTest
 import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.repositories.*
 import io.eugenethedev.taigamobile.state.Session
@@ -20,10 +19,16 @@ import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintViewModel
 import io.eugenethedev.taigamobile.ui.screens.team.TeamViewModel
 import io.mockk.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.AfterClass
+import org.junit.BeforeClass
 import kotlin.test.AfterTest
 
-abstract class BaseViewModelTest : BaseUnitTest() {
+abstract class BaseViewModelTest {
     protected val mockAppComponent = MockAppComponent()
 
     // state mocks
@@ -50,6 +55,20 @@ abstract class BaseViewModelTest : BaseUnitTest() {
         @JvmStatic
         fun unmock() {
             unmockkAll()
+        }
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        @JvmStatic
+        @BeforeClass
+        fun configureTestDispatcher() {
+            Dispatchers.setMain(UnconfinedTestDispatcher())
+        }
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        @JvmStatic
+        @AfterClass
+        fun resetDispatcher() {
+            Dispatchers.resetMain()
         }
     }
 

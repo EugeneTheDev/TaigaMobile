@@ -17,9 +17,9 @@ android {
         applicationId = "io.eugenethedev.taigamobile"
         minSdk = 21
         targetSdk = 31
-        versionCode = 21
-        versionName = "1.7"
-        project.base.archivesBaseName = "TaigaMobile-$versionName"
+        versionCode = 22
+        versionName = "1.7.1"
+        project.base.archivesName.set("TaigaMobile-$versionName")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -101,7 +101,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.6.0-alpha02")
+    implementation("com.google.android.material:material:1.5.0")
 
     // Main Compose dependencies
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -135,7 +135,7 @@ dependencies {
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
 
     // Coroutines
-    val coroutinesVersion = "1.6.0-native-mt"
+    val coroutinesVersion = "1.6.0"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
