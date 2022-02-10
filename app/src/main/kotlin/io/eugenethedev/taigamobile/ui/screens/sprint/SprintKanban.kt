@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
@@ -345,6 +348,7 @@ private fun Cell(
     content = content
 )
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun TaskItem(
     task: CommonTask,
@@ -352,13 +356,17 @@ private fun TaskItem(
 ) = Surface(
     modifier = Modifier.fillMaxWidth().padding(4.dp),
     shape = shapes.medium,
-    onClick = onTaskClick,
-    shadowElevation = cardShadowElevation,
-    indication = rememberRipple()
+    shadowElevation = cardShadowElevation
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(12.dp)
+        modifier = Modifier.fillMaxWidth()
+            .clickable(
+                onClick = onTaskClick,
+                indication = rememberRipple(),
+                interactionSource = remember { MutableInteractionSource() }
+            )
+            .padding(12.dp)
     ) {
         Column(Modifier.weight(0.8f, fill = false)) {
             CommonTaskTitle(

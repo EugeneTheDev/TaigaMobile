@@ -2,12 +2,15 @@ package io.eugenethedev.taigamobile.ui.components.badges
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -53,15 +56,16 @@ fun ClickableBadge(
         LocalMinimumTouchTargetEnforcement provides false
     ) {
         Surface(
-            enabled = isClickable,
-            onClick = onClick,
             shape = shapes.large,
-            indication = rememberRipple(),
             color = color
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                modifier = Modifier.clickable(
+                    indication = rememberRipple(),
+                    onClick = onClick ,
+                    interactionSource = remember { MutableInteractionSource() }
+                ).padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text = text,

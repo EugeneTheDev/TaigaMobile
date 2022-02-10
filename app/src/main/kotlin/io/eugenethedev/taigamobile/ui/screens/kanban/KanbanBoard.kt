@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.kanban
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.insets.navigationBarsHeight
@@ -190,6 +192,7 @@ private fun Header(
     )
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun StoryItem(
     story: CommonTaskExtended,
@@ -198,12 +201,16 @@ private fun StoryItem(
 ) = Surface(
     modifier = Modifier.fillMaxWidth().padding(4.dp),
     shape = shapes.medium,
-    shadowElevation = cardShadowElevation,
-    onClick = onTaskClick,
-    indication = rememberRipple()
+    shadowElevation = cardShadowElevation
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(12.dp)
+        modifier = Modifier.fillMaxWidth()
+            .clickable(
+                onClick = onTaskClick,
+                indication = rememberRipple(),
+                interactionSource = remember { MutableInteractionSource() }
+            )
+            .padding(12.dp)
     ) {
         story.epicsShortInfo.forEach {
             val textStyle = MaterialTheme.typography.bodySmall

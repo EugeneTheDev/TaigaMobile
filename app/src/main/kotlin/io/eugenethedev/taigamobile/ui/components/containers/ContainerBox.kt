@@ -1,11 +1,13 @@
 package io.eugenethedev.taigamobile.ui.components.containers
 
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -22,15 +24,15 @@ fun ContainerBox(
     verticalPadding: Dp = 8.dp,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit = {}
-) = Surface(
-    modifier = Modifier.fillMaxWidth(),
-    enabled = onClick != null,
-    onClick = onClick ?: {},
-    indication = rememberRipple()
-) {
-    Box(
-        modifier = Modifier.fillMaxWidth().padding(horizontalPadding, verticalPadding),
-        content = content
-    )
-}
+) = Box(
+    modifier = Modifier.fillMaxWidth()
+        .clickable(
+            indication = rememberRipple(),
+            onClick = onClick ?: {},
+            enabled = onClick != null,
+            interactionSource = remember { MutableInteractionSource() },
+        )
+        .padding(horizontalPadding, verticalPadding),
+    content = content
+)
 

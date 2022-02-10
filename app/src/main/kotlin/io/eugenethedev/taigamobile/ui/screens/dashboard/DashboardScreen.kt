@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTask
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
@@ -58,6 +59,7 @@ fun DashboardScreen(
 
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun DashboardScreenContent(
     isLoading: Boolean = false,

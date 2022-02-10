@@ -26,6 +26,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.BuildConfig
@@ -79,6 +80,7 @@ fun SettingsScreen(
     )
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun SettingsScreenContent(
     avatarUrl: String?,

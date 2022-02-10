@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
@@ -28,6 +29,7 @@ import java.time.format.FormatStyle
 /**
  * User info (name and avatar).
  */
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun UserItem(
     user: User,
