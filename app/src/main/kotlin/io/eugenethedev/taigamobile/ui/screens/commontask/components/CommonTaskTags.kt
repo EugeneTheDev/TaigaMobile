@@ -119,7 +119,7 @@ private fun AddTagField(
 ) = Row(
     verticalAlignment = Alignment.CenterVertically
 ) {
-    var value by rememberSaveable { mutableStateOf(TextFieldValue()) }
+    var value by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     var color by remember { mutableStateOf(ColorPalette.Primary.first()) }
 
     Column {

@@ -72,9 +72,9 @@ fun LoginScreenContent(
     modifier = Modifier.fillMaxSize(),
 ) {
     val taigaGlobalHost = stringResource(R.string.global_taiga_host)
-    var taigaServerInput by rememberSaveable { mutableStateOf(TextFieldValue(taigaGlobalHost)) }
-    var loginInput by rememberSaveable { mutableStateOf(TextFieldValue()) }
-    var passwordInput by rememberSaveable { mutableStateOf(TextFieldValue()) }
+    var taigaServerInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(taigaGlobalHost)) }
+    var loginInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
+    var passwordInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
     var isServerInputError by remember { mutableStateOf(false) }
     var isLoginInputError by remember { mutableStateOf(false) }

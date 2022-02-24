@@ -50,7 +50,7 @@ fun <T : Any> SelectorList(
     enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(animationDurationMillis)),
     exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(animationDurationMillis))
 ) {
-    var query by rememberSaveable { mutableStateOf(TextFieldValue()) }
+    var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
     onBackPressed(navigateBack)
 

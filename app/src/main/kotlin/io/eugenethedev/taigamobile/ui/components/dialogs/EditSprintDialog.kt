@@ -30,7 +30,7 @@ fun EditSprintDialog(
     onConfirm: (name: String, start: LocalDate, end: LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var name by rememberSaveable { mutableStateOf(TextFieldValue(initialName)) }
+    var name by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialName)) }
     var start by remember { mutableStateOf(initialStart ?: LocalDate.now()) }
     var end by remember { mutableStateOf(initialEnd ?: LocalDate.now().plusDays(14)) }
 

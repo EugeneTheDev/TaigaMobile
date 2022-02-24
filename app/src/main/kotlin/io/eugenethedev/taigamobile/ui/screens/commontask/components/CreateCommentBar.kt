@@ -30,7 +30,7 @@ fun CreateCommentBar(
     tonalElevation = 8.dp,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    var commentTextValue by rememberSaveable { mutableStateOf(TextFieldValue()) }
+    var commentTextValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

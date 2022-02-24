@@ -41,8 +41,8 @@ fun TaskEditor(
 ) {
     onBackPressed(navigateBack)
 
-    var titleInput by rememberSaveable { mutableStateOf(TextFieldValue(title)) }
-    var descriptionInput by rememberSaveable { mutableStateOf(TextFieldValue(description)) }
+    var titleInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(title)) }
+    var descriptionInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(description)) }
 
     AppBarWithBackButton(
         title = { Text(toolbarText) },
