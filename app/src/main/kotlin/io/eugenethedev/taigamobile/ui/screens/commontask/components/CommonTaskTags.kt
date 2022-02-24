@@ -9,6 +9,7 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -118,7 +119,7 @@ private fun AddTagField(
 ) = Row(
     verticalAlignment = Alignment.CenterVertically
 ) {
-    var value by remember { mutableStateOf(TextFieldValue()) }
+    var value by rememberSaveable { mutableStateOf(TextFieldValue()) }
     var color by remember { mutableStateOf(ColorPalette.Primary.first()) }
 
     Column {

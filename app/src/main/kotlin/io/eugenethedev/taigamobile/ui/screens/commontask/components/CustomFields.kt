@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -225,7 +226,7 @@ private fun CustomFieldText(
     onValueChange: (CustomFieldValue?) -> Unit,
     changeFieldState: (FieldState) -> Unit
 ) {
-    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+    var text by rememberSaveable { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
     TextValue(
         hintId = R.string.custom_field_text,
@@ -266,7 +267,7 @@ private fun CustomFieldRichText(
     changeFieldState: (FieldState) -> Unit,
     focusRequester: FocusRequester
 ) {
-    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+    var text by rememberSaveable { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
     if (fieldState == FieldState.Focused) {
         TextValue(
@@ -296,7 +297,7 @@ private fun CustomFieldNumber(
     // do not display trailing zeros, like 1.0
     fun Double?.prettyDisplay() = this?.let { if (floor(it) != it) toString() else "%.0f".format(it) }.orEmpty()
 
-    var text by remember { mutableStateOf(TextFieldValue(value?.doubleValue.prettyDisplay())) }
+    var text by rememberSaveable { mutableStateOf(TextFieldValue(value?.doubleValue.prettyDisplay())) }
 
     TextValue(
         hintId = R.string.custom_field_number,
@@ -331,7 +332,7 @@ private fun CustomFieldUrl(
     onValueChange: (CustomFieldValue?) -> Unit,
     changeFieldState: (FieldState) -> Unit
 ) {
-    var text by remember { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
+    var text by rememberSaveable { mutableStateOf(TextFieldValue(value?.stringValue.orEmpty())) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

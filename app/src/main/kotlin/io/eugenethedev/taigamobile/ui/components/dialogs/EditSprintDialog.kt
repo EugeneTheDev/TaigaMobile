@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,7 +30,7 @@ fun EditSprintDialog(
     onConfirm: (name: String, start: LocalDate, end: LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var name by remember { mutableStateOf(TextFieldValue(initialName)) }
+    var name by rememberSaveable { mutableStateOf(TextFieldValue(initialName)) }
     var start by remember { mutableStateOf(initialStart ?: LocalDate.now()) }
     var end by remember { mutableStateOf(initialEnd ?: LocalDate.now().plusDays(14)) }
 
@@ -67,11 +68,13 @@ fun EditSprintDialog(
         },
         text = {
             val pickerStyle = MaterialTheme.typography.titleMedium.merge(TextStyle(fontWeight = FontWeight.Normal))
-            val pickerModifier = Modifier.border(
-                width = 1.5.dp,
-                color = MaterialTheme.colorScheme.outline,
-                shape = shapes.small
-            ).padding(6.dp)
+            val pickerModifier = Modifier
+                .border(
+                    width = 1.5.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = shapes.small
+                )
+                .padding(6.dp)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -86,7 +89,11 @@ fun EditSprintDialog(
                     modifier = pickerModifier
                 )
 
-                Spacer(Modifier.width(16.dp).height(1.5.dp).background(MaterialTheme.colorScheme.onSurface))
+                Spacer(
+                    Modifier
+                        .width(16.dp)
+                        .height(1.5.dp)
+                        .background(MaterialTheme.colorScheme.onSurface))
 
                 DatePicker(
                     date = end,

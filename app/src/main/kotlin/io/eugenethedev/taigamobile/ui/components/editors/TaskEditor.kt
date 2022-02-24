@@ -10,8 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,8 +41,8 @@ fun TaskEditor(
 ) {
     onBackPressed(navigateBack)
 
-    var titleInput by remember { mutableStateOf(TextFieldValue(title)) }
-    var descriptionInput by remember { mutableStateOf(TextFieldValue(description)) }
+    var titleInput by rememberSaveable { mutableStateOf(TextFieldValue(title)) }
+    var descriptionInput by rememberSaveable { mutableStateOf(TextFieldValue(description)) }
 
     AppBarWithBackButton(
         title = { Text(toolbarText) },
