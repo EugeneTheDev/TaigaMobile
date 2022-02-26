@@ -132,7 +132,7 @@ abstract class RepositoriesModule {
 
     @Singleton
     @Binds
-    abstract fun bindISearchRepository(searchRepository: SearchRepository): ISearchRepository
+    abstract fun bindIProjectsRepository(searchRepository: ProjectsRepository): IProjectsRepository
 
     @Singleton
     @Binds

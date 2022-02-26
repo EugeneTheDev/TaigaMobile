@@ -9,7 +9,7 @@ import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.dagger.AppComponent
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
-import io.eugenethedev.taigamobile.domain.repositories.ISearchRepository
+import io.eugenethedev.taigamobile.domain.repositories.IProjectsRepository
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 class ProjectSelectorViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
-    @Inject lateinit var searchRepository: ISearchRepository
+    @Inject lateinit var projectsRepository: IProjectsRepository
     @Inject lateinit var session: Session
 
     val currentProjectId by lazy { session.currentProjectId }
@@ -35,7 +35,7 @@ class ProjectSelectorViewModel(appComponent: AppComponent = TaigaApp.appComponen
     val projects by lazy {
         projectsQuery.flatMapLatest { query ->
             Pager(PagingConfig(CommonPagingSource.PAGE_SIZE)) {
-                CommonPagingSource { searchRepository.searchProjects(query, it) }
+                CommonPagingSource { projectsRepository.searchProjects(query, it) }
             }.flow
         }.asLazyPagingItems(viewModelScope)
     }

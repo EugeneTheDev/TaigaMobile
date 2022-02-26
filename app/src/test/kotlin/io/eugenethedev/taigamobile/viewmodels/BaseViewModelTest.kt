@@ -42,7 +42,7 @@ abstract class BaseViewModelTest {
     protected val mockAuthRepository = mockk<IAuthRepository>(relaxed = true)
     protected val mockTaskRepository = mockk<ITasksRepository>(relaxed = true)
     protected val mockSprintsRepository = mockk<ISprintsRepository>(relaxed = true)
-    protected val mockSearchRepository = mockk<ISearchRepository>(relaxed = true)
+    protected val mockSearchRepository = mockk<IProjectsRepository>(relaxed = true)
     protected val mockUsersRepository = mockk<IUsersRepository>(relaxed = true)
 
     @AfterTest
@@ -99,7 +99,7 @@ abstract class BaseViewModelTest {
         }
 
         override fun inject(projectSelectorViewModel: ProjectSelectorViewModel) {
-            projectSelectorViewModel.searchRepository = mockSearchRepository
+            projectSelectorViewModel.projectsRepository = mockSearchRepository
             projectSelectorViewModel.session = mockSession
         }
 
