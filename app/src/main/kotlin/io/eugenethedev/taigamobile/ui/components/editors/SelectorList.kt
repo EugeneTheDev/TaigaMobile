@@ -13,6 +13,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -49,7 +50,7 @@ fun <T : Any> SelectorList(
     enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(animationDurationMillis)),
     exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(animationDurationMillis))
 ) {
-    var query by remember { mutableStateOf(TextFieldValue()) }
+    var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
     onBackPressed(navigateBack)
 

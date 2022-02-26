@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -71,9 +72,9 @@ fun LoginScreenContent(
     modifier = Modifier.fillMaxSize(),
 ) {
     val taigaGlobalHost = stringResource(R.string.global_taiga_host)
-    var taigaServerInput by remember { mutableStateOf(TextFieldValue(taigaGlobalHost)) }
-    var loginInput by remember { mutableStateOf(TextFieldValue()) }
-    var passwordInput by remember { mutableStateOf(TextFieldValue()) }
+    var taigaServerInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(taigaGlobalHost)) }
+    var loginInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
+    var passwordInput by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
     var isServerInputError by remember { mutableStateOf(false) }
     var isLoginInputError by remember { mutableStateOf(false) }
