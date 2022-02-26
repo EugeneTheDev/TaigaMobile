@@ -66,11 +66,11 @@ fun LazyListScope.CommonTaskWatchers(
 
             if (!editActions.isWatchedByMe) {
                 buttonText = R.string.watch
-                buttonIcon = R.drawable.ic_eye
+                buttonIcon = R.drawable.ic_watch
             }
             else {
                 buttonText = R.string.unwatch
-                buttonIcon = R.drawable.ic_not_watch
+                buttonIcon = R.drawable.ic_unwatch
             }
 
             TextButton(

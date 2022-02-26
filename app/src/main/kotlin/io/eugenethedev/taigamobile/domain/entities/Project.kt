@@ -12,5 +12,11 @@ data class Project(
     val slug: String,
     @SerializedName("i_am_member") val isMember: Boolean = false,
     @SerializedName("i_am_admin") val isAdmin: Boolean = false,
-    @SerializedName("i_am_owner") val isOwner: Boolean = false
+    @SerializedName("i_am_owner") val isOwner: Boolean = false,
+    val description: String? = null,
+    val avatarUrl: String? = null,
+    val members: List<Long> = emptyList(),
+    val fansCount: Int = 0,
+    val watchersCount: Int = 0,
+    val isPrivate: Boolean = false
 )

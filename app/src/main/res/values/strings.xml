@@ -44,6 +44,7 @@
 
     <string name="working_on">Working on</string>
     <string name="watching">Watching</string>
+    <string name="my_projects">My projects</string>
 
     <string name="title_with_ref_pattern" translatable="false">#%d %s</string>
     <string name="unassigned">Unassigned</string>

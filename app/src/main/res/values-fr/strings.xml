@@ -41,6 +41,7 @@
 
     <string name="working_on">Travaille sur</string>
     <string name="watching">Observe</string>
+    <string name="my_projects">Mes projets</string>
 
     <string name="unassigned">Non assigné</string>
     <string name="assignee_pattern">Assigné à: %s</string>
