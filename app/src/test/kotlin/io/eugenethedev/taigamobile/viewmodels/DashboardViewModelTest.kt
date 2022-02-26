@@ -50,7 +50,7 @@ class DashboardViewModelTest : BaseViewModelTest() {
     @Test
     fun `change current project`(): Unit = runBlocking {
         val mockCommonTask = mockk<CommonTask>(relaxed = true)
-        viewModel.changeCurrentProject(mockCommonTask)
+        viewModel.changeCurrentProject(mockCommonTask.projectInfo)
         coVerify { mockSession.changeCurrentProject(any(), any()) }
     }
 }

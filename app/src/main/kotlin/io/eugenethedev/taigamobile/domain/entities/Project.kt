@@ -14,9 +14,9 @@ data class Project(
     @SerializedName("i_am_admin") val isAdmin: Boolean = false,
     @SerializedName("i_am_owner") val isOwner: Boolean = false,
     val description: String? = null,
-    val avatarUrl: String? = null,
+    @SerializedName("logo_small_url") val avatarUrl: String? = null,
     val members: List<Long> = emptyList(),
-    val fansCount: Int = 0,
-    val watchersCount: Int = 0,
-    val isPrivate: Boolean = false
+    @SerializedName("total_fans") val fansCount: Int = 0,
+    @SerializedName("total_watchers") val watchersCount: Int = 0,
+    @SerializedName("is_private") val isPrivate: Boolean = false
 )

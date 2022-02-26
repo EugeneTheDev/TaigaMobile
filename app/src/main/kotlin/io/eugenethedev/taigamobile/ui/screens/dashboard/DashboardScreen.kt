@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.screens.dashboard
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -51,14 +52,22 @@ fun DashboardScreen(
     val watching by viewModel.watching.collectAsState()
     watching.subscribeOnError(onError)
 
+    val myProjects by viewModel.myProjects.collectAsState()
+    myProjects.subscribeOnError(onError)
+
+    val currentProjectId by viewModel.currentProjectId.collectAsState()
+
     DashboardScreenContent(
         isLoading = listOf(workingOn, watching).any { it is LoadingResult<*> },
         workingOn = workingOn.data.orEmpty(),
         watching = watching.data.orEmpty(),
+        myProjects = myProjects.data.orEmpty(),
+        currentProjectId = currentProjectId,
         navigateToTask = {
-            viewModel.changeCurrentProject(it)
+            viewModel.changeCurrentProject(it.projectInfo)
             navController.navigateToTaskScreen(it.id, it.taskType, it.ref)
-        }
+        },
+        changeCurrentProject = viewModel::changeCurrentProject
     )
 
 }
@@ -71,7 +80,8 @@ fun DashboardScreenContent(
     watching: List<CommonTask> = emptyList(),
     myProjects: List<Project> = emptyList(),
     currentProjectId: Long = 0,
-    navigateToTask: (CommonTask) -> Unit = {_ -> }
+    navigateToTask: (CommonTask) -> Unit = { _ -> },
+    changeCurrentProject: (Project) -> Unit = { _ -> }
 ) = Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
@@ -101,7 +111,8 @@ fun DashboardScreenContent(
                 )
                 Tabs.MyProjects -> MyProjects(
                     myProjects = myProjects,
-                    currentProjectId = currentProjectId
+                    currentProjectId = currentProjectId,
+                    changeCurrentProject = changeCurrentProject
                 )
             }
         }
@@ -132,15 +143,17 @@ private fun TabContent(
 @Composable
 private fun MyProjects(
     myProjects: List<Project>,
-    currentProjectId: Long
+    currentProjectId: Long,
+    changeCurrentProject: (Project) -> Unit
 ) = LazyColumn {
     items(myProjects) {
         ProjectCard(
             project = it,
-            isCurrent = it.id == currentProjectId
+            isCurrent = it.id == currentProjectId,
+            onClick = { changeCurrentProject(it) }
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
     }
 }
 
@@ -148,14 +161,18 @@ private fun MyProjects(
 @Composable
 private fun ProjectCard(
     project: Project,
-    isCurrent: Boolean
+    isCurrent: Boolean,
+    onClick: () -> Unit
 ) = Surface(
     shape = shapes.medium,
-    shadowElevation = cardShadowElevation,
-    tonalElevation = if (isCurrent) 8.dp else 0.dp,
+    border = if (isCurrent) {
+        BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+    } else {
+        BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+    },
     modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = mainHorizontalScreenPadding)
+        .padding(horizontal = mainHorizontalScreenPadding, vertical = 4.dp)
 ) {
     Column(
         modifier = Modifier
@@ -163,7 +180,7 @@ private fun ProjectCard(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(),
-                onClick = {}
+                onClick = onClick
             )
             .padding(16.dp)
     ) {
@@ -184,15 +201,36 @@ private fun ProjectCard(
 
             Spacer(Modifier.width(8.dp))
 
-            Text(
-                text = project.name,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Column {
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    text = stringResource(
+                        when {
+                            project.isOwner -> R.string.project_owner
+                            project.isAdmin -> R.string.project_admin
+                            project.isMember -> R.string.project_member
+                            else -> 0
+                        }
+                    )
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = project.name,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
 
-        Spacer(Modifier.height(4.dp))
-
-        Text(project.description.orEmpty())
+        project.description?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
 
         Spacer(Modifier.height(8.dp))
 
@@ -251,7 +289,8 @@ private fun ProjectCardPreview() = TaigaMobileTheme {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             isPrivate = true
         ),
-        isCurrent = true
+        isCurrent = true,
+        onClick = {}
     )
 }
 
