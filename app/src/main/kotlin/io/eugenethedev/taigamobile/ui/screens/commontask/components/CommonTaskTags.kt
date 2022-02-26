@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -143,22 +141,25 @@ private fun AddTagField(
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation))
         ) {
             tags.forEach {
-                DropdownMenuItem(onClick = { onSaveClick(it) }) {
-                    Spacer(
-                        Modifier.size(22.dp)
-                            .background(
-                                color = it.color.toColor(),
-                                shape = shapes.small
-                            )
-                    )
+                DropdownMenuItem(
+                    onClick = { onSaveClick(it) },
+                    text = {
+                        Spacer(
+                            Modifier.size(22.dp)
+                                .background(
+                                    color = it.color.toColor(),
+                                    shape = shapes.small
+                                )
+                        )
 
-                    Spacer(Modifier.width(4.dp))
+                        Spacer(Modifier.width(4.dp))
 
-                    Text(
-                        text = it.name,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                        Text(
+                            text = it.name,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                )
             }
         }
     }

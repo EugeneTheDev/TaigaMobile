@@ -5,8 +5,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -84,10 +82,11 @@ fun <T> DropdownSelector(
                     onClick = {
                         isExpanded = false
                         onItemSelected(it)
+                    },
+                    text = {
+                        itemContent(it)
                     }
-                ) {
-                    itemContent(it)
-                }
+                )
             }
         }
     }

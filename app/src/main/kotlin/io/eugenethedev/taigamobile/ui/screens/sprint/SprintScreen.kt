@@ -2,8 +2,6 @@ package io.eugenethedev.taigamobile.ui.screens.sprint
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -181,26 +179,28 @@ fun SprintScreenContent(
                         onClick = {
                             isMenuExpanded = false
                             isEditDialogVisible = true
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.edit),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.edit),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                    )
 
                     // delete
                     DropdownMenuItem(
                         onClick = {
                             isMenuExpanded = false
                             isDeleteAlertVisible = true
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.delete),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.delete),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                    )
                 }
             }
         },

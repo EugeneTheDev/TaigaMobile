@@ -7,7 +7,7 @@ plugins {
     kotlin("kapt")
 }
 
-val composeVersion = "1.1.0"
+val composeVersion = "1.1.1"
 
 android {
     compileSdk = 31
@@ -107,7 +107,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     // Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha05")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha06")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
@@ -151,7 +151,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Dagger 2
-    val daggerVersion = "2.40.5"
+    val daggerVersion = "2.41"
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -180,7 +180,7 @@ dependencies {
     allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
 
     // since we need to connect to test db instance
-    val postgresDriverVersion = "42.3.2"
+    val postgresDriverVersion = "42.3.3"
     testRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
     androidTestRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
 

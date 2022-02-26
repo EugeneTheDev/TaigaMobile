@@ -4,16 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.sp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
@@ -103,26 +99,28 @@ fun CommonTaskAppBar(
                         onClick = {
                             isMenuExpanded = false
                             showTaskEditor()
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.edit),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.edit),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                    )
 
                     // delete
                     DropdownMenuItem(
                         onClick = {
                             isMenuExpanded = false
                             isDeleteAlertVisible = true
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.delete),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.delete),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                    )
 
                     // promote
                     if (commonTaskType == CommonTaskType.Task || commonTaskType == CommonTaskType.Issue) {
@@ -130,13 +128,14 @@ fun CommonTaskAppBar(
                             onClick = {
                                 isMenuExpanded = false
                                 isPromoteAlertVisible = true
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.promote_to_user_story),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
                             }
-                        ) {
-                            Text(
-                                text = stringResource(R.string.promote_to_user_story),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                        )
                     }
                 }
             }
