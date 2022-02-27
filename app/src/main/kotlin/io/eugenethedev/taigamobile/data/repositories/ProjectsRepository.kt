@@ -13,7 +13,11 @@ class ProjectsRepository @Inject constructor(
 
     override suspend fun searchProjects(query: String, page: Int) = withIO {
         handle404 {
-            taigaApi.getProjects(query, page, pageSize = CommonPagingSource.PAGE_SIZE)
+            taigaApi.getProjects(
+                query = query,
+                page = page,
+                pageSize = CommonPagingSource.PAGE_SIZE
+            )
         }
     }
 
