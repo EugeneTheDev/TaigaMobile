@@ -41,6 +41,7 @@
 
     <string name="working_on">В роботі</string>
     <string name="watching">Відслідковується</string>
+    <string name="my_projects">Мої проекти</string>
 
     <string name="unassigned">Неназначено</string>
     <string name="assignee_pattern">Назначено: %s</string>

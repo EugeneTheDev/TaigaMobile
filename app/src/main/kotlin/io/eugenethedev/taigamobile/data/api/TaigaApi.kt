@@ -26,9 +26,10 @@ interface TaigaApi {
 
     @GET("projects?order_by=user_order&slight=true")
     suspend fun getProjects(
-        @Query("q") query: String,
-        @Query("page") page: Int,
-        @Query("page_size") pageSize: Int = CommonPagingSource.PAGE_SIZE
+        @Query("q") query: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("member") memberId: Long? = null,
+        @Query("page_size") pageSize: Int? = null
     ): List<Project>
 
     @GET("projects/{id}")

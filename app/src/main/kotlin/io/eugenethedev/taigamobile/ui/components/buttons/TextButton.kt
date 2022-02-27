@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.components.buttons
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,7 +25,8 @@ fun TextButton(
         icon?.let {
             Icon(
                 painter = painterResource(it),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
             )
 
             Spacer(Modifier.width(6.dp))
