@@ -169,6 +169,8 @@
     <string name="epic_title">Épique</string>
     <string name="not_in_an_epic">Pas dans une épopée</string>
 
+    <string name="profile">Profil</string>
+
     <!-- settings -->
     <string name="logout_title">Se déconnecter</string>
     <string name="logout_text">Etes vous sûr de vouloir vous déconnecter ?</string>

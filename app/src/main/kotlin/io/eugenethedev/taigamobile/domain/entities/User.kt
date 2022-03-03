@@ -38,3 +38,13 @@ data class TeamMember(
         username = username
     )
 }
+
+data class Stats(
+    val roles: List<String> = emptyList(),
+    @SerializedName("total_num_closed_userstories")
+    val totalNumClosedUserStories: Int,
+    @SerializedName("total_num_contacts")
+    val totalNumContacts: Int,
+    @SerializedName("total_num_projects")
+    val totalNumProjects: Int,
+)
