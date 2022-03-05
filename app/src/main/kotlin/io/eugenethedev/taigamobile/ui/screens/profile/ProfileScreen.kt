@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.ui.screens.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,7 +40,9 @@ import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.domain.entities.Stats
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
+import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -57,17 +60,50 @@ fun ProfileScreen(
     val currentUserProjects by viewModel.currentUserProjects.collectAsState()
     currentUserProjects.subscribeOnError(onError)
 
-    viewModel.getUser(userId)
-    viewModel.getCurrentUserStats(userId)
+    viewModel.onOpen(userId)
 
-
-    ProfileScreenContent(
+    ProfileScreenContentTest(
         navigateBack = navController::popBackStack,
         currentUser = currentUser.data,
         currentUserStats = currentUserStats.data,
-        currentUserProjects = currentUserProjects.data ?: emptyList()
+        currentUserProjects = currentUserProjects.data ?: emptyList(),
+        isLoading = currentUser is LoadingResult || currentUserStats is LoadingResult || currentUserProjects is LoadingResult
     )
 }
+
+@Composable
+fun ProfileScreenContentTest(
+    navigateBack: () -> Unit = {},
+    currentUser: User? = null,
+    currentUserStats: Stats? = null,
+    currentUserProjects: List<Project> = emptyList(),
+    isLoading: Boolean = false
+) {
+    AppBarWithBackButton(
+        title = { Text(stringResource(R.string.profile)) },
+        navigateBack = navigateBack
+    )
+
+    when {
+        isLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
+            }
+        }
+        else -> {
+            ProfileScreenContent(
+                navigateBack = navigateBack,
+                currentUser = currentUser,
+                currentUserStats = currentUserStats,
+                currentUserProjects = currentUserProjects,
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -77,13 +113,13 @@ fun ProfileScreenContent(
     currentUserStats: Stats? = null,
     currentUserProjects: List<Project> = emptyList()
 ) = Column(
-    modifier = Modifier.fillMaxSize(),
+    // modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    AppBarWithBackButton(
-        title = { Text(stringResource(R.string.profile)) },
-        navigateBack = navigateBack
-    )
+    // AppBarWithBackButton(
+    //     title = { Text(stringResource(R.string.profile)) },
+    //     navigateBack = navigateBack
+    // )
 
     Image(
         painter = rememberImagePainter(
@@ -103,7 +139,7 @@ fun ProfileScreenContent(
     Spacer(Modifier.height(16.dp))
 
     Text(
-        text = currentUser?.name ?: "Name",
+        text = currentUser?.fullName ?: "Full name",
         style = MaterialTheme.typography.titleLarge
     )
 
@@ -121,12 +157,19 @@ fun ProfileScreenContent(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth()
     ) {
-        ColumnTextData(currentUserStats?.totalNumProjects.toString(), "Projects")
-        ColumnTextData(currentUserStats?.totalNumClosedUserStories.toString(), "Closed US")
-        ColumnTextData(currentUserStats?.totalNumContacts.toString(), "Contacts")
+        ColumnTextData(currentUserStats?.totalNumProjects.toString(), stringResource(R.string.projects))
+        ColumnTextData(currentUserStats?.totalNumClosedUserStories.toString(), stringResource(R.string.closed_user_story))
+        ColumnTextData(currentUserStats?.totalNumContacts.toString(), stringResource(R.string.contacts))
     }
 
     Spacer(Modifier.height(24.dp))
+
+    Text(
+        text = stringResource(R.string.projects),
+        style = MaterialTheme.typography.titleLarge
+    )
+
+    Spacer(Modifier.height(12.dp))
 
     LazyColumn(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
         items(currentUserProjects) {
@@ -167,7 +210,6 @@ private fun ProjectItem(project: Project) = Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.weight(0.6f)
     ) {
-
         Image(
             painter = rememberImagePainter(
                 data = project.avatarUrl ?: R.drawable.default_avatar,
@@ -205,13 +247,16 @@ private fun ProjectItem(project: Project) = Row(
         }
     }
 
+    Spacer(Modifier.width(12.dp))
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.weight(0.4f)
     ) {
-        Row {
-
+        Row(
+            modifier = Modifier.weight(0.5f),
+            horizontalArrangement = Arrangement.Start
+        ) {
             Icon(
                 painter = painterResource(R.drawable.ic_favorite),
                 contentDescription = null
@@ -222,7 +267,10 @@ private fun ProjectItem(project: Project) = Row(
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier.weight(0.5f),
+            horizontalArrangement = Arrangement.Start
+        ) {
             Icon(
                 painter = painterResource(R.drawable.ic_watch),
                 contentDescription = null

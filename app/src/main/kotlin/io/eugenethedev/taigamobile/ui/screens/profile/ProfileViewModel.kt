@@ -27,8 +27,19 @@ class ProfileViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vie
     val currentUserStats = MutableResultFlow<Stats>()
     val currentUserProjects = MutableResultFlow<List<Project>>()
 
+    private var shouldReload = true
+
     init {
         appComponent.inject(this)
+    }
+
+    fun onOpen(userId: Long) {
+        if (!shouldReload)
+            return
+        getUser(userId)
+        getCurrentUserStats(userId)
+        getCurrentUserProjects(userId)
+        shouldReload = false
     }
 
     fun getUser(userId: Long) = viewModelScope.launch {

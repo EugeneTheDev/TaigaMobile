@@ -41,6 +41,7 @@
     <string name="project_member">Member</string>
     <string name="project_admin">Admin</string>
     <string name="project_owner">Owner</string>
+    <string name="projects">Projects</string>
 
     <string name="working_on">Working on</string>
     <string name="watching">Watching</string>
@@ -62,6 +63,7 @@
     <string name="hide_closed_sprints">Hide closed sprints</string>
 
     <string name="user_story">User story</string>
+    <string name="closed_user_story">Closed US</string>
     <string name="tasks_without_story">Storyless tasks</string>
     <string name="sprint_issues">Sprint issues</string>
 
@@ -175,6 +177,7 @@
     <string name="not_in_an_epic">Not in an epic</string>
 
     <string name="profile">Profile</string>
+    <string name="contacts">Contacts</string>
 
     <string name="status_with_number_template" translatable="false">%s - %d</string>
 

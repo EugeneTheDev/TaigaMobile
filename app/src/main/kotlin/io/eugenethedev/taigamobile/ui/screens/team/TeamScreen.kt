@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.team
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -54,7 +55,10 @@ fun TeamScreen(
         team = team.data.orEmpty(),
         isLoading = team is LoadingResult,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
-        navigateBack = navController::popBackStack
+        navigateBack = navController::popBackStack,
+        navigateToProfile = { userId ->
+            navController.navigate("${Routes.profile}/$userId")
+        }
     )
 }
 
@@ -64,7 +68,8 @@ fun TeamScreenContent(
     team: List<TeamMember> = emptyList(),
     isLoading: Boolean = false,
     onTitleClick: () -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    navigateToProfile: (userId: Long) -> Unit = {_ ->}
 ) = Column(Modifier.fillMaxSize()) {
     ProjectAppBar(
         projectName = projectName,
@@ -92,7 +97,10 @@ fun TeamScreenContent(
         else -> {
             LazyColumn(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
                 items(team) {
-                    TeamMemberItem(it)
+                    TeamMemberItem(
+                        teamMember = it,
+                        navigateToProfile = navigateToProfile
+                    )
                     Spacer(Modifier.height(6.dp))
                 }
 
@@ -107,8 +115,10 @@ fun TeamScreenContent(
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun TeamMemberItem(
-    teamMember: TeamMember
+    teamMember: TeamMember,
+    navigateToProfile: (userId: Long) -> Unit
 ) = Row(
+    modifier = Modifier.clickable { navigateToProfile(teamMember.id) },
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {
