@@ -42,19 +42,19 @@ class ProfileViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vie
         shouldReload = false
     }
 
-    fun getUser(userId: Long) = viewModelScope.launch {
+    private fun getUser(userId: Long) = viewModelScope.launch {
         currentUser.loadOrError {
             usersRepository.getUser(userId)
         }
     }
 
-    fun getCurrentUserStats(userId: Long) = viewModelScope.launch {
+    private fun getCurrentUserStats(userId: Long) = viewModelScope.launch {
         currentUserStats.loadOrError {
             usersRepository.getUserStats(userId)
         }
     }
 
-    fun getCurrentUserProjects(userId: Long) = viewModelScope.launch {
+    private fun getCurrentUserProjects(userId: Long) = viewModelScope.launch {
         currentUserProjects.loadOrError {
             projectsRepository.getUserProjects(userId)
         }

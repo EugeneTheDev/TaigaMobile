@@ -146,6 +146,8 @@ abstract class BaseViewModelTest {
 
         override fun inject(profileViewModel: ProfileViewModel) {
             profileViewModel.usersRepository = mockUsersRepository
+            profileViewModel.projectsRepository = mockSearchRepository
+            profileViewModel.session = mockSession
         }
     }
 }

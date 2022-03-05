@@ -83,4 +83,21 @@ class UsersRepositoryTest : BaseRepositoryTest() {
             )
         }
     }
+
+    @Test
+    fun `test getUserStats`() = runBlocking {
+        val testUsers = TestData.users.sortedBy { it.username }
+
+        usersRepository.getTeam().sortedBy { it.username }.forEachIndexed { index, member ->
+            val userStats = usersRepository.getUserStats(member.id)
+            assertEquals(
+                expected = testUsers[index].totalNumProjects,
+                actual = userStats.totalNumProjects
+            )
+            assertEquals(
+                expected = testUsers[index].totalNumProjects,
+                actual = userStats.totalNumProjects
+            )
+        }
+    }
 }
