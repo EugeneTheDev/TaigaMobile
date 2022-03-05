@@ -38,6 +38,7 @@
     <string name="project_member">Membres</string>
     <string name="project_admin">Admin</string>
     <string name="project_owner">Propriétaire</string>
+    <string name="projects">Projet</string>
 
     <string name="working_on">Travaille sur</string>
     <string name="watching">Observe</string>
@@ -58,6 +59,7 @@
     <string name="hide_closed_sprints">Masquer les sprints fermés</string>
 
     <string name="user_story">Récit utilisateur</string>
+    <string name="closed_user_story">Histoires fermées</string>
     <string name="tasks_without_story">Tâche orpheline</string>
     <string name="sprint_issues">Tickets</string>
 
@@ -170,6 +172,7 @@
     <string name="not_in_an_epic">Pas dans une épopée</string>
 
     <string name="profile">Profil</string>
+    <string name="contacts">Contacter</string>
 
     <!-- settings -->
     <string name="logout_title">Se déconnecter</string>

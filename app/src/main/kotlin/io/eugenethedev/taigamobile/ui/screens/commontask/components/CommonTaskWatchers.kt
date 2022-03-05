@@ -24,7 +24,8 @@ import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 fun LazyListScope.CommonTaskWatchers(
     watchers: List<User>,
     editActions: EditActions,
-    showWatchersSelector: () -> Unit
+    showWatchersSelector: () -> Unit,
+    navigateToProfile: (userId: Long) -> Unit
 ) {
     item {
         // watchers
@@ -37,7 +38,8 @@ fun LazyListScope.CommonTaskWatchers(
     itemsIndexed(watchers) { index, item ->
         UserItemWithAction(
             user = item,
-            onRemoveClick = { editActions.editWatchers.removeItem(item) }
+            onRemoveClick = { editActions.editWatchers.removeItem(item) },
+            navigateToProfile = navigateToProfile
         )
 
         if (index < watchers.lastIndex) {

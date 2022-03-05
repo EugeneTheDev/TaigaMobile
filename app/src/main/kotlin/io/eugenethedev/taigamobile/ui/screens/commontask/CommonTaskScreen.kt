@@ -21,6 +21,7 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.*
 import io.eugenethedev.taigamobile.ui.screens.main.FilePicker
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
+import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
@@ -240,7 +241,10 @@ fun CommonTaskScreen(
             navigateBack = navController::popBackStack,
             navigateToCreateTask = { navController.navigateToCreateTaskScreen(CommonTaskType.Task, commonTaskId) },
             navigateToTask = navController::navigateToTaskScreen
-        )
+        ),
+        navigateToProfile = { userId ->
+            navController.navigate("${Routes.profile}/$userId")
+        }
     )
 }
 
@@ -260,7 +264,8 @@ fun CommonTaskScreenContent(
     comments: List<Comment> = emptyList(),
     editActions: EditActions = EditActions(),
     loaders: Loaders = Loaders(),
-    navigationActions: NavigationActions = NavigationActions()
+    navigationActions: NavigationActions = NavigationActions(),
+    navigateToProfile: (userId: Long) -> Unit = {_ ->}
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -359,7 +364,8 @@ fun CommonTaskScreenContent(
 
                     CommonTaskCreatedBy(
                         creator = creator,
-                        commonTask = commonTask
+                        commonTask = commonTask,
+                        navigateToProfile = navigateToProfile
                     )
 
                     item {
@@ -369,7 +375,8 @@ fun CommonTaskScreenContent(
                     CommonTaskAssignees(
                         assignees = assignees,
                         editActions = editActions,
-                        showAssigneesSelector = { isAssigneesSelectorVisible = true }
+                        showAssigneesSelector = { isAssigneesSelectorVisible = true },
+                        navigateToProfile = navigateToProfile
                     )
 
                     item {
@@ -379,7 +386,8 @@ fun CommonTaskScreenContent(
                     CommonTaskWatchers(
                         watchers = watchers,
                         editActions = editActions,
-                        showWatchersSelector = { isWatchersSelectorVisible = true }
+                        showWatchersSelector = { isWatchersSelectorVisible = true },
+                        navigateToProfile = navigateToProfile
                     )
 
                     item {
@@ -436,7 +444,8 @@ fun CommonTaskScreenContent(
 
                     CommonTaskComments(
                         comments = comments,
-                        editActions = editActions
+                        editActions = editActions,
+                        navigateToProfile = navigateToProfile
                     )
 
                     item {

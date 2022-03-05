@@ -42,6 +42,7 @@ import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.ErrorResult
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
@@ -52,6 +53,7 @@ fun ProfileScreen(
     userId: Long
 ) {
     val viewModel: ProfileViewModel = viewModel()
+    viewModel.onOpen(userId)
 
     val currentUser by viewModel.currentUser.collectAsState()
     currentUser.subscribeOnError(onError)
@@ -60,14 +62,13 @@ fun ProfileScreen(
     val currentUserProjects by viewModel.currentUserProjects.collectAsState()
     currentUserProjects.subscribeOnError(onError)
 
-    viewModel.onOpen(userId)
-
     ProfileScreenContentTest(
         navigateBack = navController::popBackStack,
         currentUser = currentUser.data,
         currentUserStats = currentUserStats.data,
         currentUserProjects = currentUserProjects.data ?: emptyList(),
-        isLoading = currentUser is LoadingResult || currentUserStats is LoadingResult || currentUserProjects is LoadingResult
+        isLoading = currentUser is LoadingResult || currentUserStats is LoadingResult || currentUserProjects is LoadingResult,
+        isError = currentUser is ErrorResult || currentUserStats is ErrorResult || currentUserProjects is ErrorResult
     )
 }
 
@@ -77,7 +78,11 @@ fun ProfileScreenContentTest(
     currentUser: User? = null,
     currentUserStats: Stats? = null,
     currentUserProjects: List<Project> = emptyList(),
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isError: Boolean = false
+) = Column(
+    modifier = Modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally
 ) {
     AppBarWithBackButton(
         title = { Text(stringResource(R.string.profile)) },
@@ -85,7 +90,7 @@ fun ProfileScreenContentTest(
     )
 
     when {
-        isLoading -> {
+        isLoading || isError -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -95,7 +100,6 @@ fun ProfileScreenContentTest(
         }
         else -> {
             ProfileScreenContent(
-                navigateBack = navigateBack,
                 currentUser = currentUser,
                 currentUserStats = currentUserStats,
                 currentUserProjects = currentUserProjects,
@@ -104,23 +108,13 @@ fun ProfileScreenContentTest(
     }
 }
 
-
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileScreenContent(
-    navigateBack: () -> Unit = {},
     currentUser: User? = null,
     currentUserStats: Stats? = null,
     currentUserProjects: List<Project> = emptyList()
-) = Column(
-    // modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    // AppBarWithBackButton(
-    //     title = { Text(stringResource(R.string.profile)) },
-    //     navigateBack = navigateBack
-    // )
-
     Image(
         painter = rememberImagePainter(
             data = currentUser?.avatarUrl ?: R.drawable.default_avatar,
@@ -146,7 +140,7 @@ fun ProfileScreenContent(
     Spacer(Modifier.height(2.dp))
 
     Text(
-        text = currentUser?.username ?: "Username",
+        text = "@${currentUser?.username ?: "username"}",
         color = MaterialTheme.colorScheme.outline,
         style = MaterialTheme.typography.bodyLarge,
     )
@@ -158,7 +152,10 @@ fun ProfileScreenContent(
         modifier = Modifier.fillMaxWidth()
     ) {
         ColumnTextData(currentUserStats?.totalNumProjects.toString(), stringResource(R.string.projects))
-        ColumnTextData(currentUserStats?.totalNumClosedUserStories.toString(), stringResource(R.string.closed_user_story))
+        ColumnTextData(
+            currentUserStats?.totalNumClosedUserStories.toString(),
+            stringResource(R.string.closed_user_story)
+        )
         ColumnTextData(currentUserStats?.totalNumContacts.toString(), stringResource(R.string.contacts))
     }
 

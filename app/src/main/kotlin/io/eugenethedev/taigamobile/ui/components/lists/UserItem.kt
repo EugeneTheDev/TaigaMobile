@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.components.lists
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -33,8 +34,12 @@ import java.time.format.FormatStyle
 @Composable
 fun UserItem(
     user: User,
-    dateTime: LocalDateTime? = null
-) = Row(verticalAlignment = Alignment.CenterVertically) {
+    dateTime: LocalDateTime? = null,
+    navigateToProfile: (userId: Long) -> Unit  = {_ ->}
+) = Row(
+    modifier = Modifier.clickable { navigateToProfile(user.id) },
+    verticalAlignment = Alignment.CenterVertically
+) {
     val dateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
     val imageSize = if (dateTime != null) 46.dp else 40.dp
 
@@ -72,7 +77,8 @@ fun UserItem(
 @Composable
 fun UserItemWithAction(
     user: User,
-    onRemoveClick: () -> Unit
+    onRemoveClick: () -> Unit,
+    navigateToProfile: (userId: Long) -> Unit  = {_ ->}
 ) {
     var isAlertVisible by remember { mutableStateOf(false) }
 
@@ -94,7 +100,10 @@ fun UserItemWithAction(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        UserItem(user)
+        UserItem(
+            user = user,
+            navigateToProfile = navigateToProfile
+        )
 
         IconButton(onClick = { isAlertVisible = true }) {
             Icon(
