@@ -1,5 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -9,8 +11,10 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.dagger.AppComponent
+import io.eugenethedev.taigamobile.data.repositories.ProjectsRepository
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
+import io.eugenethedev.taigamobile.domain.repositories.IProjectsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
 import io.eugenethedev.taigamobile.domain.repositories.IUsersRepository
@@ -23,17 +27,31 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
-    @Inject lateinit var session: Session
-    @Inject lateinit var tasksRepository: ITasksRepository
-    @Inject lateinit var usersRepository: IUsersRepository
-    @Inject lateinit var sprintsRepository: ISprintsRepository
+    @Inject
+    lateinit var session: Session
+    @Inject
+    lateinit var tasksRepository: ITasksRepository
+    @Inject
+    lateinit var usersRepository: IUsersRepository
+    @Inject
+    lateinit var sprintsRepository: ISprintsRepository
+    @Inject
+    lateinit var projectsRepository: IProjectsRepository
+    @Inject
+    lateinit var clipboard: ClipboardManager
 
     companion object {
         val SPRINT_HEADER = Sprint(-1, "HEADER", -1, LocalDate.MIN, LocalDate.MIN, 0, false)
         val SWIMLANE_HEADER = Swimlane(-1, "HEADER", -1)
+
+        const val PATH_TO_USERSTORY = "us"
+        const val PATH_TO_TASK = "task"
+        const val PATH_TO_EPIC = "epic"
+        const val PATH_TO_ISSUE = "issue"
     }
 
     private var commonTaskId: Long = -1
+    private var ref: Int = -1
     private lateinit var commonTaskType: CommonTaskType
 
     val commonTask = MutableResultFlow<CommonTaskExtended>()
@@ -57,6 +75,8 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     val swimlanes = MutableResultFlow<List<Swimlane>>()
     val statuses = MutableResultFlow<Map<StatusType, List<Status>>>()
 
+    private val projectSlug = MutableResultFlow<String>()
+
     val isAssignedToMe = assignees.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
     val isWatchedByMe = watchers.map { session.currentUserId.value in it.data?.map { it.id }.orEmpty() }
@@ -67,9 +87,10 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         appComponent.inject(this)
     }
 
-    fun onOpen(commonTaskId: Long, commonTaskType: CommonTaskType) {
+    fun onOpen(commonTaskId: Long, commonTaskType: CommonTaskType, ref: Int) {
         this.commonTaskId = commonTaskId
         this.commonTaskType = commonTaskType
+        this.ref = ref
         loadData(isReloading = false)
     }
 
@@ -91,10 +112,20 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
                         creator.loadOrError(showLoading = false) { usersRepository.getUser(it.creatorId) }
                     },
                     launch {
-                        customFields.loadOrError(showLoading = false) { tasksRepository.getCustomFields(commonTaskId, commonTaskType) }
+                        customFields.loadOrError(showLoading = false) {
+                            tasksRepository.getCustomFields(
+                                commonTaskId,
+                                commonTaskType
+                            )
+                        }
                     },
                     launch {
-                        attachments.loadOrError(showLoading = false) { tasksRepository.getAttachments(commonTaskId, commonTaskType) }
+                        attachments.loadOrError(showLoading = false) {
+                            tasksRepository.getAttachments(
+                                commonTaskId,
+                                commonTaskType
+                            )
+                        }
                     },
                     launch { assignees.loadUsersFromIds(it.assignedIds) },
                     launch { watchers.loadUsersFromIds(it.watcherIds) },
@@ -105,11 +136,21 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
                         tasks.loadOrError(showLoading = false) { tasksRepository.getUserStoryTasks(commonTaskId) }
                     },
                     launch {
-                        comments.loadOrError(showLoading = false) { tasksRepository.getComments(commonTaskId, commonTaskType) }
+                        comments.loadOrError(showLoading = false) {
+                            tasksRepository.getComments(
+                                commonTaskId,
+                                commonTaskType
+                            )
+                        }
                     },
                     launch {
                         tags.loadOrError(showLoading = false) {
                             tasksRepository.getAllTags(commonTaskType).also { tagsSearched.value = it }
+                        }
+                    },
+                    launch {
+                        projectSlug.loadOrError(showLoading = false) {
+                            projectsRepository.getProjectSlug(session.currentProjectId.value)
                         }
                     }
                 ) + if (!isReloading) {
@@ -173,7 +214,12 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     fun selectSprint(sprint: Sprint) = viewModelScope.launch {
         selectSprintResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint.takeIf { it != SPRINT_HEADER }?.id, commonTaskVersion.value)
+            tasksRepository.changeSprint(
+                commonTaskId,
+                commonTaskType,
+                sprint.takeIf { it != SPRINT_HEADER }?.id,
+                commonTaskVersion.value
+            )
             loadData().join()
             session.taskEdit.postUpdate()
         }
@@ -181,6 +227,7 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     // Edit linked epic
     private val epicsQuery = MutableStateFlow("")
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val epics by lazy {
         epicsQuery.flatMapLatest { query ->
@@ -248,7 +295,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     fun removeAssignee(user: User) = changeAssignees(user.id, remove = true)
     fun removeAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = true)
 
-
     // Edit watchers
 
     private fun changeWatchers(userId: Long, remove: Boolean) = viewModelScope.launch {
@@ -291,7 +337,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             comments.value.data
         }
     }
-
 
     fun deleteAttachment(attachment: Attachment) = viewModelScope.launch {
         attachments.loadOrError(R.string.permission_error) {
@@ -386,7 +431,11 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     fun selectSwimlane(swimlane: Swimlane) = viewModelScope.launch {
         swimlanes.loadOrError(R.string.permission_error) {
-            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane.takeIf { it != SWIMLANE_HEADER }?.id, commonTaskVersion.value)
+            tasksRepository.changeUserStorySwimlane(
+                commonTaskId,
+                swimlane.takeIf { it != SWIMLANE_HEADER }?.id,
+                commonTaskVersion.value
+            )
             loadData().join()
             session.taskEdit.postUpdate()
             swimlanes.value.data
@@ -412,5 +461,20 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             loadData().join()
             session.taskEdit.postUpdate()
         }
+    }
+
+    // Copy link
+    fun setCopyLinkInClipboard() {
+        val taskType: String = when (commonTaskType) {
+            CommonTaskType.UserStory -> PATH_TO_USERSTORY
+            CommonTaskType.Task -> PATH_TO_TASK
+            CommonTaskType.Epic -> PATH_TO_EPIC
+            CommonTaskType.Issue -> PATH_TO_ISSUE
+        }
+        val clip = ClipData.newPlainText(
+            "",
+            "${session.server.value}/project/${projectSlug.value.data}/$taskType/$ref"
+        )
+        clipboard.setPrimaryClip(clip)
     }
 }

@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.dagger
 
+import android.content.ClipboardManager
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -122,6 +123,10 @@ class DataModule {
     @Provides
     @Singleton
     fun provideSettings(context: Context) = Settings(context)
+
+    @Provides
+    @Singleton
+    fun provideClipboard(context: Context) = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 }
 
 @Module

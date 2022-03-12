@@ -22,7 +22,8 @@ data class RefreshTokenResponse(
 data class ProjectResponse(
     val id: Long,
     val name: String,
-    val members: List<Member>
+    val members: List<Member>,
+    val slug: String
 ) {
     data class Member(
         val id: Long,

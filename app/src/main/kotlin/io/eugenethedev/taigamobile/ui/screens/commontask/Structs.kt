@@ -69,7 +69,8 @@ class EditActions(
     val assign: EditSimpleEmpty = EditSimpleEmpty(),
     val watch: EditSimpleEmpty = EditSimpleEmpty(),
     var isAssignedToMe: Boolean = false,
-    var isWatchedByMe: Boolean = false
+    var isWatchedByMe: Boolean = false,
+    var setCopyLinkInClipboard: () -> Unit = {}
 )
 
 // all loading statuses in one place

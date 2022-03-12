@@ -147,6 +147,8 @@
     <string name="edit">Editer</string>
     <string name="delete">Supprimer</string>
     <string name="promote_to_user_story">Promouvoir en récit utilisateur</string>
+    <string name="copy_link">Copier le lien</string>
+    <string name="copy_link_successfully">Le lien a été copié!</string>
 
     <string name="create_task">Nouvelle tâchesk</string>
     <string name="create_userstory">Nouveau récit utilisateur</string>

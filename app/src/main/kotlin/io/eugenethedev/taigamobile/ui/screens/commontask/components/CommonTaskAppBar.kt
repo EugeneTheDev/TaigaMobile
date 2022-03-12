@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,6 +31,9 @@ fun CommonTaskAppBar(
     navigationActions: NavigationActions
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val copyText = stringResource(R.string.copy_link_successfully)
+
     AppBarWithBackButton(
         title = {
             Column(
@@ -94,6 +99,21 @@ fun CommonTaskAppBar(
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false }
                 ) {
+                    // Copy link
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded = false
+                            editActions.setCopyLinkInClipboard()
+                            Toast.makeText(context, copyText, Toast.LENGTH_SHORT).show()
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.copy_link),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    )
+
                     // edit
                     DropdownMenuItem(
                         onClick = {

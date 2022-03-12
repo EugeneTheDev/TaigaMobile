@@ -152,6 +152,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="promote_to_user_story">Promote</string>
+    <string name="copy_link">Copy link</string>
+    <string name="copy_link_successfully">The link has been copied!</string>
 
     <string name="create_task">New task</string>
     <string name="create_userstory">New user story</string>

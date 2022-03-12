@@ -36,7 +36,7 @@ fun CommonTaskScreen(
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.onOpen(commonTaskId, commonTaskType)
+        viewModel.onOpen(commonTaskId, commonTaskType, ref)
     }
 
     val commonTask by viewModel.commonTask.collectAsState()
@@ -217,7 +217,7 @@ fun CommonTaskScreen(
                 isResultLoading = colorResult is LoadingResult
             ),
             assign = EditSimpleEmpty(
-                select =  viewModel::addAssigneeById ,
+                select = viewModel::addAssigneeById,
                 remove = viewModel::removeAssigneeById,
                 isResultLoading = assignees is LoadingResult,
             ),
@@ -227,7 +227,8 @@ fun CommonTaskScreen(
                 isResultLoading = watchers is LoadingResult,
             ),
             isAssignedToMe = isAssignedToMe,
-            isWatchedByMe = isWatchedByMe
+            isWatchedByMe = isWatchedByMe,
+            setCopyLinkInClipboard = viewModel::setCopyLinkInClipboard
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
@@ -390,7 +391,9 @@ fun CommonTaskScreenContent(
                         CommonTaskCustomFields(
                             customFields = customFields,
                             customFieldsValues = customFieldsValues,
-                            onValueChange = { itemId, value -> customFieldsValues = customFieldsValues - itemId + Pair(itemId, value) },
+                            onValueChange = { itemId, value ->
+                                customFieldsValues = customFieldsValues - itemId + Pair(itemId, value)
+                            },
                             editActions = editActions,
                             loaders = loaders
                         )
@@ -530,7 +533,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
         CommonTaskScreenContent(
             commonTaskType = CommonTaskType.UserStory,
             toolbarTitle = "Userstory #99",
-            toolbarSubtitle =  "Project #228",
+            toolbarSubtitle = "Project #228",
             commonTask = null, // TODO left it null for now since I do not really use this preview
             creator = User(
                 _id = 0L,
