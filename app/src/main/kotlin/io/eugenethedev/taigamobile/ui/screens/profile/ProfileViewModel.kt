@@ -18,45 +18,25 @@ import javax.inject.Inject
 class ProfileViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
     @Inject
     lateinit var usersRepository: IUsersRepository
+
     @Inject
     lateinit var projectsRepository: IProjectsRepository
+
     @Inject
     lateinit var session: Session
 
     val currentUser = MutableResultFlow<User>()
     val currentUserStats = MutableResultFlow<Stats>()
     val currentUserProjects = MutableResultFlow<List<Project>>()
-
-    private var shouldReload = true
+    val currentProjectId by lazy { session.currentProjectId }
 
     init {
         appComponent.inject(this)
     }
 
-    fun onOpen(userId: Long) {
-        if (!shouldReload)
-            return
-        getUser(userId)
-        getCurrentUserStats(userId)
-        getCurrentUserProjects(userId)
-        shouldReload = false
-    }
-
-    private fun getUser(userId: Long) = viewModelScope.launch {
-        currentUser.loadOrError {
-            usersRepository.getUser(userId)
-        }
-    }
-
-    private fun getCurrentUserStats(userId: Long) = viewModelScope.launch {
-        currentUserStats.loadOrError {
-            usersRepository.getUserStats(userId)
-        }
-    }
-
-    private fun getCurrentUserProjects(userId: Long) = viewModelScope.launch {
-        currentUserProjects.loadOrError {
-            projectsRepository.getUserProjects(userId)
-        }
+    fun onOpen(userId: Long) = viewModelScope.launch {
+        currentUser.loadOrError { usersRepository.getUser(userId) }
+        currentUserStats.loadOrError { usersRepository.getUserStats(userId) }
+        currentUserProjects.loadOrError { projectsRepository.getUserProjects(userId) }
     }
 }

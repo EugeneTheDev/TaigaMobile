@@ -39,7 +39,7 @@ fun LazyListScope.CommonTaskWatchers(
         UserItemWithAction(
             user = item,
             onRemoveClick = { editActions.editWatchers.removeItem(item) },
-            navigateToProfile = navigateToProfile
+            onUserItemClick = { navigateToProfile(item.id) }
         )
 
         if (index < watchers.lastIndex) {
@@ -69,8 +69,7 @@ fun LazyListScope.CommonTaskWatchers(
             if (!editActions.isWatchedByMe) {
                 buttonText = R.string.watch
                 buttonIcon = R.drawable.ic_watch
-            }
-            else {
+            } else {
                 buttonText = R.string.unwatch
                 buttonIcon = R.drawable.ic_unwatch
             }

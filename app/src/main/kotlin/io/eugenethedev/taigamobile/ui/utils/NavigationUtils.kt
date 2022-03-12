@@ -24,3 +24,8 @@ fun NavController.navigateToCreateTaskScreen(
 
 typealias NavigateToSprint = (sprintId: Long) -> Unit
 fun NavController.navigateToSprint(sprintId: Long) = navigate("${Routes.sprint}/$sprintId")
+
+
+typealias NavigateToProfile = (id: Long) -> Unit
+fun NavController.navigateToProfileScreen(id: Long)
+    = navigate("${Routes.profile}/$id")

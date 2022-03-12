@@ -34,7 +34,7 @@ fun LazyListScope.CommonTaskAssignees(
         UserItemWithAction(
             user = item,
             onRemoveClick = { editActions.editAssignees.removeItem(item) },
-            navigateToProfile = navigateToProfile
+            onUserItemClick = { navigateToProfile(item.id) }
         )
 
         if (index < assignees.lastIndex) {
@@ -64,8 +64,7 @@ fun LazyListScope.CommonTaskAssignees(
             if (!editActions.isAssignedToMe) {
                 buttonText = R.string.assign_to_me
                 buttonIcon = R.drawable.ic_assignee_to_me
-            }
-            else {
+            } else {
                 buttonText = R.string.unassign
                 buttonIcon = R.drawable.ic_unassigned
             }

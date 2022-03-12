@@ -82,7 +82,7 @@ private fun CommentItem(
         UserItem(
             user = comment.author,
             dateTime = comment.postDateTime,
-            navigateToProfile = navigateToProfile
+            onUserItemClick = { navigateToProfile(comment.author.id) }
         )
 
         if (comment.canDelete == true) {

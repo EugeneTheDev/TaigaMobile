@@ -33,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.navigateToProfileScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -56,8 +57,8 @@ fun TeamScreen(
         isLoading = team is LoadingResult,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateBack = navController::popBackStack,
-        navigateToProfile = { userId ->
-            navController.navigate("${Routes.profile}/$userId")
+        onUserItemClick = { userId ->
+            navController.navigateToProfileScreen(userId)
         }
     )
 }
@@ -69,7 +70,7 @@ fun TeamScreenContent(
     isLoading: Boolean = false,
     onTitleClick: () -> Unit = {},
     navigateBack: () -> Unit = {},
-    navigateToProfile: (userId: Long) -> Unit = {_ ->}
+    onUserItemClick: (userId: Long) -> Unit = { _ -> }
 ) = Column(Modifier.fillMaxSize()) {
     ProjectAppBar(
         projectName = projectName,
@@ -96,10 +97,10 @@ fun TeamScreenContent(
         }
         else -> {
             LazyColumn(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
-                items(team) {
+                items(team) { member ->
                     TeamMemberItem(
-                        teamMember = it,
-                        navigateToProfile = navigateToProfile
+                        teamMember = member,
+                        onUserItemClick = { onUserItemClick(member.id) }
                     )
                     Spacer(Modifier.height(6.dp))
                 }
@@ -116,9 +117,9 @@ fun TeamScreenContent(
 @Composable
 private fun TeamMemberItem(
     teamMember: TeamMember,
-    navigateToProfile: (userId: Long) -> Unit
+    onUserItemClick: () -> Unit
 ) = Row(
-    modifier = Modifier.clickable { navigateToProfile(teamMember.id) },
+    modifier = Modifier.clickable { onUserItemClick() },
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {

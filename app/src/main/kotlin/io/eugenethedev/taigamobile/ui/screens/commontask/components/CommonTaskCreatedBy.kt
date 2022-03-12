@@ -23,7 +23,7 @@ fun LazyListScope.CommonTaskCreatedBy(
         UserItem(
             user = creator,
             dateTime = commonTask.createdDateTime,
-            navigateToProfile = navigateToProfile
+            onUserItemClick = { navigateToProfile(creator.id) }
         )
     }
 }

@@ -21,7 +21,6 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.*
 import io.eugenethedev.taigamobile.ui.screens.main.FilePicker
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
-import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
@@ -243,7 +242,7 @@ fun CommonTaskScreen(
             navigateToTask = navController::navigateToTaskScreen
         ),
         navigateToProfile = { userId ->
-            navController.navigate("${Routes.profile}/$userId")
+            navController.navigateToProfileScreen(userId)
         }
     )
 }
