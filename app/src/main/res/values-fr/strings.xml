@@ -11,6 +11,7 @@
     <string name="permission_error">Erreur, vous n\'avez pas les autorisations suffisantes</string>
 
     <string name="nothing_to_see">Rien à voir ici</string>
+    <string name="full_name">Prénom</string>
 
     <string name="login_taiga_server">Serveur Taiga</string>
     <string name="login_username">Login</string>
