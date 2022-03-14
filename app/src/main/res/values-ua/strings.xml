@@ -11,7 +11,6 @@
     <string name="permission_error">Помилка, у вас можливо недостатньо доступів</string>
 
     <string name="nothing_to_see">Нічого цікавого</string>
-    <string name="full_name">Повне ім\'я</string>
 
     <string name="login_taiga_server">Тайга сервер host:port</string>
     <string name="login_username">Логін</string>

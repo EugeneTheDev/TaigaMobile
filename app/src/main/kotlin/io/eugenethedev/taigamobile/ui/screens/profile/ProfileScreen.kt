@@ -122,14 +122,14 @@ fun ProfileScreenContent(
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = currentUser?.fullName ?: stringResource(R.string.full_name),
+                    text = currentUser?.fullName.orEmpty(),
                     style = MaterialTheme.typography.titleLarge
                 )
 
                 Spacer(Modifier.height(2.dp))
 
                 Text(
-                    text = stringResource(R.string.username_template).format(currentUser?.username),
+                    text = stringResource(R.string.username_template).format(currentUser?.username.orEmpty()),
                     color = MaterialTheme.colorScheme.outline,
                     style = MaterialTheme.typography.bodyLarge
                 )

@@ -13,7 +13,6 @@
     <string name="permission_error">Error, you may not have sufficient permissions</string>
 
     <string name="nothing_to_see">Nothing to see here</string>
-    <string name="full_name">Full name</string>
 
     <string name="login_taiga_server">Taiga server url</string>
     <string name="login_username">Login</string>
