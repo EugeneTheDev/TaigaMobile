@@ -48,6 +48,7 @@ import io.eugenethedev.taigamobile.ui.screens.dashboard.DashboardScreen
 import io.eugenethedev.taigamobile.ui.screens.epics.EpicsScreen
 import io.eugenethedev.taigamobile.ui.screens.issues.IssuesScreen
 import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
+import io.eugenethedev.taigamobile.ui.screens.profile.ProfileScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
@@ -202,6 +203,7 @@ object Routes {
     const val sprint = "sprint"
     const val commonTask = "commonTask"
     const val createTask = "createTask"
+    const val profile = "profile"
 
     object Arguments {
         const val sprint = "sprint"
@@ -212,6 +214,7 @@ object Routes {
         const val ref = "ref"
         const val parentId = "parentId"
         const val statusId = "statusId"
+        const val userId = "userId"
     }
 }
 
@@ -326,6 +329,19 @@ fun MainScreen(
                     navController = navController,
                     sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId),
                     onError = onError
+                )
+            }
+
+            composable(
+                "${Routes.profile}/{${Routes.Arguments.userId}}",
+                arguments = listOf(
+                    navArgument(Routes.Arguments.userId) { type = NavType.LongType }
+                )
+            ) {
+                ProfileScreen(
+                    navController = navController,
+                    onError = onError,
+                    userId = it.arguments!!.getLong(Routes.Arguments.userId),
                 )
             }
 

@@ -24,7 +24,8 @@ import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 
 fun LazyListScope.CommonTaskComments(
     comments: List<Comment>,
-    editActions: EditActions
+    editActions: EditActions,
+    navigateToProfile: (userId: Long) -> Unit
 ) {
     item {
         SectionTitle(stringResource(R.string.comments_template).format(comments.size))
@@ -33,7 +34,8 @@ fun LazyListScope.CommonTaskComments(
     itemsIndexed(comments) { index, item ->
         CommentItem(
             comment = item,
-            onDeleteClick = { editActions.editComments.deleteComment(item) }
+            onDeleteClick = { editActions.editComments.deleteComment(item) },
+            navigateToProfile = navigateToProfile
         )
 
         if (index < comments.lastIndex) {
@@ -54,7 +56,8 @@ fun LazyListScope.CommonTaskComments(
 @Composable
 private fun CommentItem(
     comment: Comment,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    navigateToProfile: (userId: Long) -> Unit
 ) = Column {
     var isAlertVisible by remember { mutableStateOf(false) }
 
@@ -78,7 +81,8 @@ private fun CommentItem(
     ) {
         UserItem(
             user = comment.author,
-            dateTime = comment.postDateTime
+            dateTime = comment.postDateTime,
+            onUserItemClick = { navigateToProfile(comment.author.id) }
         )
 
         if (comment.canDelete == true) {

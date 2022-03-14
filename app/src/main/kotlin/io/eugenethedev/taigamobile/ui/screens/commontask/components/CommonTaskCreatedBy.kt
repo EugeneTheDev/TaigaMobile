@@ -11,7 +11,8 @@ import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 
 fun LazyListScope.CommonTaskCreatedBy(
     creator: User,
-    commonTask: CommonTaskExtended
+    commonTask: CommonTaskExtended,
+    navigateToProfile: (userId: Long) -> Unit
 ) {
     item {
         Text(
@@ -21,7 +22,8 @@ fun LazyListScope.CommonTaskCreatedBy(
 
         UserItem(
             user = creator,
-            dateTime = commonTask.createdDateTime
+            dateTime = commonTask.createdDateTime,
+            onUserItemClick = { navigateToProfile(creator.id) }
         )
     }
 }

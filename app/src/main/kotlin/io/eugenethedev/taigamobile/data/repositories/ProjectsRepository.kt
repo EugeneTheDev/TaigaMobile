@@ -24,4 +24,8 @@ class ProjectsRepository @Inject constructor(
     override suspend fun getMyProjects() = withIO {
         taigaApi.getProjects(memberId = session.currentUserId.value)
     }
+
+    override suspend fun getUserProjects(userId: Long) = withIO {
+        taigaApi.getProjects(memberId = userId)
+    }
 }

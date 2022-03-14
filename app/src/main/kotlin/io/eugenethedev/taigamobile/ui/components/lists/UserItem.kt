@@ -22,6 +22,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -33,8 +34,12 @@ import java.time.format.FormatStyle
 @Composable
 fun UserItem(
     user: User,
-    dateTime: LocalDateTime? = null
-) = Row(verticalAlignment = Alignment.CenterVertically) {
+    dateTime: LocalDateTime? = null,
+    onUserItemClick: () -> Unit = { }
+) = Row(
+    modifier = Modifier.clickableUnindicated { onUserItemClick() },
+    verticalAlignment = Alignment.CenterVertically
+) {
     val dateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
     val imageSize = if (dateTime != null) 46.dp else 40.dp
 
@@ -48,7 +53,9 @@ fun UserItem(
         ),
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.size(imageSize).clip(CircleShape)
+        modifier = Modifier
+            .size(imageSize)
+            .clip(CircleShape)
     )
 
     Spacer(Modifier.width(6.dp))
@@ -72,7 +79,8 @@ fun UserItem(
 @Composable
 fun UserItemWithAction(
     user: User,
-    onRemoveClick: () -> Unit
+    onRemoveClick: () -> Unit,
+    onUserItemClick: () -> Unit = { }
 ) {
     var isAlertVisible by remember { mutableStateOf(false) }
 
@@ -94,7 +102,10 @@ fun UserItemWithAction(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        UserItem(user)
+        UserItem(
+            user = user,
+            onUserItemClick = onUserItemClick
+        )
 
         IconButton(onClick = { isAlertVisible = true }) {
             Icon(

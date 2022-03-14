@@ -19,7 +19,8 @@ import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 fun LazyListScope.CommonTaskAssignees(
     assignees: List<User>,
     editActions: EditActions,
-    showAssigneesSelector: () -> Unit
+    showAssigneesSelector: () -> Unit,
+    navigateToProfile: (userId: Long) -> Unit
 ) {
     item {
         // assigned to
@@ -32,7 +33,8 @@ fun LazyListScope.CommonTaskAssignees(
     itemsIndexed(assignees) { index, item ->
         UserItemWithAction(
             user = item,
-            onRemoveClick = { editActions.editAssignees.removeItem(item) }
+            onRemoveClick = { editActions.editAssignees.removeItem(item) },
+            onUserItemClick = { navigateToProfile(item.id) }
         )
 
         if (index < assignees.lastIndex) {
@@ -62,8 +64,7 @@ fun LazyListScope.CommonTaskAssignees(
             if (!editActions.isAssignedToMe) {
                 buttonText = R.string.assign_to_me
                 buttonIcon = R.drawable.ic_assignee_to_me
-            }
-            else {
+            } else {
                 buttonText = R.string.unassign
                 buttonIcon = R.drawable.ic_unassigned
             }

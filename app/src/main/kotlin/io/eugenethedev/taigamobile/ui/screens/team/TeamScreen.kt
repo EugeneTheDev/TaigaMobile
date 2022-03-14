@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.team
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.navigateToProfileScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
@@ -54,7 +56,10 @@ fun TeamScreen(
         team = team.data.orEmpty(),
         isLoading = team is LoadingResult,
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
-        navigateBack = navController::popBackStack
+        navigateBack = navController::popBackStack,
+        onUserItemClick = { userId ->
+            navController.navigateToProfileScreen(userId)
+        }
     )
 }
 
@@ -64,7 +69,8 @@ fun TeamScreenContent(
     team: List<TeamMember> = emptyList(),
     isLoading: Boolean = false,
     onTitleClick: () -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    onUserItemClick: (userId: Long) -> Unit = { _ -> }
 ) = Column(Modifier.fillMaxSize()) {
     ProjectAppBar(
         projectName = projectName,
@@ -91,8 +97,11 @@ fun TeamScreenContent(
         }
         else -> {
             LazyColumn(Modifier.padding(horizontal = mainHorizontalScreenPadding)) {
-                items(team) {
-                    TeamMemberItem(it)
+                items(team) { member ->
+                    TeamMemberItem(
+                        teamMember = member,
+                        onUserItemClick = { onUserItemClick(member.id) }
+                    )
                     Spacer(Modifier.height(6.dp))
                 }
 
@@ -107,8 +116,10 @@ fun TeamScreenContent(
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun TeamMemberItem(
-    teamMember: TeamMember
+    teamMember: TeamMember,
+    onUserItemClick: () -> Unit
 ) = Row(
+    modifier = Modifier.clickable { onUserItemClick() },
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {

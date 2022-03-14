@@ -38,6 +38,7 @@
     <string name="project_member">Учасник</string>
     <string name="project_admin">Адмін</string>
     <string name="project_owner">Власник</string>
+    <string name="projects">Проект</string>
 
     <string name="working_on">В роботі</string>
     <string name="watching">Відслідковується</string>
@@ -58,6 +59,7 @@
     <string name="hide_closed_sprints">Приховати закриті спринти</string>
 
     <string name="user_story">Історія користувача</string>
+    <string name="closed_user_story">Закриті історії</string>
     <string name="tasks_without_story">Історії без завданнь</string>
     <string name="sprint_issues">Проблеми із спринта</string>
 
@@ -169,6 +171,8 @@
     <string name="epic_title">Епік</string>
     <string name="not_in_an_epic">Не в епосі</string>
 
+    <string name="profile">Профіль</string>
+    <string name="contacts">Контакт</string>
 
     <!-- settings -->
     <string name="logout_title">Вийти</string>

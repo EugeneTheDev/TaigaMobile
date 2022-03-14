@@ -13,6 +13,7 @@ import io.eugenethedev.taigamobile.ui.screens.issues.IssuesViewModel
 import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanViewModel
 import io.eugenethedev.taigamobile.ui.screens.login.LoginViewModel
 import io.eugenethedev.taigamobile.ui.screens.main.MainViewModel
+import io.eugenethedev.taigamobile.ui.screens.profile.ProfileViewModel
 import io.eugenethedev.taigamobile.ui.screens.projectselector.ProjectSelectorViewModel
 import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumViewModel
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
@@ -143,5 +144,10 @@ abstract class BaseViewModelTest {
             kanbanViewModel.session = mockSession
         }
 
+        override fun inject(profileViewModel: ProfileViewModel) {
+            profileViewModel.usersRepository = mockUsersRepository
+            profileViewModel.projectsRepository = mockSearchRepository
+            profileViewModel.session = mockSession
+        }
     }
 }
