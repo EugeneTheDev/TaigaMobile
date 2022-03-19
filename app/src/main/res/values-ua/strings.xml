@@ -149,6 +149,8 @@
     <string name="edit">Редагувати</string>
     <string name="delete">Видалити</string>
     <string name="promote_to_user_story">Підвищити</string>
+    <string name="copy_link">Копіювати посилання</string>
+    <string name="copy_link_successfully">Посилання було скопійовано!</string>
 
     <string name="create_task">Нове завдання</string>
     <string name="create_userstory">Нова історія користувача</string>

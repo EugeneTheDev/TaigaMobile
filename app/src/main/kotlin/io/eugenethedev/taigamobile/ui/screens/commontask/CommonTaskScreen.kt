@@ -24,6 +24,7 @@ import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
+import kotlinx.coroutines.coroutineScope
 import java.time.LocalDateTime
 
 @Composable
@@ -33,6 +34,7 @@ fun CommonTaskScreen(
     commonTaskType: CommonTaskType,
     ref: Int,
     onError: @Composable (message: Int) -> Unit = {},
+    onShowMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -227,7 +229,8 @@ fun CommonTaskScreen(
                 isResultLoading = watchers is LoadingResult,
             ),
             isAssignedToMe = isAssignedToMe,
-            isWatchedByMe = isWatchedByMe
+            isWatchedByMe = isWatchedByMe,
+            onShowMessage = onShowMessage
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
@@ -289,7 +292,8 @@ fun CommonTaskScreenContent(
             commonTaskType = commonTaskType,
             showTaskEditor = { isTaskEditorVisible = true },
             editActions = editActions,
-            navigationActions = navigationActions
+            navigationActions = navigationActions,
+            uri = commonTask?.uri ?: ""
         )
 
         if (loaders.isLoading || creator == null || commonTask == null) {

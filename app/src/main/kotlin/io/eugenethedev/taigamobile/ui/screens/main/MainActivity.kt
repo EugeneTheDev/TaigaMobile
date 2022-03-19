@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,8 @@ import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.shapes
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
@@ -144,7 +147,8 @@ class MainActivity : AppCompatActivity() {
                                 ) {
                                     items.forEach { screen ->
                                         NavigationBarItem(
-                                            modifier = Modifier.navigationBarsPadding()
+                                            modifier = Modifier
+                                                .navigationBarsPadding()
                                                 .clip(CircleShape),
                                             icon = {
                                                 Icon(
@@ -232,11 +236,22 @@ fun MainScreen(
         }
     }
 
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val onShowMessage: (Int) -> Unit = { message ->
+        val strMessage = context.getString(message)
+        scope.launch {
+            scaffoldState.snackbarHostState.showSnackbar(strMessage)
+        }
+    }
+
     val isLogged by viewModel.isLogged.collectAsState()
     val isProjectSelected by viewModel.isProjectSelected.collectAsState()
 
     Surface(
-        modifier = Modifier.fillMaxSize().padding(paddingValues),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
         color = MaterialTheme.colorScheme.background
     ) {
         NavHost(
@@ -358,7 +373,8 @@ fun MainScreen(
                     commonTaskId = it.arguments!!.getLong(Routes.Arguments.commonTaskId),
                     commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
                     ref = it.arguments!!.getInt(Routes.Arguments.ref),
-                    onError = onError
+                    onError = onError,
+                    onShowMessage = onShowMessage
                 )
             }
 

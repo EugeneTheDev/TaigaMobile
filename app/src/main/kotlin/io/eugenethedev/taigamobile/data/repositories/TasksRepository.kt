@@ -200,7 +200,7 @@ class TasksRepository @Inject constructor(
                 )
             }
     }
-    
+
     override suspend fun getBacklogUserStories(page: Int, filters: FiltersData) = withIO {
         handle404 {
             taigaApi.getUserStories(
@@ -315,7 +315,14 @@ class TasksRepository @Inject constructor(
     override suspend fun getSwimlanes() = withIO {
         taigaApi.getSwimlanes(currentProjectId)
     }
-    
+
+    private fun transformTaskTypeForCopyLink(commonTaskType: CommonTaskType) = when (commonTaskType) {
+            CommonTaskType.UserStory -> PATH_TO_USERSTORY
+            CommonTaskType.Task -> PATH_TO_TASK
+            CommonTaskType.Epic -> PATH_TO_EPIC
+            CommonTaskType.Issue -> PATH_TO_ISSUE
+        }
+
     private suspend fun CommonTaskResponse.toCommonTaskExtended(
         commonTaskType: CommonTaskType,
         filters: FiltersData,
@@ -351,7 +358,8 @@ class TasksRepository @Inject constructor(
             color = color,
             type = type?.let { id -> filters.types.find { it.id == id } }?.toStatus(StatusType.Type),
             severity = severity?.let { id -> filters.severities.find { it.id == id } }?.toStatus(StatusType.Severity),
-            priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority)
+            priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority),
+            uri =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref"
         )
     }
 
@@ -618,5 +626,12 @@ class TasksRepository @Inject constructor(
             id = epicId,
             request = ChangeEpicColor(color, version)
         )
+    }
+
+    companion object {
+        const val PATH_TO_USERSTORY = "us"
+        const val PATH_TO_TASK = "task"
+        const val PATH_TO_EPIC = "epic"
+        const val PATH_TO_ISSUE = "issue"
     }
 }
