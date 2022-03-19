@@ -24,7 +24,6 @@ import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.*
-import kotlinx.coroutines.coroutineScope
 import java.time.LocalDateTime
 
 @Composable

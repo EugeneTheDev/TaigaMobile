@@ -55,7 +55,6 @@ import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.shapes
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.InputStream
 
