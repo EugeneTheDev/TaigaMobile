@@ -388,7 +388,8 @@ private fun <T : Filter> Section(
     AnimatedVisibility(visible = isExpanded) {
         FlowRow(
             modifier = Modifier.padding(vertical = 2.dp, horizontal = 6.dp),
-            mainAxisSpacing = 4.dp
+            mainAxisSpacing = 4.dp,
+            crossAxisSpacing = 4.dp
         ) {
             filters.forEach {
                 FilterChip(

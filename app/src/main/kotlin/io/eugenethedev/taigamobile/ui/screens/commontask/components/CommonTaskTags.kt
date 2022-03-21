@@ -144,20 +144,22 @@ private fun AddTagField(
                 DropdownMenuItem(
                     onClick = { onSaveClick(it) },
                     text = {
-                        Spacer(
-                            Modifier.size(22.dp)
-                                .background(
-                                    color = it.color.toColor(),
-                                    shape = shapes.small
-                                )
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Spacer(
+                                Modifier.size(22.dp)
+                                    .background(
+                                        color = it.color.toColor(),
+                                        shape = shapes.small
+                                    )
+                            )
 
-                        Spacer(Modifier.width(4.dp))
+                            Spacer(Modifier.width(4.dp))
 
-                        Text(
-                            text = it.name,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                            Text(
+                                text = it.name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                     }
                 )
             }
