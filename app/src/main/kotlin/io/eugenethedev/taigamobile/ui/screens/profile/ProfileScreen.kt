@@ -45,7 +45,7 @@ import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
     userId: Long
 ) {
     val viewModel: ProfileViewModel = viewModel()
@@ -55,11 +55,11 @@ fun ProfileScreen(
     }
 
     val currentUser by viewModel.currentUser.collectAsState()
-    currentUser.subscribeOnError(onError)
+    currentUser.subscribeOnError(showMessage)
     val currentUserStats by viewModel.currentUserStats.collectAsState()
-    currentUserStats.subscribeOnError(onError)
+    currentUserStats.subscribeOnError(showMessage)
     val currentUserProjects by viewModel.currentUserProjects.collectAsState()
-    currentUserProjects.subscribeOnError(onError)
+    currentUserProjects.subscribeOnError(showMessage)
     val currentProjectId by viewModel.currentProjectId.collectAsState()
 
     ProfileScreenContent(

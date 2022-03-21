@@ -32,7 +32,6 @@ fun CommonTaskScreen(
     commonTaskId: Long,
     commonTaskType: CommonTaskType,
     ref: Int,
-    onError: @Composable (message: Int) -> Unit = {},
     showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
@@ -41,69 +40,69 @@ fun CommonTaskScreen(
     }
 
     val commonTask by viewModel.commonTask.collectAsState()
-    commonTask.subscribeOnError(onError)
+    commonTask.subscribeOnError(showMessage)
 
     val creator by viewModel.creator.collectAsState()
-    creator.subscribeOnError(onError)
+    creator.subscribeOnError(showMessage)
 
     val assignees by viewModel.assignees.collectAsState()
-    assignees.subscribeOnError(onError)
+    assignees.subscribeOnError(showMessage)
 
     val watchers by viewModel.watchers.collectAsState()
-    watchers.subscribeOnError(onError)
+    watchers.subscribeOnError(showMessage)
 
     val userStories by viewModel.userStories.collectAsState()
-    userStories.subscribeOnError(onError)
+    userStories.subscribeOnError(showMessage)
 
     val tasks by viewModel.tasks.collectAsState()
-    tasks.subscribeOnError(onError)
+    tasks.subscribeOnError(showMessage)
 
     val comments by viewModel.comments.collectAsState()
-    comments.subscribeOnError(onError)
+    comments.subscribeOnError(showMessage)
 
     val statuses by viewModel.statuses.collectAsState()
-    statuses.subscribeOnError(onError)
+    statuses.subscribeOnError(showMessage)
     val statusSelectResult by viewModel.statusSelectResult.collectAsState()
-    statusSelectResult.subscribeOnError(onError)
+    statusSelectResult.subscribeOnError(showMessage)
 
     val swimlanes by viewModel.swimlanes.collectAsState()
-    swimlanes.subscribeOnError(onError)
+    swimlanes.subscribeOnError(showMessage)
 
     val sprints = viewModel.sprints
-    sprints.subscribeOnError(onError)
+    sprints.subscribeOnError(showMessage)
     val selectSprintResult by viewModel.selectSprintResult.collectAsState()
-    selectSprintResult.subscribeOnError(onError)
+    selectSprintResult.subscribeOnError(showMessage)
 
     val epics = viewModel.epics
-    epics.subscribeOnError(onError)
+    epics.subscribeOnError(showMessage)
     val linkToEpicResult by viewModel.linkToEpicResult.collectAsState()
-    linkToEpicResult.subscribeOnError(onError)
+    linkToEpicResult.subscribeOnError(showMessage)
 
     val team by viewModel.team.collectAsState()
-    team.subscribeOnError(onError)
+    team.subscribeOnError(showMessage)
     val teamSearched by viewModel.teamSearched.collectAsState()
 
     val customFields by viewModel.customFields.collectAsState()
-    customFields.subscribeOnError(onError)
+    customFields.subscribeOnError(showMessage)
 
     val attachments by viewModel.attachments.collectAsState()
-    attachments.subscribeOnError(onError)
+    attachments.subscribeOnError(showMessage)
 
     val tags by viewModel.tags.collectAsState()
-    tags.subscribeOnError(onError)
+    tags.subscribeOnError(showMessage)
     val tagsSearched by viewModel.tagsSearched.collectAsState()
 
     val colorResult by viewModel.colorResult.collectAsState()
-    colorResult.subscribeOnError(onError)
+    colorResult.subscribeOnError(showMessage)
 
     val dueDateResult by viewModel.dueDateResult.collectAsState()
-    dueDateResult.subscribeOnError(onError)
+    dueDateResult.subscribeOnError(showMessage)
 
     val editResult by viewModel.editResult.collectAsState()
-    editResult.subscribeOnError(onError)
+    editResult.subscribeOnError(showMessage)
 
     val deleteResult by viewModel.deleteResult.collectAsState()
-    deleteResult.subscribeOnError(onError)
+    deleteResult.subscribeOnError(showMessage)
     deleteResult.takeIf { it is SuccessResult }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()
@@ -111,7 +110,7 @@ fun CommonTaskScreen(
     }
 
     val promoteResult by viewModel.promoteResult.collectAsState()
-    promoteResult.subscribeOnError(onError)
+    promoteResult.subscribeOnError(showMessage)
     promoteResult.takeIf { it is SuccessResult }?.data?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()

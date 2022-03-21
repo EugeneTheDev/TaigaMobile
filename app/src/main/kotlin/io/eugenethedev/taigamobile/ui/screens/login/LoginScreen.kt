@@ -39,14 +39,14 @@ import io.eugenethedev.taigamobile.ui.theme.shapes
 @Composable
 fun LoginScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: LoginViewModel = viewModel()
 
     val loginResult by viewModel.loginResult.collectAsState()
     loginResult.also {
         when(it) {
-            is ErrorResult -> onError(it.message!!)
+            is ErrorResult -> showMessage(it.message!!)
             is SuccessResult -> {
                 LaunchedEffect(Unit) {
                     navController.navigate(Routes.dashboard) {

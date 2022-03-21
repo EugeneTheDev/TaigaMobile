@@ -31,7 +31,7 @@ import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 @Composable
 fun DashboardScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: DashboardViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -39,13 +39,13 @@ fun DashboardScreen(
     }
 
     val workingOn by viewModel.workingOn.collectAsState()
-    workingOn.subscribeOnError(onError)
+    workingOn.subscribeOnError(showMessage)
 
     val watching by viewModel.watching.collectAsState()
-    watching.subscribeOnError(onError)
+    watching.subscribeOnError(showMessage)
 
     val myProjects by viewModel.myProjects.collectAsState()
-    myProjects.subscribeOnError(onError)
+    myProjects.subscribeOnError(showMessage)
 
     val currentProjectId by viewModel.currentProjectId.collectAsState()
 

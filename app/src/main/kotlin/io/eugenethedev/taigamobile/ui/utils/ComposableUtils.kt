@@ -71,11 +71,11 @@ fun Modifier.clickableUnindicated(
 
 // Error functions
 @Composable
-inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let { onError(it) }
+inline fun Result<*>.subscribeOnError(onError: (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let { onError(it) }
 
 @SuppressLint("ComposableNaming")
 @Composable
-inline fun <T : Any> LazyPagingItems<T>.subscribeOnError(onError: @Composable (message: Int) -> Unit) {
+inline fun <T : Any> LazyPagingItems<T>.subscribeOnError(onError: (message: Int) -> Unit) {
     if (loadState.run { listOf(refresh, prepend, append) }.any { it is LoadState.Error }) {
         onError(R.string.common_error_message)
     }

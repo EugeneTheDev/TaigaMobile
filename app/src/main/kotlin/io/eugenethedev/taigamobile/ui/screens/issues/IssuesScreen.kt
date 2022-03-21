@@ -24,7 +24,7 @@ import io.eugenethedev.taigamobile.ui.utils.*
 @Composable
 fun IssuesScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {}
+    showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: IssuesViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -34,10 +34,10 @@ fun IssuesScreen(
     val projectName by viewModel.projectName.collectAsState()
 
     val issues = viewModel.issues
-    issues.subscribeOnError(onError)
+    issues.subscribeOnError(showMessage)
 
     val filters by viewModel.filters.collectAsState()
-    filters.subscribeOnError(onError)
+    filters.subscribeOnError(showMessage)
 
     val activeFilters by viewModel.activeFilters.collectAsState()
 

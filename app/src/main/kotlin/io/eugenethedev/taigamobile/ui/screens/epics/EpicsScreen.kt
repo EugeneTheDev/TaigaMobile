@@ -24,7 +24,7 @@ import io.eugenethedev.taigamobile.ui.utils.*
 @Composable
 fun EpicsScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: EpicsViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -34,10 +34,10 @@ fun EpicsScreen(
     val projectName by viewModel.projectName.collectAsState()
 
     val epics = viewModel.epics
-    epics.subscribeOnError(onError)
+    epics.subscribeOnError(showMessage)
 
     val filters by viewModel.filters.collectAsState()
-    filters.subscribeOnError(onError)
+    filters.subscribeOnError(showMessage)
 
     val activeFilters by viewModel.activeFilters.collectAsState()
 
