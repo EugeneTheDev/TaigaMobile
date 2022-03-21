@@ -146,8 +146,7 @@ class MainActivity : AppCompatActivity() {
                                 ) {
                                     items.forEach { screen ->
                                         NavigationBarItem(
-                                            modifier = Modifier
-                                                .navigationBarsPadding()
+                                            modifier = Modifier.navigationBarsPadding()
                                                 .clip(CircleShape),
                                             icon = {
                                                 Icon(
@@ -237,7 +236,7 @@ fun MainScreen(
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val onShowMessage: (Int) -> Unit = { message ->
+    val showMessage: (Int) -> Unit = { message ->
         val strMessage = context.getString(message)
         scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(strMessage)
@@ -248,9 +247,7 @@ fun MainScreen(
     val isProjectSelected by viewModel.isProjectSelected.collectAsState()
 
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
         color = MaterialTheme.colorScheme.background
     ) {
         NavHost(
@@ -373,7 +370,7 @@ fun MainScreen(
                     commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
                     ref = it.arguments!!.getInt(Routes.Arguments.ref),
                     onError = onError,
-                    onShowMessage = onShowMessage
+                    showMessage = showMessage
                 )
             }
 

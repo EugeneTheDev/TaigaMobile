@@ -332,7 +332,7 @@ fun KanbanBoardPreview() = TaigaMobileTheme {
                 swimlane = null,
                 dueDate = null,
                 dueDateStatus = DueDateStatus.NotSet,
-                uri = ""
+                url = ""
             )
         },
         team = List(10) {

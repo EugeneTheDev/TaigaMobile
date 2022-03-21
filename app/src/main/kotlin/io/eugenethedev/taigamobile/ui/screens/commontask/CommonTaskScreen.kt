@@ -33,7 +33,7 @@ fun CommonTaskScreen(
     commonTaskType: CommonTaskType,
     ref: Int,
     onError: @Composable (message: Int) -> Unit = {},
-    onShowMessage: (message: Int) -> Unit = {}
+    showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: CommonTaskViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -229,7 +229,7 @@ fun CommonTaskScreen(
             ),
             isAssignedToMe = isAssignedToMe,
             isWatchedByMe = isWatchedByMe,
-            onShowMessage = onShowMessage
+            showMessage = showMessage
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
@@ -292,7 +292,7 @@ fun CommonTaskScreenContent(
             showTaskEditor = { isTaskEditorVisible = true },
             editActions = editActions,
             navigationActions = navigationActions,
-            uri = commonTask?.uri ?: ""
+            url = commonTask?.url ?: ""
         )
 
         if (loaders.isLoading || creator == null || commonTask == null) {

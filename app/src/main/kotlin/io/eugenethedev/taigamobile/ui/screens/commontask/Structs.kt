@@ -70,7 +70,7 @@ class EditActions(
     val watch: EditSimpleEmpty = EditSimpleEmpty(),
     var isAssignedToMe: Boolean = false,
     var isWatchedByMe: Boolean = false,
-    val onShowMessage: (message: Int) -> Unit = {}
+    val showMessage: (message: Int) -> Unit = {}
 )
 
 // all loading statuses in one place

@@ -29,7 +29,7 @@ fun CommonTaskAppBar(
     showTaskEditor: () -> Unit,
     editActions: EditActions,
     navigationActions: NavigationActions,
-    uri: String
+    url: String
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
     val clipboardManager = LocalClipboardManager.current
@@ -103,9 +103,9 @@ fun CommonTaskAppBar(
                         onClick = {
                             isMenuExpanded = false
                             clipboardManager.setText(
-                                AnnotatedString(uri)
+                                AnnotatedString(url)
                             )
-                            editActions.onShowMessage(R.string.copy_link_successfully)
+                            editActions.showMessage(R.string.copy_link_successfully)
                         },
                         text = {
                             Text(
