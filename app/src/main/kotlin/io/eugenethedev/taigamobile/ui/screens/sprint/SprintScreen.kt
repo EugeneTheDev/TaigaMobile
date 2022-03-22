@@ -35,7 +35,7 @@ import java.time.format.FormatStyle
 fun SprintScreen(
     navController: NavController,
     sprintId: Long,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: SprintViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -43,25 +43,25 @@ fun SprintScreen(
     }
 
     val sprint by viewModel.sprint.collectAsState()
-    sprint.subscribeOnError(onError)
+    sprint.subscribeOnError(showMessage)
 
     val statuses by viewModel.statuses.collectAsState()
-    statuses.subscribeOnError(onError)
+    statuses.subscribeOnError(showMessage)
 
     val storiesWithTasks by viewModel.storiesWithTasks.collectAsState()
-    storiesWithTasks.subscribeOnError(onError)
+    storiesWithTasks.subscribeOnError(showMessage)
 
     val storylessTasks by viewModel.storylessTasks.collectAsState()
-    storylessTasks.subscribeOnError(onError)
+    storylessTasks.subscribeOnError(showMessage)
 
     val issues by viewModel.issues.collectAsState()
-    issues.subscribeOnError(onError)
+    issues.subscribeOnError(showMessage)
 
     val editResult by viewModel.editResult.collectAsState()
-    editResult.subscribeOnError(onError)
+    editResult.subscribeOnError(showMessage)
 
     val deleteResult by viewModel.deleteResult.collectAsState()
-    deleteResult.subscribeOnError(onError)
+    deleteResult.subscribeOnError(showMessage)
     deleteResult.takeIf { it is SuccessResult }?.let {
         LaunchedEffect(Unit) {
             navController.popBackStack()

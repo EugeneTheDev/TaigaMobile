@@ -28,12 +28,12 @@ fun CreateTaskScreen(
     sprintId: Long? = null,
     statusId: Long? = null,
     swimlaneId: Long? = null,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: CreateTaskViewModel = viewModel()
 
     val creationResult by viewModel.creationResult.collectAsState()
-    creationResult.subscribeOnError(onError)
+    creationResult.subscribeOnError(showMessage)
 
     creationResult.takeIf { it is SuccessResult }?.data?.let {
         LaunchedEffect(Unit) {

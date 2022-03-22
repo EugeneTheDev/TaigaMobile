@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.shapes
+import kotlinx.coroutines.launch
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
@@ -225,9 +227,11 @@ fun MainScreen(
     paddingValues: PaddingValues,
     navController: NavHostController
 ) {
-    val onError: @Composable (Int) -> Unit = { message ->
-        val strMessage = stringResource(message)
-        LaunchedEffect(Unit) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val showMessage: (Int) -> Unit = { message ->
+        val strMessage = context.getString(message)
+        scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(strMessage)
         }
     }
@@ -246,7 +250,7 @@ fun MainScreen(
             composable(Routes.login) {
                 LoginScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
@@ -254,7 +258,7 @@ fun MainScreen(
             composable(Routes.dashboard) {
                 DashboardScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
                 // user must select project first
                 LaunchedEffect(Unit) {
@@ -267,21 +271,21 @@ fun MainScreen(
             composable(Routes.scrum) {
                 ScrumScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
             composable(Routes.epics) {
                 EpicsScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
             composable(Routes.issues) {
                 IssuesScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
@@ -294,28 +298,28 @@ fun MainScreen(
             composable(Routes.team) {
                 TeamScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
             composable(Routes.kanban) {
                 KanbanScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
             composable(Routes.settings) {
                 SettingsScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
             composable(Routes.projectsSelector) {
                 ProjectSelectorScreen(
                     navController = navController,
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
@@ -328,7 +332,7 @@ fun MainScreen(
                 SprintScreen(
                     navController = navController,
                     sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId),
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
@@ -340,7 +344,7 @@ fun MainScreen(
             ) {
                 ProfileScreen(
                     navController = navController,
-                    onError = onError,
+                    showMessage = showMessage,
                     userId = it.arguments!!.getLong(Routes.Arguments.userId),
                 )
             }
@@ -358,7 +362,7 @@ fun MainScreen(
                     commonTaskId = it.arguments!!.getLong(Routes.Arguments.commonTaskId),
                     commonTaskType = CommonTaskType.valueOf(it.arguments!!.getString(Routes.Arguments.commonTaskType, "")),
                     ref = it.arguments!!.getInt(Routes.Arguments.ref),
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
 
@@ -391,7 +395,7 @@ fun MainScreen(
                     sprintId = it.arguments!!.getLong(Routes.Arguments.sprintId).takeIf { it >= 0 },
                     statusId = it.arguments!!.getLong(Routes.Arguments.statusId).takeIf { it >= 0 },
                     swimlaneId = it.arguments!!.getLong(Routes.Arguments.swimlaneId).takeIf { it >= 0 },
-                    onError = onError
+                    showMessage = showMessage
                 )
             }
         }

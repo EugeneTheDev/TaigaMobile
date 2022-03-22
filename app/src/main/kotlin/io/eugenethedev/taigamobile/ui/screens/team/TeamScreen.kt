@@ -39,7 +39,7 @@ import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 @Composable
 fun TeamScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: TeamViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -49,7 +49,7 @@ fun TeamScreen(
     val projectName by viewModel.projectName.collectAsState()
 
     val team by viewModel.team.collectAsState()
-    team.subscribeOnError(onError)
+    team.subscribeOnError(showMessage)
 
     TeamScreenContent(
         projectName = projectName,

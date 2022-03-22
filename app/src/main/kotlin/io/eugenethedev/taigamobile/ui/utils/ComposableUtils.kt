@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -71,13 +72,19 @@ fun Modifier.clickableUnindicated(
 
 // Error functions
 @Composable
-inline fun Result<*>.subscribeOnError(onError: @Composable (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let { onError(it) }
+inline fun Result<*>.subscribeOnError(crossinline onError: (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let {
+    LaunchedEffect(this) {
+        onError(it)
+    }
+}
 
 @SuppressLint("ComposableNaming")
 @Composable
-inline fun <T : Any> LazyPagingItems<T>.subscribeOnError(onError: @Composable (message: Int) -> Unit) {
+inline fun <T : Any> LazyPagingItems<T>.subscribeOnError(crossinline onError: (message: Int) -> Unit) {
     if (loadState.run { listOf(refresh, prepend, append) }.any { it is LoadState.Error }) {
-        onError(R.string.common_error_message)
+        LaunchedEffect(this) {
+            onError(R.string.common_error_message)
+        }
     }
 }
 

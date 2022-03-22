@@ -50,7 +50,7 @@ import java.time.format.FormatStyle
 @Composable
 fun ScrumScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: ScrumViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -61,20 +61,20 @@ fun ScrumScreen(
 
     val stories = viewModel.stories
     stories.subscribeOnError {
-        onError(R.string.common_error_message)
+        showMessage(R.string.common_error_message)
     }
 
     val openSprints = viewModel.openSprints
-    openSprints.subscribeOnError(onError)
+    openSprints.subscribeOnError(showMessage)
 
     val closedSprints = viewModel.closedSprints
-    closedSprints.subscribeOnError(onError)
+    closedSprints.subscribeOnError(showMessage)
 
     val createSprintResult by viewModel.createSprintResult.collectAsState()
-    createSprintResult.subscribeOnError(onError)
+    createSprintResult.subscribeOnError(showMessage)
 
     val filters by viewModel.filters.collectAsState()
-    filters.subscribeOnError(onError)
+    filters.subscribeOnError(showMessage)
 
     val activeFilters by viewModel.activeFilters.collectAsState()
 

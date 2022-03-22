@@ -25,7 +25,7 @@ import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 @Composable
 fun KanbanScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {}
+    showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: KanbanViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -35,16 +35,16 @@ fun KanbanScreen(
     val projectName by viewModel.projectName.collectAsState()
 
     val swimlanes by viewModel.swimlanes.collectAsState()
-    swimlanes.subscribeOnError(onError)
+    swimlanes.subscribeOnError(showMessage)
 
     val statuses by viewModel.statuses.collectAsState()
-    statuses.subscribeOnError(onError)
+    statuses.subscribeOnError(showMessage)
 
     val team by viewModel.team.collectAsState()
-    team.subscribeOnError(onError)
+    team.subscribeOnError(showMessage)
 
     val stories by viewModel.stories.collectAsState()
-    stories.subscribeOnError(onError)
+    stories.subscribeOnError(showMessage)
 
     val selectedSwimlane by viewModel.selectedSwimlane.collectAsState()
 

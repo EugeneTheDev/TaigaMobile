@@ -331,7 +331,8 @@ fun KanbanBoardPreview() = TaigaMobileTheme {
                 taskType = CommonTaskType.UserStory,
                 swimlane = null,
                 dueDate = null,
-                dueDateStatus = DueDateStatus.NotSet
+                dueDateStatus = DueDateStatus.NotSet,
+                url = ""
             )
         },
         team = List(10) {

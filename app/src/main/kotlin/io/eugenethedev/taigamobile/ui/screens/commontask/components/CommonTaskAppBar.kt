@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
@@ -26,9 +28,11 @@ fun CommonTaskAppBar(
     commonTaskType: CommonTaskType,
     showTaskEditor: () -> Unit,
     editActions: EditActions,
-    navigationActions: NavigationActions
+    navigationActions: NavigationActions,
+    url: String
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val clipboardManager = LocalClipboardManager.current
     AppBarWithBackButton(
         title = {
             Column(
@@ -94,6 +98,23 @@ fun CommonTaskAppBar(
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false }
                 ) {
+                    // Copy link
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded = false
+                            clipboardManager.setText(
+                                AnnotatedString(url)
+                            )
+                            editActions.showMessage(R.string.copy_link_successfully)
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.copy_link),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    )
+
                     // edit
                     DropdownMenuItem(
                         onClick = {

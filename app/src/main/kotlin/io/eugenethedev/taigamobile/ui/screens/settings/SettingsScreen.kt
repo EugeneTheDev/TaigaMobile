@@ -49,7 +49,7 @@ import timber.log.Timber
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {}
+    showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: SettingsViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -59,7 +59,7 @@ fun SettingsScreen(
     val serverUrl by viewModel.serverUrl.collectAsState()
 
     val user by viewModel.user.collectAsState()
-    user.subscribeOnError(onError)
+    user.subscribeOnError(showMessage)
 
     val themeSetting by viewModel.themeSetting.collectAsState()
 

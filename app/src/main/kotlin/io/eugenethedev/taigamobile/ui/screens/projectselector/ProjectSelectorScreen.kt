@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProjectSelectorScreen(
     navController: NavController,
-    onError: @Composable (message: Int) -> Unit = {},
+    showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: ProjectSelectorViewModel = viewModel()
     LaunchedEffect(Unit) {
@@ -36,7 +36,7 @@ fun ProjectSelectorScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val projects = viewModel.projects
-    projects.subscribeOnError(onError)
+    projects.subscribeOnError(showMessage)
 
     val currentProjectId by viewModel.currentProjectId.collectAsState()
 

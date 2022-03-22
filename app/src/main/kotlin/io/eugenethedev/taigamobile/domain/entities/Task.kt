@@ -73,6 +73,7 @@ data class CommonTaskExtended(
     val dueDate: LocalDate?,
     val dueDateStatus: DueDateStatus?,
     val userStoryShortInfo: UserStoryShortInfo? = null,
+    val url: String,
 
     // for epic
     val color: String? = null,
