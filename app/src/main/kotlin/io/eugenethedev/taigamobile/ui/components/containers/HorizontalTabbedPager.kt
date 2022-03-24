@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 fun HorizontalTabbedPager(
     tabs: Array<out Tab>,
     modifier: Modifier = Modifier,
-    pagerState: PagerState = rememberPagerState(pageCount = tabs.size),
+    pagerState: PagerState = rememberPagerState(),
     scrollable: Boolean = true,
     edgePadding: Dp = mainHorizontalScreenPadding,
     content: @Composable PagerScope.(page: Int) -> Unit
@@ -84,7 +84,8 @@ fun HorizontalTabbedPager(
 
     HorizontalPager(
         state = pagerState,
-        content = content
+        content = content,
+        count = tabs.size
     )
 }
 

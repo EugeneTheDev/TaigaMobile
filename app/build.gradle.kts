@@ -107,7 +107,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     // Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha06")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha08")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
@@ -118,7 +118,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
 
     // Accompanist
-    val accompanistVersion = "0.18.0"
+    val accompanistVersion = "0.23.1"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
@@ -129,7 +129,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.5.0-alpha02")
+    implementation("androidx.navigation:navigation-compose:2.5.0-alpha03")
 
     // Paging (with Compose)
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
@@ -146,7 +146,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 
     // OkHttp
-    val okHttpVersion = "4.9.0"
+    val okHttpVersion = "4.9.3"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
@@ -165,7 +165,7 @@ dependencies {
     implementation("io.noties.markwon:image-coil:$markwonVersion")
 
     // Compose material dialogs (color picker)
-    implementation("io.github.vanpra.compose-material-dialogs:color:0.6.3")
+    implementation("io.github.vanpra.compose-material-dialogs:color:0.7.0")
 
     /**
      * Test frameworks
@@ -185,7 +185,7 @@ dependencies {
     androidTestRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
 
     // MockK
-    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation("io.mockk:mockk:1.12.3")
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {

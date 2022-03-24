@@ -117,7 +117,7 @@ fun ScrumScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
-    val pagerState = rememberPagerState(pageCount = Tabs.values().size)
+    val pagerState = rememberPagerState()
     var isCreateSprintDialogVisible by remember { mutableStateOf(false) }
 
     ProjectAppBar(
