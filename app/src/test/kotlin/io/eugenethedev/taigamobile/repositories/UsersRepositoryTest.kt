@@ -91,11 +91,7 @@ class UsersRepositoryTest : BaseRepositoryTest() {
         usersRepository.getTeam().sortedBy { it.username }.forEachIndexed { index, member ->
             val userStats = usersRepository.getUserStats(member.id)
             assertEquals(
-                expected = testUsers[index].totalNumProjects,
-                actual = userStats.totalNumProjects
-            )
-            assertEquals(
-                expected = testUsers[index].totalNumProjects,
+                expected = TestData.projects.count { testUsers[index] in it.team },
                 actual = userStats.totalNumProjects
             )
         }

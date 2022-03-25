@@ -8,15 +8,13 @@ object TestData {
             username = "test",
             password = "testing_password",
             email = "test@test.com",
-            fullName = "Test Test",
-            totalNumProjects = 1
+            fullName = "Test Test"
         ),
         User(
             username = "another_test",
             password = "testing_password",
             email = "another_test@test.com",
-            fullName = "Another Test",
-            totalNumProjects = 2
+            fullName = "Another Test"
         )
     )
 
