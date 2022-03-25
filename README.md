@@ -14,6 +14,7 @@ This is the **unofficial** android app for the agile project management system [
   * Tasks
   * Issues
   * Sprints
+  * Profiles
   * Working on / Watching (aka Dashboard)
 * Create, edit and delete:
   * Epics
