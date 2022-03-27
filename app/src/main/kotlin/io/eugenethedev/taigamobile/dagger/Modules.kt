@@ -1,17 +1,14 @@
 package io.eugenethedev.taigamobile.dagger
 
 import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.squareup.moshi.Moshi
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.eugenethedev.taigamobile.BuildConfig
+import io.eugenethedev.taigamobile.data.api.*
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.state.Settings
-import io.eugenethedev.taigamobile.data.api.RefreshTokenRequest
-import io.eugenethedev.taigamobile.data.api.RefreshTokenResponse
-import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.data.repositories.*
 import io.eugenethedev.taigamobile.domain.repositories.*
 import okhttp3.*
@@ -19,10 +16,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
-import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Singleton
 
 @Module
@@ -30,7 +25,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideTaigaApi(session: Session, gson: Gson): TaigaApi {
+    fun provideTaigaApi(session: Session, moshi: Moshi): TaigaApi {
         val baseUrlPlaceholder = "https://nothing.nothing"
         fun getApiUrl() = // for compatibility with older app versions
             if (!session.server.value.run { startsWith("https://") || startsWith("http://") }) {
@@ -68,7 +63,7 @@ class DataModule {
 
         return Retrofit.Builder()
             .baseUrl(baseUrlPlaceholder) // base url is set dynamically in interceptor
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(MoshiConverterFactory.create(moshi).withNullSerialization())
             .client(
                 okHttpBuilder.authenticator { _, response ->
                         response.request.header("Authorization")?.let {
@@ -77,17 +72,16 @@ class DataModule {
                                 synchronized(session) {
                                     // refresh token only if it was not refreshed in another thread
                                     if (it.replace("Bearer ", "") == session.token.value) {
-                                        val body = gson.toJson(RefreshTokenRequest(session.refreshToken.value))
+                                        val body = RefreshTokenRequestJsonAdapter(moshi)
+                                            .toJson(RefreshTokenRequest(session.refreshToken.value))
 
                                         val request = Request.Builder()
                                             .url("$baseUrlPlaceholder/${TaigaApi.REFRESH_ENDPOINT}")
                                             .post(body.toRequestBody("application/json".toMediaType()))
                                             .build()
 
-                                        val refreshResponse = gson.fromJson(
-                                            tokenClient.newCall(request).execute().body?.string(),
-                                            RefreshTokenResponse::class.java
-                                        )
+                                        val refreshResponse = RefreshTokenResponseJsonAdapter(moshi)
+                                            .fromJson(tokenClient.newCall(request).execute().body?.string().orEmpty()) ?: throw IllegalStateException("Cannot parse RefreshResponse")
 
                                         session.changeAuthCredentials(refreshResponse.auth_token, refreshResponse.refresh)
                                     }
@@ -110,10 +104,10 @@ class DataModule {
     }
 
     @Provides
-    fun provideGson(): Gson = GsonBuilder().serializeNulls()
-        .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
-        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
-        .create()
+    fun provideMoshi(): Moshi = Moshi.Builder()
+        .add(LocalDateTypeAdapter())
+        .add(LocalDateTimeTypeAdapter())
+        .build()
 
     @Provides
     @Singleton

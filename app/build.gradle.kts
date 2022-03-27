@@ -140,10 +140,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
+    // Moshi
+    val moshiVersion = "1.13.0"
+    implementation("com.squareup.moshi:moshi:$moshiVersion")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
+
     // Retrofit 2
     val retrofitVersion = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
 
     // OkHttp
     val okHttpVersion = "4.9.3"
@@ -168,7 +173,7 @@ dependencies {
     implementation("io.github.vanpra.compose-material-dialogs:color:0.7.0")
 
     /**
-     * Test frameworks
+     * Test frameworks & dependencies
      */
     allTestsImplementation(kotlin("test-junit"))
 
@@ -183,6 +188,9 @@ dependencies {
     val postgresDriverVersion = "42.3.3"
     testRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
     androidTestRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
+
+    // manual json parsing when filling test instance
+    implementation("com.google.code.gson:gson:2.9.0")
 
     // MockK
     testImplementation("io.mockk:mockk:1.12.3")

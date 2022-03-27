@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.domain.entities
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -45,11 +46,13 @@ data class CommonTask(
 )
 
 
+@JsonClass(generateAdapter = false)
 enum class DueDateStatus {
-    @SerializedName("not_set") NotSet,
-    @SerializedName("set") Set,
-    @SerializedName("due_soon") DueSoon,
-    @SerializedName("past_due") PastDue
+    @Json(name = "not_set") NotSet,
+    @Json(name = "set") Set,
+    @Json(name = "due_soon") DueSoon,
+    @Json(name = "past_due") PastDue,
+    @Json(name = "no_longer_applicable") NoLongerApplicable
 }
 
 data class CommonTaskExtended(
@@ -84,19 +87,19 @@ data class CommonTaskExtended(
     val severity: Status? = null
 )
 
-
+@JsonClass(generateAdapter = true)
 data class EpicShortInfo(
     val id: Long,
-    @SerializedName("subject") val title: String,
+    @Json(name = "subject") val title: String,
     val ref: Int,
     val color: String
 )
 
-
+@JsonClass(generateAdapter = true)
 data class UserStoryShortInfo(
     val id: Long,
     val ref: Int,
-    @SerializedName("subject") val title: String,
+    @Json(name = "subject") val title: String,
     val epics: List<EpicShortInfo>?
 ) {
     val epicColors get() = epics?.map { it.color }.orEmpty()

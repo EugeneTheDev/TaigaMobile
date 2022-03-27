@@ -85,7 +85,7 @@ private fun CommentItem(
             onUserItemClick = { navigateToProfile(comment.author.id) }
         )
 
-        if (comment.canDelete == true) {
+        if (comment.canDelete) {
             IconButton(onClick = { isAlertVisible = true }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_delete),

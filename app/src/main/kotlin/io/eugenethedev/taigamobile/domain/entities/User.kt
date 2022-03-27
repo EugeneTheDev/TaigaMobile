@@ -1,16 +1,18 @@
 package io.eugenethedev.taigamobile.domain.entities
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Users related entities
  */
 
+@JsonClass(generateAdapter = true)
 data class User(
-    @SerializedName("id") val _id: Long?,
-    @SerializedName("full_name_display") val fullName: String?,
+    @Json(name = "id") val _id: Long?,
+    @Json(name = "full_name_display") val fullName: String?,
     val photo: String?,
-    @SerializedName("big_photo") val bigPhoto: String?,
+    @Json(name = "big_photo") val bigPhoto: String?,
     val username: String,
     val name: String? = null, // sometimes name appears here
     val pk: Long? = null
@@ -39,12 +41,13 @@ data class TeamMember(
     )
 }
 
+@JsonClass(generateAdapter = true)
 data class Stats(
     val roles: List<String> = emptyList(),
-    @SerializedName("total_num_closed_userstories")
+    @Json(name = "total_num_closed_userstories")
     val totalNumClosedUserStories: Int,
-    @SerializedName("total_num_contacts")
+    @Json(name = "total_num_contacts")
     val totalNumContacts: Int,
-    @SerializedName("total_num_projects")
+    @Json(name = "total_num_projects")
     val totalNumProjects: Int,
 )

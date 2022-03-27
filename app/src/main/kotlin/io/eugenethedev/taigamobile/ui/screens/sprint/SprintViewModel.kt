@@ -63,8 +63,7 @@ class SprintViewModel(appComponent: AppComponent = TaigaApp.appComponent) : View
                             coroutineScope {
                                 sprintsRepository.getSprintUserStories(sprintId)
                                     .map { it to async { tasksRepository.getUserStoryTasks(it.id) } }
-                                    .map { (story, tasks) -> story to tasks.await() }
-                                    .toMap()
+                                    .associate { (story, tasks) -> story to tasks.await() }
                             }
                         }
                     },

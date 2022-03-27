@@ -39,7 +39,7 @@ fun LazyListScope.CommonTaskDueDate(
                     .aspectRatio(1f)
                     .background(
                         color = when (commonTask.dueDateStatus) {
-                            DueDateStatus.NotSet, null -> defaultIconBackground
+                            DueDateStatus.NotSet, DueDateStatus.NoLongerApplicable, null -> defaultIconBackground
                             DueDateStatus.Set -> taigaGreenPositive
                             DueDateStatus.DueSoon -> taigaOrange
                             DueDateStatus.PastDue -> taigaRed

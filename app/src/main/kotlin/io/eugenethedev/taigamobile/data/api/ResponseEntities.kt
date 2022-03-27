@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.data.api
 
+import com.squareup.moshi.JsonClass
 import io.eugenethedev.taigamobile.domain.entities.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -8,22 +9,26 @@ import java.time.LocalDateTime
  * Some complicated api responses
  */
 
+@JsonClass(generateAdapter = true)
 data class AuthResponse(
     val auth_token: String,
     val refresh: String?,
     val id: Long
 )
 
+@JsonClass(generateAdapter = true)
 data class RefreshTokenResponse(
     val auth_token: String,
     val refresh: String
 )
 
+@JsonClass(generateAdapter = true)
 data class ProjectResponse(
     val id: Long,
     val name: String,
     val members: List<Member>
 ) {
+    @JsonClass(generateAdapter = true)
     data class Member(
         val id: Long,
         val photo: String?,
@@ -33,6 +38,7 @@ data class ProjectResponse(
     )
 }
 
+@JsonClass(generateAdapter = true)
 data class FiltersDataResponse(
     val statuses: List<Filter>,
     val tags: List<Filter>?,
@@ -48,6 +54,7 @@ data class FiltersDataResponse(
     val severities: List<Filter>?,
     val types: List<Filter>?
 ) {
+    @JsonClass(generateAdapter = true)
     data class Filter(
         val id: Long?,
         val name: String?,
@@ -55,12 +62,14 @@ data class FiltersDataResponse(
         val count: Int
     )
 
+    @JsonClass(generateAdapter = true)
     data class UserFilter(
         val id: Long?,
         val full_name: String,
         val count: Int
     )
 
+    @JsonClass(generateAdapter = true)
     data class EpicsFilter(
         val id: Long?,
         val ref: Int?,
@@ -69,6 +78,7 @@ data class FiltersDataResponse(
     )
 }
 
+@JsonClass(generateAdapter = true)
 data class CommonTaskResponse(
     val id: Long,
     val subject: String,
@@ -79,11 +89,10 @@ data class CommonTaskResponse(
     val status_extra_info: StatusExtra,
     val project_extra_info: Project,
     val milestone: Long?,
-    val milestone_name: String,
     val assigned_users: List<Long>?,
     val assigned_to: Long?,
-    val watchers: List<Long>,
-    val owner: Long,
+    val watchers: List<Long>?,
+    val owner: Long?,
     val description: String?,
     val epics: List<EpicShortInfo>?,
     val user_story_extra_info: UserStoryShortInfo?,
@@ -102,12 +111,14 @@ data class CommonTaskResponse(
     val severity: Long?,
     val priority: Long?
 ) {
+    @JsonClass(generateAdapter = true)
     data class StatusExtra(
         val color: String,
         val name: String
     )
 }
 
+@JsonClass(generateAdapter = true)
 data class SprintResponse(
     val id: Long,
     val name: String,
@@ -117,11 +128,13 @@ data class SprintResponse(
     val order: Int,
     val user_stories: List<UserStory>
 ) {
+    @JsonClass(generateAdapter = true)
     data class UserStory(
         val id: Long
     )
 }
 
+@JsonClass(generateAdapter = true)
 data class MemberStatsResponse(
     val closed_bugs: Map<String, Int>, // because api returns "null" key along with id keys, so...
     val closed_tasks: Map<String, Int>,
@@ -130,6 +143,7 @@ data class MemberStatsResponse(
     val wiki_changes: Map<String, Int>
 )
 
+@JsonClass(generateAdapter = true)
 data class CustomAttributeResponse(
     val id: Long,
     val name: String,
@@ -139,6 +153,7 @@ data class CustomAttributeResponse(
     val extra: List<String>?
 )
 
+@JsonClass(generateAdapter = true)
 data class CustomAttributesValuesResponse(
     val attributes_values: Map<Long, Any?>,
     val version: Int
