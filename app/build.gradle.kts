@@ -200,3 +200,17 @@ fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {
     testImplementation(dependencyNotation)
     androidTestImplementation(dependencyNotation)
 }
+
+tasks.register<Exec>("launchTestInstance") {
+    commandLine("../taiga-test-instance/launch-taiga.sh")
+}
+
+tasks.register<Exec>("stopTestInstance") {
+    commandLine("../taiga-test-instance/stop-taiga.sh")
+}
+
+tasks.withType<Test> {
+    dependsOn("launchTestInstance")
+    finalizedBy("stopTestInstance")
+}
+

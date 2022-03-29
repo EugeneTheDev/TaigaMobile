@@ -38,7 +38,7 @@ abstract class BaseRepositoryTest {
                 it.changeCurrentProject(id, project.name)
             }
         }
-        mockTaigaApi = dataModule.provideTaigaApi(mockSession, dataModule.provideGson())
+        mockTaigaApi = dataModule.provideTaigaApi(mockSession, dataModule.provideMoshi())
     }
 
     @AfterTest
