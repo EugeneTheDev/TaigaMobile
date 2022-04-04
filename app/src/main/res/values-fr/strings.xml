@@ -58,7 +58,6 @@
     <string name="show_closed_sprints">Afficher les sprints fermés</string>
     <string name="hide_closed_sprints">Masquer les sprints fermés</string>
 
-    <string name="user_story">Récit utilisateur</string>
     <string name="closed_user_story">Histoires fermées</string>
     <string name="tasks_without_story">Tâche orpheline</string>
     <string name="sprint_issues">Tickets</string>
@@ -69,10 +68,10 @@
     <string name="issue_slug">Ticket #%d</string>
 
     <string name="epic">Epopée</string>
-    <string name="userstory">User story</string>
+    <string name="userstory">Récit utilisateur</string>
     <string name="task">Tâche</string>
     <string name="issue">Ticket</string>
-    
+
     <string name="no_sprint">Aucun sprint</string>
     <string name="link_to_epic">Lien ver l\'épopée</string>
     <string name="add_tag">Ajouter une étiquette</string>

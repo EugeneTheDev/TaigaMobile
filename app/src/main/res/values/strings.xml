@@ -62,7 +62,6 @@
     <string name="show_closed_sprints">Show closed sprints</string>
     <string name="hide_closed_sprints">Hide closed sprints</string>
 
-    <string name="user_story">User story</string>
     <string name="closed_user_story">Closed US</string>
     <string name="tasks_without_story">Storyless tasks</string>
     <string name="sprint_issues">Sprint issues</string>

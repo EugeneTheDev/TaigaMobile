@@ -62,7 +62,6 @@
     <string name="show_closed_sprints">Показать закрытые спринты</string>
     <string name="hide_closed_sprints">Скрыть закрытые спринты</string>
 
-    <string name="user_story">Пользовательская история</string>
     <string name="closed_user_story">Зкрытые ПИ</string>
     <string name="tasks_without_story">Задачи без пользовательских историй</string>
     <string name="sprint_issues">Запросы спринта</string>

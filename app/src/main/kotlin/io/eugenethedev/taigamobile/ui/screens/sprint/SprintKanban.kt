@@ -65,7 +65,7 @@ fun SprintKanban(
 
     Row(Modifier.padding(start = cellPadding, top = cellPadding)) {
         Header(
-            text = stringResource(R.string.user_story),
+            text = stringResource(R.string.userstory),
             cellWidth = userStoryHeadingWidth,
             cellPadding = cellPadding,
             stripeColor = backgroundCellColor,
