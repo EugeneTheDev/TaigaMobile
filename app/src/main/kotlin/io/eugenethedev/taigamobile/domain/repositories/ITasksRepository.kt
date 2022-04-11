@@ -11,7 +11,7 @@ interface ITasksRepository {
     suspend fun getStatuses(commonTaskType: CommonTaskType): List<Status>
     suspend fun getStatusByType(commonTaskType: CommonTaskType, statusType: StatusType): List<Status>
 
-    suspend fun getFiltersData(commonTaskType: CommonTaskType): FiltersData
+    suspend fun getFiltersData(commonTaskType: CommonTaskType, isCommonTaskFromBacklog: Boolean = false): FiltersData
 
     suspend fun getEpics(page: Int, filters: FiltersData): List<CommonTask>
 

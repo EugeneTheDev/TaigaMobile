@@ -27,10 +27,11 @@ class TasksRepository @Inject constructor(
         type = statusType
     )
 
-    override suspend fun getFiltersData(commonTaskType: CommonTaskType) = withIO {
+    override suspend fun getFiltersData(commonTaskType: CommonTaskType, isCommonTaskFromBacklog: Boolean) = withIO {
         taigaApi.getCommonTaskFiltersData(
-            CommonTaskPathPlural(commonTaskType),
-            currentProjectId
+            taskPath = CommonTaskPathPlural(commonTaskType),
+            project = currentProjectId,
+            milestone = if (isCommonTaskFromBacklog) "null" else null
         ).let {
             FiltersData(
                 assignees = it.assigned_to.map {

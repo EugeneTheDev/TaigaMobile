@@ -39,7 +39,12 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     fun onOpen() {
         if (!shouldReload) return
         viewModelScope.launch {
-            filters.loadOrError { tasksRepository.getFiltersData(CommonTaskType.UserStory) }
+            filters.loadOrError {
+                tasksRepository.getFiltersData(
+                    commonTaskType = CommonTaskType.UserStory,
+                    isCommonTaskFromBacklog = true
+                )
+            }
         }
         shouldReload = false
     }
@@ -56,7 +61,7 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
             }.flow
         }.asLazyPagingItems(viewModelScope)
     }
-    
+
     fun selectFilters(filters: FiltersData) {
         activeFilters.value = filters
     }

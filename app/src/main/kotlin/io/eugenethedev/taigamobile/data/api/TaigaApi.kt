@@ -92,7 +92,8 @@ interface TaigaApi {
     @GET("{taskPath}/filters_data")
     suspend fun getCommonTaskFiltersData(
         @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Query("project") project: Long
+        @Query("project") project: Long,
+        @Query("milestone") milestone: Any? = null
     ): FiltersDataResponse
 
     @GET("userstories")
