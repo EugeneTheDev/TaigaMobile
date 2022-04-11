@@ -98,6 +98,8 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
 
         session.taskEdit.onEach {
             stories.refresh()
+            openSprints.refresh()
+            closedSprints.refresh()
         }.launchIn(viewModelScope)
 
         session.sprintEdit.onEach {
