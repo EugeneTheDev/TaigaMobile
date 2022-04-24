@@ -13,6 +13,7 @@ import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.domain.paging.CommonPagingSource
 import io.eugenethedev.taigamobile.domain.repositories.ISprintsRepository
 import io.eugenethedev.taigamobile.domain.repositories.ITasksRepository
+import io.eugenethedev.taigamobile.state.Settings
 import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.NothingResult
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
@@ -27,6 +28,7 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     @Inject lateinit var tasksRepository: ITasksRepository
     @Inject lateinit var sprintsRepository: ISprintsRepository
     @Inject lateinit var session: Session
+    @Inject lateinit var settings: Settings
 
     val projectName by lazy { session.currentProjectName }
 
@@ -64,6 +66,7 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
 
     fun selectFilters(filters: FiltersData) {
         activeFilters.value = filters
+        settings.changeScrumFilters("nice")
     }
 
     // sprints
