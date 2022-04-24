@@ -54,6 +54,8 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     // stories
 
     val filters = MutableResultFlow<FiltersData>()
+//    todo not here but need to figure out how to modify activeFilters when we get filters data
+//    todo make sure we filter the activeFilters using the ids we have in settings
     val activeFilters = MutableStateFlow(FiltersData())
     @OptIn(ExperimentalCoroutinesApi::class)
     val stories by lazy {
