@@ -15,10 +15,10 @@ class Settings(context: Context) {
         _themeSetting.value = value
     }
 
-    private val _scrumFilters = MutableStateFlow(sharedPreferences.getString(SCRUM_FILTERS, ""))
-    val scrumFilters: StateFlow<String?> = _scrumFilters
-    fun changeScrumFilters(value: String) {
-        sharedPreferences.edit { putString(SCRUM_FILTERS, value) }
+    private val _scrumFilters = MutableStateFlow(sharedPreferences.getStringSet(SCRUM_FILTERS, null))
+    val scrumFilters: StateFlow<Set<String>?> = _scrumFilters
+    fun changeScrumFilters(value: Set<String>) {
+        sharedPreferences.edit { putStringSet(SCRUM_FILTERS, value) }
         _scrumFilters.value = value
     }
 
