@@ -66,10 +66,8 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
 
     fun selectFilters(filters: FiltersData) {
         activeFilters.value = filters
-        val filterIdArray = filters.statuses.map{(id) -> id}
-//        todo add way more than just statuses
-//        todo figure how how to best make a set of strings from the ids
-        settings.changeScrumFilters(setOf("very", "nice"))
+        val idArray = filters.statuses.map{(id) -> id.toString()} + filters.assignees.map{(id) -> id.toString()} + filters.roles.map{(id) -> id.toString()} + filters.createdBy.map{(id) -> id.toString()} + filters.epics.map{(id) -> id.toString()}
+        settings.changeScrumFilters(idArray.toSet())
     }
 
     // sprints
