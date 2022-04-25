@@ -33,6 +33,7 @@
     <string name="settings">Настройки</string>
     <string name="more">Больше</string>
     <string name="kanban">Канбан</string>
+    <string name="wiki">Вики</string>
 
     <string name="choose_project_title">Выбрать проект</string>
 
@@ -137,6 +138,9 @@
 
     <string name="delete_task_title">Удаление задачи</string>
     <string name="delete_task_text">Вы уверены, что хотите удалить эту задачу?</string>
+
+    <string name="delete_wiki_title">Удаление страницы</string>
+    <string name="delete_wiki_text">Вы уверены, что хотите удалить эту страницу?</string>
 
     <string name="promote_title">Преобразование</string>
     <string name="promote_text">Вы уверены, что хотите преобразовать эту задачу в пользовательскую историю?</string>

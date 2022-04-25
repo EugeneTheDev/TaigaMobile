@@ -52,6 +52,7 @@ import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
 import io.eugenethedev.taigamobile.ui.screens.profile.ProfileScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
+import io.eugenethedev.taigamobile.ui.screens.wiki.WikiScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.shapes
@@ -201,6 +202,7 @@ object Routes {
     const val team = "team"
     const val settings = "settings"
     const val kanban = "kanban"
+    const val wiki = "wiki"
     const val projectsSelector = "projectsSelector"
     const val sprint = "sprint"
     const val commonTask = "commonTask"
@@ -304,6 +306,13 @@ fun MainScreen(
 
             composable(Routes.kanban) {
                 KanbanScreen(
+                    navController = navController,
+                    showMessage = showMessage
+                )
+            }
+
+            composable(Routes.wiki) {
+                WikiScreen(
                     navController = navController,
                     showMessage = showMessage
                 )
@@ -435,6 +444,8 @@ fun MoreScreen(
     Item(R.drawable.ic_team, R.string.team, Routes.team)
     Spacer(Modifier.height(space))
     Item(R.drawable.ic_kanban, R.string.kanban, Routes.kanban)
+    Spacer(Modifier.height(space))
+    Item(R.drawable.ic_wiki, R.string.wiki, Routes.wiki)
     Spacer(Modifier.height(space))
     Item(R.drawable.ic_settings, R.string.settings, Routes.settings)
 }

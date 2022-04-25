@@ -31,6 +31,7 @@
     <string name="settings">Paramètres</string>
     <string name="more">Plus</string>
     <string name="kanban">Kanban</string>
+    <string name="wiki">Wiki</string>
 
     <string name="choose_project_title">Selectionner un projet</string>
 
@@ -132,6 +133,9 @@
 
     <string name="delete_task_title">Supprimer la tâche</string>
     <string name="delete_task_text">Etes vous sûr de vouloir supprimer la tâche ?</string>
+
+    <string name="delete_wiki_title">Supprimer la page</string>
+    <string name="delete_wiki_text">Êtes-vous sûr de vouloir supprimer cette page?</string>
 
     <string name="promote_title">Promouvoir en récit utilisateur</string>
     <string name="promote_text">Etes vous sûr de vouloir promouvoir cette tâche en récit utilisateur ?</string>

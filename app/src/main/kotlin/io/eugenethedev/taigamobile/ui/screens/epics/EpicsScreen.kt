@@ -13,7 +13,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
-import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -67,7 +67,7 @@ fun EpicsScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
-    ProjectAppBar(
+    AppBarWithSearch(
         projectName = projectName,
         actions = { PlusButton(onClick = navigateToCreateTask) },
         onTitleClick = onTitleClick

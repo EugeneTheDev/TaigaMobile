@@ -14,7 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
-import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
@@ -84,7 +84,7 @@ fun KanbanScreenContent(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.Start
 ) {
-    ProjectAppBar(
+    AppBarWithSearch(
         projectName = projectName,
         onTitleClick = onTitleClick,
         navigateBack = navigateBack

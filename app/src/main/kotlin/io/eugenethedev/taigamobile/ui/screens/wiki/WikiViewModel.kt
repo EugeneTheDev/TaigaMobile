@@ -1,8 +1,12 @@
 package io.eugenethedev.taigamobile.ui.screens.wiki
 
-/**
- * 
- *
- * @author Имя Фамилия on 25.04.2022
- */class WikiViewModel {
+import androidx.lifecycle.ViewModel
+import io.eugenethedev.taigamobile.TaigaApp
+import io.eugenethedev.taigamobile.dagger.AppComponent
+
+class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
+
+    init {
+        appComponent.inject(this)
+    }
 }
