@@ -45,6 +45,10 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
                     isCommonTaskFromBacklog = true
                 )
             }
+
+            filters.value.data?.let {
+                session.changeScrumFilters(activeFilters.value.updateData(it))
+            }
         }
         shouldReload = false
     }

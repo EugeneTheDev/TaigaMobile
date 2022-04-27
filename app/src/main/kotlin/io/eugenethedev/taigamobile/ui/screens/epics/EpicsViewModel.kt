@@ -15,7 +15,6 @@ import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,6 +37,9 @@ class EpicsViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
         if (!shouldReload) return
         viewModelScope.launch {
             filters.loadOrError { tasksRepository.getFiltersData(CommonTaskType.Epic) }
+            filters.value.data?.let {
+                session.changeEpicsFilters(activeFilters.value.updateData(it))
+            }
         }
         shouldReload = false
     }
