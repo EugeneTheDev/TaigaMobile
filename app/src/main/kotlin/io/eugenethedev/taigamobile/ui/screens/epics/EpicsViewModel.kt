@@ -43,7 +43,7 @@ class EpicsViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     }
 
     val filters = MutableResultFlow<FiltersData>()
-    val activeFilters = MutableStateFlow(FiltersData())
+    val activeFilters by lazy { session.epicsFilters }
     @OptIn(ExperimentalCoroutinesApi::class)
     val epics by lazy {
         activeFilters.flatMapLatest { filters ->
@@ -54,12 +54,11 @@ class EpicsViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     }
 
     fun selectFilters(filters: FiltersData) {
-        activeFilters.value = filters
+        session.changeEpicsFilters(filters)
     }
 
     init {
         session.currentProjectId.onEach {
-            activeFilters.value = FiltersData()
             epics.refresh()
             shouldReload = true
         }.launchIn(viewModelScope)

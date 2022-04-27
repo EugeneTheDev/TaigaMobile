@@ -44,7 +44,7 @@ class IssuesViewModel(appComponent: AppComponent = TaigaApp.appComponent) : View
     }
 
     val filters = MutableResultFlow<FiltersData>()
-    val activeFilters = MutableStateFlow(FiltersData())
+    val activeFilters by lazy { session.issuesFilters }
     @OptIn(ExperimentalCoroutinesApi::class)
     val issues by lazy {
         activeFilters.flatMapLatest { filters ->
@@ -55,12 +55,11 @@ class IssuesViewModel(appComponent: AppComponent = TaigaApp.appComponent) : View
     }
 
     fun selectFilters(filters: FiltersData) {
-        activeFilters.value = filters
+        session.changeIssuesFilters(filters)
     }
     
     init {
         session.currentProjectId.onEach {
-            activeFilters.value = FiltersData()
             shouldReload = true
         }.launchIn(viewModelScope)
 

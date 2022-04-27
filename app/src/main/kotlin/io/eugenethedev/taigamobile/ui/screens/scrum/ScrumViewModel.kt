@@ -52,7 +52,7 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     // stories
 
     val filters = MutableResultFlow<FiltersData>()
-    val activeFilters = MutableStateFlow(FiltersData())
+    val activeFilters by lazy { session.scrumFilters }
     @OptIn(ExperimentalCoroutinesApi::class)
     val stories by lazy {
         activeFilters.flatMapLatest { filters ->
@@ -63,7 +63,7 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
     }
 
     fun selectFilters(filters: FiltersData) {
-        activeFilters.value = filters
+        session.changeScrumFilters(filters)
     }
 
     // sprints
@@ -88,7 +88,6 @@ class ScrumViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewM
 
     init {
         session.currentProjectId.onEach {
-            activeFilters.value = FiltersData()
             createSprintResult.value = NothingResult()
             stories.refresh()
             openSprints.refresh()
