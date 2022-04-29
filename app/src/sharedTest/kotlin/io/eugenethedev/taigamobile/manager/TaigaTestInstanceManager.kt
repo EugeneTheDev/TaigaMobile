@@ -112,7 +112,12 @@ class TaigaTestInstanceManager(
             .build()
 
         try {
-            return checkRequest.execute().successOrThrow()
+            // just wait for the server to actually warm up
+            while (checkRequest.execute().code >= 500) {
+                println("Instance is not ready yet, waiting 1s before another try")
+                Thread.sleep(1000)
+            }
+            checkRequest.execute().successOrThrow()
         } catch (e: ConnectException) {
             throw IllegalArgumentException("No Taiga instance is running on $baseUrl")
         }

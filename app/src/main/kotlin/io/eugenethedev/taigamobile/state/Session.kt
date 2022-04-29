@@ -76,7 +76,7 @@ class Session(context: Context, moshi: Moshi) {
 
     // Filters
     private val filtersJsonAdapter = FiltersDataJsonAdapter(moshi)
-    private fun getFiltersOrEmpty(key: String) = sharedPreferences.getString(key, null)?.let { filtersJsonAdapter.fromJson(it) } ?: FiltersData()
+    private fun getFiltersOrEmpty(key: String) = sharedPreferences.getString(key, null)?.takeIf { it.isNotBlank() }?.let { filtersJsonAdapter.fromJson(it) } ?: FiltersData()
 
     private val _scrumFilters = MutableStateFlow(getFiltersOrEmpty(FILTERS_SCRUM))
     val scrumFilters: StateFlow<FiltersData> = _scrumFilters

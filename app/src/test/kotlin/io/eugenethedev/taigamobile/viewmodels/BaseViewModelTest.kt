@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.viewmodels
 
 import android.content.Context
 import io.eugenethedev.taigamobile.dagger.AppComponent
+import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.domain.repositories.*
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.state.Settings
@@ -34,9 +35,23 @@ abstract class BaseViewModelTest {
 
     // state mocks
     private val mockContext = mockk<Context> {
-        every { getSharedPreferences(any(), any()) } returns mockk(relaxed = true)
+        every { getSharedPreferences(any(), any()) } returns mockk(relaxed = true) {
+            // used for filters, need to actually save strings
+            val stringPreferences = mutableMapOf<String, String>()
+
+            every { edit() } returns mockk(relaxed = true) editor@{
+                every { putString(any(), any()) } answers {
+                    stringPreferences[firstArg()] = secondArg()
+                    this@editor
+                }
+            }
+
+            every { getString(any(), any()) } answers {
+                stringPreferences[firstArg()]
+            }
+        }
     }
-    protected val mockSession = spyk(Session(mockContext))
+    protected val mockSession = spyk(Session(mockContext, mockAppComponent.moshi))
     protected val mockSettings = spyk(Settings(mockContext))
 
     // repository mocks
@@ -74,6 +89,8 @@ abstract class BaseViewModelTest {
     }
 
     inner class MockAppComponent : AppComponent {
+        val moshi = DataModule().provideMoshi()
+
         override fun inject(mainViewModel: MainViewModel) {
             mainViewModel.session = mockSession
             mainViewModel.settings = mockSettings

@@ -41,7 +41,6 @@ fun <T : Any> testLazyPagingItems(
 
     coEvery(stubBlock) answers {
         pageArg().let {
-            println("First arg: $it")
             pages.subList((it - 1) * CommonPagingSource.PAGE_SIZE, min(it * CommonPagingSource.PAGE_SIZE, pages.size))
         }
     }

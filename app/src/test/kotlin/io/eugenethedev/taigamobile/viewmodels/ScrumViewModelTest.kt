@@ -9,7 +9,6 @@ import io.eugenethedev.taigamobile.viewmodels.utils.createDeniedException
 import io.eugenethedev.taigamobile.viewmodels.utils.notFoundException
 import io.eugenethedev.taigamobile.viewmodels.utils.testLazyPagingItems
 import io.mockk.coEvery
-import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import kotlin.test.BeforeTest
@@ -26,17 +25,17 @@ class ScrumViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test on open`(): Unit = runBlocking {
-        val mockFiltersData = mockk<FiltersData>()
+        val filtersData = FiltersData()
 
-        coEvery { mockTaskRepository.getFiltersData(any()) } returns mockFiltersData
+        coEvery { mockTaskRepository.getFiltersData(any(), true) } returns filtersData
 
         viewModel.onOpen()
-        assertResultEquals(SuccessResult(mockFiltersData), viewModel.filters.value)
+        assertResultEquals(SuccessResult(filtersData), viewModel.filters.value)
     }
 
     @Test
     fun `test on open error`(): Unit = runBlocking {
-        coEvery { mockTaskRepository.getFiltersData(any()) } throws notFoundException
+        coEvery { mockTaskRepository.getFiltersData(any(), true) } throws notFoundException
 
         viewModel.onOpen()
         assertIs<ErrorResult<FiltersData>>(viewModel.filters.value)
@@ -44,9 +43,9 @@ class ScrumViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test select filters`(): Unit = runBlocking {
-        val mockFiltersData = mockk<FiltersData>()
+        val filtersData = FiltersData()
 
-        viewModel.selectFilters(mockFiltersData)
+        viewModel.selectFilters(filtersData)
         assertIs<FiltersData>(viewModel.activeFilters.value)
     }
 
