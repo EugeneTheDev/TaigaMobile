@@ -35,21 +35,7 @@ abstract class BaseViewModelTest {
 
     // state mocks
     private val mockContext = mockk<Context> {
-        every { getSharedPreferences(any(), any()) } returns mockk(relaxed = true) {
-            // used for filters, need to actually save strings
-            val stringPreferences = mutableMapOf<String, String>()
-
-            every { edit() } returns mockk(relaxed = true) editor@{
-                every { putString(any(), any()) } answers {
-                    stringPreferences[firstArg()] = secondArg()
-                    this@editor
-                }
-            }
-
-            every { getString(any(), any()) } answers {
-                stringPreferences[firstArg()]
-            }
-        }
+        every { getSharedPreferences(any(), any()) } returns mockk(relaxed = true)
     }
     protected val mockSession = spyk(Session(mockContext, mockAppComponent.moshi))
     protected val mockSettings = spyk(Settings(mockContext))
