@@ -112,12 +112,19 @@ class TaigaTestInstanceManager(
             .build()
 
         try {
-            // just wait for the server to actually warm up
-            while (checkRequest.execute().code >= 500) {
-                println("Instance is not ready yet, waiting 1s before another try")
-                Thread.sleep(1000)
+            // healthcheck - repeatedly (max 5 times) wait for the server to warm up with 1s interval
+            repeat(5) {
+                checkRequest.execute().let {
+                    if (it.code >= 500) {
+                        println("Instance is not ready yet, waiting 1s before another try")
+                        Thread.sleep(1000)
+                    } else {
+                        it.successOrThrow()
+                        return
+                    }
+                }
             }
-            checkRequest.execute().successOrThrow()
+            throw IllegalStateException("Waiting timeout for Taiga instance is exceed")
         } catch (e: ConnectException) {
             throw IllegalArgumentException("No Taiga instance is running on $baseUrl")
         }
