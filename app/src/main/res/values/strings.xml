@@ -81,6 +81,7 @@
     <string name="link_to_epic">Link to epic</string>
     <string name="add_tag">Add tag</string>
     <string name="created_by">Created by</string>
+    <string name="last_modification">Last modification</string>
     <string name="assigned_to">Assigned to</string>
     <string name="watchers">Watchers</string>
     <string name="userstories">User stories</string>

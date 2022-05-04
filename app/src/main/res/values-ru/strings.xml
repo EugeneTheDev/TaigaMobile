@@ -81,6 +81,7 @@
     <string name="link_to_epic">Прикрепить к эпику</string>
     <string name="add_tag">Добавить метку</string>
     <string name="created_by">Создано</string>
+    <string name="last_modification">Последние изменения</string>
     <string name="assigned_to">Назначено</string>
     <string name="watchers">Наблюдатели</string>
     <string name="userstories">Пользовательские истории</string>

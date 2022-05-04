@@ -77,6 +77,7 @@
     <string name="link_to_epic">Lien ver l\'épopée</string>
     <string name="add_tag">Ajouter une étiquette</string>
     <string name="created_by">Créé par</string>
+    <string name="last_modification">Dernière modification</string>
     <string name="assigned_to">Assigné à</string>
     <string name="watchers">Observateurs</string>
     <string name="userstories">Récits utilisateur</string>

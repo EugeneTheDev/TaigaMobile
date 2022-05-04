@@ -337,7 +337,7 @@ fun CommonTaskScreenContent(
                         Spacer(Modifier.height(sectionsPadding))
                     }
 
-                    CommonTaskDescription(commonTask)
+                    CommonTaskDescription(commonTask.description)
 
                     item {
                         Spacer(Modifier.height(sectionsPadding))
