@@ -113,7 +113,7 @@ class TaigaTestInstanceManager(
 
         try {
             // healthcheck - repeatedly ping server to check if it's warmed up
-            repeat(10) {
+            repeat(32) {
                 checkRequest.execute().let {
                     if (it.code >= 500) {
                         println("Instance is not ready yet, waiting 8s before another try")
