@@ -17,8 +17,8 @@ android {
         applicationId = "io.eugenethedev.taigamobile"
         minSdk = 21
         targetSdk = 31
-        versionCode = 24
-        versionName = "1.8.1"
+        versionCode = 25
+        versionName = "1.8.2"
         project.base.archivesName.set("TaigaMobile-$versionName")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -107,7 +107,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     // Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha08")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha10")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
@@ -129,13 +129,13 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.5.0-alpha03")
+    implementation("androidx.navigation:navigation-compose:2.5.0-beta01")
 
     // Paging (with Compose)
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
 
     // Coroutines
-    val coroutinesVersion = "1.6.0"
+    val coroutinesVersion = "1.6.1"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
@@ -178,14 +178,14 @@ dependencies {
     allTestsImplementation(kotlin("test-junit"))
 
     // Robolectric (run android tests on local host)
-    testRuntimeOnly("org.robolectric:robolectric:4.7.3")
+    testRuntimeOnly("org.robolectric:robolectric:4.8.1")
 
     allTestsImplementation("androidx.test:core-ktx:1.4.0")
     allTestsImplementation("androidx.test:runner:1.4.0")
     allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
 
     // since we need to connect to test db instance
-    val postgresDriverVersion = "42.3.3"
+    val postgresDriverVersion = "42.3.4"
     testRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
     androidTestRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
 
