@@ -16,7 +16,6 @@ import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.asLazyPagingItems
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,12 +38,15 @@ class IssuesViewModel(appComponent: AppComponent = TaigaApp.appComponent) : View
         if (!shouldReload) return
         viewModelScope.launch {
             filters.loadOrError { tasksRepository.getFiltersData(CommonTaskType.Issue) }
+            filters.value.data?.let {
+                session.changeIssuesFilters(activeFilters.value.updateData(it))
+            }
         }
         shouldReload = false
     }
 
     val filters = MutableResultFlow<FiltersData>()
-    val activeFilters = MutableStateFlow(FiltersData())
+    val activeFilters by lazy { session.issuesFilters }
     @OptIn(ExperimentalCoroutinesApi::class)
     val issues by lazy {
         activeFilters.flatMapLatest { filters ->
@@ -55,12 +57,11 @@ class IssuesViewModel(appComponent: AppComponent = TaigaApp.appComponent) : View
     }
 
     fun selectFilters(filters: FiltersData) {
-        activeFilters.value = filters
+        session.changeIssuesFilters(filters)
     }
     
     init {
         session.currentProjectId.onEach {
-            activeFilters.value = FiltersData()
             shouldReload = true
         }.launchIn(viewModelScope)
 
