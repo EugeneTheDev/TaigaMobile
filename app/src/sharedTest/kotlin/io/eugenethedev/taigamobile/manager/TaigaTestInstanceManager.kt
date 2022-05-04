@@ -120,6 +120,7 @@ class TaigaTestInstanceManager(
                         Thread.sleep(8000)
                     } else {
                         it.successOrThrow()
+                        return
                     }
                 }
             }
