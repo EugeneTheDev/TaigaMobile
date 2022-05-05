@@ -95,6 +95,9 @@ android {
 }
 
 dependencies {
+    // Enforce correct kotlin version for all dependencies
+    implementation(enforcedPlatform(kotlin("bom")))
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation(kotlin("reflect"))
@@ -107,7 +110,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     // Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha10")
+    // CAREFUL WHEN UPDATING - THIS CAN BRING NEWER ALPHA VERSIONS OF JETPACK COMPOSE
+    implementation("androidx.compose.material3:material3:1.0.0-alpha09")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     // compose activity
