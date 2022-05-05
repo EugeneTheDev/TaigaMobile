@@ -329,7 +329,7 @@ private fun SettingItem(
     verticalPadding = 10.dp,
     onClick = onClick
 ) {
-    assert(itemWeight > 0 && itemWeight < 1) { Timber.w("Item weight must be between 0 and 1") }
+    assert(itemWeight > 0 && itemWeight < 1) { Timber.e("Item weight must be between 0 and 1") }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

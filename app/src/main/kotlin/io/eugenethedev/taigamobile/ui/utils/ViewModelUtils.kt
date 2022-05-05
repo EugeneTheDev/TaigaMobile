@@ -25,7 +25,7 @@ inline fun <T> MutableResultFlow<T>.loadOrError(
     value = try {
         SuccessResult(load())
     } catch (e: Exception) {
-        Timber.wtf(e)
+        Timber.e(e)
         ErrorResult(messageId)
     }
 }
