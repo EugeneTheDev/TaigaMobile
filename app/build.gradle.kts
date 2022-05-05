@@ -106,11 +106,14 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("com.google.android.material:material:1.5.0")
 
+    // ============================================================================================
+    // CAREFUL WHEN UPDATING COMPOSE RELATED DEPENDENCIES - THEY CAN USE DIFFERENT COMPOSE VERSION!
+    // ============================================================================================
+
     // Main Compose dependencies
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     // Material You
-    // CAREFUL WHEN UPDATING - THIS CAN BRING NEWER ALPHA VERSIONS OF JETPACK COMPOSE
     implementation("androidx.compose.material3:material3:1.0.0-alpha09")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
