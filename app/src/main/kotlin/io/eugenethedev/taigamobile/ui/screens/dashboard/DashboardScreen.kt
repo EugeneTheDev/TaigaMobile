@@ -50,7 +50,7 @@ fun DashboardScreen(
     val currentProjectId by viewModel.currentProjectId.collectAsState()
 
     DashboardScreenContent(
-        isLoading = listOf(workingOn, watching).any { it is LoadingResult<*> },
+        isLoading = listOf(workingOn, watching, myProjects).any { it is LoadingResult<*> },
         workingOn = workingOn.data.orEmpty(),
         watching = watching.data.orEmpty(),
         myProjects = myProjects.data.orEmpty(),

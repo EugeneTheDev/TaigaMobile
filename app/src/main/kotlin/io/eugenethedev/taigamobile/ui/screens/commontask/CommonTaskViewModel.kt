@@ -265,6 +265,7 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             )
 
             loadData().join()
+            session.taskEdit.postUpdate()
             watchers.value.data
         }
     }
