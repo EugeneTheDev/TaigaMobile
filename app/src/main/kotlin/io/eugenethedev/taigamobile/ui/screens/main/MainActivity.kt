@@ -158,9 +158,10 @@ class MainActivity : AppCompatActivity() {
                                             label = { Text(stringResource(screen.resourceId)) },
                                             selected = currentRoute == screen.route,
                                             onClick = {
-                                                navController.navigate(screen.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) { }
-                                                    launchSingleTop = true
+                                                if (screen.route != currentRoute) {
+                                                    navController.navigate(screen.route) {
+                                                        popUpTo(navController.graph.findStartDestination().id) { }
+                                                    }
                                                 }
                                             }
                                         )
