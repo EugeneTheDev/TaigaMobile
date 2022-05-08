@@ -33,7 +33,6 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.activity
 import java.time.LocalDate
 import kotlin.math.floor
@@ -80,9 +79,9 @@ fun CustomField(
                 .border(
                     width = 1.5.dp,
                     color = if (customField.type == CustomFieldType.Checkbox) Color.Transparent else borderColor,
-                    shape = shapes.small
+                    shape = MaterialTheme.shapes.extraSmall
                 )
-                .clip(shapes.small)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .padding(6.dp)
         ) {
 

@@ -54,7 +54,6 @@ import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import kotlinx.coroutines.launch
 import java.io.InputStream
 
@@ -127,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                                         snackbarData = it,
                                         backgroundColor = MaterialTheme.colorScheme.surface,
                                         contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
-                                        shape = shapes.medium
+                                        shape = MaterialTheme.shapes.small
                                     )
                                 }
                             },

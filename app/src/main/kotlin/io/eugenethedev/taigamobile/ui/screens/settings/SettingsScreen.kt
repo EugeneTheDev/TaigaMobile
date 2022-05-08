@@ -40,7 +40,6 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.activity
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
@@ -116,7 +115,7 @@ fun SettingsScreenContent(
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .size(120.dp)
-            .clip(shapes.large)
+            .clip(MaterialTheme.shapes.large)
             .constrainAs(avatar) {
                 top.linkTo(topBar.bottom, margin = 20.dp)
                 start.linkTo(parent.start)

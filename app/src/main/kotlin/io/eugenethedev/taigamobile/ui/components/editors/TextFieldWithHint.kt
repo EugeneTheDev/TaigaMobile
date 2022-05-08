@@ -27,7 +27,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.theme.shapes
 
 /**
  * You've read it right. Text field. With hint.
@@ -60,7 +59,7 @@ fun TextFieldWithHint(
             .padding(horizontal = horizontalPadding, vertical = verticalPadding)
             .let {
                 if (hasBorder) {
-                    it.border(width = 2.dp, color = outlineColor, shape = shapes.large)
+                    it.border(width = 2.dp, color = outlineColor, shape = MaterialTheme.shapes.large)
                         .padding(horizontal = 16.dp, vertical = 10.dp)
                 } else {
                     it

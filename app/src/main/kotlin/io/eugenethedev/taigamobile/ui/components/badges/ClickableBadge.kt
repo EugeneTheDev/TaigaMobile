@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
@@ -56,7 +55,7 @@ fun ClickableBadge(
         LocalMinimumTouchTargetEnforcement provides false
     ) {
         Surface(
-            shape = shapes.large,
+            shape = MaterialTheme.shapes.large,
             color = color
         ) {
             Row(

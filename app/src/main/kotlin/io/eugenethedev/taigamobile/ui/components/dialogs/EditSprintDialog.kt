@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import java.time.LocalDate
 
 @Composable
@@ -72,7 +71,7 @@ fun EditSprintDialog(
                 .border(
                     width = 1.5.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = shapes.small
+                    shape = MaterialTheme.shapes.extraSmall
                 )
                 .padding(6.dp)
 

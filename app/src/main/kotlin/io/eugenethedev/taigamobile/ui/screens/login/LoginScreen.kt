@@ -34,7 +34,6 @@ import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 
 @Composable
 fun LoginScreen(
@@ -258,7 +257,7 @@ fun LoginTextField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         isError = isError,
-        shape = shapes.medium,
+        shape = MaterialTheme.shapes.small,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = androidx.compose.material3.LocalContentColor.current.copy(LocalContentAlpha.current),
             cursorColor = MaterialTheme.colorScheme.primary,

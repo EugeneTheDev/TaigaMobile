@@ -44,7 +44,6 @@ import io.eugenethedev.taigamobile.ui.components.editors.searchFieldHorizontalPa
 import io.eugenethedev.taigamobile.ui.components.editors.searchFieldVerticalPadding
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import kotlinx.coroutines.launch
@@ -159,7 +158,7 @@ fun TaskFilters(
             ModalBottomSheetLayout(
                 modifier = Modifier.fillMaxSize(),
                 sheetState = bottomSheetState,
-                sheetShape = shapes.medium,
+                sheetShape = MaterialTheme.shapes.small,
                 scrimColor = Color.Transparent,
                 content = {},
                 sheetContent = {
