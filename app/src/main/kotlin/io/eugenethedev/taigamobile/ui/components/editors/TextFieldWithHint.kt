@@ -59,7 +59,7 @@ fun TextFieldWithHint(
             .padding(horizontal = horizontalPadding, vertical = verticalPadding)
             .let {
                 if (hasBorder) {
-                    it.border(width = 2.dp, color = outlineColor, shape = MaterialTheme.shapes.large)
+                    it.border(width = 1.dp, color = outlineColor, shape = MaterialTheme.shapes.large)
                         .padding(horizontal = 16.dp, vertical = 10.dp)
                 } else {
                     it

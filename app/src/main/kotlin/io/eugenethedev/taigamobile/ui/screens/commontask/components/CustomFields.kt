@@ -77,9 +77,9 @@ fun CustomField(
             Modifier
                 .weight(1f)
                 .border(
-                    width = 1.5.dp,
+                    width = 1.dp,
                     color = if (customField.type == CustomFieldType.Checkbox) Color.Transparent else borderColor,
-                    shape = MaterialTheme.shapes.extraSmall
+                    shape = MaterialTheme.shapes.small
                 )
                 .clip(MaterialTheme.shapes.extraSmall)
                 .padding(6.dp)

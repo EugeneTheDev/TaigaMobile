@@ -69,9 +69,9 @@ fun EditSprintDialog(
             val pickerStyle = MaterialTheme.typography.titleMedium.merge(TextStyle(fontWeight = FontWeight.Normal))
             val pickerModifier = Modifier
                 .border(
-                    width = 1.5.dp,
+                    width = 1.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = MaterialTheme.shapes.extraSmall
+                    shape = MaterialTheme.shapes.small
                 )
                 .padding(6.dp)
 
