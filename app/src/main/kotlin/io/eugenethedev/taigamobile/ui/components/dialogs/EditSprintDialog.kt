@@ -35,7 +35,7 @@ fun EditSprintDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
+        dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(R.string.cancel),
@@ -43,7 +43,7 @@ fun EditSprintDialog(
                 )
             }
         },
-        dismissButton = {
+        confirmButton = {
             TextButton(
                 onClick = {
                     name.text.trim()
