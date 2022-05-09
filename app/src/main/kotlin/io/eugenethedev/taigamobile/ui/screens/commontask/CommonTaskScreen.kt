@@ -60,18 +60,21 @@ fun CommonTaskScreen(
     val comments by viewModel.comments.collectAsState()
     comments.subscribeOnError(showMessage)
 
+    val editBasicInfoResult by viewModel.editBasicInfoResult.collectAsState()
+    editBasicInfoResult.subscribeOnError(showMessage)
+
     val statuses by viewModel.statuses.collectAsState()
     statuses.subscribeOnError(showMessage)
-    val statusSelectResult by viewModel.statusSelectResult.collectAsState()
-    statusSelectResult.subscribeOnError(showMessage)
+    val editStatusResult by viewModel.editStatusResult.collectAsState()
+    editStatusResult.subscribeOnError(showMessage)
 
     val swimlanes by viewModel.swimlanes.collectAsState()
     swimlanes.subscribeOnError(showMessage)
 
     val sprints = viewModel.sprints
     sprints.subscribeOnError(showMessage)
-    val selectSprintResult by viewModel.selectSprintResult.collectAsState()
-    selectSprintResult.subscribeOnError(showMessage)
+    val editSprintResult by viewModel.editSprintResult.collectAsState()
+    editSprintResult.subscribeOnError(showMessage)
 
     val epics = viewModel.epics
     epics.subscribeOnError(showMessage)
@@ -92,14 +95,11 @@ fun CommonTaskScreen(
     tags.subscribeOnError(showMessage)
     val tagsSearched by viewModel.tagsSearched.collectAsState()
 
-    val colorResult by viewModel.colorResult.collectAsState()
-    colorResult.subscribeOnError(showMessage)
+    val editEpicColorResult by viewModel.editEpicColorResult.collectAsState()
+    editEpicColorResult.subscribeOnError(showMessage)
 
-    val dueDateResult by viewModel.dueDateResult.collectAsState()
-    dueDateResult.subscribeOnError(showMessage)
-
-    val editResult by viewModel.editResult.collectAsState()
-    editResult.subscribeOnError(showMessage)
+    val editDueDateResult by viewModel.editDueDateResult.collectAsState()
+    editDueDateResult.subscribeOnError(showMessage)
 
     val deleteResult by viewModel.deleteResult.collectAsState()
     deleteResult.subscribeOnError(showMessage)
@@ -122,10 +122,10 @@ fun CommonTaskScreen(
     val isAssignedToMe by viewModel.isAssignedToMe.collectAsState()
     val isWatchedByMe by viewModel.isWatchedByMe.collectAsState()
 
-    fun makeEditStatusAction(statusType: StatusType) = EditAction(
+    fun createEditStatusAction(statusType: StatusType) = EditAction(
         items = statuses.data?.get(statusType).orEmpty(),
-        selectItem = viewModel::selectStatus,
-        isResultLoading = statusSelectResult.let { (it as? LoadingResult)?.data == statusType }
+        selectItem = viewModel::editStatus,
+        isResultLoading = editStatusResult.let { (it as? LoadingResult)?.data == statusType }
     )
 
     CommonTaskScreenContent(
@@ -149,19 +149,19 @@ fun CommonTaskScreen(
         tasks = tasks.data.orEmpty(),
         comments = comments.data.orEmpty(),
         editActions = EditActions(
-            editStatus = makeEditStatusAction(StatusType.Status),
-            editType = makeEditStatusAction(StatusType.Type),
-            editSeverity = makeEditStatusAction(StatusType.Severity),
-            editPriority = makeEditStatusAction(StatusType.Priority),
+            editStatus = createEditStatusAction(StatusType.Status),
+            editType = createEditStatusAction(StatusType.Type),
+            editSeverity = createEditStatusAction(StatusType.Severity),
+            editPriority = createEditStatusAction(StatusType.Priority),
             editSwimlane = EditAction(
                 items = swimlanes.data.orEmpty(),
-                selectItem = viewModel::selectSwimlane,
+                selectItem = viewModel::editSwimlane,
                 isResultLoading = swimlanes is LoadingResult
             ),
             editSprint = EditAction(
                 itemsLazy = sprints,
-                selectItem = viewModel::selectSprint,
-                isResultLoading = selectSprintResult is LoadingResult
+                selectItem = viewModel::editSprint,
+                isResultLoading = editSprintResult is LoadingResult
             ),
             editEpics = EditAction(
                 itemsLazy = epics,
@@ -197,7 +197,7 @@ fun CommonTaskScreen(
                 deleteComment = viewModel::deleteComment,
                 isResultLoading = comments is LoadingResult
             ),
-            editTask = viewModel::editTask,
+            editTask = viewModel::editBasicInfo,
             deleteTask = viewModel::deleteTask,
             promoteTask = viewModel::promoteToUserStory,
             editCustomField = viewModel::editCustomField,
@@ -209,12 +209,12 @@ fun CommonTaskScreen(
                 isResultLoading = tags is LoadingResult
             ),
             editDueDate = EditSimple(
-                select = viewModel::selectDueDate,
-                isResultLoading = dueDateResult is LoadingResult
+                select = viewModel::editDueDate,
+                isResultLoading = editDueDateResult is LoadingResult
             ),
             editEpicColor = EditSimple(
-                select = viewModel::selectEpicColor,
-                isResultLoading = colorResult is LoadingResult
+                select = viewModel::editEpicColor,
+                isResultLoading = editEpicColorResult is LoadingResult
             ),
             assign = EditSimpleEmpty(
                 select =  viewModel::addAssigneeById ,
@@ -232,7 +232,7 @@ fun CommonTaskScreen(
         ),
         loaders = Loaders(
             isLoading = commonTask is LoadingResult,
-            isEditLoading = editResult is LoadingResult,
+            isEditLoading = editBasicInfoResult is LoadingResult,
             isDeleteLoading = deleteResult is LoadingResult,
             isPromoteLoading = promoteResult is LoadingResult,
             isCustomFieldsLoading = customFields is LoadingResult

@@ -66,13 +66,6 @@ interface TaigaApi {
     @GET("milestones/{id}")
     suspend fun getSprint(@Path("id") sprintId: Long): SprintResponse
 
-    @PATCH("{taskPath}/{id}")
-    suspend fun changeCommonTaskSprint(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") id: Long,
-        @Body changeSprintRequest: ChangeSprintRequest
-    )
-
     @POST("milestones")
     suspend fun createSprint(@Body request: CreateSprintRequest)
 
@@ -203,68 +196,10 @@ interface TaigaApi {
     ): CommonTaskResponse
 
     @PATCH("{taskPath}/{id}")
-    suspend fun changeCommonTaskStatus(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") id: Long,
-        @Body changeStatusRequest: ChangeStatusRequest
-    )
-
-    @PATCH("issues/{id}")
-    suspend fun changeIssueType(
-        @Path("id") id: Long,
-        @Body changeTypeRequest: ChangeTypeRequest
-    )
-
-    @PATCH("issues/{id}")
-    suspend fun changeIssueSeverity(
-        @Path("id") id: Long,
-        @Body changeSeverityRequest: ChangeSeverityRequest
-    )
-
-    @PATCH("issues/{id}")
-    suspend fun changeIssuePriority(
-        @Path("id") id: Long,
-        @Body changePriorityRequest: ChangePriorityRequest
-    )
-
-    @PATCH("userstories/{id}")
-    suspend fun changeUserStoryAssignees(
-        @Path("id") id: Long,
-        @Body changeAssigneesRequest: ChangeUserStoryAssigneesRequest
-    )
-
-    @PATCH("{taskPath}/{id}")
-    suspend fun changeCommonTaskAssignees(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") id: Long,
-        @Body changeAssigneesRequest: ChangeCommonTaskAssigneesRequest
-    )
-
-    @PATCH("{taskPath}/{id}")
-    suspend fun changeCommonTaskWatchers(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") id: Long,
-        @Body changeWatchersRequest: ChangeWatchersRequest
-    )
-
-    @PATCH("{taskPath}/{id}")
-    suspend fun changeCommonTaskDueDate(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") id: Long,
-        @Body request: ChangeCommonTaskDueDateRequest
-    )
-
-    @PATCH("epics/{id}")
-    suspend fun changeEpicColor(
-        @Path("id") id: Long,
-        @Body request: ChangeEpicColor
-    )
-
-    @PATCH("{taskPath}/{id}")
     suspend fun editCommonTask(
         @Path("taskPath") taskPath: CommonTaskPathPlural,
         @Path("id") id: Long,
-        @Body editRequest: EditCommonTaskRequest
+        @Body editCommonTaskRequest: EditCommonTaskRequest
     )
 
     @POST("{taskPath}")
@@ -374,23 +309,8 @@ interface TaigaApi {
         @Body editRequest: EditCustomAttributesValuesRequest
     )
 
-    // Tags
-
-    @PATCH("{taskPath}/{id}")
-    suspend fun editTags(
-        @Path("taskPath") taskPath: CommonTaskPathPlural,
-        @Path("id") taskId: Long,
-        @Body editRequest: EditTagsRequest
-    )
-
     // Swimlanes
 
     @GET("swimlanes")
     suspend fun getSwimlanes(@Query("project") project: Long): List<Swimlane>
-
-    @PATCH("userstories/{id}")
-    suspend fun changeUserStorySwimlane(
-        @Path("id") id: Long,
-        @Body request: ChangeUserStorySwimlaneRequest
-    )
 }

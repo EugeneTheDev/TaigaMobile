@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.data.api
 
 import com.squareup.moshi.JsonClass
 import java.time.LocalDate
+import java.util.*
 
 @JsonClass(generateAdapter = true)
 data class AuthRequest(
@@ -16,82 +17,27 @@ data class RefreshTokenRequest(
 )
 
 @JsonClass(generateAdapter = true)
-data class ChangeStatusRequest(
+data class EditCommonTaskRequest(
+    val subject: String,
+    val description: String,
     val status: Long,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeTypeRequest(
-    val type: Long,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeSeverityRequest(
-    val severity: Long,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangePriorityRequest(
-    val priority: Long,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeSprintRequest(
+    val type: Long?,
+    val severity: Long?,
+    val priority: Long?,
     val milestone: Long?,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeUserStoryAssigneesRequest(
     val assigned_to: Long?,
     val assigned_users: List<Long>,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeCommonTaskAssigneesRequest(
-    val assigned_to: Long?,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeWatchersRequest(
     val watchers: List<Long>,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeUserStorySwimlaneRequest(
     val swimlane: Long?,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeCommonTaskDueDateRequest(
     val due_date: LocalDate?,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ChangeEpicColor(
-    val color: String,
+    val color: String?,
+    val tags: List<List<String>>,
     val version: Int
 )
 
 @JsonClass(generateAdapter = true)
 data class CreateCommentRequest(
     val comment: String,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class EditCommonTaskRequest(
-    val subject: String,
-    val description: String,
     val version: Int
 )
 
@@ -143,12 +89,6 @@ data class PromoteToUserStoryRequest(
 @JsonClass(generateAdapter = true)
 data class EditCustomAttributesValuesRequest(
     val attributes_values: Map<Long, Any?>,
-    val version: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class EditTagsRequest(
-    val tags: List<List<String>>,
     val version: Int
 )
 
