@@ -382,20 +382,14 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test change status`() = runBlocking {
+    fun `test edit status`() = runBlocking {
         val issues = tasksRepository.getIssues(1, FiltersData())
         val statuses = tasksRepository.getStatuses(CommonTaskType.Issue)
 
         issues.forEachIndexed { index, issue ->
             val commonTask = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
             val status = statuses[index % statuses.size]
-            tasksRepository.changeStatus(
-                commonTask.id,
-                commonTask.taskType,
-                status.id,
-                status.type,
-                commonTask.version
-            )
+            tasksRepository.editStatus(commonTask, status.id, status.type)
             val commonTaskAfterChange =
                 tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
 
@@ -412,7 +406,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test change sprint`() = runBlocking {
+    fun `test edit sprint`() = runBlocking {
         val issues = tasksRepository.getIssues(1, FiltersData())
         val userStories = tasksRepository.getAllUserStories()
         val sprints = sprintsRepository.getSprints(1) + sprintsRepository.getSprints(1, true)
@@ -420,12 +414,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         issues.forEachIndexed { index, issue ->
             val commonTask = tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
             val sprint = sprints[index % sprints.size]
-            tasksRepository.changeSprint(
-                commonTask.id,
-                commonTask.taskType,
-                sprint.id,
-                commonTask.version
-            )
+            tasksRepository.editSprint(commonTask, sprint.id)
             val commonTaskAfterChange =
                 tasksRepository.getCommonTask(issue.id, CommonTaskType.Issue)
 
@@ -442,12 +431,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         userStories.forEachIndexed { index, story ->
             val sprint = sprints[index % sprints.size]
-            tasksRepository.changeSprint(
-                story.id,
-                story.taskType,
-                sprint.id,
-                story.version
-            )
+            tasksRepository.editSprint(story, sprint.id)
             val storyAfterChange = tasksRepository.getCommonTask(story.id, CommonTaskType.UserStory)
 
             checkCommonTaskExtendedEquality(story, storyAfterChange)
@@ -505,7 +489,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
 
     @Test
-    fun `test change assignees`() = runBlocking {
+    fun `test edit assignees`() = runBlocking {
         val users = usersRepository.getTeam()
         val dataForTest = getCommonTasksExt(
             listOf(
@@ -519,12 +503,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         CommonTaskType.values().forEach { type ->
             dataForTest[type]!!.forEachIndexed { index, data ->
                 val assigneeUsers = listOf(users[index % users.size].id)
-                tasksRepository.changeAssignees(
-                    data.id,
-                    data.taskType,
-                    assigneeUsers,
-                    data.version
-                )
+                tasksRepository.editAssignees(data, assigneeUsers)
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
                 checkCommonTaskExtendedEquality(data, commonTaskAfterChange)
@@ -537,7 +516,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test change watchers`() = runBlocking {
+    fun `test edit watchers`() = runBlocking {
         val users = usersRepository.getTeam()
         val dataForTest = getCommonTasksExt(
             listOf(
@@ -551,12 +530,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         CommonTaskType.values().forEach { type ->
             dataForTest[type]!!.forEachIndexed { index, data ->
                 val watchers = listOf(users[index % users.size].id)
-                tasksRepository.changeWatchers(
-                    data.id,
-                    data.taskType,
-                    watchers,
-                    data.version
-                )
+                tasksRepository.editWatchers(data, watchers)
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
                 checkCommonTaskExtendedEquality(data, commonTaskAfterChange)
@@ -569,7 +543,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test change due date`() = runBlocking {
+    fun `test edit due date`() = runBlocking {
         val dataForTest = getCommonTasksExt(
             listOf(
                 CommonTaskType.Issue,
@@ -581,12 +555,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         dataForTest.forEach {
             it.value.forEachIndexed { index, data ->
                 val currentDate = LocalDate.now()
-                tasksRepository.changeDueDate(
-                    data.id,
-                    data.taskType,
-                    currentDate,
-                    data.version
-                )
+                tasksRepository.editDueDate(data, currentDate)
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
 
                 checkCommonTaskExtendedEquality(data, commonTaskAfterChange)
@@ -658,7 +627,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test edit common task`() = runBlocking {
+    fun `test edit common task basic info`() = runBlocking {
         val dataForTest = getCommonTasksExt(
             listOf(
                 CommonTaskType.Epic,
@@ -672,13 +641,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             it.value.forEachIndexed { index, commonTask ->
                 val title = "Title${index}"
                 val description = "Description${index}"
-                tasksRepository.editCommonTask(
-                    commonTask.id,
-                    commonTask.taskType,
-                    title,
-                    description,
-                    commonTask.version
-                )
+                tasksRepository.editCommonTaskBasicInfo(commonTask, title, description)
 
                 val taskAfterChange =
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
@@ -796,12 +759,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
             it.value.forEachIndexed { index, commonTask ->
                 val currentTags =
                     if (tags.isNotEmpty()) listOf(tags[index % tags.size]) else listOf()
-                tasksRepository.editTags(
-                    commonTask.taskType,
-                    commonTask.id,
-                    currentTags,
-                    commonTask.version
-                )
+                tasksRepository.editTags(commonTask, currentTags)
                 val commonTaskAfterChange =
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
 
@@ -815,7 +773,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun `test change epic color`() = runBlocking {
+    fun `test edit epic color`() = runBlocking {
         val epics = tasksRepository.getEpics(1, FiltersData()).map {
             tasksRepository.getCommonTask(it.id, it.taskType)
         }
@@ -823,11 +781,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
 
         epics.forEachIndexed { index, epic ->
             val color = colors[index % colors.size]
-            tasksRepository.changeEpicColor(
-                epic.id,
-                color,
-                epic.version
-            )
+            tasksRepository.editEpicColor(epic, color)
             val epicAfterChange = tasksRepository.getCommonTask(epic.id, CommonTaskType.Epic)
 
             checkCommonTaskExtendedEquality(epic, epicAfterChange)

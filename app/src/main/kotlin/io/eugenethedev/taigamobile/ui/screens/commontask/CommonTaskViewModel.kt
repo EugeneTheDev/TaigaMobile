@@ -37,11 +37,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     private lateinit var commonTaskType: CommonTaskType
 
     val commonTask = MutableResultFlow<CommonTaskExtended>()
-    private val commonTaskVersion = commonTask.map { commonTask.value.data?.version ?: -1 }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = -1
-    )
 
     val creator = MutableResultFlow<User>()
     val customFields = MutableResultFlow<CustomFields>()
@@ -348,7 +343,7 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
 
     fun createComment(comment: String) = viewModelScope.launch {
         comments.loadOrError(R.string.permission_error) {
-            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion.value)
+            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTask.value.data!!.version)
             loadData().join()
             comments.value.data
         }
