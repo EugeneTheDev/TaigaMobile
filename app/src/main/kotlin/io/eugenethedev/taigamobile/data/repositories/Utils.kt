@@ -33,7 +33,8 @@ fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask
     taskType = commonTaskType,
     colors = color?.let { listOf(it) } ?: epics.orEmpty().map { it.color },
     isClosed = is_closed,
-    tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) }
+    tags = tags.orEmpty().map { Tag(name = it[0]!!, color = it[1].fixNullColor()) },
+    blockedNote = blocked_note.takeIf { is_blocked }
 )
 
 fun String?.fixNullColor() = this ?: "#A9AABC" // gray, because api returns null instead of gray -_-

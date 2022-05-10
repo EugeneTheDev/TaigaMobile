@@ -238,7 +238,8 @@ private fun StoryItem(
             ref = story.ref,
             title = story.title,
             isInactive = story.isClosed,
-            tags = story.tags
+            tags = story.tags,
+            blockedNote = story.blockedNote
         )
 
         Spacer(Modifier.height(8.dp))

@@ -104,7 +104,7 @@ private fun EpicItemWithAction(
         modifier = Modifier
             .weight(1f)
             .padding(end = 4.dp)
-            .clickableUnindicated(onClick = onClick)
+            .clickableUnindicated(onClick = onClick),
     )
 
     IconButton(

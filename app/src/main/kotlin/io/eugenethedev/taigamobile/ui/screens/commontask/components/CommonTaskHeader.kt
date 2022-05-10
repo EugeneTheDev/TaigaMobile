@@ -1,10 +1,13 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
@@ -17,6 +20,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.ui.components.badges.ClickableBadge
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.theme.taigaRed
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
 
@@ -33,6 +37,36 @@ fun LazyListScope.CommonTaskHeader(
     val badgesPadding = 8.dp
 
     item {
+
+        commonTask.blockedNote?.trim()?.let {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .background(taigaRed, MaterialTheme.shapes.medium)
+                    .padding(8.dp)
+            ) {
+                val space = 4.dp
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_lock),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(Modifier.width(space))
+
+                Text(stringResource(R.string.blocked))
+
+                Spacer(Modifier.width(space))
+
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                )
+            }
+
+            Spacer(Modifier.height(badgesPadding))
+        }
+
         FlowRow(
             crossAxisAlignment = FlowCrossAxisAlignment.Center,
             crossAxisSpacing = badgesPadding,

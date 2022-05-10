@@ -315,6 +315,10 @@ fun CommonTaskScreenContent(
                         .padding(horizontal = mainHorizontalScreenPadding)
                 ) {
 
+                    item {
+                        Spacer(Modifier.height(sectionsPadding / 2))
+                    }
+
                     CommonTaskHeader(
                         commonTask = commonTask,
                         editActions = editActions,

@@ -360,7 +360,8 @@ class TasksRepository @Inject constructor(
             type = type?.let { id -> filters.types.find { it.id == id } }?.toStatus(StatusType.Type),
             severity = severity?.let { id -> filters.severities.find { it.id == id } }?.toStatus(StatusType.Severity),
             priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority),
-            url =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref"
+            url =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref",
+            blockedNote = blocked_note.takeIf { is_blocked }
         )
     }
 
