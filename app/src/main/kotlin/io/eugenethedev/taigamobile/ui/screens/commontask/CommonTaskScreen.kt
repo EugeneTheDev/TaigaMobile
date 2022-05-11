@@ -98,6 +98,9 @@ fun CommonTaskScreen(
     val editEpicColorResult by viewModel.editEpicColorResult.collectAsState()
     editEpicColorResult.subscribeOnError(showMessage)
 
+    val editBlockedResult by viewModel.editBlockedResult.collectAsState()
+    editBlockedResult.subscribeOnError(showMessage)
+
     val editDueDateResult by viewModel.editDueDateResult.collectAsState()
     editDueDateResult.subscribeOnError(showMessage)
 
@@ -238,6 +241,11 @@ fun CommonTaskScreen(
                 select = { viewModel.addWatcher() },
                 remove = { viewModel.removeWatcher() },
                 isLoading = watchers is LoadingResult,
+            ),
+            editBlocked = EditAction(
+                select = { viewModel.editBlocked(it) },
+                remove = { viewModel.editBlocked(null) },
+                isLoading = editBlockedResult is LoadingResult
             )
         ),
         navigationActions = NavigationActions(
@@ -295,6 +303,7 @@ fun CommonTaskScreenContent(
             toolbarTitle = toolbarTitle,
             toolbarSubtitle = toolbarSubtitle,
             commonTaskType = commonTaskType,
+            isBlocked = commonTask?.blockedNote != null,
             editActions = editActions,
             navigationActions = navigationActions,
             url = commonTask?.url ?: "",
@@ -539,7 +548,7 @@ fun CommonTaskScreenContent(
         )
     }
 
-    if (editActions.run { listOf(editBasicInfo.isLoading, promoteTask.isLoading, deleteTask.isLoading) }.any { it }) {
+    if (editActions.run { listOf(editBasicInfo, promoteTask, deleteTask, editBlocked) }.any { it.isLoading }) {
         LoadingDialog()
     }
 }

@@ -31,6 +31,8 @@ data class EditCommonTaskRequest(
     val due_date: LocalDate?,
     val color: String?,
     val tags: List<List<String>>,
+    val blocked_note: String,
+    val is_blocked: Boolean,
     val version: Int
 )
 

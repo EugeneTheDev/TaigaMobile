@@ -2,10 +2,7 @@ package io.eugenethedev.taigamobile.ui.components.editors
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,6 +36,7 @@ fun TextFieldWithHint(
     horizontalPadding: Dp = 0.dp,
     verticalPadding: Dp = 0.dp,
     width: Dp? = null,
+    minHeight: Dp? = null,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
     singleLine: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -47,15 +45,17 @@ fun TextFieldWithHint(
     maxLines: Int = Int.MAX_VALUE,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     onSearchClick: (() -> Unit)? = null,
-    hasBorder: Boolean = false
+    hasBorder: Boolean = false,
+    contentAlignment: Alignment = Alignment.CenterStart
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val unfocusedColor = MaterialTheme.colorScheme.outline
     var outlineColor by remember { mutableStateOf(unfocusedColor) }
 
     Box(
-        contentAlignment = Alignment.CenterStart,
+        contentAlignment = contentAlignment,
         modifier = Modifier.let { m -> width?.let { m.width(it) } ?: m.fillMaxWidth() }
+            .heightIn(min = minHeight ?: Dp.Unspecified)
             .padding(horizontal = horizontalPadding, vertical = verticalPadding)
             .let {
                 if (hasBorder) {

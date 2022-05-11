@@ -297,6 +297,16 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
+    val editBlockedResult = MutableResultFlow<Unit>()
+
+    fun editBlocked(blockedNote: String?) = viewModelScope.launch {
+        editBlockedResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editBlocked(commonTask.value.data!!, blockedNote)
+            loadData().join()
+            session.taskEdit.postUpdate()
+        }
+    }
+
     // =============
     // Related edits
     // =============

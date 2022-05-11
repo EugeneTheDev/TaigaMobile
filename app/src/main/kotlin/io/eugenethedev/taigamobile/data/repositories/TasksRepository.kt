@@ -390,6 +390,8 @@ class TasksRepository @Inject constructor(
         due_date = dueDate,
         color = color,
         tags = tags.map { it.toList() },
+        blocked_note = blockedNote.orEmpty(),
+        is_blocked = blockedNote != null,
         version = version
     )
 
@@ -472,6 +474,13 @@ class TasksRepository @Inject constructor(
         }
 
         editCommonTask(commonTask, commonTask.toEditRequest().copy(color = color))
+    }
+
+    override suspend fun editBlocked(commonTask: CommonTaskExtended, blockedNote: String?) = withIO {
+        editCommonTask(
+            commonTask,
+            commonTask.toEditRequest().copy(is_blocked = blockedNote != null, blocked_note = blockedNote.orEmpty())
+        )
     }
 
     // edit other related parts

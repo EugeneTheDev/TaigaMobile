@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,29 +41,33 @@ fun LazyListScope.CommonTaskHeader(
     item {
 
         commonTask.blockedNote?.trim()?.let {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth()
                     .background(taigaRed, MaterialTheme.shapes.medium)
                     .padding(8.dp)
             ) {
                 val space = 4.dp
 
-                Icon(
-                    painter = painterResource(R.drawable.ic_lock),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_lock),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
 
-                Spacer(Modifier.width(space))
+                    Spacer(Modifier.width(space))
 
-                Text(stringResource(R.string.blocked))
+                    Text(stringResource(R.string.blocked))
+                }
 
-                Spacer(Modifier.width(space))
+                if (it.isNotEmpty()) {
+                    Spacer(Modifier.width(space))
 
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                )
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                    )
+                }
             }
 
             Spacer(Modifier.height(badgesPadding))

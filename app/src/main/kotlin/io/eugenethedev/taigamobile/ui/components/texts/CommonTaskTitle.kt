@@ -33,7 +33,7 @@ fun CommonTaskTitle(
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorColorsHex: List<String> = emptyList(),
     tags: List<Tag> = emptyList(),
-    blockedNote: String? = null
+    isBlocked: Boolean = false
 ) = Column(modifier = modifier) {
     val space = 4.dp
 
@@ -51,7 +51,7 @@ fun CommonTaskTitle(
                 pop()
             }
         },
-        color = blockedNote?.let { taigaRed } ?: textColor,
+        color = if (isBlocked) taigaRed else textColor,
         style = MaterialTheme.typography.titleMedium
     )
 
@@ -84,7 +84,7 @@ fun CommonTaskTitlePreview() = TaigaMobileTheme {
         ref = 42,
         title = "Some title",
         tags = listOf(Tag("one", "#25A28C"), Tag("two", "#25A28C")),
-        blockedNote = "Block reason"
+        isBlocked = true
     )
 }
 

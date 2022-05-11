@@ -280,7 +280,7 @@ private fun UserStoryItem(
             indicatorColorsHex = userStory.colors,
             isInactive = userStory.isClosed,
             tags = userStory.tags,
-            blockedNote = userStory.blockedNote,
+            isBlocked = userStory.blockedNote != null,
             modifier = Modifier.padding(top = 4.dp)
                 .clickableUnindicated(onClick = onUserStoryClick)
         )
@@ -375,7 +375,7 @@ private fun TaskItem(
                 indicatorColorsHex = task.colors,
                 isInactive = task.isClosed,
                 tags = task.tags,
-                blockedNote = task.blockedNote
+                isBlocked = task.blockedNote != null
             )
 
             Text(

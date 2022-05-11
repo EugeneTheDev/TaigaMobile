@@ -51,7 +51,8 @@ class EditActions(
     val deleteTask: EmptyEditAction = EmptyEditAction(),
     val promoteTask: EmptyEditAction = EmptyEditAction(),
     val editAssign: EmptyEditAction = EmptyEditAction(),
-    val editWatch: EmptyEditAction = EmptyEditAction()
+    val editWatch: EmptyEditAction = EmptyEditAction(),
+    val editBlocked: EditAction<String, Unit> = EditAction()
 )
 
 /**

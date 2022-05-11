@@ -81,7 +81,7 @@ fun CommonTaskItem(
             indicatorColorsHex = commonTask.colors,
             isInactive = commonTask.isClosed,
             tags = commonTask.tags,
-            blockedNote = commonTask.blockedNote
+            isBlocked = commonTask.blockedNote != null
         )
 
         Text(
