@@ -215,10 +215,8 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    fun addAssignee(user: User) = editAssignees(user.id, remove = false)
-    fun addAssigneeById(userId: Long = session.currentUserId.value) = editAssignees(userId, remove = false)
-    fun removeAssignee(user: User) = editAssignees(user.id, remove = true)
-    fun removeAssigneeById(userId: Long = session.currentUserId.value) = editAssignees(userId, remove = true)
+    fun addAssignee(userId: Long = session.currentUserId.value) = editAssignees(userId, remove = false)
+    fun removeAssignee(userId: Long = session.currentUserId.value) = editAssignees(userId, remove = true)
 
     // Edit watchers
 
@@ -240,10 +238,8 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    fun addWatcher(user: User) = editWatchers(user.id, remove = false)
-    fun addWatcherById(userId: Long = session.currentUserId.value) = editWatchers(userId, remove = false)
-    fun removeWatcher(user: User) = editWatchers(user.id, remove = true)
-    fun removeWatcherById(userId: Long = session.currentUserId.value) = editWatchers(userId, remove = true)
+    fun addWatcher(userId: Long = session.currentUserId.value) = editWatchers(userId, remove = false)
+    fun removeWatcher(userId: Long = session.currentUserId.value) = editWatchers(userId, remove = true)
 
     // Tags
     val tagsSearched = MutableStateFlow(emptyList<Tag>())

@@ -26,10 +26,11 @@ fun CommonTaskAppBar(
     toolbarTitle: String,
     toolbarSubtitle: String,
     commonTaskType: CommonTaskType,
-    showTaskEditor: () -> Unit,
     editActions: EditActions,
     navigationActions: NavigationActions,
-    url: String
+    url: String,
+    showTaskEditor: () -> Unit,
+    showMessage: (message: Int) -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
     val clipboardManager = LocalClipboardManager.current
@@ -69,7 +70,7 @@ fun CommonTaskAppBar(
                         text = stringResource(R.string.delete_task_text),
                         onConfirm = {
                             isDeleteAlertVisible = false
-                            editActions.deleteTask()
+                            editActions.deleteTask.select(Unit)
                         },
                         onDismiss = { isDeleteAlertVisible = false },
                         iconId = R.drawable.ic_delete
@@ -84,7 +85,7 @@ fun CommonTaskAppBar(
                         text = stringResource(R.string.promote_text),
                         onConfirm = {
                             isPromoteAlertVisible = false
-                            editActions.promoteTask()
+                            editActions.promoteTask.select(Unit)
                         },
                         onDismiss = { isPromoteAlertVisible = false },
                         iconId = R.drawable.ic_arrow_upward
@@ -105,7 +106,7 @@ fun CommonTaskAppBar(
                             clipboardManager.setText(
                                 AnnotatedString(url)
                             )
-                            editActions.showMessage(R.string.copy_link_successfully)
+                            showMessage(R.string.copy_link_successfully)
                         },
                         text = {
                             Text(

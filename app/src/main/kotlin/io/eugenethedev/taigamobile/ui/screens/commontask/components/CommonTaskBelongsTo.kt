@@ -27,6 +27,7 @@ import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.commontask.NavigationActions
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskBelongsTo(
     commonTask: CommonTaskExtended,
     navigationActions: NavigationActions,
@@ -39,14 +40,14 @@ fun LazyListScope.CommonTaskBelongsTo(
             EpicItemWithAction(
                 epic = it,
                 onClick = { navigationActions.navigateToTask(it.id, CommonTaskType.Epic, it.ref) },
-                onRemoveClick = { editActions.unlinkFromEpic(it) }
+                onRemoveClick = { editActions.editEpics.remove(it) }
             )
 
             Spacer(Modifier.height(2.dp))
         }
 
         item {
-            if (editActions.editEpics.isResultLoading) {
+            if (editActions.editEpics.isLoading) {
                 DotsLoader()
             }
 

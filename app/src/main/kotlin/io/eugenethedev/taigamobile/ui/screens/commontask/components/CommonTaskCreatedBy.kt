@@ -9,6 +9,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskCreatedBy(
     creator: User,
     commonTask: CommonTaskExtended,

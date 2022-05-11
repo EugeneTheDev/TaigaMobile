@@ -1,5 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +23,10 @@ import io.eugenethedev.taigamobile.ui.components.lists.UserItemWithAction
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskWatchers(
     watchers: List<User>,
+    isWatchedByMe: Boolean,
     editActions: EditActions,
     showWatchersSelector: () -> Unit,
     navigateToProfile: (userId: Long) -> Unit
@@ -38,7 +42,7 @@ fun LazyListScope.CommonTaskWatchers(
     itemsIndexed(watchers) { index, item ->
         UserItemWithAction(
             user = item,
-            onRemoveClick = { editActions.editWatchers.removeItem(item) },
+            onRemoveClick = { editActions.editWatchers.remove(item) },
             onUserItemClick = { navigateToProfile(item.id) }
         )
 
@@ -49,7 +53,7 @@ fun LazyListScope.CommonTaskWatchers(
 
     // add watcher & loader
     item {
-        if (editActions.editWatchers.isResultLoading) {
+        if (editActions.editWatchers.isLoading) {
             DotsLoader()
         }
         Row(
@@ -63,22 +67,21 @@ fun LazyListScope.CommonTaskWatchers(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            val buttonText: Int
-            val buttonIcon: Int
-
-            if (!editActions.isWatchedByMe) {
-                buttonText = R.string.watch
-                buttonIcon = R.drawable.ic_watch
+            val (@StringRes buttonText: Int, @DrawableRes buttonIcon: Int) = if (isWatchedByMe) {
+                R.string.unwatch to R.drawable.ic_unwatch
             } else {
-                buttonText = R.string.unwatch
-                buttonIcon = R.drawable.ic_unwatch
+                R.string.watch to R.drawable.ic_watch
             }
 
             TextButton(
                 text = stringResource(buttonText),
                 icon = buttonIcon,
                 onClick = {
-                    if (!editActions.isWatchedByMe) editActions.watch.select() else editActions.watch.remove()
+                    if (isWatchedByMe) {
+                        editActions.editWatch.remove(Unit)
+                    } else {
+                        editActions.editWatch.select(Unit)
+                    }
                 }
             )
         }

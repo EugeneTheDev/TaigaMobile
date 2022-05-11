@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.data.api
 
 import com.squareup.moshi.JsonClass
 import java.time.LocalDate
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 data class AuthRequest(

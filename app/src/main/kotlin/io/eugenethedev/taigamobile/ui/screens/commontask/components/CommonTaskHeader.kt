@@ -24,6 +24,7 @@ import io.eugenethedev.taigamobile.ui.theme.taigaRed
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskHeader(
     commonTask: CommonTaskExtended,
     editActions: EditActions,
@@ -87,7 +88,7 @@ fun LazyListScope.CommonTaskHeader(
                 text = commonTask.status.name,
                 colorHex = commonTask.status.color,
                 onClick = { showStatusSelector() },
-                isLoading = editActions.editStatus.isResultLoading
+                isLoading = editActions.editStatus.isLoading
             )
 
             // sprint
@@ -97,7 +98,7 @@ fun LazyListScope.CommonTaskHeader(
                     color = commonTask.sprint?.let { MaterialTheme.colorScheme.primary }
                         ?: MaterialTheme.colorScheme.outline,
                     onClick = { showSprintSelector() },
-                    isLoading = editActions.editSprint.isResultLoading,
+                    isLoading = editActions.editSprint.isLoading,
                     isClickable = commonTask.taskType != CommonTaskType.Task
                 )
             }
@@ -108,7 +109,7 @@ fun LazyListScope.CommonTaskHeader(
                     text = commonTask.swimlane?.name ?: stringResource(R.string.unclassifed),
                     color = commonTask.swimlane?.let { MaterialTheme.colorScheme.primary }
                         ?: MaterialTheme.colorScheme.outline,
-                    isLoading = editActions.editSwimlane.isResultLoading,
+                    isLoading = editActions.editSwimlane.isLoading,
                     onClick = { showSwimlaneSelector() }
                 )
             }
@@ -119,7 +120,7 @@ fun LazyListScope.CommonTaskHeader(
                     text = commonTask.type!!.name,
                     colorHex = commonTask.type.color,
                     onClick = { showTypeSelector() },
-                    isLoading = editActions.editType.isResultLoading
+                    isLoading = editActions.editType.isLoading
                 )
 
                 // severity
@@ -127,7 +128,7 @@ fun LazyListScope.CommonTaskHeader(
                     text = commonTask.severity!!.name,
                     colorHex = commonTask.severity.color,
                     onClick = { showSeveritySelector() },
-                    isLoading = editActions.editSeverity.isResultLoading
+                    isLoading = editActions.editSeverity.isLoading
                 )
 
                 // priority
@@ -135,7 +136,7 @@ fun LazyListScope.CommonTaskHeader(
                     text = commonTask.priority!!.name,
                     colorHex = commonTask.priority.color,
                     onClick = { showPrioritySelector() },
-                    isLoading = editActions.editPriority.isResultLoading
+                    isLoading = editActions.editPriority.isLoading
                 )
             }
         }

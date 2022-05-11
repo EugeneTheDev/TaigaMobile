@@ -33,6 +33,7 @@ import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskTags(
     commonTask: CommonTaskExtended,
     editActions: EditActions
@@ -48,11 +49,11 @@ fun LazyListScope.CommonTaskTags(
             commonTask.tags.forEach {
                 TagItem(
                     tag = it,
-                    onRemoveClick = { editActions.editTags.removeItem(it) }
+                    onRemoveClick = { editActions.editTags.remove(it) }
                 )
             }
 
-            if (editActions.editTags.isResultLoading) {
+            if (editActions.editTags.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(28.dp),
                     strokeWidth = 2.dp,
@@ -70,7 +71,7 @@ fun LazyListScope.CommonTaskTags(
                     tags = editActions.editTags.items,
                     onInputChange = editActions.editTags.searchItems,
                     onConfirm = {
-                        editActions.editTags.selectItem(it)
+                        editActions.editTags.select(it)
                         isAddTagDialogVisible = false
                     },
                     onDismiss = { isAddTagDialogVisible = false }
