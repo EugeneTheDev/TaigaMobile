@@ -340,14 +340,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockInputStream = mockk<InputStream>(relaxed = true)
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.addAttachment(
-                any(),
-                any(),
-                neq(fileName),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.addAttachment(any(), any(), neq(fileName), any()) } throws accessDeniedException
 
         viewModel.addAttachment(fileName, mockInputStream)
         assertResultEquals(SuccessResult(mockListOfAttachments), viewModel.attachments.value)
@@ -448,10 +441,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         initOnOpen()
         viewModel.deleteTag(mockTag)
-        assertResultEquals(
-            SuccessResult(mockListOfTags),
-            viewModel.tags.value
-        )
+        assertResultEquals(SuccessResult(mockListOfTags), viewModel.tags.value)
 
         coEvery { mockTaskRepository.editTags(any(), any()) } throws accessDeniedException
         viewModel.deleteTag(mockTag)
@@ -499,5 +489,18 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         viewModel.editEpicColor(color + "error")
         assertIs<ErrorResult<Unit>>(viewModel.editEpicColorResult.value)
+    }
+
+    @Test
+    fun `task edit blocked`(): Unit = runBlocking {
+        val blockedNote = "Reason"
+
+        initOnOpen()
+        viewModel.editBlocked(blockedNote)
+        assertResultEquals(SuccessResult(Unit), viewModel.editBlockedResult.value)
+
+        coEvery { mockTaskRepository.editBlocked(any(), any()) } throws accessDeniedException
+        viewModel.editBlocked(blockedNote)
+        assertIs<ErrorResult<Unit>>(viewModel.editBlockedResult.value)
     }
 }
