@@ -3,6 +3,8 @@ package io.eugenethedev.taigamobile.data.repositories
 import io.eugenethedev.taigamobile.data.api.CommonTaskResponse
 import io.eugenethedev.taigamobile.data.api.SprintResponse
 import io.eugenethedev.taigamobile.domain.entities.*
+import io.eugenethedev.taigamobile.ui.theme.taigaGray
+import io.eugenethedev.taigamobile.ui.utils.toHex
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,7 +39,8 @@ fun CommonTaskResponse.toCommonTask(commonTaskType: CommonTaskType) = CommonTask
     blockedNote = blocked_note.takeIf { is_blocked }
 )
 
-fun String?.fixNullColor() = this ?: "#A9AABC" // gray, because api returns null instead of gray -_-
+private val taigaGrayHex by lazy { taigaGray.toHex() }
+fun String?.fixNullColor() = this ?: taigaGrayHex // gray, because api returns null instead of gray -_-
 
 fun SprintResponse.toSprint() = Sprint(
     id = id,
