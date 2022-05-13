@@ -128,7 +128,7 @@ fun CommonTaskScreen(
     fun createEditStatusAction(statusType: StatusType) = SimpleEditAction(
         items = statuses.data?.get(statusType).orEmpty(),
         select = viewModel::editStatus,
-        isLoading = editStatusResult.let { (it as? LoadingResult)?.data == statusType }
+        isLoading = (editStatusResult as? LoadingResult)?.data == statusType
     )
 
     CommonTaskScreenContent(
