@@ -552,7 +552,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         dataForTest.forEach {
-            it.value.forEachIndexed { _, data ->
+            it.value.forEach { data ->
                 val currentDate = LocalDate.now()
                 tasksRepository.editDueDate(data, currentDate)
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
@@ -703,7 +703,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         dataForTest.forEach {
-            it.value.forEachIndexed { _, commonTask ->
+            it.value.forEach { commonTask ->
                 tasksRepository.deleteCommonTask(commonTask.taskType, commonTask.id)
                 assertFailsWith<retrofit2.HttpException> {
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
@@ -722,7 +722,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         dataForTest.forEach {
-            it.value.forEachIndexed { _, commonTask ->
+            it.value.forEach { commonTask ->
                 val promotedCommonTask =
                     tasksRepository.promoteCommonTaskToUserStory(commonTask.id, commonTask.taskType)
 
