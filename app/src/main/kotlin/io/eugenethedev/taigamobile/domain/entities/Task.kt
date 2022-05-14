@@ -42,7 +42,8 @@ data class CommonTask(
     val taskType: CommonTaskType,
     val isClosed: Boolean,
     val tags: List<Tag> = emptyList(),
-    val colors: List<String> = emptyList() // colored indicators (for stories and epics)
+    val colors: List<String> = emptyList(), // colored indicators (for stories and epics)
+    val blockedNote: String? = null
 )
 
 
@@ -77,6 +78,7 @@ data class CommonTaskExtended(
     val dueDateStatus: DueDateStatus?,
     val userStoryShortInfo: UserStoryShortInfo? = null,
     val url: String,
+    val blockedNote: String? = null,
 
     // for epic
     val color: String? = null,

@@ -80,7 +80,8 @@ fun CommonTaskItem(
             title = commonTask.title,
             indicatorColorsHex = commonTask.colors,
             isInactive = commonTask.isClosed,
-            tags = commonTask.tags
+            tags = commonTask.tags,
+            isBlocked = commonTask.blockedNote != null
         )
 
         Text(
@@ -110,7 +111,8 @@ fun CommonTaskItemPreview() = TaigaMobileTheme {
             assignee = null,
             projectInfo = Project(0, "Name", "slug"),
             taskType = CommonTaskType.UserStory,
-            isClosed = false
+            isClosed = false,
+            blockedNote = "Block reason"
         ),
         showExtendedInfo = true
     )

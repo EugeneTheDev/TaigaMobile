@@ -87,6 +87,10 @@
     <string name="add_user">Додати користувача</string>
     <string name="attachments_template">%d Вкладення</string>
     <string name="custom_fields">Спеціальні поля</string>
+    <string name="block">Блокувати</string>
+    <string name="unblock">Розблокувати</string>
+    <string name="blocked">Заблоковано</string>
+    <string name="block_reason">Причина блокування</string>
 
     <string name="add_assignee">Додати правонаступника</string>
     <string name="assign_to_me">Назначити на мене</string>

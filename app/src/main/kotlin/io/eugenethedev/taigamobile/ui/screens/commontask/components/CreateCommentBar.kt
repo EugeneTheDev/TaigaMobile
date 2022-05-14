@@ -23,7 +23,7 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCommentBar(
-    createComment: (String) -> Unit
+    onButtonClick: (String) -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth(),
     tonalElevation = 8.dp,
@@ -65,7 +65,7 @@ fun CreateCommentBar(
             IconButton(
                 onClick = {
                     commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
-                        createComment(it)
+                        onButtonClick(it)
                         commentTextValue = TextFieldValue()
                         keyboardController?.hide()
                     }

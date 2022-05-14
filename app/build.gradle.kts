@@ -13,8 +13,10 @@ android {
     compileSdk = 31
     buildToolsVersion = "30.0.3"
 
+    namespace = "io.eugenethedev.taigamobile"
+
     defaultConfig {
-        applicationId = "io.eugenethedev.taigamobile"
+        applicationId = namespace!!
         minSdk = 21
         targetSdk = 31
         versionCode = 26

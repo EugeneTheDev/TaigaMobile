@@ -28,6 +28,7 @@ import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.utils.activity
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskAttachments(
     attachments: List<Attachment>,
     editActions: EditActions
@@ -37,7 +38,7 @@ fun LazyListScope.CommonTaskAttachments(
         SectionTitle(
             text = stringResource(R.string.attachments_template).format(attachments.size),
             onAddClick = {
-                filePicker.requestFile(editActions.editAttachments.addAttachment)
+                filePicker.requestFile { file, stream -> editActions.editAttachments.select(file to stream) }
             }
         )
     }
@@ -45,12 +46,12 @@ fun LazyListScope.CommonTaskAttachments(
     items(attachments) {
         AttachmentItem(
             attachment = it,
-            onRemoveClick = { editActions.editAttachments.deleteAttachment(it) }
+            onRemoveClick = { editActions.editAttachments.remove(it) }
         )
     }
 
     item {
-        if (editActions.editAttachments.isResultLoading) {
+        if (editActions.editAttachments.isLoading) {
             DotsLoader()
         }
     }

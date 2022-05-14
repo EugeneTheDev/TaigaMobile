@@ -13,7 +13,6 @@ import io.eugenethedev.taigamobile.repositories.utils.TestCommonTask
 import io.eugenethedev.taigamobile.repositories.utils.getTestTasks
 import io.eugenethedev.taigamobile.testdata.TestData
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
 import java.time.LocalDate
 import kotlin.test.*
 
@@ -553,7 +552,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         dataForTest.forEach {
-            it.value.forEachIndexed { index, data ->
+            it.value.forEach { data ->
                 val currentDate = LocalDate.now()
                 tasksRepository.editDueDate(data, currentDate)
                 val commonTaskAfterChange = tasksRepository.getCommonTask(data.id, data.taskType)
@@ -704,7 +703,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         dataForTest.forEach {
-            it.value.forEachIndexed { index, commonTask ->
+            it.value.forEach { commonTask ->
                 tasksRepository.deleteCommonTask(commonTask.taskType, commonTask.id)
                 assertFailsWith<retrofit2.HttpException> {
                     tasksRepository.getCommonTask(commonTask.id, commonTask.taskType)
@@ -723,7 +722,7 @@ class TasksRepositoryTest : BaseRepositoryTest() {
         )
 
         dataForTest.forEach {
-            it.value.forEachIndexed { index, commonTask ->
+            it.value.forEach { commonTask ->
                 val promotedCommonTask =
                     tasksRepository.promoteCommonTaskToUserStory(commonTask.id, commonTask.taskType)
 
@@ -789,6 +788,29 @@ class TasksRepositoryTest : BaseRepositoryTest() {
                 expected = color,
                 actual = epicAfterChange.color
             )
+        }
+    }
+
+    @Test
+    fun `test edit blocked`() = runBlocking {
+        val dataForTest = getCommonTasksExt(
+            listOf(
+                CommonTaskType.Epic,
+                CommonTaskType.Issue,
+                CommonTaskType.Task,
+                CommonTaskType.UserStory
+            )
+        )
+        val blockReason = "Reason"
+
+        dataForTest.forEach { (_, data) ->
+            data.forEach {
+                tasksRepository.editBlocked(it, blockReason)
+                val taskAfterEdit = tasksRepository.getCommonTask(it.id, it.taskType)
+
+                checkCommonTaskExtendedEquality(it, taskAfterEdit)
+                assertEquals(blockReason, taskAfterEdit.blockedNote)
+            }
         }
     }
 }

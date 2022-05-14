@@ -49,6 +49,7 @@ interface ITasksRepository {
     suspend fun editTags(commonTask: CommonTaskExtended, tags: List<Tag>)
     suspend fun editUserStorySwimlane(commonTask: CommonTaskExtended, swimlaneId: Long?)
     suspend fun editEpicColor(commonTask: CommonTaskExtended, color: String)
+    suspend fun editBlocked(commonTask: CommonTaskExtended, blockedNote: String?)
 
     // related edits
     suspend fun createComment(commonTaskId: Long, commonTaskType: CommonTaskType, comment: String, version: Int)

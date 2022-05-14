@@ -2,7 +2,6 @@ package io.eugenethedev.taigamobile.data.api
 
 import com.squareup.moshi.JsonClass
 import java.time.LocalDate
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 data class AuthRequest(
@@ -32,6 +31,8 @@ data class EditCommonTaskRequest(
     val due_date: LocalDate?,
     val color: String?,
     val tags: List<List<String>>,
+    val blocked_note: String,
+    val is_blocked: Boolean,
     val version: Int
 )
 

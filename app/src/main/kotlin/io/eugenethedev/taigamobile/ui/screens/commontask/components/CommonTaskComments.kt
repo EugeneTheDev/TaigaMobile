@@ -22,6 +22,7 @@ import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskComments(
     comments: List<Comment>,
     editActions: EditActions,
@@ -34,7 +35,7 @@ fun LazyListScope.CommonTaskComments(
     itemsIndexed(comments) { index, item ->
         CommentItem(
             comment = item,
-            onDeleteClick = { editActions.editComments.deleteComment(item) },
+            onDeleteClick = { editActions.editComments.remove(item) },
             navigateToProfile = navigateToProfile
         )
 
@@ -47,7 +48,7 @@ fun LazyListScope.CommonTaskComments(
     }
 
     item {
-        if (editActions.editComments.isResultLoading) {
+        if (editActions.editComments.isLoading) {
             DotsLoader()
         }
     }

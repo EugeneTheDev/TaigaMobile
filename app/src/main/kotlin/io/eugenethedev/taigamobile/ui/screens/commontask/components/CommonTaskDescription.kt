@@ -7,6 +7,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskExtended
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskDescription(
     commonTask: CommonTaskExtended
 ) {

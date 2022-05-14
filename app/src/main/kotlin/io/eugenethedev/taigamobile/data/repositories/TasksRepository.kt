@@ -360,7 +360,8 @@ class TasksRepository @Inject constructor(
             type = type?.let { id -> filters.types.find { it.id == id } }?.toStatus(StatusType.Type),
             severity = severity?.let { id -> filters.severities.find { it.id == id } }?.toStatus(StatusType.Severity),
             priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority),
-            url =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref"
+            url =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref",
+            blockedNote = blocked_note.takeIf { is_blocked }
         )
     }
 
@@ -389,6 +390,8 @@ class TasksRepository @Inject constructor(
         due_date = dueDate,
         color = color,
         tags = tags.map { it.toList() },
+        blocked_note = blockedNote.orEmpty(),
+        is_blocked = blockedNote != null,
         version = version
     )
 
@@ -471,6 +474,13 @@ class TasksRepository @Inject constructor(
         }
 
         editCommonTask(commonTask, commonTask.toEditRequest().copy(color = color))
+    }
+
+    override suspend fun editBlocked(commonTask: CommonTaskExtended, blockedNote: String?) = withIO {
+        editCommonTask(
+            commonTask,
+            commonTask.toEditRequest().copy(is_blocked = blockedNote != null, blocked_note = blockedNote.orEmpty())
+        )
     }
 
     // edit other related parts

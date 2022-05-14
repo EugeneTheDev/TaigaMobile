@@ -16,14 +16,13 @@ import io.eugenethedev.taigamobile.domain.entities.CustomFieldValue
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
-import io.eugenethedev.taigamobile.ui.screens.commontask.Loaders
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskCustomFields(
     customFields: List<CustomField>,
     customFieldsValues: Map<Long, CustomFieldValue?>,
     onValueChange: (Long, CustomFieldValue?) -> Unit,
-    editActions: EditActions,
-    loaders: Loaders
+    editActions: EditActions
 ) {
     item {
         SectionTitle(text = stringResource(R.string.custom_fields))
@@ -34,7 +33,7 @@ fun LazyListScope.CommonTaskCustomFields(
             customField = item,
             value = customFieldsValues[item.id],
             onValueChange = { onValueChange(item.id, it) },
-            onSaveClick = { editActions.editCustomField(item, customFieldsValues[item.id]) }
+            onSaveClick = { editActions.editCustomField.select(Pair(item, customFieldsValues[item.id])) }
         )
 
         if (index < customFields.lastIndex) {
@@ -46,7 +45,7 @@ fun LazyListScope.CommonTaskCustomFields(
     }
 
     item {
-        if (loaders.isCustomFieldsLoading) {
+        if (editActions.editCustomField.isLoading) {
             Spacer(Modifier.height(8.dp))
             DotsLoader()
         }
