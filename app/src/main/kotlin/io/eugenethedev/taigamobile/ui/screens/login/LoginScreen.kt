@@ -193,7 +193,7 @@ fun LoginScreenContent(
             )
         } else {
             val onClick = {
-                isServerInputError = !taigaServerInput.text.matches(Regex("""(http|https)://([\w\d-]+\.)+[\w\d-]+(:\d+)?"""))
+                isServerInputError = !taigaServerInput.text.matches(Regex("""(http|https)://([\w\d-]+\.)+[\w\d-]+(:\d+)?(/\w+)*/?"""))
                 isLoginInputError = loginInput.text.isBlank()
                 isPasswordInputError = passwordInput.text.isBlank()
 
