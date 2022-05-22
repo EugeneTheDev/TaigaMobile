@@ -393,4 +393,16 @@ interface TaigaApi {
         @Path("id") id: Long,
         @Body request: ChangeUserStorySwimlaneRequest
     )
+
+    // Wiki
+
+    @GET("wiki")
+    suspend fun getProjectWikiPages(
+        @Query("project") projectId: Long
+    ): List<WikiPage>
+
+    @GET("wiki-links/{wikiPageId}")
+    suspend fun getWikiLink(
+        @Path("wikiPageId") wikiPageId: Long,
+    ): WikiLink
 }

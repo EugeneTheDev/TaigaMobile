@@ -15,6 +15,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +39,7 @@ import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.screens.wiki.components.AdvancedSpacer
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import java.time.LocalDateTime
 
@@ -46,9 +49,18 @@ fun WikiScreen(
     showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: WikiViewModel = viewModel()
+    val currentPage by viewModel.currentWikiPage.collectAsState()
+    val currentLink by viewModel.currentWikiLink.collectAsState()
+    val onOpenResult by viewModel.onOpenResult.collectAsState()
+    onOpenResult.subscribeOnError(showMessage)
+
+    LaunchedEffect(Unit) {
+        viewModel.onOpen()
+    }
 
     WikiContentScreen(
-        pageName = "Some page",
+        pageName = currentLink?.title ?: "Some title",
+        content = currentPage?.content ?: "",
         onTitleClick = { navController.navigate(Routes.projectsSelector) },
         navigateBack = navController::popBackStack
     )
@@ -57,6 +69,7 @@ fun WikiScreen(
 @Composable
 fun WikiContentScreen(
     pageName: String,
+    content: String,
     onTitleClick: () -> Unit = {},
     navigateBack: () -> Unit = {},
 ) = Box(Modifier.fillMaxSize()) {
@@ -64,8 +77,6 @@ fun WikiContentScreen(
     val sectionsPadding = 16.dp
 
     // TODO Test data
-    val title = "Some title"
-    val description = "`some descr`"
     val creator = User(
         _id = 0,
         fullName = "Some cool fullname",
@@ -89,18 +100,9 @@ fun WikiContentScreen(
                 .fillMaxSize()
                 .padding(horizontal = mainHorizontalScreenPadding)
         ) {
-            // title
-            item {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            }
-
-            AdvancedSpacer(sectionsPadding)
 
             // description
-            CommonTaskDescription(description)
+            CommonTaskDescription(content)
 
             AdvancedSpacer(sectionsPadding)
 
@@ -135,8 +137,8 @@ fun WikiContentScreen(
     if (isDescriptionEditorVisible) {
         TaskEditor(
             toolbarText = stringResource(R.string.edit),
-            title = title,
-            description = description,
+            title = pageName,
+            description = content,
             onSaveClick = { title, description ->
                 isDescriptionEditorVisible = false
                 //TODO edit action
@@ -224,7 +226,8 @@ fun WikiAppBar(
 @Composable
 fun WikiScreenPreview() {
     WikiContentScreen(
-        pageName = "Some page"
+        pageName = "Some page",
+        content = "* Content *"
     )
 }
 
