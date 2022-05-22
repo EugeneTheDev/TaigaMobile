@@ -5,6 +5,6 @@ import io.eugenethedev.taigamobile.domain.entities.WikiPage
 
 interface IWikiRepository {
     suspend fun getProjectWikiPages() : List<WikiPage>
-    suspend fun getWikiLink(wikiPageId: Long) : WikiLink
+    suspend fun getWikiLink() : List<WikiLink>
     suspend fun deleteWikiPage(pageId: Long)
 }

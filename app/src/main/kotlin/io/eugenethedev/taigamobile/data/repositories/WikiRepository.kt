@@ -20,9 +20,9 @@ class WikiRepository @Inject constructor(
         )
     }
 
-    override suspend fun getWikiLink(wikiPageId: Long): WikiLink = withIO {
+    override suspend fun getWikiLink(): List<WikiLink> = withIO {
         taigaApi.getWikiLink(
-            wikiPageId
+            currentProjectId
         )
     }
 

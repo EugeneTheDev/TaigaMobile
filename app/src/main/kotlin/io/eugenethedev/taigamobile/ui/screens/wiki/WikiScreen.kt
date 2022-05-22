@@ -49,8 +49,11 @@ fun WikiScreen(
     showMessage: (message: Int) -> Unit = {},
 ) {
     val viewModel: WikiViewModel = viewModel()
+
     val currentPage by viewModel.currentWikiPage.collectAsState()
     val currentLink by viewModel.currentWikiLink.collectAsState()
+    val lastModifierUser by viewModel.lastModifierUser.collectAsState()
+
     val onOpenResult by viewModel.onOpenResult.collectAsState()
     onOpenResult.subscribeOnError(showMessage)
 
@@ -58,32 +61,27 @@ fun WikiScreen(
         viewModel.onOpen()
     }
 
-    WikiContentScreen(
-        pageName = currentLink?.title ?: "Some title",
-        content = currentPage?.content ?: "",
-        onTitleClick = { navController.navigate(Routes.projectsSelector) },
-        navigateBack = navController::popBackStack
-    )
+    lastModifierUser?.let {
+        WikiContentScreen(
+            pageName = currentLink?.title ?: "Some title",
+            content = currentPage?.content ?: "",
+            lastModifierUser = it,
+            onTitleClick = { navController.navigate(Routes.projectsSelector) },
+            navigateBack = navController::popBackStack
+        )
+    }
 }
 
 @Composable
 fun WikiContentScreen(
     pageName: String,
     content: String,
+    lastModifierUser: User,
     onTitleClick: () -> Unit = {},
     navigateBack: () -> Unit = {},
 ) = Box(Modifier.fillMaxSize()) {
     var isDescriptionEditorVisible by remember { mutableStateOf(false) }
     val sectionsPadding = 16.dp
-
-    // TODO Test data
-    val creator = User(
-        _id = 0,
-        fullName = "Some cool fullname",
-        photo = null,
-        bigPhoto = null,
-        username = "Some cool username"
-    )
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -116,8 +114,8 @@ fun WikiContentScreen(
                 Spacer(Modifier.height(8.dp))
 
                 UserItem(
-                    user = creator,
-                    dateTime = LocalDateTime.now(),
+                    user = lastModifierUser,
+                    dateTime = LocalDateTime.now(), //TODO Add date
                     onUserItemClick = {
                         //TODO Move to profile screen
                     }
@@ -225,9 +223,18 @@ fun WikiAppBar(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun WikiScreenPreview() {
+    val creator = User(
+        _id = 0,
+        fullName = "Some cool fullname",
+        photo = null,
+        bigPhoto = null,
+        username = "Some cool username"
+    )
+
     WikiContentScreen(
         pageName = "Some page",
-        content = "* Content *"
+        content = "* Content *",
+        lastModifierUser = creator
     )
 }
 

@@ -401,8 +401,8 @@ interface TaigaApi {
         @Query("project") projectId: Long
     ): List<WikiPage>
 
-    @GET("wiki-links/{wikiPageId}")
+    @GET("wiki-links")
     suspend fun getWikiLink(
-        @Path("wikiPageId") wikiPageId: Long,
-    ): WikiLink
+        @Query("project") projectId: Long
+    ): List<WikiLink>
 }
