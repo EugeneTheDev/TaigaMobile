@@ -401,8 +401,24 @@ interface TaigaApi {
         @Query("project") projectId: Long
     ): List<WikiPage>
 
+    @PATCH("wiki/{id}")
+    suspend fun editWikiPage(
+        @Path("id") pageId: Long,
+        @Body editWikiPageRequest: EditWikiPageRequest
+    )
+
+    @DELETE("wiki/{id}")
+    suspend fun deleteWikiPage(
+        @Path("id") pageId: Long
+    ): Response<Void>
+
     @GET("wiki-links")
     suspend fun getWikiLink(
         @Query("project") projectId: Long
     ): List<WikiLink>
+
+    @DELETE("wiki-links/{id}")
+    suspend fun deleteWikiLink(
+        @Path("id") linkId: Long
+    ): Response<Void>
 }

@@ -1,6 +1,5 @@
 package io.eugenethedev.taigamobile.ui.screens.wiki
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.eugenethedev.taigamobile.TaigaApp
@@ -44,10 +43,31 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
             wikiLinks.value = wikiRepository.getWikiLink()
             currentWikiLink.value = wikiLinks.value.firstOrNull()
 
-            currentWikiPage.value?.lastModifier?.let {
-                lastModifierUser.value = userRepository.getUser(it)
-            }
+            lastModifierUser.value =
+                if (currentWikiPage.value == null) null else userRepository.getUser(currentWikiPage.value?.lastModifier!!)
         }
     }
 
+    fun deleteWikiPage() = viewModelScope.launch {
+        val linkId = currentWikiLink.value?.id
+        val pageId = currentWikiPage.value?.id
+
+        if (linkId != null && pageId != null) {
+            wikiRepository.deleteWikiLink(linkId)
+            wikiRepository.deleteWikiPage(pageId)
+            onOpen().join()
+        }
+    }
+
+    fun editWikiPage(content: String) = viewModelScope.launch {
+        currentWikiPage.value?.let {
+            wikiRepository.editWikiPage(
+                pageId = it.id,
+                content = content,
+                version = it.version
+            )
+
+            onOpen().join()
+        }
+    }
 }

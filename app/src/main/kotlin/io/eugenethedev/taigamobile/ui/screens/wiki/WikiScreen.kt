@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,11 +35,14 @@ import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
+import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskDescription
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.screens.wiki.components.AdvancedSpacer
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
+import io.eugenethedev.taigamobile.ui.utils.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.navigateToProfileScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import java.time.LocalDateTime
@@ -61,14 +65,34 @@ fun WikiScreen(
         viewModel.onOpen()
     }
 
-    lastModifierUser?.let {
-        WikiContentScreen(
-            pageName = currentLink?.title ?: "Some title",
-            content = currentPage?.content ?: "",
-            lastModifierUser = it,
-            onTitleClick = { navController.navigate(Routes.projectsSelector) },
-            navigateBack = navController::popBackStack
-        )
+    when {
+        onOpenResult is LoadingResult -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
+            }
+        }
+        else -> {
+            lastModifierUser?.let {
+                WikiContentScreen(
+                    pageName = currentLink?.title ?: "Some title",
+                    content = currentPage?.content ?: "",
+                    lastModifierUser = it,
+                    lastModifierDate = currentPage?.modifiedDate ?: LocalDateTime.now(),
+                    navigateBack = navController::popBackStack,
+                    deleteWikiPage = viewModel::deleteWikiPage,
+                    editWikiPage = viewModel::editWikiPage,
+                    onTitleClick = {
+                        navController.navigate(Routes.projectsSelector)
+                    },
+                    onUserItemClick = { userId ->
+                        navController.navigateToProfileScreen(userId)
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -77,8 +101,12 @@ fun WikiContentScreen(
     pageName: String,
     content: String,
     lastModifierUser: User,
-    onTitleClick: () -> Unit = {},
+    lastModifierDate: LocalDateTime,
     navigateBack: () -> Unit = {},
+    deleteWikiPage: () -> Unit = {},
+    editWikiPage: (content: String) -> Unit = { _ -> },
+    onTitleClick: () -> Unit = {},
+    onUserItemClick: (userId: Long) -> Unit = { _ -> }
 ) = Box(Modifier.fillMaxSize()) {
     var isDescriptionEditorVisible by remember { mutableStateOf(false) }
     val sectionsPadding = 16.dp
@@ -90,7 +118,8 @@ fun WikiContentScreen(
             pageName = pageName,
             onTitleClick = onTitleClick,
             showDescriptionEditor = { isDescriptionEditorVisible = true },
-            navigateBack = navigateBack
+            navigateBack = navigateBack,
+            deleteWikiPage = deleteWikiPage
         )
 
         LazyColumn(
@@ -115,9 +144,9 @@ fun WikiContentScreen(
 
                 UserItem(
                     user = lastModifierUser,
-                    dateTime = LocalDateTime.now(), //TODO Add date
+                    dateTime = lastModifierDate,
                     onUserItemClick = {
-                        //TODO Move to profile screen
+                        onUserItemClick(lastModifierUser.id)
                     }
                 )
             }
@@ -137,9 +166,10 @@ fun WikiContentScreen(
             toolbarText = stringResource(R.string.edit),
             title = pageName,
             description = content,
-            onSaveClick = { title, description ->
+            showTitle = false,
+            onSaveClick = { _, description ->
                 isDescriptionEditorVisible = false
-                //TODO edit action
+                editWikiPage(description)
             },
             navigateBack = { isDescriptionEditorVisible = false }
         )
@@ -151,7 +181,8 @@ fun WikiAppBar(
     pageName: String,
     onTitleClick: () -> Unit,
     showDescriptionEditor: () -> Unit,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    deleteWikiPage: () -> Unit
 ) {
 
     var isMenuExpanded by remember { mutableStateOf(false) }
@@ -173,7 +204,7 @@ fun WikiAppBar(
                     text = stringResource(R.string.delete_wiki_text),
                     onConfirm = {
                         isDeleteAlertVisible = false
-                        //TODO delete action
+                        deleteWikiPage()
                     },
                     onDismiss = { isDeleteAlertVisible = false },
                     iconId = R.drawable.ic_delete
@@ -234,7 +265,8 @@ fun WikiScreenPreview() {
     WikiContentScreen(
         pageName = "Some page",
         content = "* Content *",
-        lastModifierUser = creator
+        lastModifierUser = creator,
+        lastModifierDate = LocalDateTime.now()
     )
 }
 

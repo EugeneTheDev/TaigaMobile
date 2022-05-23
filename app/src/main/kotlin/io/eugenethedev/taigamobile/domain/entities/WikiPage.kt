@@ -14,12 +14,13 @@ data class WikiPage(
     @Json(name = "last_modifier") val lastModifier: Long,
     @Json(name = "modified_date") val modifiedDate: LocalDateTime,
     @Json(name = "total_watchers") val totalWatchers: Long,
-    val version: Long
+    val version: Int
 )
 
 @JsonClass(generateAdapter = true)
 data class WikiLink(
     @Json(name = "href") val ref: String,
+    val id: Long,
     val order: Long,
     val title: String
 )

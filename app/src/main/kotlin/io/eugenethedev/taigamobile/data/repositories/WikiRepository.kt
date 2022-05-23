@@ -1,5 +1,6 @@
 package io.eugenethedev.taigamobile.data.repositories
 
+import io.eugenethedev.taigamobile.data.api.EditWikiPageRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.domain.entities.WikiLink
 import io.eugenethedev.taigamobile.domain.entities.WikiPage
@@ -22,11 +23,28 @@ class WikiRepository @Inject constructor(
 
     override suspend fun getWikiLink(): List<WikiLink> = withIO {
         taigaApi.getWikiLink(
-            currentProjectId
+            projectId = currentProjectId
         )
     }
 
-    override suspend fun deleteWikiPage(pageId: Long) {
-        // TODO("Not yet implemented")
+    override suspend fun deleteWikiPage(pageId: Long) = withIO {
+        taigaApi.deleteWikiPage(
+            pageId = pageId
+        )
+        return@withIO
+    }
+
+    override suspend fun deleteWikiLink(linkId: Long) = withIO {
+        taigaApi.deleteWikiLink(
+            linkId = linkId
+        )
+        return@withIO
+    }
+
+    override suspend fun editWikiPage(pageId: Long, content: String, version: Int) = withIO {
+        taigaApi.editWikiPage(
+            pageId = pageId,
+            editWikiPageRequest = EditWikiPageRequest(content, version)
+        )
     }
 }
