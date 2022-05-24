@@ -413,6 +413,25 @@ interface TaigaApi {
         @Body editWikiPageRequest: EditWikiPageRequest
     )
 
+    @GET("wiki/attachments")
+    suspend fun getPageAttachments(
+        @Query("object_id") pageId: Long,
+        @Query("project") projectId: Long
+    ): List<Attachment>
+
+    @POST("wiki/attachments")
+    @Multipart
+    suspend fun uploadPageAttachment(
+        @Part file: MultipartBody.Part,
+        @Part project: MultipartBody.Part,
+        @Part objectId: MultipartBody.Part
+    )
+
+    @DELETE("wiki/attachments/{id}")
+    suspend fun deletePageAttachment(
+        @Path("id") attachmentId: Long
+    ): Response<Void>
+
     @DELETE("wiki/{id}")
     suspend fun deleteWikiPage(
         @Path("id") pageId: Long

@@ -2,8 +2,10 @@ package io.eugenethedev.taigamobile.ui.screens.wiki
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.TaigaApp
 import io.eugenethedev.taigamobile.dagger.AppComponent
+import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.domain.entities.WikiLink
 import io.eugenethedev.taigamobile.domain.entities.WikiPage
@@ -13,45 +15,69 @@ import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.ui.utils.MutableResultFlow
 import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import javax.inject.Inject
 
 class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
 
     @Inject
     lateinit var session: Session
+
     @Inject
     lateinit var wikiRepository: IWikiRepository
 
     @Inject
     lateinit var userRepository: IUsersRepository
 
-    private val wikiPages = MutableStateFlow<List<WikiPage>>(emptyList())
-    private val wikiLinks = MutableStateFlow<List<WikiLink>>(emptyList())
+    private val wikiPages = MutableResultFlow<List<WikiPage>>()
+    private val wikiLinks = MutableResultFlow<List<WikiLink>>()
 
     var currentWikiLink = MutableStateFlow<WikiLink?>(null)
     var currentWikiPage = MutableStateFlow<WikiPage?>(null)
     var lastModifierUser = MutableStateFlow<User?>(null)
 
-    val onOpenResult = MutableResultFlow<Unit>()
+    val loadDataResult = MutableResultFlow<Unit>()
     val createWikiPageResult = MutableResultFlow<Unit>()
     val editWikiPageResult = MutableResultFlow<Unit>()
     val deleteWikiPageResult = MutableResultFlow<Unit>()
+
+    val attachments = MutableResultFlow<List<Attachment>>()
 
     init {
         appComponent.inject(this)
     }
 
     fun onOpen() = viewModelScope.launch {
-        onOpenResult.loadOrError {
-            wikiPages.value = wikiRepository.getProjectWikiPages()
-            currentWikiPage.value = wikiPages.value.firstOrNull()
+        loadData()
+    }
 
-            wikiLinks.value = wikiRepository.getWikiLink()
-            currentWikiLink.value = wikiLinks.value.find { it.ref == currentWikiPage.value?.slug }
+    private fun loadData() = viewModelScope.launch {
+        wikiPages.loadOrError {
+            wikiRepository.getProjectWikiPages().also {
 
-            lastModifierUser.value =
-                if (currentWikiPage.value == null) null else userRepository.getUser(currentWikiPage.value?.lastModifier!!)
+                currentWikiPage.value = it.firstOrNull()
+                lastModifierUser.value =
+                    if (currentWikiPage.value == null) null else userRepository.getUser(currentWikiPage.value?.lastModifier!!)
+
+                val jobsToLoad = arrayOf(
+                    launch {
+                        wikiLinks.loadOrError(showLoading = false) {
+                            val result = wikiRepository.getWikiLinks()
+                            currentWikiLink.value = result.find { it.ref == currentWikiPage.value?.slug }
+                            result
+                        }
+                    },
+                    launch {
+                        attachments.loadOrError(showLoading = false) {
+                            currentWikiPage.value?.let { page -> wikiRepository.getPageAttachments(page.id) }
+                        }
+                    }
+                )
+
+                joinAll(*jobsToLoad)
+            }
         }
     }
 
@@ -62,12 +88,12 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
 
             if (pageId != null) {
                 wikiRepository.deleteWikiPage(pageId)
-                onOpen().join()
+                loadData().join()
             }
 
             if (linkId != null) {
                 wikiRepository.deleteWikiLink(linkId)
-                onOpen().join()
+                loadData().join()
             }
         }
     }
@@ -81,7 +107,7 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
                     version = it.version
                 )
 
-                onOpen().join()
+                loadData().join()
             }
         }
     }
@@ -105,7 +131,32 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
                 version = wikiPage.version
             )
 
-            onOpen().join()
+            loadData().join()
+        }
+    }
+
+    fun deletePageAttachment(attachment: Attachment) = viewModelScope.launch {
+        attachments.loadOrError(R.string.permission_error) {
+            wikiRepository.deletePageAttachment(
+                attachmentId = attachment.id
+            )
+
+            loadData().join()
+            attachments.value.data
+        }
+    }
+
+    fun addPageAttachment(fileName: String, inputStream: InputStream) = viewModelScope.launch {
+        attachments.loadOrError(R.string.permission_error) {
+            currentWikiPage.value?.id?.let { pageId ->
+                wikiRepository.addPageAttachment(
+                    pageId = pageId,
+                    fileName = fileName,
+                    inputStream = inputStream
+                )
+                loadData().join()
+            }
+            attachments.value.data
         }
     }
 }

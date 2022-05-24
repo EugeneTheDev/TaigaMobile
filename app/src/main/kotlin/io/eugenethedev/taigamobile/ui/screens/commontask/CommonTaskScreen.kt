@@ -411,7 +411,7 @@ fun CommonTaskScreenContent(
 
                     CommonTaskAttachments(
                         attachments = attachments,
-                        editActions = editActions
+                        editAttachmentsAction = editActions.editAttachments
                     )
 
                     item {

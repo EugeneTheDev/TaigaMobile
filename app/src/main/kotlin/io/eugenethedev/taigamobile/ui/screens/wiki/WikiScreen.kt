@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
+import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
@@ -37,6 +38,8 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.EmptyWikiDialog
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
+import io.eugenethedev.taigamobile.ui.screens.commontask.EditAttachmentsAction
+import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskAttachments
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskDescription
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.screens.wiki.components.AdvancedSpacer
@@ -59,7 +62,7 @@ fun WikiScreen(
     val currentLink by viewModel.currentWikiLink.collectAsState()
     val lastModifierUser by viewModel.lastModifierUser.collectAsState()
 
-    val onOpenResult by viewModel.onOpenResult.collectAsState()
+    val onOpenResult by viewModel.loadDataResult.collectAsState()
     onOpenResult.subscribeOnError(showMessage)
 
     val createWikiPageResult by viewModel.createWikiPageResult.collectAsState()
@@ -71,8 +74,11 @@ fun WikiScreen(
     val deleteWikiPageResult by viewModel.deleteWikiPageResult.collectAsState()
     deleteWikiPageResult.subscribeOnError(showMessage)
 
+    val attachments by viewModel.attachments.collectAsState()
+    attachments.subscribeOnError(showMessage)
+
     val isLoading = onOpenResult is LoadingResult || createWikiPageResult is LoadingResult ||
-        editWikiPageResult is LoadingResult || deleteWikiPageResult is LoadingResult
+        editWikiPageResult is LoadingResult || deleteWikiPageResult is LoadingResult || attachments is LoadingResult
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
@@ -93,6 +99,12 @@ fun WikiScreen(
                 content = currentPage?.content ?: "",
                 lastModifierUser = lastModifierUser,
                 lastModifierDate = currentPage?.modifiedDate ?: LocalDateTime.now(),
+                attachments = attachments.data.orEmpty(),
+                editAttachmentsAction = EditAttachmentsAction(
+                    deleteAttachment = viewModel::deletePageAttachment,
+                    addAttachment = viewModel::addPageAttachment,
+                    isResultLoading = attachments is LoadingResult
+                ),
                 navigateBack = navController::popBackStack,
                 deleteWikiPage = viewModel::deleteWikiPage,
                 editWikiPage = viewModel::editWikiPage,
@@ -114,6 +126,8 @@ fun WikiContentScreen(
     content: String,
     lastModifierUser: User?,
     lastModifierDate: LocalDateTime,
+    attachments: List<Attachment> = emptyList(),
+    editAttachmentsAction: EditAttachmentsAction = EditAttachmentsAction(),
     navigateBack: () -> Unit = {},
     deleteWikiPage: () -> Unit = {},
     editWikiPage: (content: String) -> Unit = { _ -> },
@@ -123,7 +137,7 @@ fun WikiContentScreen(
 ) = Box(Modifier.fillMaxSize()) {
     var isDescriptionEditorVisible by remember { mutableStateOf(false) }
     var isCreatingNewTask by remember { mutableStateOf(false) }
-    val sectionsPadding = 16.dp
+    val sectionsPadding = 24.dp
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -173,11 +187,12 @@ fun WikiContentScreen(
 
             AdvancedSpacer(sectionsPadding)
 
-            // TODO Add attachments
-            // CommonTaskAttachments(
-            //     attachments = attachments,
-            //     editActions = editActions
-            // )
+            CommonTaskAttachments(
+                attachments = attachments,
+                editAttachmentsAction = editAttachmentsAction
+            )
+
+            AdvancedSpacer(sectionsPadding)
         }
     }
 

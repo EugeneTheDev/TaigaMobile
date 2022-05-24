@@ -3,10 +3,13 @@ package io.eugenethedev.taigamobile.data.repositories
 import io.eugenethedev.taigamobile.data.api.EditWikiPageRequest
 import io.eugenethedev.taigamobile.data.api.NewWikiLinkRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
-import io.eugenethedev.taigamobile.domain.entities.WikiLink
-import io.eugenethedev.taigamobile.domain.entities.WikiPage
+import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.repositories.IWikiRepository
 import io.eugenethedev.taigamobile.state.Session
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.InputStream
 import javax.inject.Inject
 
 class WikiRepository @Inject constructor(
@@ -16,13 +19,13 @@ class WikiRepository @Inject constructor(
 
     private val currentProjectId get() = session.currentProjectId.value
 
-    override suspend fun getProjectWikiPages(): List<WikiPage> = withIO {
+    override suspend fun getProjectWikiPages() = withIO {
         taigaApi.getProjectWikiPages(
             projectId = currentProjectId
         )
     }
 
-    override suspend fun getProjectWikiPageBySlug(slug: String): WikiPage = withIO {
+    override suspend fun getProjectWikiPageBySlug(slug: String) = withIO {
         taigaApi.getProjectWikiPageBySlug(
             projectId = currentProjectId,
             slug = slug
@@ -43,7 +46,39 @@ class WikiRepository @Inject constructor(
         return@withIO
     }
 
-    override suspend fun getWikiLink(): List<WikiLink> = withIO {
+    override suspend fun getPageAttachments(pageId: Long): List<Attachment> = withIO {
+        taigaApi.getPageAttachments(
+            pageId = pageId,
+            projectId = currentProjectId
+        )
+    }
+
+    override suspend fun addPageAttachment(pageId: Long, fileName: String, inputStream: InputStream) = withIO {
+        val file = MultipartBody.Part.createFormData(
+            name = "attached_file",
+            filename = fileName,
+            body = inputStream.readBytes().toRequestBody("*/*".toMediaType())
+        )
+        val project = MultipartBody.Part.createFormData("project", currentProjectId.toString())
+        val objectId = MultipartBody.Part.createFormData("object_id", pageId.toString())
+
+        inputStream.use {
+            taigaApi.uploadPageAttachment(
+                file = file,
+                project = project,
+                objectId = objectId
+            )
+        }
+    }
+
+    override suspend fun deletePageAttachment(attachmentId: Long) = withIO {
+        taigaApi.deletePageAttachment(
+            attachmentId = attachmentId
+        )
+        return@withIO
+    }
+
+    override suspend fun getWikiLinks() = withIO {
         taigaApi.getWikiLink(
             projectId = currentProjectId
         )
