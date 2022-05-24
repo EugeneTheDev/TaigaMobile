@@ -18,9 +18,13 @@ import javax.inject.Inject
 
 class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
 
-    @Inject lateinit var session: Session
-    @Inject lateinit var wikiRepository: IWikiRepository
-    @Inject lateinit var userRepository: IUsersRepository
+    @Inject
+    lateinit var session: Session
+    @Inject
+    lateinit var wikiRepository: IWikiRepository
+
+    @Inject
+    lateinit var userRepository: IUsersRepository
 
     private val wikiPages = MutableStateFlow<List<WikiPage>>(emptyList())
     private val wikiLinks = MutableStateFlow<List<WikiLink>>(emptyList())
@@ -30,6 +34,9 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
     var lastModifierUser = MutableStateFlow<User?>(null)
 
     val onOpenResult = MutableResultFlow<Unit>()
+    val createWikiPageResult = MutableResultFlow<Unit>()
+    val editWikiPageResult = MutableResultFlow<Unit>()
+    val deleteWikiPageResult = MutableResultFlow<Unit>()
 
     init {
         appComponent.inject(this)
@@ -41,7 +48,7 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
             currentWikiPage.value = wikiPages.value.firstOrNull()
 
             wikiLinks.value = wikiRepository.getWikiLink()
-            currentWikiLink.value = wikiLinks.value.firstOrNull()
+            currentWikiLink.value = wikiLinks.value.find { it.ref == currentWikiPage.value?.slug }
 
             lastModifierUser.value =
                 if (currentWikiPage.value == null) null else userRepository.getUser(currentWikiPage.value?.lastModifier!!)
@@ -49,22 +56,53 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
     }
 
     fun deleteWikiPage() = viewModelScope.launch {
-        val linkId = currentWikiLink.value?.id
-        val pageId = currentWikiPage.value?.id
+        deleteWikiPageResult.loadOrError {
+            val linkId = currentWikiLink.value?.id
+            val pageId = currentWikiPage.value?.id
 
-        if (linkId != null && pageId != null) {
-            wikiRepository.deleteWikiLink(linkId)
-            wikiRepository.deleteWikiPage(pageId)
-            onOpen().join()
+            if (pageId != null) {
+                wikiRepository.deleteWikiPage(pageId)
+                onOpen().join()
+            }
+
+            if (linkId != null) {
+                wikiRepository.deleteWikiLink(linkId)
+                onOpen().join()
+            }
         }
     }
 
     fun editWikiPage(content: String) = viewModelScope.launch {
-        currentWikiPage.value?.let {
+        editWikiPageResult.loadOrError {
+            currentWikiPage.value?.let {
+                wikiRepository.editWikiPage(
+                    pageId = it.id,
+                    content = content,
+                    version = it.version
+                )
+
+                onOpen().join()
+            }
+        }
+    }
+
+    fun createWikiPage(title: String, content: String) = viewModelScope.launch {
+        createWikiPageResult.loadOrError {
+            val slug = title.replace(" ", "-").lowercase()
+
+            wikiRepository.createWikiLink(
+                href = slug,
+                title = title
+            )
+
+            // Need it, because we can't put content to page
+            // and create link for it at the same time :(
+            val wikiPage = wikiRepository.getProjectWikiPageBySlug(slug)
+
             wikiRepository.editWikiPage(
-                pageId = it.id,
+                pageId = wikiPage.id,
                 content = content,
-                version = it.version
+                version = wikiPage.version
             )
 
             onOpen().join()

@@ -1,6 +1,7 @@
 package io.eugenethedev.taigamobile.data.repositories
 
 import io.eugenethedev.taigamobile.data.api.EditWikiPageRequest
+import io.eugenethedev.taigamobile.data.api.NewWikiLinkRequest
 import io.eugenethedev.taigamobile.data.api.TaigaApi
 import io.eugenethedev.taigamobile.domain.entities.WikiLink
 import io.eugenethedev.taigamobile.domain.entities.WikiPage
@@ -21,9 +22,17 @@ class WikiRepository @Inject constructor(
         )
     }
 
-    override suspend fun getWikiLink(): List<WikiLink> = withIO {
-        taigaApi.getWikiLink(
-            projectId = currentProjectId
+    override suspend fun getProjectWikiPageBySlug(slug: String): WikiPage = withIO {
+        taigaApi.getProjectWikiPageBySlug(
+            projectId = currentProjectId,
+            slug = slug
+        )
+    }
+
+    override suspend fun editWikiPage(pageId: Long, content: String, version: Int) = withIO {
+        taigaApi.editWikiPage(
+            pageId = pageId,
+            editWikiPageRequest = EditWikiPageRequest(content, version)
         )
     }
 
@@ -34,17 +43,26 @@ class WikiRepository @Inject constructor(
         return@withIO
     }
 
+    override suspend fun getWikiLink(): List<WikiLink> = withIO {
+        taigaApi.getWikiLink(
+            projectId = currentProjectId
+        )
+    }
+
+    override suspend fun createWikiLink(href: String, title: String) = withIO {
+        taigaApi.createWikiLink(
+            newWikiLinkRequest = NewWikiLinkRequest(
+                href = href,
+                project = currentProjectId,
+                title = title
+            )
+        )
+    }
+
     override suspend fun deleteWikiLink(linkId: Long) = withIO {
         taigaApi.deleteWikiLink(
             linkId = linkId
         )
         return@withIO
-    }
-
-    override suspend fun editWikiPage(pageId: Long, content: String, version: Int) = withIO {
-        taigaApi.editWikiPage(
-            pageId = pageId,
-            editWikiPageRequest = EditWikiPageRequest(content, version)
-        )
     }
 }

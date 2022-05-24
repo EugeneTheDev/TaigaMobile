@@ -6,15 +6,16 @@ import java.time.LocalDateTime
 
 @JsonClass(generateAdapter = true)
 data class WikiPage(
-    val content: String,
-    @Json(name = "created_date") val cratedDate: LocalDateTime,
-    val editions: Long,
     val id: Long,
+    val version: Int,
+    val content: String,
+    val editions: Long,
+    @Json(name = "created_date") val cratedDate: LocalDateTime,
     @Json(name = "is_watcher") val isWatcher: Boolean,
     @Json(name = "last_modifier") val lastModifier: Long,
     @Json(name = "modified_date") val modifiedDate: LocalDateTime,
     @Json(name = "total_watchers") val totalWatchers: Long,
-    val version: Int
+    @Json(name = "slug")val slug: String
 )
 
 @JsonClass(generateAdapter = true)

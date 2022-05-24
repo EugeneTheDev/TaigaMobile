@@ -172,3 +172,10 @@ data class EditWikiPageRequest(
     val content: String,
     val version: Int
 )
+
+@JsonClass(generateAdapter = true)
+data class NewWikiLinkRequest(
+    val href: String,
+    val project: Long,
+    val title: String
+)

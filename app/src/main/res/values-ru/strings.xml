@@ -202,6 +202,10 @@
     <string name="help">Помощь</string>
     <string name="submit_report">Отправить отчет</string>
 
+    <string name="empty_wiki_dialog_title">Пока нет ни одной страницы вики…</string>
+    <string name="empty_wiki_dialog_subtitle">Может добавим новую?</string>
+    <string name="create_new_page">Создать новую страницу</string>
+
     <string name="credits_message">Сделано с ❤️ EugeneTheDev. Если вам понравилось это приложение, поставьте ему высокую оценку в Google Play и звезду на GitHub</string>
 
     <string name="github_url" translatable="false">https://github.com/EugeneTheDev/TaigaMobile</string>

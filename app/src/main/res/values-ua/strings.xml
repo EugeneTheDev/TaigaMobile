@@ -194,6 +194,10 @@
     <string name="help">Допомога</string>
     <string name="submit_report">Надіслати репорт</string>
 
+    <string name="empty_wiki_dialog_title">Тут немає вікі-сторінок…</string>
+    <string name="empty_wiki_dialog_subtitle">Давайте додамо новий?</string>
+    <string name="create_new_page">Створити нову сторінку</string>
+
     <string name="credits_message">Зроблено ❤️ by EugeneTheDev. Якщо вам подобається додаток незабудьте оцінити його на Google Play та GitHub</string>
 
     <string name="source_code">Джерело коду</string>

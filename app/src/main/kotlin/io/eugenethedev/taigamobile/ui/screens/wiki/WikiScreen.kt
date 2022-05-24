@@ -33,6 +33,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
+import io.eugenethedev.taigamobile.ui.components.dialogs.EmptyWikiDialog
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
@@ -61,12 +62,24 @@ fun WikiScreen(
     val onOpenResult by viewModel.onOpenResult.collectAsState()
     onOpenResult.subscribeOnError(showMessage)
 
+    val createWikiPageResult by viewModel.createWikiPageResult.collectAsState()
+    createWikiPageResult.subscribeOnError(showMessage)
+
+    val editWikiPageResult by viewModel.editWikiPageResult.collectAsState()
+    editWikiPageResult.subscribeOnError(showMessage)
+
+    val deleteWikiPageResult by viewModel.deleteWikiPageResult.collectAsState()
+    deleteWikiPageResult.subscribeOnError(showMessage)
+
+    val isLoading = onOpenResult is LoadingResult || createWikiPageResult is LoadingResult ||
+        editWikiPageResult is LoadingResult || deleteWikiPageResult is LoadingResult
+
     LaunchedEffect(Unit) {
         viewModel.onOpen()
     }
 
     when {
-        onOpenResult is LoadingResult -> {
+        isLoading -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -75,23 +88,22 @@ fun WikiScreen(
             }
         }
         else -> {
-            lastModifierUser?.let {
-                WikiContentScreen(
-                    pageName = currentLink?.title ?: "Some title",
-                    content = currentPage?.content ?: "",
-                    lastModifierUser = it,
-                    lastModifierDate = currentPage?.modifiedDate ?: LocalDateTime.now(),
-                    navigateBack = navController::popBackStack,
-                    deleteWikiPage = viewModel::deleteWikiPage,
-                    editWikiPage = viewModel::editWikiPage,
-                    onTitleClick = {
-                        navController.navigate(Routes.projectsSelector)
-                    },
-                    onUserItemClick = { userId ->
-                        navController.navigateToProfileScreen(userId)
-                    }
-                )
-            }
+            WikiContentScreen(
+                pageName = currentLink?.title ?: "",
+                content = currentPage?.content ?: "",
+                lastModifierUser = lastModifierUser,
+                lastModifierDate = currentPage?.modifiedDate ?: LocalDateTime.now(),
+                navigateBack = navController::popBackStack,
+                deleteWikiPage = viewModel::deleteWikiPage,
+                editWikiPage = viewModel::editWikiPage,
+                createWikiPage = viewModel::createWikiPage,
+                onTitleClick = {
+                    navController.navigate(Routes.projectsSelector)
+                },
+                onUserItemClick = { userId ->
+                    navController.navigateToProfileScreen(userId)
+                }
+            )
         }
     }
 }
@@ -100,15 +112,17 @@ fun WikiScreen(
 fun WikiContentScreen(
     pageName: String,
     content: String,
-    lastModifierUser: User,
+    lastModifierUser: User?,
     lastModifierDate: LocalDateTime,
     navigateBack: () -> Unit = {},
     deleteWikiPage: () -> Unit = {},
     editWikiPage: (content: String) -> Unit = { _ -> },
+    createWikiPage: (title: String, content: String) -> Unit = { _, _ -> },
     onTitleClick: () -> Unit = {},
     onUserItemClick: (userId: Long) -> Unit = { _ -> }
 ) = Box(Modifier.fillMaxSize()) {
     var isDescriptionEditorVisible by remember { mutableStateOf(false) }
+    var isCreatingNewTask by remember { mutableStateOf(false) }
     val sectionsPadding = 16.dp
 
     Column(
@@ -117,9 +131,13 @@ fun WikiContentScreen(
         WikiAppBar(
             pageName = pageName,
             onTitleClick = onTitleClick,
-            showDescriptionEditor = { isDescriptionEditorVisible = true },
             navigateBack = navigateBack,
-            deleteWikiPage = deleteWikiPage
+            deleteWikiPage = deleteWikiPage,
+            showDescriptionEditor = { isDescriptionEditorVisible = true },
+            showCreatorNewPage = {
+                isDescriptionEditorVisible = true
+                isCreatingNewTask = true
+            },
         )
 
         LazyColumn(
@@ -142,13 +160,15 @@ fun WikiContentScreen(
 
                 Spacer(Modifier.height(8.dp))
 
-                UserItem(
-                    user = lastModifierUser,
-                    dateTime = lastModifierDate,
-                    onUserItemClick = {
-                        onUserItemClick(lastModifierUser.id)
-                    }
-                )
+                if (lastModifierUser != null) {
+                    UserItem(
+                        user = lastModifierUser,
+                        dateTime = lastModifierDate,
+                        onUserItemClick = {
+                            onUserItemClick(lastModifierUser.id)
+                        }
+                    )
+                }
             }
 
             AdvancedSpacer(sectionsPadding)
@@ -161,17 +181,52 @@ fun WikiContentScreen(
         }
     }
 
-    if (isDescriptionEditorVisible) {
-        TaskEditor(
-            toolbarText = stringResource(R.string.edit),
-            title = pageName,
-            description = content,
-            showTitle = false,
-            onSaveClick = { _, description ->
-                isDescriptionEditorVisible = false
-                editWikiPage(description)
+    if (lastModifierUser == null) {
+        EmptyWikiDialog(
+            createNewPage = {
+                isDescriptionEditorVisible = true
+                isCreatingNewTask = true
             },
-            navigateBack = { isDescriptionEditorVisible = false }
+            navigateBack = navigateBack
+        )
+    }
+
+    if (isDescriptionEditorVisible) {
+        val toolbarText: String
+        val title: String
+        val description: String
+        val showTitle: Boolean
+
+        if (isCreatingNewTask) {
+            toolbarText = stringResource(R.string.create_new_page)
+            title = ""
+            description = ""
+            showTitle = true
+        } else {
+            toolbarText = stringResource(R.string.edit)
+            title = pageName
+            description = content
+            showTitle = false
+        }
+
+        TaskEditor(
+            toolbarText = toolbarText,
+            title = title,
+            description = description,
+            showTitle = showTitle,
+            onSaveClick = { title, description ->
+                if (isCreatingNewTask)
+                    createWikiPage(title, description)
+                else
+                    editWikiPage(description)
+
+                isDescriptionEditorVisible = false
+                isCreatingNewTask = false
+            },
+            navigateBack = {
+                isDescriptionEditorVisible = false
+                isCreatingNewTask = false
+            }
         )
     }
 }
@@ -181,11 +236,12 @@ fun WikiAppBar(
     pageName: String,
     onTitleClick: () -> Unit,
     showDescriptionEditor: () -> Unit,
+    showCreatorNewPage: () -> Unit,
     navigateBack: () -> Unit,
     deleteWikiPage: () -> Unit
 ) {
-
     var isMenuExpanded by remember { mutableStateOf(false) }
+
     AppBarWithSearch(
         projectName = pageName,
         actions = {
@@ -217,15 +273,16 @@ fun WikiAppBar(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false }
             ) {
-                // Delete
+
+                //Create new page
                 DropdownMenuItem(
                     onClick = {
                         isMenuExpanded = false
-                        isDeleteAlertVisible = true
+                        showCreatorNewPage()
                     },
                     text = {
                         Text(
-                            text = stringResource(R.string.delete),
+                            text = stringResource(R.string.create_new_page),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -240,6 +297,20 @@ fun WikiAppBar(
                     text = {
                         Text(
                             text = stringResource(R.string.edit),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                )
+
+                // Delete
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded = false
+                        isDeleteAlertVisible = true
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.delete),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }

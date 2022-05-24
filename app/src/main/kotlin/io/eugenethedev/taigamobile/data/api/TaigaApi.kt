@@ -401,6 +401,12 @@ interface TaigaApi {
         @Query("project") projectId: Long
     ): List<WikiPage>
 
+    @GET("wiki/by_slug")
+    suspend fun getProjectWikiPageBySlug(
+        @Query("project") projectId: Long,
+        @Query("slug") slug: String
+    ): WikiPage
+
     @PATCH("wiki/{id}")
     suspend fun editWikiPage(
         @Path("id") pageId: Long,
@@ -416,6 +422,11 @@ interface TaigaApi {
     suspend fun getWikiLink(
         @Query("project") projectId: Long
     ): List<WikiLink>
+
+    @POST("wiki-links")
+    suspend fun createWikiLink(
+        @Body newWikiLinkRequest: NewWikiLinkRequest
+    )
 
     @DELETE("wiki-links/{id}")
     suspend fun deleteWikiLink(
