@@ -2,6 +2,7 @@ package io.eugenethedev.taigamobile.viewmodels
 
 import android.content.Context
 import io.eugenethedev.taigamobile.dagger.AppComponent
+import io.eugenethedev.taigamobile.dagger.DataModule
 import io.eugenethedev.taigamobile.domain.repositories.*
 import io.eugenethedev.taigamobile.state.Session
 import io.eugenethedev.taigamobile.state.Settings
@@ -37,7 +38,7 @@ abstract class BaseViewModelTest {
     private val mockContext = mockk<Context> {
         every { getSharedPreferences(any(), any()) } returns mockk(relaxed = true)
     }
-    protected val mockSession = spyk(Session(mockContext))
+    protected val mockSession = spyk(Session(mockContext, mockAppComponent.moshi))
     protected val mockSettings = spyk(Settings(mockContext))
 
     // repository mocks
@@ -76,6 +77,8 @@ abstract class BaseViewModelTest {
     }
 
     inner class MockAppComponent : AppComponent {
+        val moshi = DataModule().provideMoshi()
+
         override fun inject(mainViewModel: MainViewModel) {
             mainViewModel.session = mockSession
             mainViewModel.settings = mockSettings

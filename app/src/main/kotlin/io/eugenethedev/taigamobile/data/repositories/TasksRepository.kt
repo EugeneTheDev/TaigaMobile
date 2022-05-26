@@ -360,62 +360,130 @@ class TasksRepository @Inject constructor(
             type = type?.let { id -> filters.types.find { it.id == id } }?.toStatus(StatusType.Type),
             severity = severity?.let { id -> filters.severities.find { it.id == id } }?.toStatus(StatusType.Severity),
             priority = priority?.let { id -> filters.priorities.find { it.id == id } }?.toStatus(StatusType.Priority),
-            url =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref"
+            url =  "${session.server.value}/project/${project_extra_info.slug}/${transformTaskTypeForCopyLink(commonTaskType)}/$ref",
+            blockedNote = blocked_note.takeIf { is_blocked }
         )
     }
 
-    // edit related
 
-    override suspend fun changeStatus(
-        commonTaskId: Long,
-        commonTaskType: CommonTaskType,
+    /**
+     * Edit related
+     */
+
+
+    // edit task itself
+
+    private fun Tag.toList() = listOf(name, color)
+
+    private fun CommonTaskExtended.toEditRequest() = EditCommonTaskRequest(
+        subject = title,
+        description = description,
+        status = status.id,
+        type = type?.id,
+        severity = severity?.id,
+        priority = priority?.id,
+        milestone = sprint?.id,
+        assigned_to = assignedIds.firstOrNull(),
+        assigned_users = assignedIds,
+        watchers = watcherIds,
+        swimlane = swimlane?.id,
+        due_date = dueDate,
+        color = color,
+        tags = tags.map { it.toList() },
+        blocked_note = blockedNote.orEmpty(),
+        is_blocked = blockedNote != null,
+        version = version
+    )
+
+    private suspend fun editCommonTask(commonTask: CommonTaskExtended, request: EditCommonTaskRequest) {
+        taigaApi.editCommonTask(CommonTaskPathPlural(commonTask.taskType), commonTask.id, request)
+    }
+
+    override suspend fun editStatus(
+        commonTask: CommonTaskExtended,
         statusId: Long,
-        statusType: StatusType,
-        version: Int
+        statusType: StatusType
     ) = withIO {
-        if (commonTaskType != CommonTaskType.Issue && statusType != StatusType.Status) {
-            throw UnsupportedOperationException("Cannot change $statusType for $commonTaskType")
+        if (commonTask.taskType != CommonTaskType.Issue && statusType != StatusType.Status) {
+            throw UnsupportedOperationException("Cannot change $statusType for ${commonTask.taskType}")
         }
 
-        val body = ChangeStatusRequest(statusId, version)
-        when (statusType) {
-            StatusType.Status -> taigaApi.changeCommonTaskStatus(
-                taskPath = CommonTaskPathPlural(commonTaskType),
-                id = commonTaskId,
-                changeStatusRequest = body
-            )
-            StatusType.Type -> taigaApi.changeIssueType(
-                id = commonTaskId,
-                changeTypeRequest = ChangeTypeRequest(statusId, version)
-            )
-            StatusType.Severity -> taigaApi.changeIssueSeverity(
-                id = commonTaskId,
-                changeSeverityRequest = ChangeSeverityRequest(statusId, version)
-            )
-            StatusType.Priority -> taigaApi.changeIssuePriority(
-                id = commonTaskId,
-                changePriorityRequest = ChangePriorityRequest(statusId, version)
-            )
-
+        val request = commonTask.toEditRequest().let {
+            when (statusType) {
+                StatusType.Status -> it.copy(status = statusId)
+                StatusType.Type -> it.copy(type = statusId)
+                StatusType.Severity -> it.copy(severity = statusId)
+                StatusType.Priority -> it.copy(priority = statusId)
+            }
         }
+
+        editCommonTask(commonTask, request)
     }
 
-    override suspend fun changeSprint(
-        commonTaskId: Long,
-        commonTaskType: CommonTaskType,
-        sprintId: Long?,
-        version: Int
-    ) = withIO {
-        if (commonTaskType in listOf(CommonTaskType.Epic, CommonTaskType.Task)) {
-            throw UnsupportedOperationException("Cannot change sprint for $commonTaskType")
+    override suspend fun editSprint(commonTask: CommonTaskExtended, sprintId: Long?) = withIO {
+        if (commonTask.taskType in listOf(CommonTaskType.Epic, CommonTaskType.Task)) {
+            throw UnsupportedOperationException("Cannot change sprint for ${commonTask.taskType}")
         }
 
-        taigaApi.changeCommonTaskSprint(
-            taskPath = CommonTaskPathPlural(commonTaskType),
-            id = commonTaskId,
-            changeSprintRequest = ChangeSprintRequest(sprintId, version)
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(milestone = sprintId))
+    }
+
+    override suspend fun editAssignees(commonTask: CommonTaskExtended, assignees: List<Long>) = withIO {
+        val request = commonTask.toEditRequest().let {
+            if (commonTask.taskType == CommonTaskType.UserStory) {
+                it.copy(assigned_to = assignees.firstOrNull(), assigned_users = assignees)
+            } else {
+                it.copy(assigned_to = assignees.lastOrNull())
+            }
+        }
+
+        editCommonTask(commonTask, request)
+    }
+
+    override suspend fun editWatchers(commonTask: CommonTaskExtended, watchers: List<Long>) = withIO {
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(watchers = watchers))
+    }
+
+    override suspend fun editDueDate(commonTask: CommonTaskExtended, date: LocalDate?) = withIO {
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(due_date = date))
+    }
+
+    override suspend fun editCommonTaskBasicInfo(
+        commonTask: CommonTaskExtended,
+        title: String,
+        description: String,
+    ) = withIO {
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(subject = title, description = description))
+    }
+
+    override suspend fun editTags(commonTask: CommonTaskExtended, tags: List<Tag>) = withIO {
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(tags = tags.map { it.toList() }))
+    }
+
+    override suspend fun editUserStorySwimlane(commonTask: CommonTaskExtended, swimlaneId: Long?) = withIO {
+        if (commonTask.taskType != CommonTaskType.UserStory) {
+            throw UnsupportedOperationException("Cannot change swimlane for ${commonTask.taskType}")
+        }
+
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(swimlane = swimlaneId))
+    }
+
+    override suspend fun editEpicColor(commonTask: CommonTaskExtended, color: String) = withIO {
+        if (commonTask.taskType != CommonTaskType.Epic) {
+            throw UnsupportedOperationException("Cannot change color for ${commonTask.taskType}")
+        }
+
+        editCommonTask(commonTask, commonTask.toEditRequest().copy(color = color))
+    }
+
+    override suspend fun editBlocked(commonTask: CommonTaskExtended, blockedNote: String?) = withIO {
+        editCommonTask(
+            commonTask,
+            commonTask.toEditRequest().copy(is_blocked = blockedNote != null, blocked_note = blockedNote.orEmpty())
         )
     }
+
+    // edit other related parts
 
     override suspend fun linkToEpic(epicId: Long, userStoryId: Long) = withIO {
         taigaApi.linkToEpic(
@@ -427,52 +495,6 @@ class TasksRepository @Inject constructor(
     override suspend fun unlinkFromEpic(epicId: Long, userStoryId: Long) = withIO {
         taigaApi.unlinkFromEpic(epicId, userStoryId)
         return@withIO
-    }
-
-    override suspend fun changeAssignees(
-        commonTaskId: Long,
-        commonTaskType: CommonTaskType,
-        assignees: List<Long>,
-        version: Int
-    ) = withIO {
-        if (commonTaskType == CommonTaskType.UserStory) {
-            taigaApi.changeUserStoryAssignees(
-                id = commonTaskId,
-                changeAssigneesRequest = ChangeUserStoryAssigneesRequest(assignees.firstOrNull(), assignees, version)
-            )
-        } else {
-            taigaApi.changeCommonTaskAssignees(
-                taskPath = CommonTaskPathPlural(commonTaskType),
-                id = commonTaskId,
-                changeAssigneesRequest = ChangeCommonTaskAssigneesRequest(assignees.lastOrNull(), version)
-            )
-        }
-    }
-
-    override suspend fun changeWatchers(
-        commonTaskId: Long,
-        commonTaskType: CommonTaskType,
-        watchers: List<Long>,
-        version: Int
-    ) = withIO {
-        taigaApi.changeCommonTaskWatchers(
-            taskPath = CommonTaskPathPlural(commonTaskType),
-            id = commonTaskId,
-            changeWatchersRequest = ChangeWatchersRequest(watchers, version)
-        )
-    }
-
-    override suspend fun changeDueDate(
-        commonTaskId: Long,
-        commonTaskType: CommonTaskType,
-        date: LocalDate?,
-        version: Int
-    ) = withIO {
-        taigaApi.changeCommonTaskDueDate(
-            taskPath = CommonTaskPathPlural(commonTaskType),
-            id = commonTaskId,
-            request = ChangeCommonTaskDueDateRequest(date, version)
-        )
     }
 
     override suspend fun createComment(
@@ -497,20 +519,6 @@ class TasksRepository @Inject constructor(
             taskPath = CommonTaskPathSingular(commonTaskType),
             id = commonTaskId,
             commentId = commentId
-        )
-    }
-
-    override suspend fun editCommonTask(
-        commonTaskId: Long,
-        commonTaskType: CommonTaskType,
-        title: String,
-        description: String,
-        version: Int
-    ) = withIO {
-        taigaApi.editCommonTask(
-            taskPath = CommonTaskPathPlural(commonTaskType),
-            id = commonTaskId,
-            editRequest = EditCommonTaskRequest(title, description, version)
         )
     }
 
@@ -599,33 +607,6 @@ class TasksRepository @Inject constructor(
             taskPath = CommonTaskPathPlural(commonTaskType),
             taskId = commonTaskId,
             editRequest = EditCustomAttributesValuesRequest(fields.mapValues { it.value?.value }, version)
-        )
-    }
-
-    override suspend fun editTags(
-        commonTaskType: CommonTaskType,
-        commonTaskId: Long,
-        tags: List<Tag>,
-        version: Int
-    ) = withIO {
-        taigaApi.editTags(
-            taskPath = CommonTaskPathPlural(commonTaskType),
-            taskId = commonTaskId,
-            editRequest = EditTagsRequest(tags = tags.map { listOf(it.name, it.color) }, version = version)
-        )
-    }
-
-    override suspend fun changeUserStorySwimlane(userStoryId: Long, swimlaneId: Long?, version: Int) = withIO {
-        taigaApi.changeUserStorySwimlane(
-            id = userStoryId,
-            request = ChangeUserStorySwimlaneRequest(swimlaneId, version)
-        )
-    }
-
-    override suspend fun changeEpicColor(epicId: Long, color: String, version: Int) = withIO {
-        taigaApi.changeEpicColor(
-            id = epicId,
-            request = ChangeEpicColor(color, version)
         )
     }
 

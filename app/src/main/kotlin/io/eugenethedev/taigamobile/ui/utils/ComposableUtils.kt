@@ -108,7 +108,7 @@ fun Color.toHex() = "#%08X".format(toArgb()).replace("#FF", "#")
 // calculate optimal text color for colored background background
 fun Color.textColor() = if (luminance() < 0.5) Color.White else Color.Black
 // copy from library, because it is internal in library
-fun ColorScheme.surfaceColorAtElevation(elevation: Dp, ): Color {
+fun ColorScheme.surfaceColorAtElevation(elevation: Dp): Color {
     if (elevation == 0.dp) return surface
     val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
     return primary.copy(alpha = alpha).compositeOver(surface)

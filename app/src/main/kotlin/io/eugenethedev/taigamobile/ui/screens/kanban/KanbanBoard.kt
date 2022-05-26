@@ -150,7 +150,7 @@ private fun Header(
         .width(cellWidth)
         .background(
             color = backgroundColor,
-            shape = shapes.medium.copy(
+            shape = MaterialTheme.shapes.small.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )
@@ -200,7 +200,7 @@ private fun StoryItem(
     onTaskClick: () -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth().padding(4.dp),
-    shape = shapes.medium,
+    shape = MaterialTheme.shapes.small,
     shadowElevation = cardShadowElevation
 ) {
     Column(
@@ -238,7 +238,8 @@ private fun StoryItem(
             ref = story.ref,
             title = story.title,
             isInactive = story.isClosed,
-            tags = story.tags
+            tags = story.tags,
+            isBlocked = story.blockedNote != null
         )
 
         Spacer(Modifier.height(8.dp))

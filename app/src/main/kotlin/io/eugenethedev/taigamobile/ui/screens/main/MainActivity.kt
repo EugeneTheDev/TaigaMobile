@@ -55,7 +55,6 @@ import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
 import io.eugenethedev.taigamobile.ui.screens.wiki.WikiScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import kotlinx.coroutines.launch
 import java.io.InputStream
 
@@ -128,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                                         snackbarData = it,
                                         backgroundColor = MaterialTheme.colorScheme.surface,
                                         contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
-                                        shape = shapes.medium
+                                        shape = MaterialTheme.shapes.small
                                     )
                                 }
                             },
@@ -159,9 +158,10 @@ class MainActivity : AppCompatActivity() {
                                             label = { Text(stringResource(screen.resourceId)) },
                                             selected = currentRoute == screen.route,
                                             onClick = {
-                                                navController.navigate(screen.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) { }
-                                                    launchSingleTop = true
+                                                if (screen.route != currentRoute) {
+                                                    navController.navigate(screen.route) {
+                                                        popUpTo(navController.graph.findStartDestination().id) { }
+                                                    }
                                                 }
                                             }
                                         )

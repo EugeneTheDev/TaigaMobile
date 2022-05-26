@@ -30,7 +30,6 @@ import io.eugenethedev.taigamobile.domain.entities.WikiLink
 import io.eugenethedev.taigamobile.domain.entities.WikiPage
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.theme.shapes
 
 @Composable
 fun WikiPageSelector(
@@ -117,7 +116,7 @@ fun WikiPageItem(
     currentPageTitle: String,
     onClick: () -> Unit = {}
 ) = Surface(
-    shape = shapes.medium,
+    shape = MaterialTheme.shapes.small,
     border = if (pageTitle == currentPageTitle) {
         BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
     } else {

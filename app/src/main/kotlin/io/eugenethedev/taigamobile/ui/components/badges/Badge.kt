@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.textColor
 
 @Composable
@@ -22,7 +21,7 @@ fun Badge(
 ) {
     val color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface
     Surface(
-        shape = shapes.small,
+        shape = MaterialTheme.shapes.extraSmall,
         color = color,
         contentColor = color.textColor(),
         tonalElevation = 2.dp

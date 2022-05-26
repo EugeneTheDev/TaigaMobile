@@ -60,18 +60,21 @@ fun CommonTaskScreen(
     val comments by viewModel.comments.collectAsState()
     comments.subscribeOnError(showMessage)
 
+    val editBasicInfoResult by viewModel.editBasicInfoResult.collectAsState()
+    editBasicInfoResult.subscribeOnError(showMessage)
+
     val statuses by viewModel.statuses.collectAsState()
     statuses.subscribeOnError(showMessage)
-    val statusSelectResult by viewModel.statusSelectResult.collectAsState()
-    statusSelectResult.subscribeOnError(showMessage)
+    val editStatusResult by viewModel.editStatusResult.collectAsState()
+    editStatusResult.subscribeOnError(showMessage)
 
     val swimlanes by viewModel.swimlanes.collectAsState()
     swimlanes.subscribeOnError(showMessage)
 
     val sprints = viewModel.sprints
     sprints.subscribeOnError(showMessage)
-    val selectSprintResult by viewModel.selectSprintResult.collectAsState()
-    selectSprintResult.subscribeOnError(showMessage)
+    val editSprintResult by viewModel.editSprintResult.collectAsState()
+    editSprintResult.subscribeOnError(showMessage)
 
     val epics = viewModel.epics
     epics.subscribeOnError(showMessage)
@@ -92,14 +95,14 @@ fun CommonTaskScreen(
     tags.subscribeOnError(showMessage)
     val tagsSearched by viewModel.tagsSearched.collectAsState()
 
-    val colorResult by viewModel.colorResult.collectAsState()
-    colorResult.subscribeOnError(showMessage)
+    val editEpicColorResult by viewModel.editEpicColorResult.collectAsState()
+    editEpicColorResult.subscribeOnError(showMessage)
 
-    val dueDateResult by viewModel.dueDateResult.collectAsState()
-    dueDateResult.subscribeOnError(showMessage)
+    val editBlockedResult by viewModel.editBlockedResult.collectAsState()
+    editBlockedResult.subscribeOnError(showMessage)
 
-    val editResult by viewModel.editResult.collectAsState()
-    editResult.subscribeOnError(showMessage)
+    val editDueDateResult by viewModel.editDueDateResult.collectAsState()
+    editDueDateResult.subscribeOnError(showMessage)
 
     val deleteResult by viewModel.deleteResult.collectAsState()
     deleteResult.subscribeOnError(showMessage)
@@ -122,10 +125,10 @@ fun CommonTaskScreen(
     val isAssignedToMe by viewModel.isAssignedToMe.collectAsState()
     val isWatchedByMe by viewModel.isWatchedByMe.collectAsState()
 
-    fun makeEditStatusAction(statusType: StatusType) = EditAction(
+    fun createEditStatusAction(statusType: StatusType) = SimpleEditAction(
         items = statuses.data?.get(statusType).orEmpty(),
-        selectItem = viewModel::selectStatus,
-        isResultLoading = statusSelectResult.let { (it as? LoadingResult)?.data == statusType }
+        select = viewModel::editStatus,
+        isLoading = (editStatusResult as? LoadingResult)?.data == statusType
     )
 
     CommonTaskScreenContent(
@@ -141,101 +144,109 @@ fun CommonTaskScreen(
         toolbarSubtitle = projectName,
         commonTask = commonTask.data,
         creator = creator.data,
+        isLoading = commonTask is LoadingResult,
         customFields = customFields.data?.fields.orEmpty(),
         attachments = attachments.data.orEmpty(),
         assignees = assignees.data.orEmpty(),
         watchers = watchers.data.orEmpty(),
+        isAssignedToMe = isAssignedToMe,
+        isWatchedByMe = isWatchedByMe,
         userStories = userStories.data.orEmpty(),
         tasks = tasks.data.orEmpty(),
         comments = comments.data.orEmpty(),
         editActions = EditActions(
-            editStatus = makeEditStatusAction(StatusType.Status),
-            editType = makeEditStatusAction(StatusType.Type),
-            editSeverity = makeEditStatusAction(StatusType.Severity),
-            editPriority = makeEditStatusAction(StatusType.Priority),
-            editSwimlane = EditAction(
+            editStatus = createEditStatusAction(StatusType.Status),
+            editType = createEditStatusAction(StatusType.Type),
+            editSeverity = createEditStatusAction(StatusType.Severity),
+            editPriority = createEditStatusAction(StatusType.Priority),
+            editSwimlane = SimpleEditAction(
                 items = swimlanes.data.orEmpty(),
-                selectItem = viewModel::selectSwimlane,
-                isResultLoading = swimlanes is LoadingResult
+                select = viewModel::editSwimlane,
+                isLoading = swimlanes is LoadingResult
             ),
-            editSprint = EditAction(
+            editSprint = SimpleEditAction(
                 itemsLazy = sprints,
-                selectItem = viewModel::selectSprint,
-                isResultLoading = selectSprintResult is LoadingResult
+                select = viewModel::editSprint,
+                isLoading = editSprintResult is LoadingResult
             ),
             editEpics = EditAction(
                 itemsLazy = epics,
                 searchItems = viewModel::searchEpics,
-                selectItem = viewModel::linkToEpic,
-                isResultLoading = linkToEpicResult is LoadingResult,
-                removeItem = {
-                    // Since epic structure in CommonTaskExtended differs from what is used in edit there is separate lambda
-                }
+                select = viewModel::linkToEpic,
+                isLoading = linkToEpicResult is LoadingResult,
+                remove = viewModel::unlinkFromEpic
             ),
-            unlinkFromEpic = viewModel::unlinkFromEpic,
-            editAttachments = EditAttachmentsAction(
-                deleteAttachment = viewModel::deleteAttachment,
-                addAttachment = viewModel::addAttachment,
-                isResultLoading = attachments is LoadingResult
+            editAttachments = EditAction(
+                select = { (file, stream) -> viewModel.addAttachment(file, stream) },
+                remove = viewModel::deleteAttachment,
+                isLoading = attachments is LoadingResult
             ),
-            editAssignees = EditAction(
+            editAssignees = SimpleEditAction(
                 items = teamSearched,
                 searchItems = viewModel::searchTeam,
-                selectItem = viewModel::addAssignee,
-                isResultLoading = assignees is LoadingResult,
-                removeItem = viewModel::removeAssignee
+                select = { viewModel.addAssignee(it.id) },
+                isLoading = assignees is LoadingResult,
+                remove = { viewModel.removeAssignee(it.id) }
             ),
-            editWatchers = EditAction(
+            editWatchers = SimpleEditAction(
                 items = teamSearched,
                 searchItems = viewModel::searchTeam,
-                selectItem = viewModel::addWatcher,
-                isResultLoading = watchers is LoadingResult,
-                removeItem = viewModel::removeWatcher
+                select = { viewModel.addWatcher(it.id) },
+                isLoading = watchers is LoadingResult,
+                remove = { viewModel.removeWatcher(it.id) }
             ),
-            editComments = EditCommentsAction(
-                createComment = viewModel::createComment,
-                deleteComment = viewModel::deleteComment,
-                isResultLoading = comments is LoadingResult
+            editComments = EditAction(
+                select = viewModel::createComment,
+                remove = viewModel::deleteComment,
+                isLoading = comments is LoadingResult
             ),
-            editTask = viewModel::editTask,
-            deleteTask = viewModel::deleteTask,
-            promoteTask = viewModel::promoteToUserStory,
-            editCustomField = viewModel::editCustomField,
+            editBasicInfo = SimpleEditAction(
+                select = { (title, description) -> viewModel.editBasicInfo(title, description) },
+                isLoading = editBasicInfoResult is LoadingResult
+            ),
+            deleteTask = EmptyEditAction(
+                select = { viewModel.deleteTask() },
+                isLoading = deleteResult is LoadingResult
+            ),
+            promoteTask = EmptyEditAction(
+                select = { viewModel.promoteToUserStory() },
+                isLoading = promoteResult is LoadingResult
+            ),
+            editCustomField = SimpleEditAction(
+                select = { (field, value) -> viewModel.editCustomField(field, value) },
+                isLoading = customFields is LoadingResult
+            ),
             editTags = EditAction(
                 items = tagsSearched,
                 searchItems = viewModel::searchTags,
-                selectItem = viewModel::addTag,
-                removeItem = viewModel::deleteTag,
-                isResultLoading = tags is LoadingResult
+                select = viewModel::addTag,
+                remove = viewModel::deleteTag,
+                isLoading = tags is LoadingResult
             ),
-            editDueDate = EditSimple(
-                select = viewModel::selectDueDate,
-                isResultLoading = dueDateResult is LoadingResult
+            editDueDate = EditAction(
+                select = viewModel::editDueDate,
+                remove = { viewModel.editDueDate(null) },
+                isLoading = editDueDateResult is LoadingResult
             ),
-            editEpicColor = EditSimple(
-                select = viewModel::selectEpicColor,
-                isResultLoading = colorResult is LoadingResult
+            editEpicColor = SimpleEditAction(
+                select = viewModel::editEpicColor,
+                isLoading = editEpicColorResult is LoadingResult
             ),
-            assign = EditSimpleEmpty(
-                select =  viewModel::addAssigneeById ,
-                remove = viewModel::removeAssigneeById,
-                isResultLoading = assignees is LoadingResult,
+            editAssign = EmptyEditAction(
+                select =  { viewModel.addAssignee() },
+                remove = { viewModel.removeAssignee() },
+                isLoading = assignees is LoadingResult,
             ),
-            watch = EditSimpleEmpty(
-                select = viewModel::addWatcherById,
-                remove = viewModel::removeWatcherById,
-                isResultLoading = watchers is LoadingResult,
+            editWatch = EmptyEditAction(
+                select = { viewModel.addWatcher() },
+                remove = { viewModel.removeWatcher() },
+                isLoading = watchers is LoadingResult,
             ),
-            isAssignedToMe = isAssignedToMe,
-            isWatchedByMe = isWatchedByMe,
-            showMessage = showMessage
-        ),
-        loaders = Loaders(
-            isLoading = commonTask is LoadingResult,
-            isEditLoading = editResult is LoadingResult,
-            isDeleteLoading = deleteResult is LoadingResult,
-            isPromoteLoading = promoteResult is LoadingResult,
-            isCustomFieldsLoading = customFields is LoadingResult
+            editBlocked = EditAction(
+                select = { viewModel.editBlocked(it) },
+                remove = { viewModel.editBlocked(null) },
+                isLoading = editBlockedResult is LoadingResult
+            )
         ),
         navigationActions = NavigationActions(
             navigateBack = navController::popBackStack,
@@ -244,7 +255,8 @@ fun CommonTaskScreen(
         ),
         navigateToProfile = { userId ->
             navController.navigateToProfileScreen(userId)
-        }
+        },
+        showMessage = showMessage
     )
 }
 
@@ -253,19 +265,22 @@ fun CommonTaskScreenContent(
     commonTaskType: CommonTaskType,
     toolbarTitle: String,
     toolbarSubtitle: String,
-    commonTask: CommonTaskExtended?,
-    creator: User?,
+    commonTask: CommonTaskExtended? = null,
+    creator: User? = null,
+    isLoading: Boolean = false,
     customFields: List<CustomField> = emptyList(),
     attachments: List<Attachment> = emptyList(),
     assignees: List<User> = emptyList(),
     watchers: List<User> = emptyList(),
+    isAssignedToMe: Boolean = false,
+    isWatchedByMe: Boolean = false,
     userStories: List<CommonTask> = emptyList(),
     tasks: List<CommonTask> = emptyList(),
     comments: List<Comment> = emptyList(),
     editActions: EditActions = EditActions(),
-    loaders: Loaders = Loaders(),
     navigationActions: NavigationActions = NavigationActions(),
-    navigateToProfile: (userId: Long) -> Unit = {_ ->}
+    navigateToProfile: (userId: Long) -> Unit = {_ ->},
+    showMessage: (message: Int) -> Unit = {}
 ) = Box(Modifier.fillMaxSize()) {
     var isTaskEditorVisible by remember { mutableStateOf(false) }
 
@@ -281,20 +296,22 @@ fun CommonTaskScreenContent(
 
     var customFieldsValues by remember { mutableStateOf(emptyMap<Long, CustomFieldValue?>()) }
     customFieldsValues =
-        customFields.map { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }.toMap()
+        customFields.associate { it.id to (if (it.id in customFieldsValues) customFieldsValues[it.id] else it.value) }
 
     Column(Modifier.fillMaxSize()) {
         CommonTaskAppBar(
             toolbarTitle = toolbarTitle,
             toolbarSubtitle = toolbarSubtitle,
             commonTaskType = commonTaskType,
-            showTaskEditor = { isTaskEditorVisible = true },
+            isBlocked = commonTask?.blockedNote != null,
             editActions = editActions,
             navigationActions = navigationActions,
-            url = commonTask?.url ?: ""
+            url = commonTask?.url ?: "",
+            showTaskEditor = { isTaskEditorVisible = true },
+            showMessage = showMessage
         )
 
-        if (loaders.isLoading || creator == null || commonTask == null) {
+        if (isLoading || creator == null || commonTask == null) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
@@ -314,6 +331,10 @@ fun CommonTaskScreenContent(
                         .fillMaxSize()
                         .padding(horizontal = mainHorizontalScreenPadding)
                 ) {
+
+                    item {
+                        Spacer(Modifier.height(sectionsPadding / 2))
+                    }
 
                     CommonTaskHeader(
                         commonTask = commonTask,
@@ -375,6 +396,7 @@ fun CommonTaskScreenContent(
 
                     CommonTaskAssignees(
                         assignees = assignees,
+                        isAssignedToMe = isAssignedToMe,
                         editActions = editActions,
                         showAssigneesSelector = { isAssigneesSelectorVisible = true },
                         navigateToProfile = navigateToProfile
@@ -386,6 +408,7 @@ fun CommonTaskScreenContent(
 
                     CommonTaskWatchers(
                         watchers = watchers,
+                        isWatchedByMe = isWatchedByMe,
                         editActions = editActions,
                         showWatchersSelector = { isWatchersSelectorVisible = true },
                         navigateToProfile = navigateToProfile
@@ -400,8 +423,7 @@ fun CommonTaskScreenContent(
                             customFields = customFields,
                             customFieldsValues = customFieldsValues,
                             onValueChange = { itemId, value -> customFieldsValues = customFieldsValues - itemId + Pair(itemId, value) },
-                            editActions = editActions,
-                            loaders = loaders
+                            editActions = editActions
                         )
 
                         item {
@@ -411,7 +433,7 @@ fun CommonTaskScreenContent(
 
                     CommonTaskAttachments(
                         attachments = attachments,
-                        editAttachmentsAction = editActions.editAttachments
+                        editAttachments = editActions.editAttachments
                     )
 
                     item {
@@ -458,7 +480,7 @@ fun CommonTaskScreenContent(
                     }
                 }
 
-                CreateCommentBar(editActions.editComments.createComment)
+                CreateCommentBar(editActions.editComments.select)
             }
         }
     }
@@ -513,20 +535,20 @@ fun CommonTaskScreenContent(
     )
 
     // Editor
-    if (isTaskEditorVisible || loaders.isEditLoading) {
+    if (isTaskEditorVisible || editActions.editBasicInfo.isLoading) {
         TaskEditor(
             toolbarText = stringResource(R.string.edit),
             title = commonTask?.title.orEmpty(),
             description = commonTask?.description.orEmpty(),
             onSaveClick = { title, description ->
                 isTaskEditorVisible = false
-                editActions.editTask(title, description)
+                editActions.editBasicInfo.select(Pair(title, description))
             },
             navigateBack = { isTaskEditorVisible = false }
         )
     }
 
-    if (loaders.isEditLoading || loaders.isDeleteLoading || loaders.isPromoteLoading) {
+    if (editActions.run { listOf(editBasicInfo, promoteTask, deleteTask, editBlocked) }.any { it.isLoading }) {
         LoadingDialog()
     }
 }
@@ -574,7 +596,7 @@ fun CommonTaskScreenPreview() = TaigaMobileTheme {
                     title = "Very cool story",
                     ref = 100,
                     status = Status(
-                        id = (0..2).random().toLong(),
+                        id = 1,
                         name = "In progress",
                         color = "#729fcf",
                         type = StatusType.Status

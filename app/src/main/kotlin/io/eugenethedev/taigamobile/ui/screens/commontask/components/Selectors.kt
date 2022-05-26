@@ -16,6 +16,7 @@ import io.eugenethedev.taigamobile.ui.components.editors.SelectorList
 import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.screens.commontask.CommonTaskViewModel
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
+import io.eugenethedev.taigamobile.ui.screens.commontask.SimpleEditAction
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -33,7 +34,7 @@ fun Selectors(
     epicsEntry: SelectorEntry<CommonTask> = SelectorEntry(),
     assigneesEntry: SelectorEntry<User> = SelectorEntry(),
     watchersEntry: SelectorEntry<User> = SelectorEntry(),
-    swimlaneEntry: SelectorEntry<Swimlane> = SelectorEntry()
+    swimlaneEntry: SelectorEntry<Swimlane> = SelectorEntry(),
 ) {
     // status editor
     SelectorList(
@@ -47,7 +48,7 @@ fun Selectors(
         StatusItem(
             status = it,
             onClick = {
-                statusEntry.edit.selectItem(it)
+                statusEntry.edit.select(it)
                 statusEntry.hide()
             }
         )
@@ -65,7 +66,7 @@ fun Selectors(
         StatusItem(
             status = it,
             onClick = {
-                typeEntry.edit.selectItem(it)
+                typeEntry.edit.select(it)
                 typeEntry.hide()
             }
         )
@@ -83,7 +84,7 @@ fun Selectors(
         StatusItem(
             status = it,
             onClick = {
-                severityEntry.edit.selectItem(it)
+                severityEntry.edit.select(it)
                 severityEntry.hide()
             }
         )
@@ -101,7 +102,7 @@ fun Selectors(
         StatusItem(
             status = it,
             onClick = {
-                priorityEntry.edit.selectItem(it)
+                priorityEntry.edit.select(it)
                 priorityEntry.hide()
             }
         )
@@ -118,7 +119,7 @@ fun Selectors(
         SprintItem(
             sprint = it,
             onClick = {
-                sprintEntry.edit.selectItem(it)
+                sprintEntry.edit.select(it)
                 sprintEntry.hide()
             }
         )
@@ -135,7 +136,7 @@ fun Selectors(
         EpicItem(
             epic = it,
             onClick = {
-                epicsEntry.edit.selectItem(it)
+                epicsEntry.edit.select(it)
                 epicsEntry.hide()
             }
         )
@@ -153,7 +154,7 @@ fun Selectors(
         MemberItem(
             member = it,
             onClick = {
-                assigneesEntry.edit.selectItem(it)
+                assigneesEntry.edit.select(it)
                 assigneesEntry.hide()
             }
         )
@@ -170,7 +171,7 @@ fun Selectors(
         MemberItem(
             member = it,
             onClick = {
-                watchersEntry.edit.selectItem(it)
+                watchersEntry.edit.select(it)
                 watchersEntry.hide()
             }
         )
@@ -187,15 +188,15 @@ fun Selectors(
         SwimlaneItem(
             swimlane = it,
             onClick = {
-                swimlaneEntry.edit.selectItem(it)
+                swimlaneEntry.edit.select(it)
                 swimlaneEntry.hide()
             }
         )
     }
 }
 
-class SelectorEntry<T : Any> (
-    val edit: EditAction<T> = EditAction(),
+class SelectorEntry<TItem : Any> (
+    val edit: EditAction<TItem, *> = SimpleEditAction(),
     val isVisible: Boolean = false,
     val hide: () -> Unit = {}
 )
@@ -283,17 +284,17 @@ private fun EpicItem(
 
 @Composable
 private fun SwimlaneItem(
-    swimlane: Swimlane?,
+    swimlane: Swimlane,
     onClick: () -> Unit
 ) = ContainerBox(
     verticalPadding = 16.dp,
     onClick = onClick
 ) {
-    fun getOrNull() = swimlane.takeIf { it != CommonTaskViewModel.SWIMLANE_HEADER }
+    val swimlaneNullable = swimlane.takeIf { it != CommonTaskViewModel.SWIMLANE_HEADER }
 
     Text(
-        text = getOrNull()?.name ?: stringResource(R.string.unclassifed),
+        text = swimlaneNullable?.name ?: stringResource(R.string.unclassifed),
         style = MaterialTheme.typography.bodyLarge,
-        color = getOrNull()?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary
+        color = swimlaneNullable?.let { MaterialTheme.colorScheme.onSurface } ?: MaterialTheme.colorScheme.primary
     )
 }

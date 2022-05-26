@@ -1,5 +1,7 @@
 package io.eugenethedev.taigamobile.ui.screens.commontask.components
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,8 +18,10 @@ import io.eugenethedev.taigamobile.ui.components.lists.UserItemWithAction
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskAssignees(
     assignees: List<User>,
+    isAssignedToMe: Boolean,
     editActions: EditActions,
     showAssigneesSelector: () -> Unit,
     navigateToProfile: (userId: Long) -> Unit
@@ -33,7 +37,7 @@ fun LazyListScope.CommonTaskAssignees(
     itemsIndexed(assignees) { index, item ->
         UserItemWithAction(
             user = item,
-            onRemoveClick = { editActions.editAssignees.removeItem(item) },
+            onRemoveClick = { editActions.editAssignees.remove(item) },
             onUserItemClick = { navigateToProfile(item.id) }
         )
 
@@ -44,7 +48,7 @@ fun LazyListScope.CommonTaskAssignees(
 
     // add assignee & loader
     item {
-        if (editActions.editAssignees.isResultLoading) {
+        if (editActions.editAssignees.isLoading) {
             DotsLoader()
         }
         Row(
@@ -58,22 +62,21 @@ fun LazyListScope.CommonTaskAssignees(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            val buttonText: Int
-            val buttonIcon: Int
-
-            if (!editActions.isAssignedToMe) {
-                buttonText = R.string.assign_to_me
-                buttonIcon = R.drawable.ic_assignee_to_me
+            val (@StringRes buttonText: Int, @DrawableRes buttonIcon: Int) = if (isAssignedToMe) {
+                R.string.unassign to R.drawable.ic_unassigned
             } else {
-                buttonText = R.string.unassign
-                buttonIcon = R.drawable.ic_unassigned
+                R.string.assign_to_me to R.drawable.ic_assignee_to_me
             }
 
             TextButton(
                 text = stringResource(buttonText),
                 icon = buttonIcon,
                 onClick = {
-                    if (!editActions.isAssignedToMe) editActions.assign.select() else editActions.assign.remove()
+                    if (isAssignedToMe) {
+                        editActions.editAssign.remove(Unit)
+                    } else {
+                        editActions.editAssign.select(Unit)
+                    }
                 }
             )
         }

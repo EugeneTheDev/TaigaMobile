@@ -32,7 +32,6 @@ import coil.compose.rememberImagePainter
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Project
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.theme.shapes
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -41,7 +40,7 @@ fun ProjectCard(
     isCurrent: Boolean,
     onClick: () -> Unit = {}
 ) = Surface(
-    shape = shapes.medium,
+    shape = MaterialTheme.shapes.small,
     border = if (isCurrent) {
         BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
     } else {

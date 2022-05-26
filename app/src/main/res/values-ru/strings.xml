@@ -93,7 +93,10 @@
     <string name="add_user">Добавить пользователя</string>
     <string name="attachments_template">%d Вложений</string>
     <string name="custom_fields">Специальные поля</string>
-
+    <string name="block">Блокировать</string>
+    <string name="unblock">Разблокировать</string>
+    <string name="blocked">Заблокировано</string>
+    <string name="block_reason">Причина блокировки</string>
 
     <string name="add_assignee">Назначить</string>
     <string name="assign_to_me">Назначить мне</string>

@@ -2,6 +2,9 @@ package io.eugenethedev.taigamobile.state
 
 import android.content.Context
 import androidx.core.content.edit
+import com.squareup.moshi.Moshi
+import io.eugenethedev.taigamobile.domain.entities.FiltersData
+import io.eugenethedev.taigamobile.domain.entities.FiltersDataJsonAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -11,7 +14,7 @@ import kotlinx.coroutines.launch
 /**
  * Global app state
  */
-class Session(context: Context) {
+class Session(context: Context, moshi: Moshi) {
 
     private val sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -58,6 +61,8 @@ class Session(context: Context) {
         }
         _currentProjectId.value = id
         _currentProjectName.value = name
+
+        resetFilters()
     }
 
     private fun checkLogged(token: String, refresh: String) = listOf(token, refresh).all { it.isNotEmpty() }
@@ -68,11 +73,52 @@ class Session(context: Context) {
     val isProjectSelected = currentProjectId.map(::checkProjectSelected)
         .stateIn(scope, SharingStarted.Eagerly, initialValue = checkProjectSelected(currentProjectId.value))
 
+
+    // Filters
+    private val filtersJsonAdapter = FiltersDataJsonAdapter(moshi)
+    private fun getFiltersOrEmpty(key: String) = sharedPreferences.getString(key, null)?.takeIf { it.isNotBlank() }?.let { filtersJsonAdapter.fromJson(it) } ?: FiltersData()
+
+    private val _scrumFilters = MutableStateFlow(getFiltersOrEmpty(FILTERS_SCRUM))
+    val scrumFilters: StateFlow<FiltersData> = _scrumFilters
+    fun changeScrumFilters(filters: FiltersData) {
+        sharedPreferences.edit {
+            putString(FILTERS_SCRUM, filtersJsonAdapter.toJson(filters))
+        }
+        _scrumFilters.value = filters
+    }
+
+    private val _epicsFilters = MutableStateFlow(getFiltersOrEmpty(FILTERS_EPICS))
+    val epicsFilters: StateFlow<FiltersData> = _epicsFilters
+    fun changeEpicsFilters(filters: FiltersData) {
+        sharedPreferences.edit {
+            putString(FILTERS_EPICS, filtersJsonAdapter.toJson(filters))
+        }
+        _epicsFilters.value = filters
+    }
+
+    private val _issuesFilters = MutableStateFlow(getFiltersOrEmpty(FILTERS_ISSUES))
+    val issuesFilters: StateFlow<FiltersData> = _issuesFilters
+    fun changeIssuesFilters(filters: FiltersData) {
+        sharedPreferences.edit {
+            putString(FILTERS_ISSUES, filtersJsonAdapter.toJson(filters))
+        }
+        _issuesFilters.value = filters
+    }
+
+    private fun resetFilters() {
+        changeScrumFilters(FiltersData())
+        changeEpicsFilters(FiltersData())
+        changeIssuesFilters(FiltersData())
+    }
+
+
     fun reset() {
         changeAuthCredentials("", "")
         changeServer("")
         changeCurrentUserId(-1)
         changeCurrentProject(-1, "")
+
+        resetFilters()
     }
 
     companion object {
@@ -83,6 +129,10 @@ class Session(context: Context) {
         private const val PROJECT_NAME_KEY = "project_name"
         private const val PROJECT_ID_KEY = "project_id"
         private const val USER_ID_KEY = "user_id"
+
+        private const val FILTERS_SCRUM = "filters_scrum"
+        private const val FILTERS_EPICS = "filters_epics"
+        private const val FILTERS_ISSUES = "filters_issues"
     }
 
     // Events (no data, just dispatch update to subscribers)

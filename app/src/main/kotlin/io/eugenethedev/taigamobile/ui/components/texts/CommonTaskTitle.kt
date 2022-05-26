@@ -1,8 +1,6 @@
 package io.eugenethedev.taigamobile.ui.components.texts
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +17,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Tag
 import io.eugenethedev.taigamobile.ui.components.Chip
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
+import io.eugenethedev.taigamobile.ui.theme.taigaRed
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 
@@ -33,8 +32,11 @@ fun CommonTaskTitle(
     isInactive: Boolean = false,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorColorsHex: List<String> = emptyList(),
-    tags: List<Tag> = emptyList()
+    tags: List<Tag> = emptyList(),
+    isBlocked: Boolean = false
 ) = Column(modifier = modifier) {
+    val space = 4.dp
+
     Text(
         text = buildAnnotatedString {
             if (isInactive) pushStyle(SpanStyle(color = MaterialTheme.colorScheme.outline, textDecoration = TextDecoration.LineThrough))
@@ -49,16 +51,16 @@ fun CommonTaskTitle(
                 pop()
             }
         },
-        color = textColor,
+        color = if (isBlocked) taigaRed else textColor,
         style = MaterialTheme.typography.titleMedium
     )
 
     if (tags.isNotEmpty()) {
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(space))
 
         FlowRow(
-            mainAxisSpacing = 4.dp,
-            crossAxisSpacing = 4.dp
+            mainAxisSpacing = space,
+            crossAxisSpacing = space
         ) {
             tags.forEach {
                 val bgColor = it.color.toColor()
@@ -81,7 +83,8 @@ fun CommonTaskTitlePreview() = TaigaMobileTheme {
     CommonTaskTitle(
         ref = 42,
         title = "Some title",
-        tags = listOf(Tag("one", "#25A28C"), Tag("two", "#25A28C"))
+        tags = listOf(Tag("one", "#25A28C"), Tag("two", "#25A28C")),
+        isBlocked = true
     )
 }
 

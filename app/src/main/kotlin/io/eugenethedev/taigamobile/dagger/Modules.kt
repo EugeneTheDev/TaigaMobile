@@ -111,7 +111,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideSession(context: Context) = Session(context)
+    fun provideSession(context: Context, moshi: Moshi) = Session(context, moshi)
 
     @Provides
     @Singleton

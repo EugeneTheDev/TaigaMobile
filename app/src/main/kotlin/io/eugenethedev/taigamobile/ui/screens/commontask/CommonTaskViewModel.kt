@@ -37,11 +37,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
     private lateinit var commonTaskType: CommonTaskType
 
     val commonTask = MutableResultFlow<CommonTaskExtended>()
-    private val commonTaskVersion = commonTask.map { commonTask.value.data?.version ?: -1 }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = -1
-    )
 
     val creator = MutableResultFlow<User>()
     val customFields = MutableResultFlow<CustomFields>()
@@ -143,18 +138,29 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    /**
-     * Edit related stuff
-     */
+    // ================
+    // Edit task itself
+    // ================
+
+    // Edit task itself (title & description)
+    val editBasicInfoResult = MutableResultFlow<Unit>()
+
+    fun editBasicInfo(title: String, description: String) = viewModelScope.launch {
+        editBasicInfoResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editCommonTaskBasicInfo(commonTask.value.data!!, title, description)
+            loadData().join()
+            session.taskEdit.postUpdate()
+        }
+    }
 
     // Edit status (and also type, severity, priority)
-    val statusSelectResult = MutableResultFlow<StatusType>()
+    val editStatusResult = MutableResultFlow<StatusType>()
 
-    fun selectStatus(status: Status) = viewModelScope.launch {
-        statusSelectResult.value = LoadingResult(status.type)
+    fun editStatus(status: Status) = viewModelScope.launch {
+        editStatusResult.value = LoadingResult(status.type)
 
-        statusSelectResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeStatus(commonTaskId, commonTaskType, status.id, status.type, commonTaskVersion.value)
+        editStatusResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editStatus(commonTask.value.data!!, status.id, status.type)
             loadData().join()
             session.taskEdit.postUpdate()
             status.type
@@ -169,15 +175,142 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             .asLazyPagingItems(viewModelScope)
     }
 
-    val selectSprintResult = MutableResultFlow<Unit>(NothingResult())
+    val editSprintResult = MutableResultFlow<Unit>(NothingResult())
 
-    fun selectSprint(sprint: Sprint) = viewModelScope.launch {
-        selectSprintResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeSprint(commonTaskId, commonTaskType, sprint.takeIf { it != SPRINT_HEADER }?.id, commonTaskVersion.value)
+    fun editSprint(sprint: Sprint) = viewModelScope.launch {
+        editSprintResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editSprint(commonTask.value.data!!, sprint.takeIf { it != SPRINT_HEADER }?.id)
             loadData().join()
             session.taskEdit.postUpdate()
         }
     }
+
+    // use team for both assignees and watchers
+    val teamSearched = MutableStateFlow(emptyList<User>())
+
+    fun searchTeam(query: String) = viewModelScope.launch {
+        val q = query.lowercase()
+        teamSearched.value = team.value.data
+            .orEmpty()
+            .filter { q in it.username.lowercase() || q in it.displayName.lowercase() }
+    }
+
+    // Edit assignees
+
+    private fun editAssignees(userId: Long, remove: Boolean) = viewModelScope.launch {
+        assignees.loadOrError(R.string.permission_error) {
+            teamSearched.value = team.value.data.orEmpty()
+
+            tasksRepository.editAssignees(
+                commonTask.value.data!!,
+                commonTask.value.data!!.assignedIds.let {
+                    if (remove) it - userId
+                    else it + userId
+                }
+            )
+
+            loadData().join()
+            session.taskEdit.postUpdate()
+            assignees.value.data
+        }
+    }
+
+    fun addAssignee(userId: Long = session.currentUserId.value) = editAssignees(userId, remove = false)
+    fun removeAssignee(userId: Long = session.currentUserId.value) = editAssignees(userId, remove = true)
+
+    // Edit watchers
+
+    private fun editWatchers(userId: Long, remove: Boolean) = viewModelScope.launch {
+        watchers.loadOrError(R.string.permission_error) {
+            teamSearched.value = team.value.data.orEmpty()
+
+            tasksRepository.editWatchers(
+                commonTask.value.data!!,
+                commonTask.value.data?.watcherIds.orEmpty().let {
+                    if (remove) it - userId
+                    else it + userId
+                }
+            )
+
+            loadData().join()
+            session.taskEdit.postUpdate()
+            watchers.value.data
+        }
+    }
+
+    fun addWatcher(userId: Long = session.currentUserId.value) = editWatchers(userId, remove = false)
+    fun removeWatcher(userId: Long = session.currentUserId.value) = editWatchers(userId, remove = true)
+
+    // Tags
+    val tagsSearched = MutableStateFlow(emptyList<Tag>())
+
+    fun searchTags(query: String) = viewModelScope.launch {
+        tagsSearched.value = tags.value.data.orEmpty().filter { query.isNotEmpty() && query.lowercase() in it.name }
+    }
+
+    private fun editTag(tag: Tag, remove: Boolean) = viewModelScope.launch {
+        tags.loadOrError(R.string.permission_error) {
+            tagsSearched.value = tags.value.data.orEmpty()
+
+            tasksRepository.editTags(
+                commonTask.value.data!!,
+                commonTask.value.data!!.tags.let { if (remove) it - tag else it + tag },
+            )
+
+            loadData().join()
+            session.taskEdit.postUpdate()
+            tags.value.data
+        }
+    }
+
+    fun addTag(tag: Tag) = editTag(tag, remove = false)
+    fun deleteTag(tag: Tag) = editTag(tag, remove = true)
+
+    // Swimlanes
+    fun editSwimlane(swimlane: Swimlane) = viewModelScope.launch {
+        swimlanes.loadOrError(R.string.permission_error) {
+            tasksRepository.editUserStorySwimlane(commonTask.value.data!!, swimlane.takeIf { it != SWIMLANE_HEADER }?.id)
+            loadData().join()
+            session.taskEdit.postUpdate()
+            swimlanes.value.data
+        }
+    }
+
+    // Due date
+    val editDueDateResult = MutableResultFlow<Unit>()
+
+    fun editDueDate(date: LocalDate?) = viewModelScope.launch {
+        editDueDateResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editDueDate(commonTask.value.data!!, date)
+            loadData().join()
+        }
+    }
+
+    // Epic color
+    val editEpicColorResult = MutableResultFlow<Unit>()
+
+    fun editEpicColor(color: String) = viewModelScope.launch {
+        editEpicColorResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editEpicColor(commonTask.value.data!!, color)
+            loadData().join()
+            session.taskEdit.postUpdate()
+        }
+    }
+
+    val editBlockedResult = MutableResultFlow<Unit>()
+
+    fun editBlocked(blockedNote: String?) = viewModelScope.launch {
+        editBlockedResult.loadOrError(R.string.permission_error) {
+            tasksRepository.editBlocked(commonTask.value.data!!, blockedNote)
+            loadData().join()
+            session.taskEdit.postUpdate()
+        }
+    }
+
+    // =============
+    // Related edits
+    // =============
+
 
     // Edit linked epic
     private val epicsQuery = MutableStateFlow("")
@@ -212,73 +345,11 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
         }
     }
 
-    // use team for both assignees and watchers
-    val teamSearched = MutableStateFlow(emptyList<User>())
-
-    fun searchTeam(query: String) = viewModelScope.launch {
-        val q = query.lowercase()
-        teamSearched.value = team.value.data
-            .orEmpty()
-            .filter { q in it.username.lowercase() || q in it.displayName.lowercase() }
-    }
-
-    // Edit assignees
-
-    private fun changeAssignees(userId: Long, remove: Boolean) = viewModelScope.launch {
-        assignees.loadOrError(R.string.permission_error) {
-            teamSearched.value = team.value.data.orEmpty()
-
-            tasksRepository.changeAssignees(
-                commonTaskId, commonTaskType,
-                commonTask.value.data?.assignedIds.orEmpty().let {
-                    if (remove) it - userId
-                    else it + userId
-                },
-                commonTaskVersion.value
-            )
-
-            loadData().join()
-            session.taskEdit.postUpdate()
-            assignees.value.data
-        }
-    }
-
-    fun addAssignee(user: User) = changeAssignees(user.id, remove = false)
-    fun addAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = false)
-    fun removeAssignee(user: User) = changeAssignees(user.id, remove = true)
-    fun removeAssigneeById(userId: Long = session.currentUserId.value) = changeAssignees(userId, remove = true)
-
-
-    // Edit watchers
-
-    private fun changeWatchers(userId: Long, remove: Boolean) = viewModelScope.launch {
-        watchers.loadOrError(R.string.permission_error) {
-            teamSearched.value = team.value.data.orEmpty()
-
-            tasksRepository.changeWatchers(
-                commonTaskId, commonTaskType,
-                commonTask.value.data?.watcherIds.orEmpty().let {
-                    if (remove) it - userId
-                    else it + userId
-                },
-                commonTaskVersion.value
-            )
-
-            loadData().join()
-            watchers.value.data
-        }
-    }
-
-    fun addWatcher(user: User) = changeWatchers(user.id, remove = false)
-    fun addWatcherById(userId: Long = session.currentUserId.value) = changeWatchers(userId, remove = false)
-    fun removeWatcher(user: User) = changeWatchers(user.id, remove = true)
-    fun removeWatcherById(userId: Long = session.currentUserId.value) = changeWatchers(userId, remove = true)
-
     // Edit comments
 
     fun createComment(comment: String) = viewModelScope.launch {
         comments.loadOrError(R.string.permission_error) {
-            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTaskVersion.value)
+            tasksRepository.createComment(commonTaskId, commonTaskType, comment, commonTask.value.data!!.version)
             loadData().join()
             comments.value.data
         }
@@ -306,17 +377,6 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             tasksRepository.addAttachment(commonTaskId, commonTaskType, fileName, inputStream)
             loadData().join()
             attachments.value.data
-        }
-    }
-
-    // Edit task itself (title & description)
-    val editResult = MutableResultFlow<Unit>()
-
-    fun editTask(title: String, description: String) = viewModelScope.launch {
-        editResult.loadOrError(R.string.permission_error) {
-            tasksRepository.editCommonTask(commonTaskId, commonTaskType, title, description, commonTaskVersion.value)
-            loadData().join()
-            session.taskEdit.postUpdate()
         }
     }
 
@@ -354,63 +414,5 @@ class CommonTaskViewModel(appComponent: AppComponent = TaigaApp.appComponent) : 
             customFields.value.data
         }
 
-    }
-
-    // Tags
-    val tagsSearched = MutableStateFlow(emptyList<Tag>())
-
-    fun searchTags(query: String) = viewModelScope.launch {
-        tagsSearched.value = tags.value.data.orEmpty().filter { query.isNotEmpty() && query.lowercase() in it.name }
-    }
-
-    private fun editTag(tag: Tag, remove: Boolean) = viewModelScope.launch {
-        tags.loadOrError(R.string.permission_error) {
-            tagsSearched.value = tags.value.data.orEmpty()
-
-            tasksRepository.editTags(
-                commonTaskType = commonTaskType,
-                commonTaskId = commonTaskId,
-                tags = commonTask.value.data?.tags.orEmpty()
-                    .let { if (remove) it - tag else it + tag },
-                version = commonTaskVersion.value
-            )
-
-            loadData().join()
-            session.taskEdit.postUpdate()
-            tags.value.data
-        }
-    }
-
-    fun addTag(tag: Tag) = editTag(tag, remove = false)
-    fun deleteTag(tag: Tag) = editTag(tag, remove = true)
-
-    fun selectSwimlane(swimlane: Swimlane) = viewModelScope.launch {
-        swimlanes.loadOrError(R.string.permission_error) {
-            tasksRepository.changeUserStorySwimlane(commonTaskId, swimlane.takeIf { it != SWIMLANE_HEADER }?.id, commonTaskVersion.value)
-            loadData().join()
-            session.taskEdit.postUpdate()
-            swimlanes.value.data
-        }
-    }
-
-    // Due date
-    val dueDateResult = MutableResultFlow<Unit>()
-
-    fun selectDueDate(date: LocalDate?) = viewModelScope.launch {
-        dueDateResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeDueDate(commonTaskId, commonTaskType, date, commonTaskVersion.value)
-            loadData().join()
-        }
-    }
-
-    // Epic color
-    val colorResult = MutableResultFlow<Unit>()
-
-    fun selectEpicColor(color: String) = viewModelScope.launch {
-        colorResult.loadOrError(R.string.permission_error) {
-            tasksRepository.changeEpicColor(commonTaskId, color, commonTaskVersion.value)
-            loadData().join()
-            session.taskEdit.postUpdate()
-        }
     }
 }

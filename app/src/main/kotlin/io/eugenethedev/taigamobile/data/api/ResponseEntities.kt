@@ -102,6 +102,8 @@ data class CommonTaskResponse(
     val swimlane: Long?,
     val due_date: LocalDate?,
     val due_date_status: DueDateStatus?,
+    val blocked_note: String,
+    val is_blocked: Boolean,
 
     // for epic
     val color: String?,

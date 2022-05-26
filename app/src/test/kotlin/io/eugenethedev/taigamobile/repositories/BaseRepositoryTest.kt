@@ -26,7 +26,7 @@ abstract class BaseRepositoryTest {
 
         val dataModule = DataModule() // contains methods for API configuration
 
-        mockSession = Session(ApplicationProvider.getApplicationContext()).also {
+        mockSession = Session(ApplicationProvider.getApplicationContext(), dataModule.provideMoshi()).also {
             it.changeServer(taigaManager.baseUrl)
 
             activeUser.data.apply {

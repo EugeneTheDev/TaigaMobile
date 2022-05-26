@@ -36,7 +36,6 @@ import io.eugenethedev.taigamobile.ui.components.texts.CommonTaskTitle
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import io.eugenethedev.taigamobile.ui.theme.cardShadowElevation
 import io.eugenethedev.taigamobile.ui.theme.kanbanBoardTonalElevation
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.NavigateToTask
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
@@ -206,7 +205,7 @@ private fun Header(
         .width(cellWidth)
         .background(
             color = backgroundColor,
-            shape = shapes.medium.copy(
+            shape = MaterialTheme.shapes.small.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )
@@ -239,7 +238,7 @@ private fun IssueHeader(
     modifier = Modifier
         .width(width)
         .padding(padding)
-        .clip(shapes.small)
+        .clip(MaterialTheme.shapes.extraSmall)
         .background(backgroundColor)
         .padding(horizontal = 6.dp, vertical = 4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -281,6 +280,7 @@ private fun UserStoryItem(
             indicatorColorsHex = userStory.colors,
             isInactive = userStory.isClosed,
             tags = userStory.tags,
+            isBlocked = userStory.blockedNote != null,
             modifier = Modifier.padding(top = 4.dp)
                 .clickableUnindicated(onClick = onUserStoryClick)
         )
@@ -355,7 +355,7 @@ private fun TaskItem(
     onTaskClick: () -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth().padding(4.dp),
-    shape = shapes.medium,
+    shape = MaterialTheme.shapes.small,
     shadowElevation = cardShadowElevation
 ) {
     Row(
@@ -374,7 +374,8 @@ private fun TaskItem(
                 title = task.title,
                 indicatorColorsHex = task.colors,
                 isInactive = task.isClosed,
-                tags = task.tags
+                tags = task.tags,
+                isBlocked = task.blockedNote != null
             )
 
             Text(

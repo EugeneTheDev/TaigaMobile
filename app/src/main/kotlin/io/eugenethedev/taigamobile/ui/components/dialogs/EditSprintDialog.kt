@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.DatePicker
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import java.time.LocalDate
 
 @Composable
@@ -36,7 +35,7 @@ fun EditSprintDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
+        dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(R.string.cancel),
@@ -44,7 +43,7 @@ fun EditSprintDialog(
                 )
             }
         },
-        dismissButton = {
+        confirmButton = {
             TextButton(
                 onClick = {
                     name.text.trim()
@@ -70,9 +69,9 @@ fun EditSprintDialog(
             val pickerStyle = MaterialTheme.typography.titleMedium.merge(TextStyle(fontWeight = FontWeight.Normal))
             val pickerModifier = Modifier
                 .border(
-                    width = 1.5.dp,
+                    width = 1.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = shapes.small
+                    shape = MaterialTheme.shapes.small
                 )
                 .padding(6.dp)
 

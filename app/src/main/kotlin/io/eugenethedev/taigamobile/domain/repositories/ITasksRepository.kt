@@ -35,17 +35,27 @@ interface ITasksRepository {
 
     suspend fun getSwimlanes(): List<Swimlane>
 
-    // edit related
-    suspend fun changeStatus(commonTaskId: Long, commonTaskType: CommonTaskType, statusId: Long, statusType: StatusType, version: Int)
-    suspend fun changeSprint(commonTaskId: Long, commonTaskType: CommonTaskType, sprintId: Long?, version: Int)
-    suspend fun linkToEpic(epicId: Long, userStoryId: Long)
-    suspend fun unlinkFromEpic(epicId: Long, userStoryId: Long)
-    suspend fun changeAssignees(commonTaskId: Long, commonTaskType: CommonTaskType, assignees: List<Long>, version: Int)
-    suspend fun changeWatchers(commonTaskId: Long, commonTaskType: CommonTaskType, watchers: List<Long>, version: Int)
-    suspend fun changeDueDate(commonTaskId: Long, commonTaskType: CommonTaskType, date: LocalDate?, version: Int)
+    // ============
+    // Edit methods
+    // ============
+
+    // edit task
+    suspend fun editStatus(commonTask: CommonTaskExtended, statusId: Long, statusType: StatusType)
+    suspend fun editSprint(commonTask: CommonTaskExtended, sprintId: Long?)
+    suspend fun editAssignees(commonTask: CommonTaskExtended, assignees: List<Long>)
+    suspend fun editWatchers(commonTask: CommonTaskExtended, watchers: List<Long>)
+    suspend fun editDueDate(commonTask: CommonTaskExtended, date: LocalDate?)
+    suspend fun editCommonTaskBasicInfo(commonTask: CommonTaskExtended, title: String, description: String)
+    suspend fun editTags(commonTask: CommonTaskExtended, tags: List<Tag>)
+    suspend fun editUserStorySwimlane(commonTask: CommonTaskExtended, swimlaneId: Long?)
+    suspend fun editEpicColor(commonTask: CommonTaskExtended, color: String)
+    suspend fun editBlocked(commonTask: CommonTaskExtended, blockedNote: String?)
+
+    // related edits
     suspend fun createComment(commonTaskId: Long, commonTaskType: CommonTaskType, comment: String, version: Int)
     suspend fun deleteComment(commonTaskId: Long, commonTaskType: CommonTaskType, commentId: String)
-    suspend fun editCommonTask(commonTaskId: Long, commonTaskType: CommonTaskType, title: String, description: String, version: Int)
+    suspend fun linkToEpic(epicId: Long, userStoryId: Long)
+    suspend fun unlinkFromEpic(epicId: Long, userStoryId: Long)
 
     suspend fun createCommonTask(
         commonTaskType: CommonTaskType,
@@ -65,10 +75,4 @@ interface ITasksRepository {
     suspend fun deleteAttachment(commonTaskType: CommonTaskType, attachmentId: Long)
 
     suspend fun editCustomFields(commonTaskType: CommonTaskType, commonTaskId: Long, fields: Map<Long, CustomFieldValue?>, version: Int)
-
-    suspend fun editTags(commonTaskType: CommonTaskType, commonTaskId: Long, tags: List<Tag>, version: Int)
-
-    suspend fun changeUserStorySwimlane(userStoryId: Long, swimlaneId: Long?, version: Int)
-
-    suspend fun changeEpicColor(epicId: Long, color: String, version: Int)
 }

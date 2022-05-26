@@ -19,12 +19,11 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
-import io.eugenethedev.taigamobile.ui.theme.shapes
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCommentBar(
-    createComment: (String) -> Unit
+    onButtonClick: (String) -> Unit
 ) = Surface(
     modifier = Modifier.fillMaxWidth(),
     tonalElevation = 8.dp,
@@ -45,9 +44,9 @@ fun CreateCommentBar(
                 .border(
                     width = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = shapes.large
+                    shape = MaterialTheme.shapes.large
                 )
-                .clip(shapes.large)
+                .clip(MaterialTheme.shapes.large)
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                 .padding(8.dp),
             contentAlignment = Alignment.CenterStart
@@ -66,7 +65,7 @@ fun CreateCommentBar(
             IconButton(
                 onClick = {
                     commentTextValue.text.trim().takeIf { it.isNotEmpty() }?.let {
-                        createComment(it)
+                        onButtonClick(it)
                         commentTextValue = TextFieldValue()
                         keyboardController?.hide()
                     }

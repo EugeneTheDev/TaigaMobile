@@ -95,7 +95,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test select status`(): Unit = runBlocking {
+    fun `test edit status`(): Unit = runBlocking {
         val mockStatus = mockk<Status>(relaxed = true)
         val errorStatus = Status(
             id = mockStatus.id + 1,
@@ -105,21 +105,13 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         )
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.changeStatus(
-                any(),
-                any(),
-                neq(mockStatus.id),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editStatus(any(), neq(mockStatus.id), any()) } throws accessDeniedException
 
-        viewModel.selectStatus(mockStatus)
-        assertResultEquals(SuccessResult(mockStatus.type), viewModel.statusSelectResult.value)
+        viewModel.editStatus(mockStatus)
+        assertResultEquals(SuccessResult(mockStatus.type), viewModel.editStatusResult.value)
 
-        viewModel.selectStatus(errorStatus)
-        assertIs<ErrorResult<StatusType>>(viewModel.statusSelectResult.value)
+        viewModel.editStatus(errorStatus)
+        assertIs<ErrorResult<StatusType>>(viewModel.editStatusResult.value)
     }
 
     @Test
@@ -130,7 +122,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `test select sprint`(): Unit = runBlocking {
+    fun `test edit sprint`(): Unit = runBlocking {
         val mockSprint = mockk<Sprint>(relaxed = true)
         val errorSprint = Sprint(
             id = mockSprint.id + 1,
@@ -143,37 +135,24 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         )
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.changeSprint(
-                any(),
-                any(),
-                neq(mockSprint.id),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editSprint(any(), neq(mockSprint.id)) } throws accessDeniedException
 
-        viewModel.selectSprint(mockSprint)
-        assertResultEquals(SuccessResult(Unit), viewModel.selectSprintResult.value)
+        viewModel.editSprint(mockSprint)
+        assertResultEquals(SuccessResult(Unit), viewModel.editSprintResult.value)
 
-        viewModel.selectSprint(errorSprint)
-        assertIs<ErrorResult<Unit>>(viewModel.selectSprintResult.value)
+        viewModel.editSprint(errorSprint)
+        assertIs<ErrorResult<Unit>>(viewModel.editSprintResult.value)
     }
 
     @Test
     fun `test epics list with filters`(): Unit = runBlocking {
         val query = "query"
         testLazyPagingItems(viewModel.epics) {
-            mockTaskRepository.getEpics(
-                any(),
-                eq(FiltersData())
-            )
+            mockTaskRepository.getEpics(any(), eq(FiltersData()))
         }
         viewModel.searchEpics(query)
         testLazyPagingItems(viewModel.epics) {
-            mockTaskRepository.getEpics(
-                any(),
-                eq(FiltersData(query = query))
-            )
+            mockTaskRepository.getEpics(any(), eq(FiltersData(query = query)))
         }
     }
 
@@ -192,12 +171,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         )
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.linkToEpic(
-                neq(mockEpic.id),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.linkToEpic(neq(mockEpic.id), any()) } throws accessDeniedException
 
         viewModel.linkToEpic(mockEpic)
         assertResultEquals(SuccessResult(Unit), viewModel.linkToEpicResult.value)
@@ -217,12 +191,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         )
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.unlinkFromEpic(
-                neq(mockEpic.id),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.unlinkFromEpic(neq(mockEpic.id), any()) } throws accessDeniedException
 
         viewModel.unlinkFromEpic(mockEpic)
         assertResultEquals(SuccessResult(Unit), viewModel.linkToEpicResult.value)
@@ -250,44 +219,14 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockUser = mockk<User>(relaxed = true)
 
         initOnOpen()
-        viewModel.addAssignee(mockUser)
+        viewModel.addAssignee(mockUser.id)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
             viewModel.assignees.value
         )
 
-        coEvery {
-            mockTaskRepository.changeAssignees(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.addAssignee(mockUser)
-        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
-    }
-
-    @Test
-    fun `test add assignee by id`(): Unit = runBlocking {
-        val mockUser = mockk<User>(relaxed = true)
-
-        initOnOpen()
-        viewModel.addAssigneeById(mockUser.id)
-        assertResultEquals(
-            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
-            viewModel.assignees.value
-        )
-
-        coEvery {
-            mockTaskRepository.changeAssignees(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.addAssigneeById(mockUser.id)
+        coEvery { mockTaskRepository.editAssignees(any(), any()) } throws accessDeniedException
+        viewModel.addAssignee(mockUser.id)
         assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
     }
 
@@ -296,44 +235,14 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockUser = mockk<User>(relaxed = true)
 
         initOnOpen()
-        viewModel.removeAssignee(mockUser)
+        viewModel.removeAssignee(mockUser.id)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
             viewModel.assignees.value
         )
 
-        coEvery {
-            mockTaskRepository.changeAssignees(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.removeAssignee(mockUser)
-        assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
-    }
-
-    @Test
-    fun `test remove assignee by id`(): Unit = runBlocking {
-        val mockUser = mockk<User>(relaxed = true)
-
-        initOnOpen()
-        viewModel.removeAssigneeById(mockUser.id)
-        assertResultEquals(
-            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
-            viewModel.assignees.value
-        )
-
-        coEvery {
-            mockTaskRepository.changeAssignees(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.removeAssigneeById(mockUser.id)
+        coEvery { mockTaskRepository.editAssignees(any(), any()) } throws accessDeniedException
+        viewModel.removeAssignee(mockUser.id)
         assertIs<ErrorResult<List<User>>>(viewModel.assignees.value)
     }
 
@@ -343,44 +252,14 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockUser = mockk<User>(relaxed = true)
 
         initOnOpen()
-        viewModel.addWatcher(mockUser)
+        viewModel.addWatcher(mockUser.id)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
             viewModel.watchers.value
         )
 
-        coEvery {
-            mockTaskRepository.changeWatchers(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.addWatcher(mockUser)
-        assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
-    }
-
-    @Test
-    fun `test add watcher by id`(): Unit = runBlocking {
-        val mockUser = mockk<User>(relaxed = true)
-
-        initOnOpen()
-        viewModel.addWatcherById(mockUser.id)
-        assertResultEquals(
-            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
-            viewModel.watchers.value
-        )
-
-        coEvery {
-            mockTaskRepository.changeWatchers(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.addWatcherById(mockUser.id)
+        coEvery { mockTaskRepository.editWatchers(any(), any()) } throws accessDeniedException
+        viewModel.addWatcher(mockUser.id)
         assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
     }
 
@@ -389,44 +268,14 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockUser = mockk<User>(relaxed = true)
 
         initOnOpen()
-        viewModel.removeWatcher(mockUser)
+        viewModel.removeWatcher(mockUser.id)
         assertResultEquals(
             SuccessResult(mockListOfTeamMember.map { it.toUser() }),
             viewModel.watchers.value
         )
 
-        coEvery {
-            mockTaskRepository.changeWatchers(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.removeWatcher(mockUser)
-        assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
-    }
-
-    @Test
-    fun `test remove watcher by id`(): Unit = runBlocking {
-        val mockUser = mockk<User>(relaxed = true)
-
-        initOnOpen()
-        viewModel.removeWatcherById(mockUser.id)
-        assertResultEquals(
-            SuccessResult(mockListOfTeamMember.map { it.toUser() }),
-            viewModel.watchers.value
-        )
-
-        coEvery {
-            mockTaskRepository.changeWatchers(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.removeWatcherById(mockUser.id)
+        coEvery { mockTaskRepository.editWatchers(any(), any()) } throws accessDeniedException
+        viewModel.removeWatcher(mockUser.id)
         assertIs<ErrorResult<List<User>>>(viewModel.watchers.value)
     }
 
@@ -435,14 +284,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val comment = "comment"
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.createComment(
-                any(),
-                any(),
-                neq(comment),
-                any()
-            )
-        } throws notFoundException
+        coEvery { mockTaskRepository.createComment(any(), any(), neq(comment), any()) } throws notFoundException
 
         viewModel.createComment(comment)
         assertResultEquals(SuccessResult(mockListOfComments), viewModel.comments.value)
@@ -463,13 +305,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         )
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.deleteComment(
-                any(),
-                any(),
-                neq(mockComment.id)
-            )
-        } throws notFoundException
+        coEvery { mockTaskRepository.deleteComment(any(), any(), neq(mockComment.id)) } throws notFoundException
 
         viewModel.deleteComment(mockComment)
         assertResultEquals(SuccessResult(mockListOfComments), viewModel.comments.value)
@@ -489,12 +325,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         )
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.deleteAttachment(
-                any(),
-                neq(mockAttachment.id)
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.deleteAttachment(any(), neq(mockAttachment.id)) } throws accessDeniedException
 
         viewModel.deleteAttachment(mockAttachment)
         assertResultEquals(SuccessResult(mockListOfAttachments), viewModel.attachments.value)
@@ -509,14 +340,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val mockInputStream = mockk<InputStream>(relaxed = true)
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.addAttachment(
-                any(),
-                any(),
-                neq(fileName),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.addAttachment(any(), any(), neq(fileName), any()) } throws accessDeniedException
 
         viewModel.addAttachment(fileName, mockInputStream)
         assertResultEquals(SuccessResult(mockListOfAttachments), viewModel.attachments.value)
@@ -531,21 +355,13 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         val description = "description"
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.editCommonTask(
-                any(),
-                any(),
-                neq(title),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editCommonTaskBasicInfo(any(), neq(title), any()) } throws accessDeniedException
 
-        viewModel.editTask(title, description)
-        assertResultEquals(SuccessResult(Unit), viewModel.editResult.value)
+        viewModel.editBasicInfo(title, description)
+        assertResultEquals(SuccessResult(Unit), viewModel.editBasicInfoResult.value)
 
-        viewModel.editTask(title + "error", description)
-        assertIs<ErrorResult<Unit>>(viewModel.editResult.value)
+        viewModel.editBasicInfo(title + "error", description)
+        assertIs<ErrorResult<Unit>>(viewModel.editBasicInfoResult.value)
     }
 
     @Test
@@ -566,21 +382,11 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         initOnOpen()
 
-        coEvery {
-            mockTaskRepository.promoteCommonTaskToUserStory(
-                any(),
-                any()
-            )
-        } returns mockCommonTask
+        coEvery { mockTaskRepository.promoteCommonTaskToUserStory(any(), any()) } returns mockCommonTask
         viewModel.promoteToUserStory()
         assertResultEquals(SuccessResult(mockCommonTask), viewModel.promoteResult.value)
 
-        coEvery {
-            mockTaskRepository.promoteCommonTaskToUserStory(
-                any(),
-                any()
-            )
-        } throws notFoundException
+        coEvery { mockTaskRepository.promoteCommonTaskToUserStory(any(), any()) } throws notFoundException
         viewModel.promoteToUserStory()
         assertIs<ErrorResult<CommonTask>>(viewModel.promoteResult.value)
     }
@@ -594,14 +400,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
         viewModel.editCustomField(mockCustomField, mockCustomFieldValue)
         assertResultEquals(SuccessResult(mockCustomFields), viewModel.customFields.value)
 
-        coEvery {
-            mockTaskRepository.editCustomFields(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editCustomFields(any(), any(), any(), any()) } throws accessDeniedException
         viewModel.editCustomField(mockCustomField, mockCustomFieldValue)
         assertIs<ErrorResult<CustomFields>>(viewModel.customFields.value)
     }
@@ -631,14 +430,7 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
             viewModel.tags.value
         )
 
-        coEvery {
-            mockTaskRepository.editTags(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editTags(any(), any()) } throws accessDeniedException
         viewModel.addTag(mockTag)
         assertIs<ErrorResult<List<Tag>>>(viewModel.tags.value)
     }
@@ -649,82 +441,66 @@ class CommonTaskViewModelTest : BaseViewModelTest() {
 
         initOnOpen()
         viewModel.deleteTag(mockTag)
-        assertResultEquals(
-            SuccessResult(mockListOfTags),
-            viewModel.tags.value
-        )
+        assertResultEquals(SuccessResult(mockListOfTags), viewModel.tags.value)
 
-        coEvery {
-            mockTaskRepository.editTags(
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editTags(any(), any()) } throws accessDeniedException
         viewModel.deleteTag(mockTag)
         assertIs<ErrorResult<List<Tag>>>(viewModel.tags.value)
     }
 
     @Test
-    fun `test select swimlane`(): Unit = runBlocking {
+    fun `test edit swimlane`(): Unit = runBlocking {
         val mockSwimlane = mockk<Swimlane>(relaxed = true)
 
         initOnOpen()
         viewModel.swimlanes.value = SuccessResult(mockListOfSwimlanes)
-        viewModel.selectSwimlane(mockSwimlane)
+        viewModel.editSwimlane(mockSwimlane)
         assertResultEquals(SuccessResult(mockListOfSwimlanes), viewModel.swimlanes.value)
 
-        coEvery {
-            mockTaskRepository.changeUserStorySwimlane(
-                any(),
-                any(),
-                any()
-            )
-        } throws accessDeniedException
-        viewModel.selectSwimlane(mockSwimlane)
+        coEvery { mockTaskRepository.editUserStorySwimlane(any(), any()) } throws accessDeniedException
+        viewModel.editSwimlane(mockSwimlane)
         assertIs<ErrorResult<List<Swimlane>>>(viewModel.swimlanes.value)
     }
 
     @Test
-    fun `test select due date`(): Unit = runBlocking {
+    fun `test edit due date`(): Unit = runBlocking {
         val mockLocaleDate = LocalDate.of(2000, 1, 1)
         val errorLocaleDate = LocalDate.of(3000, 1, 1)
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.changeDueDate(
-                any(),
-                any(),
-                neq(mockLocaleDate),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editDueDate(any(), neq(mockLocaleDate)) } throws accessDeniedException
 
-        viewModel.selectDueDate(mockLocaleDate)
-        assertResultEquals(SuccessResult(Unit), viewModel.dueDateResult.value)
+        viewModel.editDueDate(mockLocaleDate)
+        assertResultEquals(SuccessResult(Unit), viewModel.editDueDateResult.value)
 
-        viewModel.selectDueDate(errorLocaleDate)
-        assertIs<ErrorResult<Unit>>(viewModel.dueDateResult.value)
+        viewModel.editDueDate(errorLocaleDate)
+        assertIs<ErrorResult<Unit>>(viewModel.editDueDateResult.value)
     }
 
     @Test
-    fun `test select epic color`(): Unit = runBlocking {
+    fun `test edit epic color`(): Unit = runBlocking {
         val color = "color"
 
         initOnOpen()
-        coEvery {
-            mockTaskRepository.changeEpicColor(
-                any(),
-                neq(color),
-                any()
-            )
-        } throws accessDeniedException
+        coEvery { mockTaskRepository.editEpicColor(any(), neq(color)) } throws accessDeniedException
 
-        viewModel.selectEpicColor(color)
-        assertResultEquals(SuccessResult(Unit), viewModel.colorResult.value)
+        viewModel.editEpicColor(color)
+        assertResultEquals(SuccessResult(Unit), viewModel.editEpicColorResult.value)
 
-        viewModel.selectEpicColor(color + "error")
-        assertIs<ErrorResult<Unit>>(viewModel.colorResult.value)
+        viewModel.editEpicColor(color + "error")
+        assertIs<ErrorResult<Unit>>(viewModel.editEpicColorResult.value)
+    }
+
+    @Test
+    fun `task edit blocked`(): Unit = runBlocking {
+        val blockedNote = "Reason"
+
+        initOnOpen()
+        viewModel.editBlocked(blockedNote)
+        assertResultEquals(SuccessResult(Unit), viewModel.editBlockedResult.value)
+
+        coEvery { mockTaskRepository.editBlocked(any(), any()) } throws accessDeniedException
+        viewModel.editBlocked(blockedNote)
+        assertIs<ErrorResult<Unit>>(viewModel.editBlockedResult.value)
     }
 }

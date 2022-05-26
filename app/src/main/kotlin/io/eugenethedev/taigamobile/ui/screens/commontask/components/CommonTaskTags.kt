@@ -28,12 +28,12 @@ import io.eugenethedev.taigamobile.ui.components.editors.TextFieldWithHint
 import io.eugenethedev.taigamobile.ui.components.pickers.ColorPicker
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
-import io.eugenethedev.taigamobile.ui.theme.shapes
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 import io.eugenethedev.taigamobile.ui.utils.textColor
 import io.eugenethedev.taigamobile.ui.utils.toColor
 import io.eugenethedev.taigamobile.ui.utils.toHex
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskTags(
     commonTask: CommonTaskExtended,
     editActions: EditActions
@@ -44,29 +44,37 @@ fun LazyListScope.CommonTaskTags(
             mainAxisSpacing = 8.dp,
             crossAxisSpacing = 8.dp
         ) {
-            var isAddTagFieldVisible by remember { mutableStateOf(false) }
+            var isAddTagDialogVisible by remember { mutableStateOf(false) }
 
             commonTask.tags.forEach {
                 TagItem(
                     tag = it,
-                    onRemoveClick = { editActions.editTags.removeItem(it) }
+                    onRemoveClick = { editActions.editTags.remove(it) }
                 )
             }
 
-            when {
-                editActions.editTags.isResultLoading -> CircularProgressIndicator(
+            if (editActions.editTags.isLoading) {
+                CircularProgressIndicator(
                     modifier = Modifier.size(28.dp),
                     strokeWidth = 2.dp,
                     color = MaterialTheme.colorScheme.primary
                 )
-                isAddTagFieldVisible -> AddTagField(
+            } else {
+                AddButton(
+                    text = stringResource(R.string.add_tag),
+                    onClick = { isAddTagDialogVisible = true }
+                )
+            }
+
+            if (isAddTagDialogVisible) {
+                AddTagDialog(
                     tags = editActions.editTags.items,
                     onInputChange = editActions.editTags.searchItems,
-                    onSaveClick = { editActions.editTags.selectItem(it) }
-                )
-                else -> AddButton(
-                    text = stringResource(R.string.add_tag),
-                    onClick = { isAddTagFieldVisible = true }
+                    onConfirm = {
+                        editActions.editTags.select(it)
+                        isAddTagDialogVisible = false
+                    },
+                    onDismiss = { isAddTagDialogVisible = false }
                 )
             }
         }
@@ -97,7 +105,9 @@ private fun TagItem(
 
             IconButton(
                 onClick = onRemoveClick,
-                modifier = Modifier.size(26.dp).clip(CircleShape)
+                modifier = Modifier
+                    .size(26.dp)
+                    .clip(CircleShape)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_remove),
@@ -110,85 +120,116 @@ private fun TagItem(
 }
 
 @Composable
-private fun AddTagField(
+private fun AddTagDialog(
     tags: List<Tag>,
     onInputChange: (String) -> Unit,
-    onSaveClick: (Tag) -> Unit
-) = Row(
-    verticalAlignment = Alignment.CenterVertically
+    onConfirm: (Tag) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    var value by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
+    var name by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     var color by remember { mutableStateOf(ColorPalette.Primary.first()) }
+    var isDropdownVisible by remember { mutableStateOf(true) }
 
-    Column {
-        TextFieldWithHint(
-            hintId = R.string.tag,
-            value = value,
-            onValueChange = {
-                value = it
-                onInputChange(it.text)
-            },
-            width = 180.dp,
-            hasBorder = true,
-            singleLine = true
-        )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (name.text.isNotBlank()) {
+                        onConfirm(Tag(name.text, color.toHex()))
+                    }
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.ok),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.add_tag),
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    TextFieldWithHint(
+                        hintId = R.string.tag,
+                        value = name,
+                        onValueChange = {
+                            name = it
+                            // if dropdown menu item has been chosen - do not show dropdown again
+                            if (tags.none { it.name == name.text}) {
+                                isDropdownVisible = true
+                                onInputChange(it.text)
+                            }
+                        },
+                        width = 180.dp,
+                        hasBorder = true,
+                        singleLine = true
+                    )
 
-        DropdownMenu(
-            expanded = tags.isNotEmpty(),
-            onDismissRequest = {},
-            properties = PopupProperties(clippingEnabled = false),
-            modifier = Modifier.heightIn(max = 200.dp)
-                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation))
-        ) {
-            tags.forEach {
-                DropdownMenuItem(
-                    onClick = { onSaveClick(it) },
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Spacer(
-                                Modifier.size(22.dp)
-                                    .background(
-                                        color = it.color.toColor(),
-                                        shape = shapes.small
-                                    )
-                            )
+                    if (isDropdownVisible) {
+                        DropdownMenu(
+                            expanded = tags.isNotEmpty(),
+                            onDismissRequest = { isDropdownVisible = false },
+                            properties = PopupProperties(clippingEnabled = false),
+                            modifier = Modifier
+                                .heightIn(max = 200.dp)
+                                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(dialogTonalElevation))
+                        ) {
+                            tags.forEach {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        name = TextFieldValue(it.name)
+                                        color = it.color.toColor()
+                                        isDropdownVisible = false
+                                    },
+                                    text = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Spacer(
+                                                Modifier
+                                                    .size(22.dp)
+                                                    .background(
+                                                        color = it.color.toColor(),
+                                                        shape = MaterialTheme.shapes.extraSmall
+                                                    )
+                                            )
 
-                            Spacer(Modifier.width(4.dp))
+                                            Spacer(Modifier.width(4.dp))
 
-                            Text(
-                                text = it.name,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                                            Text(
+                                                text = it.name,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                ColorPicker(
+                    size = 32.dp,
+                    color = color,
+                    onColorPicked = { color = it }
                 )
             }
         }
-    }
-
-    Spacer(Modifier.width(4.dp))
-
-    ColorPicker(
-        size = 32.dp,
-        color = color,
-        onColorPicked = { color = it }
     )
-
-    Spacer(Modifier.width(2.dp))
-
-    IconButton(
-        onClick = {
-            value.text.takeIf { it.isNotEmpty() }?.let {
-                onSaveClick(Tag(it, color.toHex()))
-                value = TextFieldValue()
-            }
-        },
-        modifier = Modifier.size(32.dp).clip(CircleShape)
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_save),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.outline
-        )
-    }
 }

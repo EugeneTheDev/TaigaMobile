@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import io.eugenethedev.taigamobile.ui.components.texts.MarkdownText
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskDescription(
     description: String
 ) {

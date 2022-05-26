@@ -12,14 +12,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import io.eugenethedev.taigamobile.R
-import io.eugenethedev.taigamobile.ui.theme.shapes
 
 /**
  * Alert with loader and text
  */
 @Composable
 fun LoadingDialog() = Dialog(onDismissRequest = { /* cannot dismiss */ }) {
-    Surface(shape = shapes.medium) {
+    Surface(shape = MaterialTheme.shapes.small) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(20.dp)

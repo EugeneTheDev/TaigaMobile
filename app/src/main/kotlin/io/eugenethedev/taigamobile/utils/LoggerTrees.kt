@@ -50,7 +50,8 @@ class FileLoggingTree(private val basePath: String, private val minPriority: Int
         } catch (e: Exception) {
             Log.e(
                 LOG_TAG,
-                "Error while logging into file : $e"
+                "Error while logging into file : $e",
+                e
             )
         }
     }

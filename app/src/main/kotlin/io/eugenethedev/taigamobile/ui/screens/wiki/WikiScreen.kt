@@ -40,7 +40,7 @@ import io.eugenethedev.taigamobile.ui.components.dialogs.EmptyWikiDialog
 import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
-import io.eugenethedev.taigamobile.ui.screens.commontask.EditAttachmentsAction
+import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskAttachments
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskDescription
 import io.eugenethedev.taigamobile.ui.screens.wiki.components.AdvancedSpacer
@@ -51,6 +51,7 @@ import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.utils.navigateToProfileScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
+import java.io.InputStream
 import java.time.LocalDateTime
 
 @Composable
@@ -112,10 +113,10 @@ fun WikiScreen(
                 attachments = attachments.data.orEmpty(),
                 links = wikiLinks.data.orEmpty(),
                 pages = wikiPages.data.orEmpty(),
-                editAttachmentsAction = EditAttachmentsAction(
-                    deleteAttachment = viewModel::deletePageAttachment,
-                    addAttachment = viewModel::addPageAttachment,
-                    isResultLoading = attachments is LoadingResult
+                editAttachments = EditAction(
+                    select = { (file, stream) -> viewModel.addPageAttachment(file, stream) },
+                    remove = viewModel::deletePageAttachment,
+                    isLoading = attachments is LoadingResult
                 ),
                 selectPage = viewModel::selectPage,
                 navigateBack = navController::popBackStack,
@@ -140,7 +141,7 @@ fun WikiContentScreen(
     attachments: List<Attachment> = emptyList(),
     links: List<WikiLink> = emptyList(),
     pages: List<WikiPage> = emptyList(),
-    editAttachmentsAction: EditAttachmentsAction = EditAttachmentsAction(),
+    editAttachments: EditAction<Pair<String, InputStream>, Attachment> = EditAction(),
     selectPage: (content: String, isBySlug: Boolean) -> Unit = { _, _ -> },
     navigateBack: () -> Unit = {},
     deleteWikiPage: () -> Unit = {},
@@ -203,7 +204,7 @@ fun WikiContentScreen(
 
             CommonTaskAttachments(
                 attachments = attachments,
-                editAttachmentsAction = editAttachmentsAction
+                editAttachments = editAttachments
             )
 
             AdvancedSpacer(sectionsPadding)

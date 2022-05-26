@@ -18,6 +18,7 @@ import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
 import io.eugenethedev.taigamobile.ui.theme.*
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
 
+@Suppress("FunctionName")
 fun LazyListScope.CommonTaskDueDate(
     commonTask: CommonTaskExtended,
     editActions: EditActions
@@ -30,7 +31,7 @@ fun LazyListScope.CommonTaskDueDate(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .background(background, shapes.medium)
+                .background(background, MaterialTheme.shapes.small)
 
         ) {
             Box(
@@ -43,12 +44,12 @@ fun LazyListScope.CommonTaskDueDate(
                             DueDateStatus.Set -> taigaGreenPositive
                             DueDateStatus.DueSoon -> taigaOrange
                             DueDateStatus.PastDue -> taigaRed
-                        }.takeUnless { editActions.editDueDate.isResultLoading } ?: defaultIconBackground,
-                        shape = shapes.medium
+                        }.takeUnless { editActions.editDueDate.isLoading } ?: defaultIconBackground,
+                        shape = MaterialTheme.shapes.small
                     )
                     .padding(4.dp)
             ) {
-                if (editActions.editDueDate.isResultLoading) {
+                if (editActions.editDueDate.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.fillMaxSize().padding(2.dp),
                         strokeWidth = 2.dp,
@@ -66,7 +67,11 @@ fun LazyListScope.CommonTaskDueDate(
 
             DatePicker(
                 date = commonTask.dueDate,
-                onDatePicked = { editActions.editDueDate.select(it) },
+                onDatePicked = {
+                    editActions.editDueDate.apply {
+                        it?.let { select(it) } ?: remove(Unit)
+                    }
+                },
                 hintId = R.string.no_due_date,
                 modifier = Modifier.padding(6.dp)
             )

@@ -24,12 +24,12 @@ class IssuesViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test on open`(): Unit = runBlocking {
-        val mockFiltersData = mockk<FiltersData>(relaxed = true)
+        val filtersData = FiltersData()
 
-        coEvery { mockTaskRepository.getFiltersData(any()) } returns mockFiltersData
+        coEvery { mockTaskRepository.getFiltersData(any()) } returns filtersData
         viewModel.onOpen()
 
-        assertResultEquals(SuccessResult(mockFiltersData), viewModel.filters.value)
+        assertResultEquals(SuccessResult(filtersData), viewModel.filters.value)
     }
 
     @Test
@@ -42,9 +42,9 @@ class IssuesViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `test select filters`(): Unit = runBlocking {
-        val mockFiltersData = mockk<FiltersData>()
+        val filtersData = FiltersData()
 
-        viewModel.selectFilters(mockFiltersData)
+        viewModel.selectFilters(filtersData)
         assertIs<FiltersData>(viewModel.activeFilters.value)
     }
 
