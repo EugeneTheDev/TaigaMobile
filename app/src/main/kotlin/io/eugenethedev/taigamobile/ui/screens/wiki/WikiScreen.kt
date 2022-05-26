@@ -32,6 +32,8 @@ import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.User
+import io.eugenethedev.taigamobile.domain.entities.WikiLink
+import io.eugenethedev.taigamobile.domain.entities.WikiPage
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.dialogs.EmptyWikiDialog
@@ -41,8 +43,8 @@ import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAttachmentsAction
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskAttachments
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskDescription
-import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.screens.wiki.components.AdvancedSpacer
+import io.eugenethedev.taigamobile.ui.screens.wiki.components.WikiPageSelector
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
@@ -62,8 +64,14 @@ fun WikiScreen(
     val currentLink by viewModel.currentWikiLink.collectAsState()
     val lastModifierUser by viewModel.lastModifierUser.collectAsState()
 
-    val onOpenResult by viewModel.loadDataResult.collectAsState()
+    val onOpenResult by viewModel.onOpenResult.collectAsState()
     onOpenResult.subscribeOnError(showMessage)
+
+    val wikiLinks by viewModel.wikiLinks.collectAsState()
+    wikiLinks.subscribeOnError(showMessage)
+
+    val wikiPages by viewModel.wikiPages.collectAsState()
+    wikiPages.subscribeOnError(showMessage)
 
     val createWikiPageResult by viewModel.createWikiPageResult.collectAsState()
     createWikiPageResult.subscribeOnError(showMessage)
@@ -78,7 +86,8 @@ fun WikiScreen(
     attachments.subscribeOnError(showMessage)
 
     val isLoading = onOpenResult is LoadingResult || createWikiPageResult is LoadingResult ||
-        editWikiPageResult is LoadingResult || deleteWikiPageResult is LoadingResult || attachments is LoadingResult
+        editWikiPageResult is LoadingResult || deleteWikiPageResult is LoadingResult ||
+        attachments is LoadingResult
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
@@ -95,23 +104,24 @@ fun WikiScreen(
         }
         else -> {
             WikiContentScreen(
-                pageName = currentLink?.title ?: "",
+                pageName = currentLink?.title ?: "Wiki",
                 content = currentPage?.content ?: "",
+                currentPageSlug = currentPage?.slug ?: currentLink?.ref ?: "",
                 lastModifierUser = lastModifierUser,
                 lastModifierDate = currentPage?.modifiedDate ?: LocalDateTime.now(),
                 attachments = attachments.data.orEmpty(),
+                links = wikiLinks.data.orEmpty(),
+                pages = wikiPages.data.orEmpty(),
                 editAttachmentsAction = EditAttachmentsAction(
                     deleteAttachment = viewModel::deletePageAttachment,
                     addAttachment = viewModel::addPageAttachment,
                     isResultLoading = attachments is LoadingResult
                 ),
+                selectPage = viewModel::selectPage,
                 navigateBack = navController::popBackStack,
                 deleteWikiPage = viewModel::deleteWikiPage,
                 editWikiPage = viewModel::editWikiPage,
                 createWikiPage = viewModel::createWikiPage,
-                onTitleClick = {
-                    navController.navigate(Routes.projectsSelector)
-                },
                 onUserItemClick = { userId ->
                     navController.navigateToProfileScreen(userId)
                 }
@@ -124,18 +134,22 @@ fun WikiScreen(
 fun WikiContentScreen(
     pageName: String,
     content: String,
+    currentPageSlug: String,
     lastModifierUser: User?,
     lastModifierDate: LocalDateTime,
     attachments: List<Attachment> = emptyList(),
+    links: List<WikiLink> = emptyList(),
+    pages: List<WikiPage> = emptyList(),
     editAttachmentsAction: EditAttachmentsAction = EditAttachmentsAction(),
+    selectPage: (content: String, isBySlug: Boolean) -> Unit = { _, _ -> },
     navigateBack: () -> Unit = {},
     deleteWikiPage: () -> Unit = {},
     editWikiPage: (content: String) -> Unit = { _ -> },
     createWikiPage: (title: String, content: String) -> Unit = { _, _ -> },
-    onTitleClick: () -> Unit = {},
     onUserItemClick: (userId: Long) -> Unit = { _ -> }
 ) = Box(Modifier.fillMaxSize()) {
     var isDescriptionEditorVisible by remember { mutableStateOf(false) }
+    var isWikiPageSelecetorVisible by remember { mutableStateOf(false) }
     var isCreatingNewTask by remember { mutableStateOf(false) }
     val sectionsPadding = 24.dp
 
@@ -144,7 +158,7 @@ fun WikiContentScreen(
     ) {
         WikiAppBar(
             pageName = pageName,
-            onTitleClick = onTitleClick,
+            onTitleClick = { isWikiPageSelecetorVisible = true },
             navigateBack = navigateBack,
             deleteWikiPage = deleteWikiPage,
             showDescriptionEditor = { isDescriptionEditorVisible = true },
@@ -203,6 +217,22 @@ fun WikiContentScreen(
                 isCreatingNewTask = true
             },
             navigateBack = navigateBack
+        )
+    }
+
+    if (isWikiPageSelecetorVisible) {
+        WikiPageSelector(
+            links = links,
+            pages = pages,
+            currentPageTitle = pageName,
+            currentPageSlug = currentPageSlug,
+            selectPage = { content, isBySlug ->
+                selectPage(content, isBySlug)
+                isWikiPageSelecetorVisible = false
+            },
+            navigateBack = {
+                isWikiPageSelecetorVisible = false
+            }
         )
     }
 
@@ -351,6 +381,7 @@ fun WikiScreenPreview() {
     WikiContentScreen(
         pageName = "Some page",
         content = "* Content *",
+        currentPageSlug = "slug",
         lastModifierUser = creator,
         lastModifierDate = LocalDateTime.now()
     )

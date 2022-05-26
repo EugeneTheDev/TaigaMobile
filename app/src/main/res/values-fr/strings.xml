@@ -194,9 +194,13 @@
     <string name="help">Aide</string>
     <string name="submit_report">Soumettre un rapport</string>
 
+    <!-- wiki -->
     <string name="empty_wiki_dialog_title">Il n\'y a pas de pages wiki…</string>
     <string name="empty_wiki_dialog_subtitle">Ajoutons-en un nouveau?</string>
     <string name="create_new_page">Créer une nouvelle page</string>
+    <string name="list_of_bookmarks">Liste des signets</string>
+    <string name="pages">Pages</string>
+    <string name="pages_without_link">Pages sans lien</string>
 
     <string name="credits_message">Réalisé avec ❤️ par EugeneTheDev. Si vous aimez l\'application, merci de donner une appréciation sur Google Play et sur le projet GitHub</string>
 

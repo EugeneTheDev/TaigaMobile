@@ -31,14 +31,14 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
     @Inject
     lateinit var userRepository: IUsersRepository
 
-    private val wikiPages = MutableResultFlow<List<WikiPage>>()
-    private val wikiLinks = MutableResultFlow<List<WikiLink>>()
+    val wikiPages = MutableResultFlow<List<WikiPage>>()
+    val wikiLinks = MutableResultFlow<List<WikiLink>>()
 
     var currentWikiLink = MutableStateFlow<WikiLink?>(null)
     var currentWikiPage = MutableStateFlow<WikiPage?>(null)
     var lastModifierUser = MutableStateFlow<User?>(null)
 
-    val loadDataResult = MutableResultFlow<Unit>()
+    val onOpenResult = MutableResultFlow<Unit>()
     val createWikiPageResult = MutableResultFlow<Unit>()
     val editWikiPageResult = MutableResultFlow<Unit>()
     val deleteWikiPageResult = MutableResultFlow<Unit>()
@@ -50,7 +50,9 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
     }
 
     fun onOpen() = viewModelScope.launch {
-        loadData()
+        onOpenResult.loadOrError {
+            loadData().join()
+        }
     }
 
     private fun loadData() = viewModelScope.launch {
@@ -157,6 +159,16 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
                 loadData().join()
             }
             attachments.value.data
+        }
+    }
+
+    fun selectPage(content: String, isBySlug: Boolean) {
+        if (isBySlug) {
+            currentWikiLink.value = wikiLinks.value.data?.find { it.ref == content }
+            currentWikiPage.value = wikiPages.value.data?.find { it.slug == content }
+        } else {
+            currentWikiLink.value = wikiLinks.value.data?.find { it.title == content }
+            currentWikiPage.value = wikiPages.value.data?.find { it.slug == currentWikiLink.value?.ref }
         }
     }
 }

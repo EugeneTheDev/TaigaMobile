@@ -24,7 +24,8 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 @Composable
 fun EmptyWikiDialog(
     createNewPage: () -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    isButtonAvailable: Boolean = true
 ) = Column(
     modifier = Modifier
         .fillMaxSize()
@@ -59,10 +60,12 @@ fun EmptyWikiDialog(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        TextButton(
-            text = stringResource(R.string.create_new_page),
-            onClick = createNewPage
-        )
+        if (isButtonAvailable) {
+            TextButton(
+                text = stringResource(R.string.create_new_page),
+                onClick = createNewPage
+            )
+        }
     }
 }
 
