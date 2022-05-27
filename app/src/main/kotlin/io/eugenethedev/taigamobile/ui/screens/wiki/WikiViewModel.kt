@@ -37,6 +37,7 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
     var currentWikiLink = MutableStateFlow<WikiLink?>(null)
     var currentWikiPage = MutableStateFlow<WikiPage?>(null)
     var lastModifierUser = MutableStateFlow<User?>(null)
+    var currentWikiState = MutableStateFlow<WikiState>(WikiState.PAGE_SELECTOR_VISIBLE)
 
     val onOpenResult = MutableResultFlow<Unit>()
     val createWikiPageResult = MutableResultFlow<Unit>()
@@ -44,6 +45,7 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
     val deleteWikiPageResult = MutableResultFlow<Unit>()
 
     val attachments = MutableResultFlow<List<Attachment>>()
+
 
     init {
         appComponent.inject(this)
@@ -110,6 +112,7 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
                 )
 
                 loadData().join()
+                selectPage(it.slug, true)
             }
         }
     }
@@ -134,6 +137,7 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
             )
 
             loadData().join()
+            selectPage(slug, true)
         }
     }
 
@@ -170,5 +174,9 @@ class WikiViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewMo
             currentWikiLink.value = wikiLinks.value.data?.find { it.title == content }
             currentWikiPage.value = wikiPages.value.data?.find { it.slug == currentWikiLink.value?.ref }
         }
+    }
+
+    fun setCurrentWikiState(state: WikiState) {
+        currentWikiState.value = state
     }
 }

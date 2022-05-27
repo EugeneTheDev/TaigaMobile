@@ -29,6 +29,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.WikiLink
 import io.eugenethedev.taigamobile.domain.entities.WikiPage
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
+import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 
 @Composable
@@ -38,6 +39,7 @@ fun WikiPageSelector(
     currentPageTitle: String,
     currentPageSlug: String,
     selectPage: (content: String, isBySlug: Boolean) -> Unit = { _, _ -> },
+    createWikiPage: () -> Unit = {},
     navigateBack: () -> Unit = {},
 ) = Column(
     modifier = Modifier
@@ -53,6 +55,11 @@ fun WikiPageSelector(
 
     AppBarWithBackButton(
         title = { Text(stringResource(R.string.list_of_bookmarks)) },
+        actions = {
+            PlusButton(
+                onClick = createWikiPage
+            )
+        },
         navigateBack = navigateBack
     )
 
