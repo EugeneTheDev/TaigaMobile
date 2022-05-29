@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.eugenethedev.taigamobile.R
 
@@ -31,6 +32,10 @@ fun TextButton(
 
             Spacer(Modifier.width(6.dp))
         }
-        Text(text)
+        Text(
+            text = text,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
