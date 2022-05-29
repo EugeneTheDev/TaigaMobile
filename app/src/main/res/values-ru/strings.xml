@@ -205,7 +205,9 @@
     <string name="help">Помощь</string>
     <string name="submit_report">Отправить отчет</string>
 
-    <!-- wiki -->
+    <!-- wiki_selector -->
+    <string name="bookmarks">Закладки</string>
+    <string name="all_wiki_pages">Все страницы вики</string>
     <string name="empty_wiki_dialog_title">Пока нет ни одной страницы вики…</string>
     <string name="empty_wiki_dialog_subtitle">Может добавим новую?</string>
     <string name="create_new_page">Создать новую страницу</string>

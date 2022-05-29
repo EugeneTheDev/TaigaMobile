@@ -28,7 +28,7 @@ import io.eugenethedev.taigamobile.domain.entities.CommonTaskType
 import io.eugenethedev.taigamobile.domain.entities.FiltersData
 import io.eugenethedev.taigamobile.ui.components.TasksFiltersWithLazyList
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
-import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithSearch
+import io.eugenethedev.taigamobile.ui.components.appbars.ClickableAppBar
 import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
@@ -120,7 +120,7 @@ fun ScrumScreenContent(
     val pagerState = rememberPagerState()
     var isCreateSprintDialogVisible by remember { mutableStateOf(false) }
 
-    AppBarWithSearch(
+    ClickableAppBar(
         projectName = projectName,
         actions = {
             PlusButton(

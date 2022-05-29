@@ -205,7 +205,9 @@
     <string name="help">Help</string>
     <string name="submit_report">Submit report</string>
 
-    <!-- wiki -->
+    <!-- wiki_selector -->
+    <string name="bookmarks">Bookmarks</string>
+    <string name="all_wiki_pages">All wiki pages</string>
     <string name="empty_wiki_dialog_title">There are no wiki pages…</string>
     <string name="empty_wiki_dialog_subtitle">Let\'s add a new one?</string>
     <string name="create_new_page">Create new page</string>

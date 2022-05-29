@@ -198,7 +198,9 @@
     <string name="help">Допомога</string>
     <string name="submit_report">Надіслати репорт</string>
 
-    <!-- wiki -->
+    <!-- wiki_selector -->
+    <string name="bookmarks">Закладки</string>
+    <string name="all_wiki_pages">Всі вікі-сторінки</string>
     <string name="empty_wiki_dialog_title">Тут немає вікі-сторінок…</string>
     <string name="empty_wiki_dialog_subtitle">Давайте додамо новий?</string>
     <string name="create_new_page">Створити нову сторінку</string>
