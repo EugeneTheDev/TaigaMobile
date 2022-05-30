@@ -15,6 +15,7 @@ This is the **unofficial** android app for the agile project management system [
   * Issues
   * Sprints
   * Profiles
+  * Wiki
   * Working on / Watching (aka Dashboard)
 * Create, edit and delete:
   * Epics
@@ -22,6 +23,7 @@ This is the **unofficial** android app for the agile project management system [
   * Tasks
   * Issues
   * Sprints
+  * Wiki pages
 * Leave and delete comments
 * Kanban (for sprint and for user stories)
 * Filters for user stories, epics, issues

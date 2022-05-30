@@ -19,8 +19,8 @@ android {
         applicationId = namespace!!
         minSdk = 21
         targetSdk = 31
-        versionCode = 28
-        versionName = "1.8.5"
+        versionCode = 29
+        versionName = "1.9"
         project.base.archivesName.set("TaigaMobile-$versionName")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -106,7 +106,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.5.0")
+    implementation("com.google.android.material:material:1.6.0")
 
     // ============================================================================================
     // CAREFUL WHEN UPDATING COMPOSE RELATED DEPENDENCIES - THEY CAN USE DIFFERENT COMPOSE VERSION!
@@ -124,7 +124,7 @@ dependencies {
     // view model support
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
     // compose constraint layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     // Accompanist
     val accompanistVersion = "0.23.1"
@@ -138,13 +138,13 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Navigation Component (with Compose)
-    implementation("androidx.navigation:navigation-compose:2.5.0-beta01")
+    implementation("androidx.navigation:navigation-compose:2.5.0-rc01")
 
     // Paging (with Compose)
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
 
     // Coroutines
-    val coroutinesVersion = "1.6.1"
+    val coroutinesVersion = "1.6.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
@@ -165,7 +165,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Dagger 2
-    val daggerVersion = "2.41"
+    val daggerVersion = "2.42"
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -194,7 +194,7 @@ dependencies {
     allTestsImplementation("androidx.test.ext:junit-ktx:1.1.3")
 
     // since we need to connect to test db instance
-    val postgresDriverVersion = "42.3.4"
+    val postgresDriverVersion = "42.3.6"
     testRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
     androidTestRuntimeOnly("org.postgresql:postgresql:$postgresDriverVersion")
 
@@ -202,7 +202,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
 
     // MockK
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("io.mockk:mockk:1.12.4")
 }
 
 fun DependencyHandler.allTestsImplementation(dependencyNotation: Any) {
