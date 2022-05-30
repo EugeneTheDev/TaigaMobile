@@ -20,6 +20,7 @@ import io.eugenethedev.taigamobile.ui.screens.scrum.ScrumViewModel
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
 import io.eugenethedev.taigamobile.ui.screens.sprint.SprintViewModel
 import io.eugenethedev.taigamobile.ui.screens.team.TeamViewModel
+import io.eugenethedev.taigamobile.ui.screens.wiki.WikiViewModel
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,6 +47,7 @@ abstract class BaseViewModelTest {
     protected val mockSprintsRepository = mockk<ISprintsRepository>(relaxed = true)
     protected val mockSearchRepository = mockk<IProjectsRepository>(relaxed = true)
     protected val mockUsersRepository = mockk<IUsersRepository>(relaxed = true)
+    protected val mockWikiRepository = mockk<IWikiRepository>(relaxed = true)
 
     @AfterTest
     fun resetMocks() {
@@ -151,6 +153,12 @@ abstract class BaseViewModelTest {
             profileViewModel.usersRepository = mockUsersRepository
             profileViewModel.projectsRepository = mockSearchRepository
             profileViewModel.session = mockSession
+        }
+
+        override fun inject(wikiViewModel: WikiViewModel) {
+            wikiViewModel.wikiRepository = mockWikiRepository
+            wikiViewModel.userRepository = mockUsersRepository
+            wikiViewModel.session = mockSession
         }
     }
 }

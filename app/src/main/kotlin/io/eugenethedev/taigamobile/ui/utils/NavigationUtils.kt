@@ -29,3 +29,7 @@ fun NavController.navigateToSprint(sprintId: Long) = navigate("${Routes.sprint}/
 typealias NavigateToProfile = (id: Long) -> Unit
 fun NavController.navigateToProfileScreen(id: Long)
     = navigate("${Routes.profile}/$id")
+
+typealias NavigateToWikiPage = (slug: String) -> Unit
+fun NavController.navigateToWikiPageScreen(slug: String)
+    = navigate("${Routes.wiki_page}/$slug")

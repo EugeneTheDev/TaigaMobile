@@ -52,6 +52,9 @@ import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
 import io.eugenethedev.taigamobile.ui.screens.profile.ProfileScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
+import io.eugenethedev.taigamobile.ui.screens.wiki.createpage.WikiCreatePageScreen
+import io.eugenethedev.taigamobile.ui.screens.wiki.page.WikiPageScreen
+import io.eugenethedev.taigamobile.ui.screens.wiki.list.WikiListScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
@@ -201,6 +204,9 @@ object Routes {
     const val team = "team"
     const val settings = "settings"
     const val kanban = "kanban"
+    const val wiki_selector = "wiki_selector"
+    const val wiki_page = "wiki_page"
+    const val wiki_create_page = "wiki_create_page"
     const val projectsSelector = "projectsSelector"
     const val sprint = "sprint"
     const val commonTask = "commonTask"
@@ -217,6 +223,7 @@ object Routes {
         const val parentId = "parentId"
         const val statusId = "statusId"
         const val userId = "userId"
+        const val wikiSlug = "wikiSlug"
     }
 }
 
@@ -304,6 +311,33 @@ fun MainScreen(
 
             composable(Routes.kanban) {
                 KanbanScreen(
+                    navController = navController,
+                    showMessage = showMessage
+                )
+            }
+
+            composable(Routes.wiki_selector) {
+                WikiListScreen(
+                    navController = navController,
+                    showMessage = showMessage
+                )
+            }
+
+            composable(Routes.wiki_create_page) {
+                WikiCreatePageScreen(
+                    navController = navController,
+                    showMessage = showMessage
+                )
+            }
+
+            composable(
+                "${Routes.wiki_page}/{${Routes.Arguments.wikiSlug}}",
+                arguments = listOf(
+                    navArgument(Routes.Arguments.wikiSlug) { type = NavType.StringType }
+                )
+            ) {
+                WikiPageScreen(
+                    slug = it.arguments!!.getString(Routes.Arguments.wikiSlug).orEmpty(),
                     navController = navController,
                     showMessage = showMessage
                 )
@@ -435,6 +469,8 @@ fun MoreScreen(
     Item(R.drawable.ic_team, R.string.team, Routes.team)
     Spacer(Modifier.height(space))
     Item(R.drawable.ic_kanban, R.string.kanban, Routes.kanban)
+    Spacer(Modifier.height(space))
+    Item(R.drawable.ic_wiki, R.string.wiki, Routes.wiki_selector)
     Spacer(Modifier.height(space))
     Item(R.drawable.ic_settings, R.string.settings, Routes.settings)
 }

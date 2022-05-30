@@ -27,7 +27,7 @@ import com.google.accompanist.insets.navigationBarsHeight
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.TeamMember
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
-import io.eugenethedev.taigamobile.ui.components.appbars.ProjectAppBar
+import io.eugenethedev.taigamobile.ui.components.appbars.ClickableAppBar
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.texts.NothingToSeeHereText
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
@@ -72,7 +72,7 @@ fun TeamScreenContent(
     navigateBack: () -> Unit = {},
     onUserItemClick: (userId: Long) -> Unit = { _ -> }
 ) = Column(Modifier.fillMaxSize()) {
-    ProjectAppBar(
+    ClickableAppBar(
         projectName = projectName,
         onTitleClick = onTitleClick,
         navigateBack = navigateBack

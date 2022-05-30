@@ -14,10 +14,12 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.domain.entities.*
 import io.eugenethedev.taigamobile.domain.entities.CustomField
-import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
+import io.eugenethedev.taigamobile.ui.components.editors.Editor
 import io.eugenethedev.taigamobile.ui.components.lists.SimpleTasksListWithTitle
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
+import io.eugenethedev.taigamobile.ui.components.lists.Attachments
+import io.eugenethedev.taigamobile.ui.components.lists.Description
 import io.eugenethedev.taigamobile.ui.screens.commontask.components.*
 import io.eugenethedev.taigamobile.ui.screens.main.FilePicker
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
@@ -358,7 +360,7 @@ fun CommonTaskScreenContent(
                         Spacer(Modifier.height(sectionsPadding))
                     }
 
-                    CommonTaskDescription(commonTask)
+                    Description(commonTask.description)
 
                     item {
                         Spacer(Modifier.height(sectionsPadding))
@@ -431,9 +433,9 @@ fun CommonTaskScreenContent(
                         }
                     }
 
-                    CommonTaskAttachments(
+                    Attachments(
                         attachments = attachments,
-                        editActions = editActions
+                        editAttachments = editActions.editAttachments
                     )
 
                     item {
@@ -536,7 +538,7 @@ fun CommonTaskScreenContent(
 
     // Editor
     if (isTaskEditorVisible || editActions.editBasicInfo.isLoading) {
-        TaskEditor(
+        Editor(
             toolbarText = stringResource(R.string.edit),
             title = commonTask?.title.orEmpty(),
             description = commonTask?.description.orEmpty(),

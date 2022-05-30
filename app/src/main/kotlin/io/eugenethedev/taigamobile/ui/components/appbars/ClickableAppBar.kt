@@ -14,7 +14,7 @@ import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.utils.clickableUnindicated
 
 @Composable
-fun ProjectAppBar(
+fun ClickableAppBar(
     projectName: String,
     onTitleClick: () -> Unit,
     actions: @Composable RowScope.() -> Unit = {},

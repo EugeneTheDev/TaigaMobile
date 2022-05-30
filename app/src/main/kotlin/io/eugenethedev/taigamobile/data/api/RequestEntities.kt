@@ -107,3 +107,16 @@ data class EditSprintRequest(
     val estimated_start: LocalDate,
     val estimated_finish: LocalDate,
 )
+
+@JsonClass(generateAdapter = true)
+data class EditWikiPageRequest(
+    val content: String,
+    val version: Int
+)
+
+@JsonClass(generateAdapter = true)
+data class NewWikiLinkRequest(
+    val href: String,
+    val project: Long,
+    val title: String
+)

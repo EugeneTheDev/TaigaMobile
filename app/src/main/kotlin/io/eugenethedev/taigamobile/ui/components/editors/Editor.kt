@@ -27,10 +27,11 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.onBackPressed
 
 @Composable
-fun TaskEditor(
+fun Editor(
     toolbarText: String,
     title: String = "",
     description: String = "",
+    showTitle: Boolean = true,
     onSaveClick: (title: String, description: String) -> Unit = { _, _ -> },
     navigateBack: () -> Unit = {}
 ) = Column(
@@ -73,14 +74,16 @@ fun TaskEditor(
 
         Spacer(Modifier.height(8.dp))
 
-        TextFieldWithHint(
-            hintId = R.string.title_hint,
-            value = titleInput,
-            onValueChange = { titleInput = it },
-            style = MaterialTheme.typography.headlineSmall
-        )
+        if (showTitle) {
+            TextFieldWithHint(
+                hintId = R.string.title_hint,
+                value = titleInput,
+                onValueChange = { titleInput = it },
+                style = MaterialTheme.typography.headlineSmall
+            )
 
-        Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+        }
 
         TextFieldWithHint(
             hintId = R.string.description_hint,
@@ -96,5 +99,5 @@ fun TaskEditor(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun TaskEditorPreview() = TaigaMobileTheme {
-    TaskEditor("Edit")
+    Editor("Edit")
 }

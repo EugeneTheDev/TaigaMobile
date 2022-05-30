@@ -31,6 +31,7 @@
     <string name="settings">Налаштування</string>
     <string name="more">Більше</string>
     <string name="kanban">Канбан</string>
+    <string name="wiki">Вика</string>
 
     <string name="choose_project_title">Виберіть проєкт</string>
 
@@ -76,6 +77,7 @@
     <string name="link_to_epic">Зв\'язати з епіком</string>
     <string name="add_tag">Додати тег</string>
     <string name="created_by">Створений</string>
+    <string name="last_modification">Остання модифікація</string>
     <string name="assigned_to">Назначено</string>
     <string name="watchers">Відслідковують</string>
     <string name="userstories">Історії користувача</string>
@@ -137,6 +139,9 @@
     <string name="delete_task_title">Видалити завдання</string>
     <string name="delete_task_text">Ви впевнені, що бажаєте видалити завдання?</string>
 
+    <string name="delete_wiki_title">Видалити сторінку</string>
+    <string name="delete_wiki_text">Ви впевнені, що хочете видалити цю сторінку?</string>
+
     <string name="promote_title">Підвищення</string>
     <string name="promote_text">Ви впевнені, що бажаєте підвищити це завдання до історії користувача?</string>
 
@@ -192,6 +197,16 @@
 
     <string name="help">Допомога</string>
     <string name="submit_report">Надіслати репорт</string>
+
+    <!-- wiki_selector -->
+    <string name="bookmarks">Закладки</string>
+    <string name="all_wiki_pages">Всі вікі-сторінки</string>
+    <string name="empty_wiki_dialog_title">Тут немає вікі-сторінок…</string>
+    <string name="empty_wiki_dialog_subtitle">Давайте додамо новий?</string>
+    <string name="create_new_page">Створити нову сторінку</string>
+    <string name="list_of_bookmarks">Список закладок</string>
+    <string name="pages">Сторінка</string>
+    <string name="pages_without_link">Сторінки без посилань</string>
 
     <string name="credits_message">Зроблено ❤️ by EugeneTheDev. Якщо вам подобається додаток незабудьте оцінити його на Google Play та GitHub</string>
 

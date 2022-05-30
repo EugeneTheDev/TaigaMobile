@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.commontask.components
+package io.eugenethedev.taigamobile.ui.components.lists
 
 import android.content.Intent
 import android.net.Uri
@@ -24,21 +24,22 @@ import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
 import io.eugenethedev.taigamobile.ui.components.loaders.DotsLoader
 import io.eugenethedev.taigamobile.ui.components.texts.SectionTitle
-import io.eugenethedev.taigamobile.ui.screens.commontask.EditActions
+import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
 import io.eugenethedev.taigamobile.ui.screens.main.LocalFilePicker
 import io.eugenethedev.taigamobile.ui.utils.activity
+import java.io.InputStream
 
 @Suppress("FunctionName")
-fun LazyListScope.CommonTaskAttachments(
+fun LazyListScope.Attachments(
     attachments: List<Attachment>,
-    editActions: EditActions
+    editAttachments: EditAction<Pair<String, InputStream>, Attachment>
 ) {
     item {
         val filePicker = LocalFilePicker.current
         SectionTitle(
             text = stringResource(R.string.attachments_template).format(attachments.size),
             onAddClick = {
-                filePicker.requestFile { file, stream -> editActions.editAttachments.select(file to stream) }
+                filePicker.requestFile { file, stream -> editAttachments.select(file to stream) }
             }
         )
     }
@@ -46,12 +47,12 @@ fun LazyListScope.CommonTaskAttachments(
     items(attachments) {
         AttachmentItem(
             attachment = it,
-            onRemoveClick = { editActions.editAttachments.remove(it) }
+            onRemoveClick = { editAttachments.remove(it) }
         )
     }
 
     item {
-        if (editActions.editAttachments.isLoading) {
+        if (editAttachments.isLoading) {
             DotsLoader()
         }
     }

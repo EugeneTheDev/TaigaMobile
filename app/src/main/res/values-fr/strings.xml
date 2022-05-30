@@ -31,6 +31,7 @@
     <string name="settings">Paramètres</string>
     <string name="more">Plus</string>
     <string name="kanban">Kanban</string>
+    <string name="wiki">Wiki</string>
 
     <string name="choose_project_title">Selectionner un projet</string>
 
@@ -76,6 +77,7 @@
     <string name="link_to_epic">Lien ver l\'épopée</string>
     <string name="add_tag">Ajouter une étiquette</string>
     <string name="created_by">Créé par</string>
+    <string name="last_modification">Dernière modification</string>
     <string name="assigned_to">Assigné à</string>
     <string name="watchers">Observateurs</string>
     <string name="userstories">Récits utilisateur</string>
@@ -137,6 +139,9 @@
     <string name="delete_task_title">Supprimer la tâche</string>
     <string name="delete_task_text">Etes vous sûr de vouloir supprimer la tâche ?</string>
 
+    <string name="delete_wiki_title">Supprimer la page</string>
+    <string name="delete_wiki_text">Êtes-vous sûr de vouloir supprimer cette page?</string>
+
     <string name="promote_title">Promouvoir en récit utilisateur</string>
     <string name="promote_text">Etes vous sûr de vouloir promouvoir cette tâche en récit utilisateur ?</string>
 
@@ -192,6 +197,16 @@
 
     <string name="help">Aide</string>
     <string name="submit_report">Soumettre un rapport</string>
+
+    <!-- wiki_selector -->
+    <string name="bookmarks">Signet</string>
+    <string name="all_wiki_pages">Toutes les pages wiki</string>
+    <string name="empty_wiki_dialog_title">Il n\'y a pas de pages wiki…</string>
+    <string name="empty_wiki_dialog_subtitle">Ajoutons-en un nouveau?</string>
+    <string name="create_new_page">Créer une nouvelle page</string>
+    <string name="list_of_bookmarks">Liste des signets</string>
+    <string name="pages">Pages</string>
+    <string name="pages_without_link">Pages sans lien</string>
 
     <string name="credits_message">Réalisé avec ❤️ par EugeneTheDev. Si vous aimez l\'application, merci de donner une appréciation sur Google Play et sur le projet GitHub</string>
 

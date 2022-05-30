@@ -139,4 +139,8 @@ abstract class RepositoriesModule {
     @Singleton
     @Binds
     abstract fun bindISprintsRepository(sprintsRepository: SprintsRepository): ISprintsRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindIWikiRepository(wikiRepository: WikiRepository): IWikiRepository
 }
