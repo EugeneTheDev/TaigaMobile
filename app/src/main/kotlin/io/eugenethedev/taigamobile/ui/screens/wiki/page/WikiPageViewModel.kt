@@ -76,7 +76,7 @@ class WikiPageViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vi
             val pageId = page.value.data?.id
 
             pageId?.let { wikiRepository.deleteWikiPage(it) }
-            linkId?.let { wikiRepository.deleteWikiPage(it) }
+            linkId?.let { wikiRepository.deleteWikiLink(it) }
         }
     }
 
