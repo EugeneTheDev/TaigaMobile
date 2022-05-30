@@ -17,9 +17,9 @@ import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanViewModel
 import io.eugenethedev.taigamobile.ui.screens.profile.ProfileViewModel
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsViewModel
 import io.eugenethedev.taigamobile.ui.screens.team.TeamViewModel
-import io.eugenethedev.taigamobile.ui.screens.wiki.createPage.WikiCreatePageViewModel
+import io.eugenethedev.taigamobile.ui.screens.wiki.createpage.WikiCreatePageViewModel
 import io.eugenethedev.taigamobile.ui.screens.wiki.page.WikiPageViewModel
-import io.eugenethedev.taigamobile.ui.screens.wiki.selector.WikiSelectorViewModel
+import io.eugenethedev.taigamobile.ui.screens.wiki.list.WikiListViewModel
 import javax.inject.Singleton
 
 @Singleton
@@ -46,7 +46,7 @@ interface AppComponent {
     fun inject(issuesViewModel: IssuesViewModel)
     fun inject(kanbanViewModel: KanbanViewModel)
     fun inject(profileViewModel: ProfileViewModel)
-    fun inject(wikiSelectorViewModel: WikiSelectorViewModel)
+    fun inject(wikiSelectorViewModel: WikiListViewModel)
     fun inject(wikiPageViewModel: WikiPageViewModel)
     fun inject(wikiCreatePageViewModel: WikiCreatePageViewModel)
 }

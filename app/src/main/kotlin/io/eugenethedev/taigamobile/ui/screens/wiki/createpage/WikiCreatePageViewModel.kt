@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.wiki.createPage
+package io.eugenethedev.taigamobile.ui.screens.wiki.createpage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

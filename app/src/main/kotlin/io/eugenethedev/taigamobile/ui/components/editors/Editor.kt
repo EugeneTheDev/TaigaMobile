@@ -27,7 +27,7 @@ import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.onBackPressed
 
 @Composable
-fun TaskEditor(
+fun Editor(
     toolbarText: String,
     title: String = "",
     description: String = "",
@@ -99,5 +99,5 @@ fun TaskEditor(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun TaskEditorPreview() = TaigaMobileTheme {
-    TaskEditor("Edit")
+    Editor("Edit")
 }

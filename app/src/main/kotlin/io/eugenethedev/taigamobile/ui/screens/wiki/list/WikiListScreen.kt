@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.wiki.selector
+package io.eugenethedev.taigamobile.ui.screens.wiki.list
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -32,7 +32,6 @@ import io.eugenethedev.taigamobile.ui.components.buttons.PlusButton
 import io.eugenethedev.taigamobile.ui.components.containers.ContainerBox
 import io.eugenethedev.taigamobile.ui.components.containers.HorizontalTabbedPager
 import io.eugenethedev.taigamobile.ui.components.containers.Tab
-import io.eugenethedev.taigamobile.ui.components.dialogs.EmptyWikiDialog
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.main.Routes
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
@@ -40,66 +39,51 @@ import io.eugenethedev.taigamobile.ui.utils.navigateToWikiPageScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 
 @Composable
-fun WikiSelectorScreen(
+fun WikiListScreen(
     navController: NavController,
     showMessage: (message: Int) -> Unit = {},
 ) {
-    val viewModel: WikiSelectorViewModel = viewModel()
+    val viewModel: WikiListViewModel = viewModel()
 
     val projectName by viewModel.projectName.collectAsState()
 
-    val wikiLinks by viewModel.wikiLinksResult.collectAsState()
+    val wikiLinks by viewModel.wikiLinks.collectAsState()
     wikiLinks.subscribeOnError(showMessage)
 
-    val wikiPages by viewModel.wikiPagesResult.collectAsState()
+    val wikiPages by viewModel.wikiPages.collectAsState()
     wikiPages.subscribeOnError(showMessage)
 
     LaunchedEffect(Unit) {
-        viewModel.getWikiPage()
-        viewModel.getWikiLinks()
+        viewModel.onOpen()
     }
 
-    if (wikiLinks is LoadingResult || wikiPages is LoadingResult) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularLoader()
-        }
-    } else {
-        val wikiPagesSlug = wikiPages.data.orEmpty().map { it.slug }
-        val wikiLinksSlug = wikiLinks.data.orEmpty().filter { it.ref !in wikiPagesSlug }.map { it.ref }
+    val wikiPagesSlug = wikiPages.data.orEmpty().map { it.slug }
 
-        WikiPageSelectorContent(
-            projectName = projectName,
-            bookmarksTitles = wikiLinks.data.orEmpty().map { it.title },
-            allPagesSlug = wikiPagesSlug + wikiLinksSlug,
-            onTitleClick = { navController.navigate(Routes.projectsSelector) },
-            navigateToCreatePage = {
-                navController.navigate(Routes.wiki_create_page)
-            },
-            navigateToPageByTitle = { title ->
-                wikiLinks.data.orEmpty().find { it.title == title }?.ref?.let {
-                    navController.navigateToWikiPageScreen(it)
-                }
-            },
-            navigateToPageBySlug = { slug ->
-                navController.navigateToWikiPageScreen(slug)
-            },
-            navigateBack = { navController.popBackStack() }
-        )
-    }
+    WikiListScreenContent(
+        projectName = projectName,
+        bookmarks = wikiLinks.data.orEmpty().filter { it.ref in wikiPagesSlug }.map { it.title to it.ref },
+        allPages = wikiPagesSlug,
+        isLoading = wikiLinks is LoadingResult || wikiPages is LoadingResult,
+        onTitleClick = { navController.navigate(Routes.projectsSelector) },
+        navigateToCreatePage = {
+            navController.navigate(Routes.wiki_create_page)
+        },
+        navigateToPageBySlug = { slug ->
+            navController.navigateToWikiPageScreen(slug)
+        },
+        navigateBack = { navController.popBackStack() }
+    )
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun WikiPageSelectorContent(
+fun WikiListScreenContent(
     projectName: String,
-    bookmarksTitles: List<String> = emptyList(),
-    allPagesSlug: List<String> = emptyList(),
+    bookmarks: List<Pair<String, String>> = emptyList(),
+    allPages: List<String> = emptyList(),
+    isLoading: Boolean = false,
     onTitleClick: () -> Unit = {},
     navigateToCreatePage: () -> Unit = {},
-    navigateToPageByTitle: (title: String) -> Unit = {},
     navigateToPageBySlug: (slug: String) -> Unit = {},
     navigateBack: () -> Unit = {}
 ) = Column(
@@ -117,7 +101,16 @@ fun WikiPageSelectorContent(
         navigateBack = navigateBack
     )
 
-    if (bookmarksTitles.isEmpty() && allPagesSlug.isEmpty()) {
+    if (isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularLoader()
+        }
+    }
+
+    if (bookmarks.isEmpty() && allPages.isEmpty()) {
         EmptyWikiDialog(
             createNewPage = navigateToCreatePage
         )
@@ -130,11 +123,12 @@ fun WikiPageSelectorContent(
     ) { page ->
         when (WikiTabs.values()[page]) {
             WikiTabs.Bookmarks -> WikiSelectorList(
-                titles = bookmarksTitles,
-                onClick = navigateToPageByTitle
+                titles = bookmarks.map { it.first },
+                bookmarks = bookmarks,
+                onClick = navigateToPageBySlug
             )
             WikiTabs.AllWikiPages -> WikiSelectorList(
-                titles = allPagesSlug,
+                titles = allPages,
                 onClick = navigateToPageBySlug
             )
         }
@@ -147,8 +141,9 @@ private enum class WikiTabs(@StringRes override val titleId: Int) : Tab {
 }
 
 @Composable
-fun WikiSelectorList(
+private fun WikiSelectorList(
     titles: List<String> = emptyList(),
+    bookmarks: List<Pair<String, String>> = emptyList(),
     onClick: (name: String) -> Unit = {}
 ) = Box(
     Modifier.fillMaxSize(),
@@ -157,7 +152,7 @@ fun WikiSelectorList(
     val listItemContent: @Composable LazyItemScope.(Int, String) -> Unit = lambda@{ index, item ->
         WikiSelectorItem(
             title = item,
-            onClick = { onClick(item) }
+            onClick = { onClick(bookmarks.getOrNull(index)?.second ?: item) }
         )
 
         if (index < titles.lastIndex) {
@@ -210,7 +205,7 @@ private fun WikiSelectorItem(
 @Preview
 @Composable
 fun WikiPageSelectorPreview() {
-    WikiPageSelectorContent(
+    WikiListScreenContent(
         projectName = "Cool project"
     )
 }

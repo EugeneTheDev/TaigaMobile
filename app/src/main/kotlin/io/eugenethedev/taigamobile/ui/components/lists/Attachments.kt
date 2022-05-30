@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.commontask.components
+package io.eugenethedev.taigamobile.ui.components.lists
 
 import android.content.Intent
 import android.net.Uri
@@ -30,7 +30,7 @@ import io.eugenethedev.taigamobile.ui.utils.activity
 import java.io.InputStream
 
 @Suppress("FunctionName")
-fun LazyListScope.CommonTaskAttachments(
+fun LazyListScope.Attachments(
     attachments: List<Attachment>,
     editAttachments: EditAction<Pair<String, InputStream>, Attachment>
 ) {

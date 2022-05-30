@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.wiki.selector
+package io.eugenethedev.taigamobile.ui.screens.wiki.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +13,7 @@ import io.eugenethedev.taigamobile.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class WikiSelectorViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
+class WikiListViewModel(appComponent: AppComponent = TaigaApp.appComponent) : ViewModel() {
 
     @Inject
     lateinit var session: Session
@@ -23,22 +23,26 @@ class WikiSelectorViewModel(appComponent: AppComponent = TaigaApp.appComponent) 
 
     val projectName by lazy { session.currentProjectName }
 
-    val wikiPagesResult = MutableResultFlow<List<WikiPage>>()
-    val wikiLinksResult = MutableResultFlow<List<WikiLink>>()
+    val wikiPages = MutableResultFlow<List<WikiPage>>()
+    val wikiLinks = MutableResultFlow<List<WikiLink>>()
 
     init {
         appComponent.inject(this)
     }
 
+    fun onOpen() {
+        getWikiPage()
+        getWikiLinks()
+    }
+
     fun getWikiPage() = viewModelScope.launch {
-        wikiPagesResult.loadOrError {
-            val res = wikiRepository.getProjectWikiPages()
-            res
+        wikiPages.loadOrError {
+            wikiRepository.getProjectWikiPages()
         }
     }
 
     fun getWikiLinks() = viewModelScope.launch {
-        wikiLinksResult.loadOrError {
+        wikiLinks.loadOrError {
             wikiRepository.getWikiLinks()
         }
     }

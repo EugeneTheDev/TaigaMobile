@@ -52,9 +52,9 @@ import io.eugenethedev.taigamobile.ui.screens.kanban.KanbanScreen
 import io.eugenethedev.taigamobile.ui.screens.profile.ProfileScreen
 import io.eugenethedev.taigamobile.ui.screens.settings.SettingsScreen
 import io.eugenethedev.taigamobile.ui.screens.team.TeamScreen
-import io.eugenethedev.taigamobile.ui.screens.wiki.createPage.WikiCreatePageScreen
+import io.eugenethedev.taigamobile.ui.screens.wiki.createpage.WikiCreatePageScreen
 import io.eugenethedev.taigamobile.ui.screens.wiki.page.WikiPageScreen
-import io.eugenethedev.taigamobile.ui.screens.wiki.selector.WikiSelectorScreen
+import io.eugenethedev.taigamobile.ui.screens.wiki.list.WikiListScreen
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileRippleTheme
 import io.eugenethedev.taigamobile.ui.theme.TaigaMobileTheme
 import kotlinx.coroutines.launch
@@ -317,7 +317,7 @@ fun MainScreen(
             }
 
             composable(Routes.wiki_selector) {
-                WikiSelectorScreen(
+                WikiListScreen(
                     navController = navController,
                     showMessage = showMessage
                 )

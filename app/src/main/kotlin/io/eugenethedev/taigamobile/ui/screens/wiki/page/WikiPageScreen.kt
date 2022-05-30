@@ -36,16 +36,16 @@ import io.eugenethedev.taigamobile.domain.entities.Attachment
 import io.eugenethedev.taigamobile.domain.entities.User
 import io.eugenethedev.taigamobile.ui.components.appbars.AppBarWithBackButton
 import io.eugenethedev.taigamobile.ui.components.dialogs.ConfirmActionDialog
-import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
+import io.eugenethedev.taigamobile.ui.components.editors.Editor
 import io.eugenethedev.taigamobile.ui.components.lists.UserItem
 import io.eugenethedev.taigamobile.ui.components.loaders.CircularLoader
 import io.eugenethedev.taigamobile.ui.screens.commontask.EditAction
-import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskAttachments
-import io.eugenethedev.taigamobile.ui.screens.commontask.components.CommonTaskDescription
-import io.eugenethedev.taigamobile.ui.screens.wiki.AdvancedSpacer
+import io.eugenethedev.taigamobile.ui.components.lists.Attachments
+import io.eugenethedev.taigamobile.ui.components.lists.Description
 import io.eugenethedev.taigamobile.ui.theme.dialogTonalElevation
 import io.eugenethedev.taigamobile.ui.theme.mainHorizontalScreenPadding
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
+import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.utils.navigateToProfileScreen
 import io.eugenethedev.taigamobile.ui.utils.subscribeOnError
 import io.eugenethedev.taigamobile.ui.utils.surfaceColorAtElevation
@@ -60,10 +60,10 @@ fun WikiPageScreen(
 ) {
     val viewModel: WikiPageViewModel = viewModel()
 
-    val page by viewModel.pageResult.collectAsState()
+    val page by viewModel.page.collectAsState()
     page.subscribeOnError(showMessage)
 
-    val link by viewModel.linkResult.collectAsState()
+    val link by viewModel.link.collectAsState()
     link.subscribeOnError(showMessage)
 
     val editWikiPageResult by viewModel.editWikiPageResult.collectAsState()
@@ -81,40 +81,35 @@ fun WikiPageScreen(
         editWikiPageResult is LoadingResult || deleteWikiPageResult is LoadingResult ||
         attachments is LoadingResult
 
+    deleteWikiPageResult.takeIf { it is SuccessResult }?.let {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.onOpen(slug)
     }
 
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularLoader()
-        }
-    } else {
-        WikiPageScreenContent(
-            pageName = link.data?.title ?: slug,
-            content = page.data?.content ?: "",
-            lastModifierUser = lastModifierUser,
-            lastModifierDate = page.data?.modifiedDate ?: LocalDateTime.now(),
-            attachments = attachments.data.orEmpty(),
-            navigateBack = { navController.popBackStack() },
-            editWikiPage = viewModel::editWikiPage,
-            deleteWikiPage = {
-                viewModel.deleteWikiPage()
-                navController.popBackStack()
-            },
-            onUserItemClick = { userId ->
-                navController.navigateToProfileScreen(userId)
-            },
-            editAttachments = EditAction(
-                select = { (file, stream) -> viewModel.addPageAttachment(file, stream) },
-                remove = viewModel::deletePageAttachment,
-                isLoading = attachments is LoadingResult
-            ),
+    WikiPageScreenContent(
+        pageName = link.data?.title ?: slug,
+        content = page.data?.content ?: "",
+        lastModifierUser = lastModifierUser,
+        lastModifierDate = page.data?.modifiedDate ?: LocalDateTime.now(),
+        attachments = attachments.data.orEmpty(),
+        isLoading = isLoading,
+        navigateBack = navController::popBackStack,
+        editWikiPage = viewModel::editWikiPage,
+        deleteWikiPage = viewModel::deleteWikiPage,
+        onUserItemClick = { userId ->
+            navController.navigateToProfileScreen(userId)
+        },
+        editAttachments = EditAction(
+            select = { (file, stream) -> viewModel.addPageAttachment(file, stream) },
+            remove = viewModel::deletePageAttachment,
+            isLoading = attachments is LoadingResult
         )
-    }
+    )
 }
 
 @Composable
@@ -124,6 +119,7 @@ fun WikiPageScreenContent(
     lastModifierUser: User?,
     lastModifierDate: LocalDateTime,
     attachments: List<Attachment> = emptyList(),
+    isLoading: Boolean = false,
     navigateBack: () -> Unit = {},
     editWikiPage: (content: String) -> Unit = { _ -> },
     deleteWikiPage: () -> Unit = {},
@@ -149,6 +145,15 @@ fun WikiPageScreenContent(
             deleteWikiPage = deleteWikiPage,
         )
 
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
+            }
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -156,9 +161,13 @@ fun WikiPageScreenContent(
         ) {
 
             // description
-            CommonTaskDescription(content)
+            Description(content)
 
-            AdvancedSpacer(sectionsPadding)
+            item {
+                Spacer(
+                    Modifier.height(sectionsPadding)
+                )
+            }
 
             // last modification
             item {
@@ -180,19 +189,28 @@ fun WikiPageScreenContent(
                 }
             }
 
-            AdvancedSpacer(sectionsPadding)
+            item {
+                Spacer(
+                    Modifier.height(sectionsPadding)
+                )
+            }
 
-            CommonTaskAttachments(
+            Attachments(
                 attachments = attachments,
                 editAttachments = editAttachments
             )
 
-            AdvancedSpacer(sectionsPadding)
+            item {
+                Spacer(
+                    Modifier.height(sectionsPadding)
+                )
+            }
         }
 
     }
+
     if (isEditPageVisible) {
-        TaskEditor(
+        Editor(
             toolbarText = stringResource(R.string.edit),
             title = pageName,
             description = content,

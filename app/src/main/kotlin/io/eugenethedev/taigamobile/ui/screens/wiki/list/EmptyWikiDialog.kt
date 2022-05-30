@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.components.dialogs
+package io.eugenethedev.taigamobile.ui.screens.wiki.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

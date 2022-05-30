@@ -1,4 +1,4 @@
-package io.eugenethedev.taigamobile.ui.screens.wiki.createPage
+package io.eugenethedev.taigamobile.ui.screens.wiki.createpage
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.eugenethedev.taigamobile.R
 import io.eugenethedev.taigamobile.ui.components.dialogs.LoadingDialog
-import io.eugenethedev.taigamobile.ui.components.editors.TaskEditor
+import io.eugenethedev.taigamobile.ui.components.editors.Editor
 import io.eugenethedev.taigamobile.ui.utils.LoadingResult
 import io.eugenethedev.taigamobile.ui.utils.SuccessResult
 import io.eugenethedev.taigamobile.ui.utils.navigateToWikiPageScreen
@@ -51,7 +51,7 @@ fun WikiCreatePageScreenContent(
 ) = Box(
     modifier = Modifier.fillMaxSize()
 ) {
-    TaskEditor(
+    Editor(
         toolbarText = stringResource(R.string.create_new_page),
         onSaveClick = createWikiPage,
         navigateBack = navigateBack

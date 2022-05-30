@@ -27,13 +27,13 @@ class WikiPageViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vi
     @Inject
     lateinit var userRepository: IUsersRepository
 
-    private var pageSlug: String = ""
+    private lateinit var pageSlug: String
 
-    val pageResult = MutableResultFlow<WikiPage>()
-    val linkResult = MutableResultFlow<WikiLink>()
+    val page = MutableResultFlow<WikiPage>()
+    val link = MutableResultFlow<WikiLink>()
+    val attachments = MutableResultFlow<List<Attachment>>()
     val editWikiPageResult = MutableResultFlow<Unit>()
     val deleteWikiPageResult = MutableResultFlow<Unit>()
-    val attachments = MutableResultFlow<List<Attachment>>()
 
     var lastModifierUser = MutableStateFlow<User?>(null)
 
@@ -47,14 +47,14 @@ class WikiPageViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vi
     }
 
     private fun loadData() = viewModelScope.launch {
-        pageResult.loadOrError {
+        page.loadOrError {
             wikiRepository.getProjectWikiPageBySlug(pageSlug).also {
 
                 lastModifierUser.value = userRepository.getUser(it.lastModifier)
 
                 val jobsToLoad = arrayOf(
                     launch {
-                        linkResult.loadOrError(showLoading = false) {
+                        link.loadOrError(showLoading = false) {
                             wikiRepository.getWikiLinks().find { it.ref == pageSlug }
                         }
                     },
@@ -72,20 +72,17 @@ class WikiPageViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vi
 
     fun deleteWikiPage() = viewModelScope.launch {
         deleteWikiPageResult.loadOrError {
-            val linkId = linkResult.value.data?.id
-            val pageId = pageResult.value.data?.id
+            val linkId = link.value.data?.id
+            val pageId = page.value.data?.id
 
-            if (pageId != null)
-                wikiRepository.deleteWikiPage(pageId)
-
-            if (linkId != null)
-                wikiRepository.deleteWikiLink(linkId)
+            pageId?.let { wikiRepository.deleteWikiPage(it) }
+            linkId?.let { wikiRepository.deleteWikiPage(it) }
         }
     }
 
     fun editWikiPage(content: String) = viewModelScope.launch {
         editWikiPageResult.loadOrError {
-            pageResult.value.data?.let {
+            page.value.data?.let {
                 wikiRepository.editWikiPage(
                     pageId = it.id,
                     content = content,
@@ -110,7 +107,7 @@ class WikiPageViewModel(appComponent: AppComponent = TaigaApp.appComponent) : Vi
 
     fun addPageAttachment(fileName: String, inputStream: InputStream) = viewModelScope.launch {
         attachments.loadOrError(R.string.permission_error) {
-            pageResult.value.data?.id?.let { pageId ->
+            page.value.data?.id?.let { pageId ->
                 wikiRepository.addPageAttachment(
                     pageId = pageId,
                     fileName = fileName,
