@@ -1,7 +1,9 @@
+# ⚠️ Archived ⚠️
+This repository has been archived and is no longer maintained.
 # TaigaMobile
 <a href='https://play.google.com/store/apps/details?id=io.eugenethedev.taigamobile&utm_source=github'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=300/></a>
 
-This is the **unofficial** android app for the agile project management system [taiga.io](https://www.taiga.io/). It was built with [Jetpack Compose](https://developer.android.com/jetpack/compose), featuring Material You with dynamic colors. The project is still under development and new features will be added in the future.
+This is the **unofficial** android app for the agile project management system [taiga.io](https://www.taiga.io/). It was built with [Jetpack Compose](https://developer.android.com/jetpack/compose), featuring Material You with dynamic colors.
 
 <img src="screenshots/m3_1.png" width=200/> <img src="screenshots/m3_2.png" width=200/>
 <img src="screenshots/m3_3.png" width=200/> <img src="screenshots/m3_4.png" width=200/>
@@ -42,10 +44,7 @@ This is the **unofficial** android app for the agile project management system [
 * ... and other cool things
 
 ## Design
-Probably sucks. I'm not very good at designing UI, but I'm doing my best. So, if you have any suggestions, please tell me. I'll be really glad to receive any feedback.
+Probably sucks. I'm not very good at designing UI, but I did my best.
 
 ## Download
 Check out the app on [Google Play](https://play.google.com/store/apps/details?id=io.eugenethedev.taigamobile&utm_source=github) or go to the [Releases page](https://github.com/EugeneTheDev/TaigaMobile/releases) to download the latest apk.
-
-## Issues
-If you have any problems or suggestions, please submit an [Issue](https://github.com/EugeneTheDev/TaigaMobile/issues).
